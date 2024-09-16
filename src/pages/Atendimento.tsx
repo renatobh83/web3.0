@@ -13,7 +13,7 @@ import { ArrowDownwardSharp, ContactEmergency, Home, Logout, Person } from '@mui
 import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, MenuItem, MenuList, Switch, Tab, Tabs, TextField, Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { StyledMenu } from '../components/MainComponents/MenusNavBar';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import AppTheme from '../Theme/AppTheme';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import PersonIcon from '@mui/icons-material/Person';
@@ -21,6 +21,13 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { debounce } from 'lodash'
 import { SelectComponent } from '../components/AtendimentoComponent/SelectComponent';
 import { useAtendimentoTicketStore } from '../store/atendimentoTicket';
+import { format } from 'date-fns';
+import { ListarConfiguracoes } from '../services/configuracoes';
+import { ConsultarTickets } from '../services/tickets';
+import { useUsuarioStore } from '../store/usuarios';
+import { ListarFilas } from '../services/filas';
+import { ListarWhatsapps } from '../services/sessoesWhatsapp';
+import { useWhatsappStore } from '../store/whatsapp';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -65,14 +72,42 @@ interface Props {
 }
 
 export function Atendimento(props: Props) {
+    // Stores
+    const resetTickets = useAtendimentoTicketStore((s) => s.resetTickets);
+    const setHasMore = useAtendimentoTicketStore((s) => s.setHasMore);
+    const loadTickets = useAtendimentoTicketStore((s) => s.loadTickets);
+    const { loadWhatsApps } = useWhatsappStore()
 
+    const { setUsuarioSelecionado, toggleModalUsuario } = useUsuarioStore();
 
+    const nav = useNavigate()
     const { window } = props;
     const tickets = useAtendimentoTicketStore((s) => s.tickets);
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [isClosing, setIsClosing] = React.useState(false);
     const [tabTickets, setTabTickets] = useState(0);
     const [tabTicketsStatus, setTabTicketsStatus] = useState("pending");
+    const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+    const [anchorElFiltro, setAnchorElFiltro] = useState<null | HTMLElement>(null);
+    const [loading, setLoading] = useState(false)
+    const profile = localStorage.getItem("profile");
+    const [switchStates, setSwitchStates] = useState(() => {
+        const savedStates = JSON.parse(localStorage.getItem("filtrosAtendimento"));
+        return {
+            showAll: savedStates.showAll,
+            isNotAssignedUser: savedStates.isNotAssignedUser,
+            withUnreadMessages: savedStates.withUnreadMessages,
+        };
+    });
+    const [pesquisaTickets, setPesquisaTickets] = useState(() => {
+        const savedData = localStorage.getItem("filtrosAtendimento");
+        return savedData ? JSON.parse(savedData) : { status: [], outrosCampos: "" };
+    });
+
+    const openNav = Boolean(anchorElNav)
+    const openFiltro = Boolean(anchorElFiltro)
+
+
     const handleDrawerClose = () => {
         setIsClosing(true);
         setMobileOpen(false);
@@ -87,11 +122,7 @@ export function Atendimento(props: Props) {
             setMobileOpen(!mobileOpen);
         }
     };
-    const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
-    const [anchorElFiltro, setAnchorElFiltro] = useState<null | HTMLElement>(null);
 
-    const openNav = Boolean(anchorElNav)
-    const openFiltro = Boolean(anchorElFiltro)
 
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
@@ -109,25 +140,11 @@ export function Atendimento(props: Props) {
     };
     const username = localStorage.getItem("username");
 
-    const nav = useNavigate()
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const handleChangeTabs = (_event: any, newValue: number) => {
         setTabTickets(newValue);
     };
-    const profile = localStorage.getItem("profile");
-    const [switchStates, setSwitchStates] = useState(() => {
 
-        const savedStates = JSON.parse(localStorage.getItem("filtrosAtendimento"));
-        return {
-            showAll: savedStates.showAll,
-            isNotAssignedUser: savedStates.isNotAssignedUser,
-            withUnreadMessages: savedStates.withUnreadMessages,
-        };
-    });
-    const [pesquisaTickets, setPesquisaTickets] = useState(() => {
-        const savedData = localStorage.getItem("filtrosAtendimento");
-        return savedData ? JSON.parse(savedData) : { status: [], outrosCampos: "" };
-    });
     const handleChange = async (event: {
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         target: { name: any; checked: any };
@@ -182,7 +199,113 @@ export function Atendimento(props: Props) {
         const value = event.target.value;
         handleSearch(value); // Chama a função debounced
     };
+    function cRouteContatos() {
+        // return this.$route.name === 'chat-contatos'
+    }
+    function cFiltroSelecionado() {
+        const { queuesIds, showAll, withUnreadMessages, isNotAssignedUser } = pesquisaTickets
+        return !!(queuesIds?.length || showAll || withUnreadMessages || isNotAssignedUser)
+    }
+    function cIsExtraInfo() {
+        // return this.ticketFocado?.contact?.extraInfo?.length > 0
+    }
+    function handlerNotifications(data) {
+        const options = {
+            body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
+            icon: data.ticket.contact.profilePicUrl,
+            tag: data.ticket.id,
+            renotify: true
+        }
 
+        const notification = new Notification(`Mensagem de ${data.ticket.contact.name}`,
+            options)
+
+        setTimeout(() => {
+            notification.close()
+        }, 10000)
+
+        notification.onclick = e => {
+            e.preventDefault()
+
+            // this.$store.dispatch('AbrirChatMensagens', data.ticket)
+            // this.$router.push({ name: 'atendimento' })
+            // history.push(`/tickets/${ticket.id}`);
+        }
+
+        // this.$nextTick(() => {
+        //     // utilizar refs do layout
+        //     this.$refs.audioNotificationPlay.play()
+        // })
+    }
+    const listarConfiguracoes = async () => {
+        const { data } = await ListarConfiguracoes()
+        localStorage.setItem('configuracoes', JSON.stringify(data))
+    }
+    const consultarTickets = async (paramsInit = {}) => {
+        const params = {
+            ...pesquisaTickets,
+            ...paramsInit,
+        };
+        try {
+            if (pesquisaTickets.status.lengh === 0) return;
+            const { data } = await ConsultarTickets(params);
+            loadTickets(data.tickets);
+            setHasMore(data.hasMore);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    const BuscarTicketFiltro = useCallback(async () => {
+        resetTickets();
+        setLoading(true);
+        await consultarTickets(pesquisaTickets);
+        setLoading(false);
+    }, [pesquisaTickets, resetTickets]);
+
+    const onLoadMore = async () => {
+        if (tickets.length === 0 || !hasMore || loading) {
+            return
+        }
+        try {
+            setLoading(true);
+            pesquisaTickets.pageNumber++
+            await consultarTickets()
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+        }
+    }
+    const [filas, setFilas] = useState([])
+
+    const listarFilas = useCallback(async () => {
+        const { data } = await ListarFilas()
+        setFilas(data)
+        localStorage.setItem('filasCadastradas', JSON.stringify(data || []))
+    }, [])
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    const listarWhatsapps = useCallback(async () => {
+        const { data } = await ListarWhatsapps()
+        // this.$store.commit('LOAD_WHATSAPPS', data)
+        loadWhatsApps(data)
+    }, [])
+
+
+    const [etiquetas, setEtiquetas] = useState([])
+
+    // async function listarEtiquetas() {
+    //     const { data } = await ListarEtiquetas(true)
+    //     setEtiquetas(data)
+    // }
+
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+        listarFilas()
+        listarWhatsapps()
+        consultarTickets()
+    }, [])
     const drawer = (
         <div>
             <Toolbar sx={{ justifyContent: 'space-between' }}>
@@ -452,17 +575,7 @@ export function Atendimento(props: Props) {
                     )}
                 </TabPanel>
             </>
-            <TabPanel value={tabTickets} index={1}>
-                {tabTickets === 1 && tabTicketsStatus === "open" && (
-                    <div>open grupo</div>
-                )}
-                {tabTickets === 1 && tabTicketsStatus === "pending" && (
-                    <div>pendentes grupo</div>
-                )}
-                {tabTickets === 1 && tabTicketsStatus === "closed" && (
-                    <div>closed grupo</div>
-                )}
-            </TabPanel>
+
         </div>
     );
 
