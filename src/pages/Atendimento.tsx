@@ -6,11 +6,10 @@ import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { AccountCircle, ArrowDownwardSharp, ContactEmergency, Home, Logout, Person } from '@mui/icons-material';
+import { ArrowDownwardSharp, ContactEmergency, Home, Logout, Person } from '@mui/icons-material';
 import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, MenuItem, MenuList, Switch, Tab, Tabs, TextField, Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { StyledMenu } from '../components/MainComponents/MenusNavBar';
@@ -21,6 +20,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { debounce } from 'lodash'
 import { SelectComponent } from '../components/AtendimentoComponent/SelectComponent';
+import { useAtendimentoTicketStore } from '../store/atendimentoTicket';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -55,10 +55,7 @@ function a11yProps(index: number, name: string) {
     };
 }
 
-
-
 const drawerWidth = 300;
-
 interface Props {
     /**
      * Injected by the documentation to work in an iframe.
@@ -68,7 +65,10 @@ interface Props {
 }
 
 export function Atendimento(props: Props) {
+
+
     const { window } = props;
+    const tickets = useAtendimentoTicketStore((s) => s.tickets);
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [isClosing, setIsClosing] = React.useState(false);
     const [tabTickets, setTabTickets] = useState(0);
@@ -110,11 +110,13 @@ export function Atendimento(props: Props) {
     const username = localStorage.getItem("username");
 
     const nav = useNavigate()
-    const handleChangeTabs = (event, newValue: number) => {
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const handleChangeTabs = (_event: any, newValue: number) => {
         setTabTickets(newValue);
     };
     const profile = localStorage.getItem("profile");
     const [switchStates, setSwitchStates] = useState(() => {
+
         const savedStates = JSON.parse(localStorage.getItem("filtrosAtendimento"));
         return {
             showAll: savedStates.showAll,
@@ -127,6 +129,7 @@ export function Atendimento(props: Props) {
         return savedData ? JSON.parse(savedData) : { status: [], outrosCampos: "" };
     });
     const handleChange = async (event: {
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         target: { name: any; checked: any };
     }) => {
         const { name, checked } = event.target;
@@ -142,6 +145,7 @@ export function Atendimento(props: Props) {
     };
     const statusTickets = useCallback(
         debounce((novoStatus: string) => {
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
             setPesquisaTickets((prevPesquisaTickets: { status: any }) => {
                 const { status } = prevPesquisaTickets;
                 // Criar uma cópia do array de status atual
@@ -164,6 +168,21 @@ export function Atendimento(props: Props) {
         }, 100),
         [],
     );
+    const handleSearch = useCallback(
+        debounce(async (term: string) => {
+            setPesquisaTickets({
+                ...pesquisaTickets,
+                searchParam: term,
+            });
+        }, 700),
+        [],
+    ); // 10000ms = 10s
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        handleSearch(value); // Chama a função debounced
+    };
+
     const drawer = (
         <div>
             <Toolbar sx={{ justifyContent: 'space-between' }}>
@@ -199,7 +218,6 @@ export function Atendimento(props: Props) {
 
             <Divider />
             <List>
-
                 <Tabs
                     value={tabTickets}
                     onChange={handleChangeTabs}
@@ -337,27 +355,103 @@ export function Atendimento(props: Props) {
                         </MenuList>
                     </StyledMenu>
                     <TextField
-
                         id="standard-basic"
-                        label="Standard"
+                        label="Pesquisa"
                         variant="standard"
                         size="small"
-                        slotProps={{
-                            input: {
-
-                                type: 'search',
-                            },
-                        }} />
+                        onChange={handleInputChange}
+                    />
                     <ContactEmergency />
                 </Toolbar>
-
-
             </List>
             <Divider />
-            <ListItem>
-                Icons
-            </ListItem>
 
+            {tabTickets === 0 && (
+                <Tabs
+                    sx={{ mt: 2 }}
+                    variant="fullWidth"
+                    value={tabTicketsStatus}
+                    onChange={(_event, newValue) => setTabTicketsStatus(newValue)}
+                >
+                    <Tab label="Aberto" value="open" disableRipple />
+                    {/* <Badge color="error" className="absolute left-0 top-0" /> */}
+                    <Tab label="Pendente" value="pending" disableRipple />
+                    {/* <Badge color="error" className="absolute left-0 top-0" /> */}
+                    <Tab label="Fechado" value="closed" disableRipple />
+                    {/* <Badge color="error" className="absolute left-0 top-0" /> */}
+                    {/* {chatBotLane === "enabled" && (
+                                    <Tab
+                                        icon={<Settings />}
+                                        label="Chatbot"
+                                        value="chatbot"
+                                        className={clsx(darkMode ? "text-white" : "text-black")}
+                                        disableRipple
+                                    />
+                                )}
+                                {chatBotLane === "enabled" && (
+                                    <Badge
+                                        badgeContent={pendingTicketsChatBot}
+                                        color="error"
+                                        className="absolute left-0 top-0"
+                                    />
+                                )}
+                                {chatBotLane === "enabled" && (
+                                    <Tooltip title="Conversas Privadas" className="bg-padrao text-gray-900 font-bold" />
+                                )} */}
+                </Tabs>
+
+            )}
+
+            {tabTickets === 1 && (
+                <Tabs
+                    sx={{ mt: 2 }}
+                    variant="fullWidth"
+                    value={tabTicketsStatus}
+                    onChange={(event, newValue) => setTabTicketsStatus(newValue)}
+                >
+                    <Tab label="Abertos" value="open" disableRipple />
+
+
+                    <Tab label="Pendente" value="pending" disableRipple />
+                    <Tab label="Fechado" value="closed" disableRipple />
+                </Tabs>
+            )}
+            <><TabPanel value={tabTickets} index={0}>
+                <List
+                    disablePadding={true}
+                    sx={{
+                        width: "100%",
+                        maxWidth: 370,
+                        bgcolor: "background.paper",
+                        padding: 0,
+                    }}
+                >
+                    {tickets
+                        .filter((mensagem) => mensagem.status === tabTicketsStatus)
+                        .map((mensagem) => (
+                            // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
+                            <Box>
+                                {mensagem.lastMessage}
+                            </Box>
+                            // <ItemTicket
+                            //     key={mensagem.id}
+                            //     ticket={mensagem}
+                            //     abrirChatContato={() => { }} />
+                        ))}
+                </List>
+            </TabPanel>
+                <TabPanel value={tabTickets} index={1}>
+                    {tabTickets === 1 && tabTicketsStatus === "open" && (
+                        <div>open grupo</div>
+                    )}
+                    {tabTickets === 1 && tabTicketsStatus === "pending" && (
+                        <div>pendentes grupo</div>
+                    )}
+                    {tabTickets === 1 && tabTicketsStatus === "closed" && (
+                        <div>closed grupo</div>
+                    )}
+                </TabPanel>
+            </>
             <TabPanel value={tabTickets} index={1}>
                 {tabTickets === 1 && tabTicketsStatus === "open" && (
                     <div>open grupo</div>
