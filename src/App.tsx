@@ -3,6 +3,7 @@ import { Toaster } from "sonner";
 import { useAuth } from "./context/AuthContext";
 import { MainLayout } from "./layout/MainLayout";
 import Login from "./pages/Login";
+import { Atendimento } from "./pages/Atendimento";
 // import { Dasboard } from "./pages/Dasboard";
 // import { Atendimento } from "./pages/Atendimento";
 // import { Chat } from "./pages/Chat";
@@ -26,9 +27,9 @@ const AppRoutes = () => {
               <Route path="/sessoes" element={<IndexSessoesWhatsapp />} /> */}
 
             </Route>
-            {/* <Route path="/atendimento" element={<Atendimento />}>
-              <Route path=":ticketId" element={<Chat />} />
-            </Route> */}
+            <Route path="/atendimento" element={<Atendimento />}>
+              {/* <Route path=":ticketId" element={<Chat />} /> */}
+            </Route>
           </>
         ) : (
           <Route path="*" element={<Navigate to="/login" />} />

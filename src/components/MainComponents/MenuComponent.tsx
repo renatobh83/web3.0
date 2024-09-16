@@ -192,6 +192,7 @@ export const MenuComponent: React.FC<Props> = ({ userProfile, exibirMenuBeta, st
             ))}
             <Divider />
             {userProfile === 'admin' && (
+                // biome-ignore lint/complexity/noUselessFragments: <explanation>
                 <>
                     {menuDataAdmin.map(item => (
                         <ListItem key={item.title} disablePadding sx={{ display: 'block' }}>

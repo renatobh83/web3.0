@@ -102,9 +102,6 @@ export const MainLayout: React.FC<{
         }
     }, [updateNotificationsP, updateNotifications])
 
-
-
-
     useEffect(() => {
         listarWhatsapps();
         listarConfiguracoes();

@@ -21,7 +21,7 @@ import { toast } from "sonner";
 
 
 
-const StyledMenu = styled((props: MenuProps) => (
+export const StyledMenu = styled((props: MenuProps) => (
     <Menu
         elevation={0}
         anchorOrigin={{
@@ -111,14 +111,14 @@ export const MenusNavbar = () => {
     }
     const efetuarLogout = async () => {
         try {
-            await RealizarLogout(usuario)
-            localStorage.removeItem('token')
-            localStorage.removeItem('username')
-            localStorage.removeItem('profile')
-            localStorage.removeItem('userId')
-            localStorage.removeItem('queues')
-            localStorage.removeItem('usuario')
-            localStorage.removeItem('filtrosAtendimento')
+            // await RealizarLogout(usuario)
+            // localStorage.removeItem('token')
+            // localStorage.removeItem('username')
+            // localStorage.removeItem('profile')
+            // localStorage.removeItem('userId')
+            // localStorage.removeItem('queues')
+            // localStorage.removeItem('usuario')
+            // localStorage.removeItem('filtrosAtendimento')
 
             window.location.href = "/login";
         } catch (error) {
