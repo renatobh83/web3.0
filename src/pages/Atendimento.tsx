@@ -28,6 +28,7 @@ import { useUsuarioStore } from '../store/usuarios';
 import { ListarFilas } from '../services/filas';
 import { ListarWhatsapps } from '../services/sessoesWhatsapp';
 import { useWhatsappStore } from '../store/whatsapp';
+import { ListarEtiquetas } from '../services/etiquetas';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -294,10 +295,10 @@ export function Atendimento(props: Props) {
 
     const [etiquetas, setEtiquetas] = useState([])
 
-    // async function listarEtiquetas() {
-    //     const { data } = await ListarEtiquetas(true)
-    //     setEtiquetas(data)
-    // }
+    const listarEtiquetas = useCallback(async () => {
+        const { data } = await ListarEtiquetas(true)
+        setEtiquetas(data)
+    }, [])
 
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -305,6 +306,7 @@ export function Atendimento(props: Props) {
         listarFilas()
         listarWhatsapps()
         consultarTickets()
+        listarEtiquetas()
     }, [])
     const drawer = (
         <div>
