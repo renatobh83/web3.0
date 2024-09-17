@@ -8,7 +8,7 @@ export function CriarEtiqueta(data) {
   });
 }
 
-export function ListarEtiquetas(isActive = null) {
+export function ListarEtiquetas(isActive: boolean) {
   return request({
     url: `/tags/?isActive=${isActive}`,
     method: "get",

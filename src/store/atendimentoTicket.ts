@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { ConsultarDadosTicket, LocalizarMensagens } from "../services/tickets";
 
 export interface Ticket {
+  [x: string]: any;
   whatsapp: any;
   channel: string;
   lastMessageAt: any;

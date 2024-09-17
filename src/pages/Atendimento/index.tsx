@@ -95,6 +95,7 @@ export function Atendimento(props: Props) {
     const [tabTickets, setTabTickets] = useState(0);
     const [tabTicketsStatus, setTabTicketsStatus] = useState("pending");
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+    const [etiquetas, setEtiquetas] = useState([])
     const [anchorElFiltro, setAnchorElFiltro] = useState<null | HTMLElement>(null);
     const [loading, setLoading] = useState(false)
     const profile = localStorage.getItem("profile");
@@ -152,10 +153,7 @@ export function Atendimento(props: Props) {
         setTabTickets(newValue);
     };
 
-    const handleChange = async (event: {
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-        target: { name: any; checked: any };
-    }) => {
+    const handleChange = (event) => {
         const { name, checked } = event.target;
         // Atualizar o estado específico do switch
         setSwitchStates((prevStates) => ({
@@ -167,11 +165,16 @@ export function Atendimento(props: Props) {
             [event.target.name]: event.target.checked,
         });
     };
+
+
+
+
     const statusTickets = useCallback(
         debounce((novoStatus: string) => {
             // biome-ignore lint/suspicious/noExplicitAny: <explanation>
             setPesquisaTickets((prevPesquisaTickets: { status: any }) => {
                 const { status } = prevPesquisaTickets;
+
                 // Criar uma cópia do array de status atual
                 let statusAtualizado: string[];
 
@@ -189,7 +192,7 @@ export function Atendimento(props: Props) {
                     status: statusAtualizado, // Atualizar apenas o campo status
                 };
             });
-        }, 100),
+        }, 200),
         [],
     );
     const handleSearch = useCallback(
@@ -262,6 +265,7 @@ export function Atendimento(props: Props) {
             console.error(err);
         }
     };
+
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     const BuscarTicketFiltro = useCallback(async () => {
         resetTickets();
@@ -299,7 +303,14 @@ export function Atendimento(props: Props) {
     }, [])
 
 
-    const [etiquetas, setEtiquetas] = useState([])
+
+    useEffect(() => {
+        localStorage.setItem("filtrosAtendimento", JSON.stringify(pesquisaTickets));
+    }, [pesquisaTickets]); // Executa sempre que pesquisaTickets mudar
+
+    useEffect(() => {
+        BuscarTicketFiltro();
+    }, [BuscarTicketFiltro]);
 
     const listarEtiquetas = useCallback(async () => {
         const { data } = await ListarEtiquetas(true)
@@ -382,11 +393,12 @@ export function Atendimento(props: Props) {
     function groupMessages(): Ticket[] {
         return tickets.filter(ticket => ticket.unreadMessages && ticket.isGroup)
     }
+
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         listarFilas()
         listarWhatsapps()
-        consultarTickets()
+
         listarEtiquetas()
     }, [])
     const drawer = (
@@ -703,7 +715,7 @@ export function Atendimento(props: Props) {
                     </Box>
                 ))}
             </Box>
-            {console.log(tickets)}
+
 
         </>
     );
