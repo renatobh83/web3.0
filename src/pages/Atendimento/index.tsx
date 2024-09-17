@@ -10,25 +10,27 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { ArrowDownwardSharp, ContactEmergency, Home, Logout, Person } from '@mui/icons-material';
-import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, MenuItem, MenuList, Switch, Tab, Tabs, TextField, Tooltip } from '@mui/material';
+import { Avatar, Button, Checkbox, FormControl, FormControlLabel, FormGroup, MenuItem, MenuList, Switch, Tab, Tabs, TextField, Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { StyledMenu } from '../components/MainComponents/MenusNavBar';
 import { useCallback, useEffect, useState } from 'react';
-import AppTheme from '../Theme/AppTheme';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import PersonIcon from '@mui/icons-material/Person';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { debounce } from 'lodash'
-import { SelectComponent } from '../components/AtendimentoComponent/SelectComponent';
-import { useAtendimentoTicketStore } from '../store/atendimentoTicket';
 import { format } from 'date-fns';
-import { ListarConfiguracoes } from '../services/configuracoes';
-import { ConsultarTickets } from '../services/tickets';
-import { useUsuarioStore } from '../store/usuarios';
-import { ListarFilas } from '../services/filas';
-import { ListarWhatsapps } from '../services/sessoesWhatsapp';
-import { useWhatsappStore } from '../store/whatsapp';
-import { ListarEtiquetas } from '../services/etiquetas';
+
+import { ItemTicket } from './ItemTicket';
+import { SelectComponent } from '../../components/AtendimentoComponent/SelectComponent';
+import { StyledMenu } from '../../components/MainComponents/MenusNavBar';
+import { ListarConfiguracoes } from '../../services/configuracoes';
+import { ListarEtiquetas } from '../../services/etiquetas';
+import { ListarFilas } from '../../services/filas';
+import { ListarWhatsapps } from '../../services/sessoesWhatsapp';
+import { ConsultarTickets } from '../../services/tickets';
+import { type Ticket, useAtendimentoTicketStore } from '../../store/atendimentoTicket';
+import { useUsuarioStore } from '../../store/usuarios';
+import { useWhatsappStore } from '../../store/whatsapp';
+import AppTheme from '../../Theme/AppTheme';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -45,14 +47,18 @@ function TabPanel(props: TabPanelProps) {
             hidden={value !== index}
             id={`vertical-tabpanel-${index}`}
             aria-labelledby={`vertical-tab-${index}`}
+
             {...other}
         >
             {value === index && (
-                <Box sx={{ p: 3 }}>
-                    <Typography>{children}</Typography>
-                </Box>
-            )}
-        </div>
+                // biome-ignore lint/complexity/noUselessFragments: <explanation>
+                <div style={{ height: '60vh', overflow: 'auto' }}> {children}</div>
+                // <Box >
+                //     <Typography>{children}</Typography>
+                // </Box>
+            )
+            }
+        </div >
     );
 }
 function a11yProps(index: number, name: string) {
@@ -63,7 +69,7 @@ function a11yProps(index: number, name: string) {
     };
 }
 
-const drawerWidth = 300;
+const drawerWidth = 380;
 interface Props {
     /**
      * Injected by the documentation to work in an iframe.
@@ -77,7 +83,7 @@ export function Atendimento(props: Props) {
     const resetTickets = useAtendimentoTicketStore((s) => s.resetTickets);
     const setHasMore = useAtendimentoTicketStore((s) => s.setHasMore);
     const loadTickets = useAtendimentoTicketStore((s) => s.loadTickets);
-    const { loadWhatsApps } = useWhatsappStore()
+    const { loadWhatsApps, whatsApps } = useWhatsappStore()
 
     const { setUsuarioSelecionado, toggleModalUsuario } = useUsuarioStore();
 
@@ -300,7 +306,82 @@ export function Atendimento(props: Props) {
         setEtiquetas(data)
     }, [])
 
+    const pendingTickets = (): Ticket[] => {
+        const filteredTickets = tickets.filter(ticket => ticket.status === 'pending' && !ticket.isGroup)
+        const groupedTickets = filteredTickets.reduce((acc, ticket) => {
+            const key = `${ticket.whatsappId}_${ticket.userId}_${ticket.status}_${ticket.contactId}`;
+            if (!acc[key] || acc[key].id > ticket.id) {
+                acc[key] = ticket;
+            }
+            return acc;
+        }, {});
+        const groupedTicketIds = new Set(Object.values(groupedTickets).map(ticket => ticket.id));
+        const remainingTickets = filteredTickets.filter(ticket => !groupedTicketIds.has(ticket.id));
+        // remainingTickets.forEach(ticket => {
+        //     AtualizarStatusTicketNull(ticket.id, 'closed', ticket.userId);
+        //     console.log(`Ticket duplo ${ticket.id} tratado.`);
+        // });
+        return Object.values(groupedTickets)
+    }
 
+    function openTickets(): Ticket[] {
+        const filteredTickets = tickets.filter(ticket => ticket.status === 'open' && !ticket.isGroup)
+        const groupedTickets = filteredTickets.reduce((acc, ticket) => {
+            const key = `${ticket.whatsappId}_${ticket.userId}_${ticket.status}_${ticket.contactId}`;
+            if (!acc[key] || acc[key].id > ticket.id) {
+                acc[key] = ticket;
+            }
+            return acc;
+        }, {});
+        const groupedTicketIds = new Set(Object.values(groupedTickets).map(ticket => ticket.id));
+        const remainingTickets = filteredTickets.filter(ticket => !groupedTicketIds.has(ticket.id));
+        // remainingTickets.forEach(ticket => {
+        //     AtualizarStatusTicketNull(ticket.id, 'closed', ticket.userId);
+        //     console.log(`Ticket duplo ${ticket.id} tratado.`);
+        // });
+        // return Object.values(groupedTickets).slice(0, this.batchSize);
+        return Object.values(groupedTickets)
+    }
+    function closedTickets(): Ticket[] {
+        return tickets.filter(ticket => ticket.status === 'closed' && !ticket.isGroup)
+        // return this.tickets.filter(ticket => ticket.status === 'closed' && !ticket.isGroup).slice(0, this.batchSize);
+    }
+    function closedGroupTickets(): Ticket[] {
+        return tickets.filter(ticket => ticket.status === 'closed' && ticket.isGroup)
+        // return this.tickets.filter(ticket => ticket.status === 'closed' && ticket.isGroup).slice(0, this.batchSize);
+    }
+    function openGroupTickets(): Ticket[] {
+        // return this.tickets.filter(ticket => ticket.status === 'open' && ticket.isGroup)
+        const filteredTickets = tickets.filter(ticket => ticket.status === 'open' && ticket.isGroup);
+        const groupedTickets = filteredTickets.reduce((acc, ticket) => {
+            const key = `${ticket.whatsappId}_${ticket.userId}_${ticket.status}_${ticket.contactId}`;
+            if (!acc[key] || acc[key].id > ticket.id) {
+                acc[key] = ticket;
+            }
+            return acc;
+        }, {});
+        return Object.values(groupedTickets);
+        // return Object.values(groupedTickets).slice(0, this.batchSize);
+    }
+    function pendingGroupTickets(): Ticket[] {
+        // return this.tickets.filter(ticket => ticket.status === 'pending' && ticket.isGroup)
+        const filteredTickets = tickets.filter(ticket => ticket.status === 'pending' && ticket.isGroup);
+        const groupedTickets = filteredTickets.reduce((acc, ticket) => {
+            const key = `${ticket.whatsappId}_${ticket.userId}_${ticket.status}_${ticket.contactId}`;
+            if (!acc[key] || acc[key].id > ticket.id) {
+                acc[key] = ticket;
+            }
+            return acc;
+        }, {});
+        return Object.values(groupedTickets);
+        // return Object.values(groupedTickets).slice(0, this.batchSize);
+    }
+    function privateMessages(): Ticket[] {
+        return tickets.filter(ticket => ticket.unreadMessages && !ticket.isGroup)
+    }
+    function groupMessages(): Ticket[] {
+        return tickets.filter(ticket => ticket.unreadMessages && ticket.isGroup)
+    }
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         listarFilas()
@@ -309,7 +390,7 @@ export function Atendimento(props: Props) {
         listarEtiquetas()
     }, [])
     const drawer = (
-        <div>
+        <>
             <Toolbar sx={{ justifyContent: 'space-between' }}>
                 <Button onClick={handleOpenNavMenu}>
                     {username}
@@ -339,9 +420,9 @@ export function Atendimento(props: Props) {
                 <Button onClick={() => nav('/')}>
                     <Home />
                 </Button>
-            </Toolbar>
 
-            <Divider />
+
+            </Toolbar>
             <List>
                 <Tabs
                     value={tabTickets}
@@ -369,7 +450,7 @@ export function Atendimento(props: Props) {
                         />
                     </Tooltip>
                 </Tabs>
-                <Divider />
+
 
                 <Toolbar sx={{ justifyContent: 'space-between' }} disableGutters>
                     <Button onClick={handleOpenFiltro} size="medium">
@@ -488,12 +569,12 @@ export function Atendimento(props: Props) {
                     />
                     <ContactEmergency />
                 </Toolbar>
+                <Divider />
             </List>
-            <Divider />
 
             {tabTickets === 0 && (
                 <Tabs
-                    sx={{ mt: 2 }}
+                    sx={{ mt: 2, mb: 2 }}
                     variant="fullWidth"
                     value={tabTicketsStatus}
                     onChange={(_event, newValue) => setTabTicketsStatus(newValue)}
@@ -529,10 +610,10 @@ export function Atendimento(props: Props) {
 
             {tabTickets === 1 && (
                 <Tabs
-                    sx={{ mt: 2 }}
+                    sx={{ mt: 2, mb: 2 }}
                     variant="fullWidth"
                     value={tabTicketsStatus}
-                    onChange={(event, newValue) => setTabTicketsStatus(newValue)}
+                    onChange={(_event, newValue) => setTabTicketsStatus(newValue)}
                 >
                     <Tab label="Abertos" value="open" disableRipple />
 
@@ -541,44 +622,90 @@ export function Atendimento(props: Props) {
                     <Tab label="Fechado" value="closed" disableRipple />
                 </Tabs>
             )}
-            <><TabPanel value={tabTickets} index={0}>
+
+
+            <TabPanel value={tabTickets} index={0} >
                 <List
-                    disablePadding={true}
                     sx={{
                         width: "100%",
-                        maxWidth: 370,
-                        bgcolor: "background.paper",
-                        padding: 0,
+                        gap: 2,
                     }}
                 >
-                    {tickets
-                        .filter((mensagem) => mensagem.status === tabTicketsStatus)
-                        .map((mensagem) => (
-                            // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-                            <Box>
-                                {mensagem.lastMessage}
-                            </Box>
-                            // <ItemTicket
-                            //     key={mensagem.id}
-                            //     ticket={mensagem}
-                            //     abrirChatContato={() => { }} />
-                        ))}
+                    {tabTicketsStatus === 'open' && (
+                        openTickets().map((ticket) => (
+                            <ItemTicket key={ticket.id} ticket={ticket} filas={filas} etiquetas={etiquetas} buscaTicket={false} />
+                        ))
+                    )}
+                    {tabTicketsStatus === 'pending' && (
+                        pendingTickets().map((ticket) => (
+                            <ItemTicket key={ticket.id} ticket={ticket} filas={filas} etiquetas={etiquetas} buscaTicket={false} />
+                        ))
+                    )}
+                    {tabTicketsStatus === 'closed' && (
+                        closedTickets().map((ticket) => (
+                            <ItemTicket key={ticket.id} ticket={ticket} filas={filas} etiquetas={etiquetas} buscaTicket={false} />
+                        ))
+                    )}
+
+
+
                 </List>
             </TabPanel>
-                <TabPanel value={tabTickets} index={1}>
-                    {tabTickets === 1 && tabTicketsStatus === "open" && (
-                        <div>open grupo</div>
-                    )}
-                    {tabTickets === 1 && tabTicketsStatus === "pending" && (
-                        <div>pendentes grupo</div>
-                    )}
-                    {tabTickets === 1 && tabTicketsStatus === "closed" && (
-                        <div>closed grupo</div>
-                    )}
-                </TabPanel>
-            </>
 
-        </div>
+            <TabPanel value={tabTickets} index={1}>
+                {tabTickets === 1 && tabTicketsStatus === "open" && (
+                    openGroupTickets().map((ticket) => (
+                        <ItemTicket key={ticket.id} ticket={ticket} filas={filas} etiquetas={etiquetas} buscaTicket={false} />
+                    ))
+                )}
+                {tabTickets === 1 && tabTicketsStatus === "pending" && (
+                    pendingGroupTickets().map((ticket) => (
+                        <ItemTicket key={ticket.id} ticket={ticket} filas={filas} etiquetas={etiquetas} buscaTicket={false} />
+                    ))
+                )}
+                {tabTickets === 1 && tabTicketsStatus === "closed" && (
+                    closedGroupTickets().map((ticket) => (
+                        <ItemTicket key={ticket.id} ticket={ticket} filas={filas} etiquetas={etiquetas} buscaTicket={false} />
+                    ))
+                )}
+            </TabPanel>
+            <Box sx={{
+                px: 2, height: 60, bgcolor: 'background.paper', display: 'inline-flex', justifyContent: 'space-between'
+            }}>
+                {whatsApps?.map((item) => (
+                    <Box key={item.id} sx={{ mx: 0.5, p: 0, display: 'flex', alignItems: 'center' }}> {/* Equivalente a `q-mx-xs` e `q-pa-none` */}
+                        <Tooltip
+                            title={item.status}
+                            placement="top"
+                            sx={{
+                                maxHeight: 300,
+                                bgcolor: 'blue.100',
+                                color: 'grey.900',
+                                overflowY: 'auto',
+                            }}
+                        >
+                            <IconButton
+                                sx={{
+                                    borderRadius: '50%',  // Equivalente ao `rounded`
+                                    opacity: item.status === 'CONNECTED' ? 1 : 0.2,  // Condição de opacidade
+                                    p: 0,  // Remove padding para replicar `flat`
+                                    width: 36,  // Tamanho equivalente ao `size="18px"` ajustado
+                                    height: 36,
+                                }}
+                            >
+                                {/* O ícone pode ser um `img` ou `Avatar` */}
+                                <Avatar
+                                    src={`./${item.type}-logo.png`}
+                                    sx={{ width: 18, height: 18, }}  // Ajuste do tamanho do ícone
+                                />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                ))}
+            </Box>
+            {console.log(tickets)}
+
+        </>
     );
 
     // Remove this const when copying and pasting into your project.
@@ -611,8 +738,9 @@ export function Atendimento(props: Props) {
                     </Toolbar>
                 </AppBar>
                 <Box
+
                     component="nav"
-                    sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+                    sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 }, overflow: 'auto' }}
                     aria-label="mailbox folders"
                 >
                     {/* The implementation can be swapped with js to avoid SEO duplication of links. */}

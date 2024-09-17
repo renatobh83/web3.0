@@ -42,12 +42,11 @@ export default function AppTheme({
                     ...navigationCustomizations,
                     ...surfacesCustomizations,
                     ...themeComponents,
+
                 },
             });
     }, [disableCustomTheme, themeComponents]);
-    if (disableCustomTheme) {
-        return <React.Fragment>{children}</React.Fragment>;
-    }
+
     return (
         <ThemeProvider theme={theme} disableTransitionOnChange>
             {children}
