@@ -1,8 +1,9 @@
 import { AppBar, Toolbar, IconButton, Typography, Box, Button, Avatar, Stack, styled, Paper, Divider } from "@mui/material"
 import MenuIcon from '@mui/icons-material/Menu';
-import type { OutletContextType } from "./Chat";
+
 import { CalendarMonth, FindInPage, TransferWithinAStation } from "@mui/icons-material";
 import Close from "@mui/icons-material/Close";
+import { useAtendimentoStore } from "../../store/atendimento";
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#fff',
@@ -16,7 +17,14 @@ const Item = styled(Paper)(({ theme }) => ({
     }),
 }));
 
-export const InfoCabecalhoMenssagens = ({ drawerWidth, handleDrawerToggle }: OutletContextType) => {
+export const InfoCabecalhoMenssagens = () => {
+    const { drawerWidth, isClosing, mobileOpen, setMobileOpen } = useAtendimentoStore()
+
+    const handleDrawerToggle = () => {
+        if (!isClosing) {
+            setMobileOpen(!mobileOpen);
+        }
+    };
     return (
         <AppBar
             position="fixed"

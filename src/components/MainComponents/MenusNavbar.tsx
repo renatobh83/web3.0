@@ -16,6 +16,7 @@ import { useNotificationsStore } from "../../store/notifications";
 import { red, green } from "@mui/material/colors";
 import SystemVersion from "./SystemVersion";
 import { toast } from "sonner";
+import { useApplicationStore } from "../../store/application";
 
 
 
@@ -73,12 +74,21 @@ export const MenusNavbar = () => {
         JSON.parse(localStorage.getItem("usuario") || "null"),
     );
     const username = localStorage.getItem("username");
-    const toggleColorMode = () => {
-        const newMode = mode === 'dark' ? 'light' : 'dark';
-        setMode(newMode);
-       
-        localStorage.setItem('themeMode', newMode); // Save the selected mode to localStorage
-    };
+    const { themeMode, toggleThemeMode } = useApplicationStore()
+
+    useEffect(() => {
+        setMode(themeMode);
+    }, [themeMode, setMode]);
+
+    const handleToggleColor = () => {
+        toggleThemeMode(); // Alterna o tema na store
+    }
+    // const toggleColorMode = () => {
+    //     const newMode = mode === 'dark' ? 'light' : 'dark';
+    //     setMode(newMode);
+
+    //     localStorage.setItem('themeMode', newMode); // Save the selected mode to localStorage
+    // };
 
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -232,7 +242,7 @@ export const MenusNavbar = () => {
             <ToggleColorMode
                 data-screenshot="toggle-mode"
                 mode={mode}
-                toggleColorMode={toggleColorMode}
+                toggleColorMode={handleToggleColor}
             />
             {/* <Select
                 value={mode}

@@ -33,6 +33,8 @@ import { useWhatsappStore } from '../../store/whatsapp';
 import AppTheme from '../../Theme/AppTheme';
 import { gray } from '../../Theme/themePrimitives';
 import ToggleColorMode from '../../components/MaterialUi/Login/ToggleColorMode';
+import { useAtendimentoStore } from '../../store/atendimento';
+import { useApplicationStore } from '../../store/application';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -49,12 +51,12 @@ function TabPanel(props: TabPanelProps) {
             hidden={value !== index}
             id={`vertical-tabpanel-${index}`}
             aria-labelledby={`vertical-tab-${index}`}
-            style={{height: "calc(100% - 180px)", overflow: 'auto'}}
+            style={{ height: "calc(100% - 180px)", overflow: 'auto' }}
 
             {...other}
         >
             {value === index && (
-                <div style={{overflow: 'auto' }}> {children}</div>
+                <div style={{ overflow: 'auto' }}> {children}</div>
             )
             }
         </div >
@@ -68,7 +70,7 @@ function a11yProps(index: number, name: string) {
     };
 }
 
-const drawerWidth = 380;
+// const drawerWidth = 380;
 interface Props {
     /**
      * Injected by the documentation to work in an iframe.
@@ -85,12 +87,14 @@ export function Atendimento(props: Props) {
     const { loadWhatsApps, whatsApps } = useWhatsappStore()
 
     const { setUsuarioSelecionado, toggleModalUsuario } = useUsuarioStore();
-
+    const { drawerWidth, mobileOpen, setMobileOpen, isClosing, setIsClosing } = useAtendimentoStore()
     const nav = useNavigate()
     const { window } = props;
     const tickets = useAtendimentoTicketStore((s) => s.tickets);
-    const [mobileOpen, setMobileOpen] = React.useState(false);
-    const [isClosing, setIsClosing] = React.useState(false);
+
+    // const [mobileOpen, setMobileOpen] = React.useState(false);
+    // const [isClosing, setIsClosing] = React.useState(false);
+
     const [tabTickets, setTabTickets] = useState(0);
     const [tabTicketsStatus, setTabTicketsStatus] = useState("pending");
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
@@ -98,6 +102,7 @@ export function Atendimento(props: Props) {
     const [anchorElFiltro, setAnchorElFiltro] = useState<null | HTMLElement>(null);
     const [loading, setLoading] = useState(false)
     const profile = localStorage.getItem("profile");
+
     const [switchStates, setSwitchStates] = useState(() => {
         const savedStates = JSON.parse(localStorage.getItem("filtrosAtendimento"));
         return {
@@ -114,6 +119,17 @@ export function Atendimento(props: Props) {
     const openNav = Boolean(anchorElNav)
     const openFiltro = Boolean(anchorElFiltro)
 
+    const { themeMode, toggleThemeMode } = useApplicationStore()
+    const { mode, setMode } = useColorScheme()
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+        setMode(themeMode);
+    }, [themeMode, setMode]);
+
+    const handleToggleColor = () => {
+        toggleThemeMode(); // Alterna o tema na store
+    }
 
     const handleDrawerClose = () => {
         setIsClosing(true);
@@ -315,15 +331,9 @@ export function Atendimento(props: Props) {
         const { data } = await ListarEtiquetas(true)
         setEtiquetas(data)
     }, [])
-    const { mode, setMode } = useColorScheme()
 
-    const toggleColorMode = () => {
-       
-        const newMode = mode === 'dark' ? 'light' : 'dark';
-        console.log(newMode)
-        setMode(newMode);
-        localStorage.setItem('themeMode', newMode); // Save the selected mode to localStorage
-    };
+
+
 
 
     const pendingTickets = (): Ticket[] => {
@@ -595,7 +605,7 @@ export function Atendimento(props: Props) {
 
             {tabTickets === 0 && (
                 <Tabs
-                    sx={{ mt: 2, minHeight:60 }}
+                    sx={{ mt: 2, minHeight: 60 }}
                     variant="fullWidth"
                     value={tabTicketsStatus}
                     onChange={(_event, newValue) => setTabTicketsStatus(newValue)}
@@ -653,9 +663,9 @@ export function Atendimento(props: Props) {
                     }}
                 >
                     {tabTicketsStatus === 'open' && (
-                  
+
                         //  <ItemTicket key={tickets[0].id} ticket={tickets[0]} filas={filas} etiquetas={etiquetas} buscaTicket={false} />
-                         openTickets().map((ticket) => (
+                        openTickets().map((ticket) => (
                             <ItemTicket key={ticket.id} ticket={ticket} filas={filas} etiquetas={etiquetas} buscaTicket={false} />
                         ))
                     )}
@@ -693,13 +703,13 @@ export function Atendimento(props: Props) {
                 )}
             </TabPanel>
             <Box sx={{
-                px: 2, height: 60,  display: 'inline-flex', justifyContent: 'space-between', alignItems: 'center'
+                px: 2, height: 60, display: 'inline-flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
                 <ToggleColorMode
-                data-screenshot="toggle-mode"
-                mode={mode}
-                toggleColorMode={toggleColorMode}
-            />
+                    data-screenshot="toggle-mode"
+                    mode={mode}
+                    toggleColorMode={handleToggleColor}
+                />
                 {whatsApps?.map((item) => (
                     <Box key={item.id} sx={{ mx: 0.5, p: 0, display: 'flex', alignItems: 'center' }}> {/* Equivalente a `q-mx-xs` e `q-pa-none` */}
                         <Tooltip
@@ -730,7 +740,7 @@ export function Atendimento(props: Props) {
                         </Tooltip>
                     </Box>
                 ))}
-                  
+
             </Box>
         </>
     );
@@ -739,9 +749,8 @@ export function Atendimento(props: Props) {
     const container = window !== undefined ? () => window().document.body : undefined;
 
     return (
-        <AppTheme>
+        < >
             <Box sx={{ display: 'flex' }}>
-                <CssBaseline enableColorScheme />
                 <AppBar
                     position="fixed"
                     sx={{
@@ -801,9 +810,11 @@ export function Atendimento(props: Props) {
                     component="main"
                     sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
                 >
+                    {/* <Outlet context={{ drawerWidth, handleDrawerToggle }} /> */}
                     <Outlet context={{ drawerWidth, handleDrawerToggle }} />
                 </Box>
             </Box>
-        </AppTheme>
+
+        </>
     );
 }

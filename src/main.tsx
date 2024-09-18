@@ -5,11 +5,21 @@ import { AuthProvider } from "./context/AuthContext.tsx";
 import { App } from './App.tsx'
 import './index.css'
 
+import AppTheme from './Theme/AppTheme.tsx';
+
+const Root = () => {
+  return (
+    <AppTheme>
+
+      <App />
+    </AppTheme>
+  );
+};
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
       <Router>
-        <App />
+        <Root />
       </Router>
     </AuthProvider>
   </StrictMode>,

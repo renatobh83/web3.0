@@ -11,12 +11,13 @@ export type OutletContextType = {
 
 
 export const Chat = () => {
-    const { drawerWidth, handleDrawerToggle } = useOutletContext<OutletContextType>();
+    // const { drawerWidth, handleDrawerToggle } = useOutletContext<OutletContextType>();
     const cMessages = []
     return (
-    
-        <Box sx={{  overflow: 'hidden', scrollbarWidth: 'none' }}>
-            <InfoCabecalhoMenssagens drawerWidth={drawerWidth} handleDrawerToggle={handleDrawerToggle} />
+
+        <Box sx={{ overflow: 'hidden', scrollbarWidth: 'none' }}>
+            {/* <InfoCabecalhoMenssagens drawerWidth={drawerWidth} handleDrawerToggle={handleDrawerToggle} /> */}
+            <InfoCabecalhoMenssagens />
             <Toolbar />
             <Box >
                 {!cMessages.length ? (
@@ -31,6 +32,6 @@ export const Chat = () => {
 
             </Box>
         </Box>
-    
+
     )
 }

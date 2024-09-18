@@ -110,33 +110,31 @@ export const MainLayout: React.FC<{
 
 
 
-    const [open, setOpen] = useState(false);
+    // const [open, setOpen] = useState(false);
 
-    const toggleDrawer = (newOpen) => () => {
-        setOpen(newOpen);
-    };
+    // const toggleDrawer = (newOpen) => () => {
+    //     setOpen(newOpen);
+    // };
     return (
-        <AppTheme {...props} >
-            <CssBaseline enableColorScheme />
-            <Box sx={{ display: 'flex' }}>
-                <MenuDrawer />
+        <Box sx={{ display: 'flex' }}>
+            <MenuDrawer />
 
-                <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
-                    <Stack
-                        spacing={2}
-                        sx={{
-                            alignItems: 'center',
-                            mx: 3,
-                            pb: 10,
-                            mt: 8,
-                        }}
-                    >
-                        {/* header inside main */}
-                        <Header />
-                        <Outlet />
-                    </Stack>
-                </Box>
+            <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+                <Stack
+                    spacing={2}
+                    sx={{
+                        alignItems: 'center',
+                        mx: 3,
+                        pb: 10,
+                        mt: 8,
+                    }}
+                >
+                    {/* header inside main */}
+                    <Header />
+                    <Outlet />
+                </Stack>
             </Box>
-        </AppTheme>
+        </Box>
+
     )
 }
