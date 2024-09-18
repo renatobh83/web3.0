@@ -1,10 +1,9 @@
-import { Logout, Person, PlayCircleFilledRounded } from "@mui/icons-material";
+import { Logout, Person } from "@mui/icons-material";
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountBoxRounded from "@mui/icons-material/AccountBoxRounded";
-import PersonIcon from '@mui/icons-material/Person';
 import {
-    alpha, Avatar, Badge, Box, Button, Divider,
+    alpha, Avatar, Badge, Button, Divider,
     FormControlLabel,
     FormGroup,
     ListItemText, Menu, MenuItem, MenuList,
@@ -16,7 +15,6 @@ import ToggleColorMode from "../MaterialUi/Login/ToggleColorMode";
 import { useNotificationsStore } from "../../store/notifications";
 import { red, green } from "@mui/material/colors";
 import SystemVersion from "./SystemVersion";
-import { RealizarLogout } from "../../services/login";
 import { toast } from "sonner";
 
 
@@ -78,6 +76,7 @@ export const MenusNavbar = () => {
     const toggleColorMode = () => {
         const newMode = mode === 'dark' ? 'light' : 'dark';
         setMode(newMode);
+       
         localStorage.setItem('themeMode', newMode); // Save the selected mode to localStorage
     };
 

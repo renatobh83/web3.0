@@ -1,34 +1,21 @@
 import { useOutletContext } from "react-router-dom";
 import { InfoCabecalhoMenssagens } from "./InforCabecalhoChat"
-import { Box, Fade, FormControlLabel, Paper, Switch, Toolbar } from "@mui/material";
+import { Box, CssBaseline, Fade, Toolbar } from "@mui/material";
+import AppTheme from "../../Theme/AppTheme";
 
-import { useState } from "react";
+
 export type OutletContextType = {
     drawerWidth: number;
     handleDrawerToggle: () => void;
 };
 
-const icon = (
-    <Paper sx={{ m: 1, width: 100, height: 100 }} elevation={4}>
-        {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
-        <svg>
-            <Box
-                component="polygon"
-                points="0,100 50,00, 100,100"
-                sx={(theme) => ({
-                    fill: theme.palette.common.white,
-                    stroke: theme.palette.divider,
-                    strokeWidth: 1,
-                })}
-            />
-        </svg>
-    </Paper>
-);
+
 export const Chat = () => {
     const { drawerWidth, handleDrawerToggle } = useOutletContext<OutletContextType>();
     const cMessages = []
     return (
-        <Box sx={{ bgcolor: 'white', overflow: 'hidden', scrollbarWidth: 'none' }}>
+    
+        <Box sx={{  overflow: 'hidden', scrollbarWidth: 'none' }}>
             <InfoCabecalhoMenssagens drawerWidth={drawerWidth} handleDrawerToggle={handleDrawerToggle} />
             <Toolbar />
             <Box >
@@ -44,5 +31,6 @@ export const Chat = () => {
 
             </Box>
         </Box>
+    
     )
 }

@@ -10,7 +10,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { ArrowDownwardSharp, ContactEmergency, Home, Logout, Person } from '@mui/icons-material';
-import { AppBar, Avatar, Button, Checkbox, FormControl, FormControlLabel, FormGroup, MenuItem, MenuList, Switch, Tab, Tabs, TextField, Tooltip } from '@mui/material';
+import { AppBar, Avatar, Button, Checkbox, FormControl, FormControlLabel, FormGroup, MenuItem, MenuList, Switch, Tab, Tabs, TextField, Tooltip, useColorScheme } from '@mui/material';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
@@ -31,6 +31,8 @@ import { type Ticket, useAtendimentoTicketStore } from '../../store/atendimentoT
 import { useUsuarioStore } from '../../store/usuarios';
 import { useWhatsappStore } from '../../store/whatsapp';
 import AppTheme from '../../Theme/AppTheme';
+import { gray } from '../../Theme/themePrimitives';
+import ToggleColorMode from '../../components/MaterialUi/Login/ToggleColorMode';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -47,15 +49,12 @@ function TabPanel(props: TabPanelProps) {
             hidden={value !== index}
             id={`vertical-tabpanel-${index}`}
             aria-labelledby={`vertical-tab-${index}`}
+            style={{height: "calc(100% - 180px)", overflow: 'auto'}}
 
             {...other}
         >
             {value === index && (
-                // biome-ignore lint/complexity/noUselessFragments: <explanation>
-                <div style={{ height: '60vh', overflow: 'auto' }}> {children}</div>
-                // <Box >
-                //     <Typography>{children}</Typography>
-                // </Box>
+                <div style={{overflow: 'auto' }}> {children}</div>
             )
             }
         </div >
@@ -316,6 +315,16 @@ export function Atendimento(props: Props) {
         const { data } = await ListarEtiquetas(true)
         setEtiquetas(data)
     }, [])
+    const { mode, setMode } = useColorScheme()
+
+    const toggleColorMode = () => {
+       
+        const newMode = mode === 'dark' ? 'light' : 'dark';
+        console.log(newMode)
+        setMode(newMode);
+        localStorage.setItem('themeMode', newMode); // Save the selected mode to localStorage
+    };
+
 
     const pendingTickets = (): Ticket[] => {
         const filteredTickets = tickets.filter(ticket => ticket.status === 'pending' && !ticket.isGroup)
@@ -586,7 +595,7 @@ export function Atendimento(props: Props) {
 
             {tabTickets === 0 && (
                 <Tabs
-                    sx={{ mt: 2, mb: 2 }}
+                    sx={{ mt: 2, minHeight:60 }}
                     variant="fullWidth"
                     value={tabTicketsStatus}
                     onChange={(_event, newValue) => setTabTicketsStatus(newValue)}
@@ -640,11 +649,13 @@ export function Atendimento(props: Props) {
                 <List
                     sx={{
                         width: "100%",
-                        gap: 2,
+                        gap: 1,
                     }}
                 >
                     {tabTicketsStatus === 'open' && (
-                        openTickets().map((ticket) => (
+                  
+                        //  <ItemTicket key={tickets[0].id} ticket={tickets[0]} filas={filas} etiquetas={etiquetas} buscaTicket={false} />
+                         openTickets().map((ticket) => (
                             <ItemTicket key={ticket.id} ticket={ticket} filas={filas} etiquetas={etiquetas} buscaTicket={false} />
                         ))
                     )}
@@ -682,8 +693,13 @@ export function Atendimento(props: Props) {
                 )}
             </TabPanel>
             <Box sx={{
-                px: 2, height: 60, bgcolor: 'background.paper', display: 'inline-flex', justifyContent: 'space-between'
+                px: 2, height: 60,  display: 'inline-flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
+                <ToggleColorMode
+                data-screenshot="toggle-mode"
+                mode={mode}
+                toggleColorMode={toggleColorMode}
+            />
                 {whatsApps?.map((item) => (
                     <Box key={item.id} sx={{ mx: 0.5, p: 0, display: 'flex', alignItems: 'center' }}> {/* Equivalente a `q-mx-xs` e `q-pa-none` */}
                         <Tooltip
@@ -699,7 +715,7 @@ export function Atendimento(props: Props) {
                             <IconButton
                                 sx={{
                                     borderRadius: '50%',  // Equivalente ao `rounded`
-                                    opacity: item.status === 'CONNECTED' ? 1 : 0.2,  // Condição de opacidade
+                                    opacity: item.status === 'CONNECTED' ? 1 : 0.5,  // Condição de opacidade
                                     p: 0,  // Remove padding para replicar `flat`
                                     width: 36,  // Tamanho equivalente ao `size="18px"` ajustado
                                     height: 36,
@@ -707,16 +723,15 @@ export function Atendimento(props: Props) {
                             >
                                 {/* O ícone pode ser um `img` ou `Avatar` */}
                                 <Avatar
-                                    src={`./${item.type}-logo.png`}
+                                    src={`../${item.type}-logo.png`}
                                     sx={{ width: 18, height: 18, }}  // Ajuste do tamanho do ícone
                                 />
                             </IconButton>
                         </Tooltip>
                     </Box>
                 ))}
+                  
             </Box>
-
-
         </>
     );
 
@@ -786,7 +801,6 @@ export function Atendimento(props: Props) {
                     component="main"
                     sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
                 >
-
                     <Outlet context={{ drawerWidth, handleDrawerToggle }} />
                 </Box>
             </Box>

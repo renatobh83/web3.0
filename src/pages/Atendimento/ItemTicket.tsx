@@ -1,8 +1,8 @@
-import { Avatar, Badge, Box, Chip, ListItem, ListItemAvatar, ListItemButton, Typography } from "@mui/material"
+import { Avatar, Badge, Box, Chip, IconButton, ListItem, ListItemAvatar, ListItemButton, Typography } from "@mui/material"
 import type { Ticket } from "../../store/atendimentoTicket"
 import PlayArrow from "@mui/icons-material/PlayArrow"
 
-import { WhatsApp } from "@mui/icons-material"
+import { CheckCircle, WhatsApp } from "@mui/icons-material"
 import { formatDistance, parseJSON } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
@@ -42,7 +42,7 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
                 sx={{
                     height: 120,
                     width: '100%',
-                    borderLeft: '6px solid ',
+                    borderLeft: '6px solid',
                     bgcolor: 'background.paper',
                     display: 'flex',
                     alignItems: 'center',
@@ -84,10 +84,11 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
                         display="flex"
                         justifyContent="space-between"
                         alignItems="center"
-                        sx={{ width: '100%' }}
+                        // sx={{ width: '100%' }}
                     >
                         <Typography
-                            fontWeight="bold"
+                            // fontWeight="bold"/
+                            variant="inherit"
                             sx={{
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
@@ -98,9 +99,10 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
                             {ticket.name || ticket.contact.name}
                         </Typography>
 
-                        <Typography variant="caption" color="textSecondary" sx={{ flexShrink: 0 }}>
+                     
+                        {/* <Typography variant="caption" color="textSecondary" sx={{ flexShrink: 0 }}>
                             {dataInWords(ticket.lastMessageAt, ticket.updatedAt)}
-                        </Typography>
+                        </Typography> */}
                     </Box>
 
                     <Typography
@@ -159,28 +161,28 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
                     display="flex"
                     flexDirection="column"
                     alignItems="center"
-                    justifyItems='flex-start'
-                    gap={1}
+                    justifyContent='space-around'
+                    height={'100%'}
+                  
                     sx={{
                         minWidth: 50, // Tamanho fixo para a coluna da direita
                         flexShrink: 0 // Impede que a coluna da direita diminua
                     }}
                 >
-                    {/* <Chip
-                        label="3 Dias"
+                       <Chip
+                        label={dataInWords(ticket.lastMessageAt, ticket.updatedAt)}
                         size="small"
-                        sx={{
-
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                        }}
-                    /> */}
+                      
+                    />
+                 
                     <Typography variant="body2" color="textSecondary">
                         #{ticket.id}
                     </Typography>
-                    {/* <IconButton size="small" color="success">
-                        <CheckCircle fontSize="small" />
-                    </IconButton> */}
+                    {ticket.status === "closed" && (
+                
+                        <CheckCircle fontSize="medium"  sx={{color: "green !important"}}/>
+                   
+                    )}
                 </Box>
             </ListItemButton>
         </ListItem >
