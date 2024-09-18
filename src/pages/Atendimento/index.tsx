@@ -10,7 +10,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { ArrowDownwardSharp, ContactEmergency, Home, Logout, Person } from '@mui/icons-material';
-import { AppBar, Avatar, Button, Checkbox, FormControl, FormControlLabel, FormGroup, MenuItem, MenuList, Switch, Tab, Tabs, TextField, Tooltip, useColorScheme } from '@mui/material';
+import { AppBar, Avatar, Button, Checkbox, FormControl, FormControlLabel, FormGroup, MenuItem, MenuList, SwipeableDrawer, Switch, Tab, Tabs, TextField, Tooltip, useColorScheme } from '@mui/material';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
@@ -94,7 +94,7 @@ export function Atendimento(props: Props) {
 
     // const [mobileOpen, setMobileOpen] = React.useState(false);
     // const [isClosing, setIsClosing] = React.useState(false);
-
+    const { isContactInfo } = useAtendimentoStore()
     const [tabTickets, setTabTickets] = useState(0);
     const [tabTicketsStatus, setTabTicketsStatus] = useState("pending");
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
@@ -750,32 +750,27 @@ export function Atendimento(props: Props) {
 
     return (
         < >
-            <Box sx={{ display: 'flex' }}>
-                <AppBar
-                    position="fixed"
-                    sx={{
-                        display: { md: 'none' },
-                        width: { sm: `calc(100% - ${drawerWidth}px)` },
-                        ml: { sm: `${drawerWidth}px` },
-                    }}
-                >
-                    <Toolbar>
-                        <IconButton
-                            color="inherit"
-                            aria-label="open drawer"
-                            edge="start"
-                            onClick={handleDrawerToggle}
-                            sx={{ mr: 2, display: { sm: 'none' } }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
+            <Box sx={{ display: 'flex', }}>
+                {/* <Toolbar>
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        edge="start"
+                        onClick={handleDrawerToggle}
+                        sx={{ mr: 2, display: { sm: 'none' } }}
+                    >
+                        <MenuIcon />
+                    </IconButton>
 
-                    </Toolbar>
-                </AppBar>
+                </Toolbar> */}
+
                 <Box
-
                     component="nav"
-                    sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 }, overflow: 'auto' }}
+                    sx={{
+                        width: { sm: drawerWidth, md: 0 },
+                        flexShrink: { sm: 0 },
+                        overflow: 'auto'
+                    }}
                     aria-label="mailbox folders"
                 >
                     {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
@@ -808,10 +803,18 @@ export function Atendimento(props: Props) {
                 </Box>
                 <Box
                     component="main"
-                    sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+                    sx={{
+                        ml: '380px',
+                        mr: isContactInfo ? '300px' : '0',
+                        flexGrow: 1,
+                        width: { sm: `calc(100% - ${drawerWidth}px)` },
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between'
+                    }}
                 >
                     {/* <Outlet context={{ drawerWidth, handleDrawerToggle }} /> */}
-                    <Outlet context={{ drawerWidth, handleDrawerToggle }} />
+                    <Outlet />
                 </Box>
             </Box>
 
