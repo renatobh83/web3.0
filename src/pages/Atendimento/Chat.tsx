@@ -6,8 +6,8 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { useWhatsappStore } from "../../store/whatsapp";
 import { useAtendimentoTicketStore } from "../../store/atendimentoTicket";
 import { useEffect, useRef, useState } from "react";
-import { ChatMessage } from "./ChatMensagem";
 import { useAtendimentoStore } from "../../store/atendimento";
+import { ChatMensagem } from "./ChatMenssage";
 
 export type OutletContextType = {
     drawerWidth: number;
@@ -28,8 +28,8 @@ export const Chat = () => {
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         LocalizarMensagensTicket({
-            ticketId: '23',
-            pageNumber: 0
+            ticketId: '24',
+            pageNumber: 1
         })
 
     }, [])
@@ -83,7 +83,7 @@ export const Chat = () => {
                     </Fade>
                 ) :
                     <Box
-                        // style={{ background: 'url(../wa-background.png) no-repeat center center fixed' }}
+                        style={{ background: 'url(../wa-background.png) ' }}
                         id="scrollableDiv"
                         className="overflow-y-auto relative"
                         ref={scrollContainerRef}
@@ -96,14 +96,8 @@ export const Chat = () => {
                             loader={<h4>Loading...</h4>}
                             scrollableTarget="scrollableDiv"
                         >
-                            <div>Menssagens</div>
-                            <div>Menssagens</div>
-                            <div>Menssagens</div>
-                            <div>Menssagens</div>
-                            <div>Menssagens</div>
-                            <div>Menssagens</div>
-                            <div>Menssagens</div>
-                            <div>Menssagens</div>
+
+                            <ChatMensagem menssagens={mensagens} />
 
 
                         </InfiniteScroll>
