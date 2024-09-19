@@ -1,6 +1,6 @@
 import { Avatar, Box, Button, Checkbox, Chip, Divider, Icon, IconButton, Tooltip, Typography, useColorScheme } from "@mui/material"
 import { formatarData, formatarMensagemWhatsapp } from "../../utils/helpers"
-import { ArrowDownward, CalendarMonth, DoneAll } from "@mui/icons-material"
+import { ArrowDownward, CalendarMonth, Check, DoneAll } from "@mui/icons-material"
 import { dataInWords, formatarBotaoWhatsapp, formatarMensagemDeLista, formatarMensagemRespostaBotaoWhatsapp, formatarNotas, formatarTemplates } from "./mixinCommon"
 
 import DOMPurify from 'dompurify';
@@ -49,7 +49,7 @@ export const ChatMensagem = ({ menssagens }) => {
 
                         mb: 1,
                         width: '100%',
-                        minWidth: '100px',
+
                         maxWidth: '350px',
                         ml: mensagem.fromMe && 'auto',
                         mr: !mensagem.fromMe ? 'auto' : 0,
@@ -82,18 +82,18 @@ export const ChatMensagem = ({ menssagens }) => {
                         <Typography variant="body2">MENSSAGEM RESPONDIDA COMPONENT</Typography>
                     )}
                     {!mensagem.isDeleted && isShowOptions && (
-                          <Box sx={{ display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
-                          <IconButton sx={{
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
+                            <IconButton sx={{
 
-                              color: '#000', // Cor do ícone
-                              borderColor: 'transparent !important',
-                              backgroundColor: 'transparent !important', // Remove qualquer fundo indesejado
-                              borderRadius: '50%', // Deixa o ícone circular
-                          }}>
+                                color: '#000', // Cor do ícone
+                                borderColor: 'transparent !important',
+                                backgroundColor: 'transparent !important', // Remove qualquer fundo indesejado
+                                borderRadius: '50%', // Deixa o ícone circular
+                            }}>
 
-                              <ArrowDownward sx={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.45)' }} />
-                          </IconButton>
-                      </Box>
+                                <ArrowDownward sx={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.45)' }} />
+                            </IconButton>
+                        </Box>
                     )}
 
                     {mensagem.mediaType === 'audio' && mensagem.mediaUrl && (
@@ -172,29 +172,50 @@ export const ChatMensagem = ({ menssagens }) => {
                             <Box
                                 //  dangerouslySetInnerHTML={{ __html: formatarMensagemWhatsapp(DOMPurify.sanitize(mensagem.body)) }}
                                 sx={{
+
                                     mt: '2px',
+                                    minWidth: '100px',
                                     minHeight: '48px',
                                     position: 'relative',
                                     padding: '12px 16px',
-                                    borderRadius: '10px',
+                                    borderRadius: '16px',
                                     display: 'inline-block',
                                     backgroundColor: mensagem.fromMe ? '#f5f5f5' : mode === 'dark' ? '#bbdefb' : '#e3f2fd',
                                     color: mode === 'dark' ? '#000' : '#000'
 
                                 }} >
-                                <Box sx={{ textAlign: 'center', wordWrap: 'break-word' }}>
+
+                                <IconButton
+                                    onClick={() => alert('OpenMenu')}
+                                    sx={{
+
+                                        border: 'none',
+                                        position: 'absolute',
+                                        top: '-10px',
+                                        right: '-9px',
+                                        padding: '0px', // Remove o espaçamento extra em torno do ícone
+                                        fontSize: '16px', // Ajusta o tamanho do ícone
+                                        color: '#000 !important', // Cor do ícone
+                                        backgroundColor: 'transparent !important', // Remove qualquer fundo indesejado
+                                        borderRadius: '50%', // Deixa o ícone circular
+                                    }}
+                                >
+                                    <ArrowDownward sx={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.45)' }} />
+                                </IconButton>
+
+                                <Box sx={{ wordWrap: 'break-word' }}>
                                     {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
                                     <span dangerouslySetInnerHTML={{ __html: formatarMensagemWhatsapp(DOMPurify.sanitize(mensagem.body)) }} />
                                 </Box>
                                 {mensagem.fromMe ? (
                                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: '4px' }}>
-                                         <Typography variant="caption"  sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.45)' }}>{dataInWords(mensagem.createdAt)}</Typography>
+                                        <Typography variant="caption" sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.45)' }}>{dataInWords(mensagem.createdAt)}</Typography>
                                         <DoneAll sx={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.45)' }} />
                                     </Box>
-                                 ) : (
-                                    <Typography variant="caption"  sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.45)' }}>{dataInWords(mensagem.createdAt)}</Typography>
-                                 )
-                                
+                                ) : (
+                                    <Typography variant="caption" sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.45)' }}>{dataInWords(mensagem.createdAt)}</Typography>
+                                )
+
                                 }
                             </Box>
                         </>

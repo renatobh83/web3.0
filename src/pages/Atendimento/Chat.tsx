@@ -28,7 +28,7 @@ export const Chat = () => {
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         LocalizarMensagensTicket({
-            ticketId: '24',
+            ticketId: '26',
             pageNumber: 1
         })
 
