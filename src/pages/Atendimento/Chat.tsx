@@ -8,6 +8,7 @@ import { useAtendimentoTicketStore } from "../../store/atendimentoTicket";
 import { useEffect, useRef, useState } from "react";
 import { useAtendimentoStore } from "../../store/atendimento";
 import { ChatMensagem } from "./ChatMenssage";
+import { InputMenssagem } from "./InputMenssagem";
 
 export type OutletContextType = {
     drawerWidth: number;
@@ -106,10 +107,8 @@ export const Chat = () => {
                         </InfiniteScroll>
                     </Box>
                 }
-
             </Box>
-
-            <Box sx={{ height: '60px' }}>Input</Box>
+            <InputMenssagem />
         </Box >
 
     )

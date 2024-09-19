@@ -1,0 +1,56 @@
+{
+  /* Input para digitar o chat */
+}
+<TextField
+  label="Digite sua mensagem"
+  variant="outlined"
+  fullWidth
+  value={textChat}
+  onChange={handleInputChange}
+  onFocus={handleMenuOpen}
+/>;
+
+{
+  /* Menu de mensagens rápidas */
+}
+<Menu
+  anchorEl={anchorEl}
+  open={isOpen}
+  onClose={handleMenuClose}
+  PaperProps={{ style: { maxHeight: "400px", minWidth: "200px" } }}
+>
+  {mensagensRapidas.length === 0 ? (
+    <List>
+      <ListItem>
+        <ListItemText
+          primary={
+            <Typography style={{ color: "red", fontWeight: "bold" }}>
+              Ops... Nada por aqui!
+            </Typography>
+          }
+          secondary="Cadastre suas mensagens na administração de sistema."
+        />
+      </ListItem>
+    </List>
+  ) : (
+    <List>
+      {mensagensRapidas.map((resposta) => (
+        <Tooltip key={resposta.key} title={resposta.message} arrow>
+          <ListItem
+            button
+            onClick={() => mensagemRapidaSelecionada(resposta.message)}
+          >
+            <ListItemText
+              primary={
+                <Typography style={{ fontWeight: "bold" }}>
+                  {resposta.key}
+                </Typography>
+              }
+              secondary={resposta.message}
+            />
+          </ListItem>
+        </Tooltip>
+      ))}
+    </List>
+  )}
+</Menu>;
