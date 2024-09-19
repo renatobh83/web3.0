@@ -1,8 +1,9 @@
-import { Avatar, Box, Button, Checkbox, Divider, Icon, IconButton, Tooltip, Typography, useColorScheme } from "@mui/material"
+import { Avatar, Box, Button, Checkbox, Chip, Divider, Icon, IconButton, Tooltip, Typography, useColorScheme } from "@mui/material"
 import { formatarData, formatarMensagemWhatsapp } from "../../utils/helpers"
-import { CalendarMonth, Check, CheckCircleOutlineTwoTone } from "@mui/icons-material"
+import { ArrowDownward, CalendarMonth, DoneAll } from "@mui/icons-material"
 import { dataInWords, formatarBotaoWhatsapp, formatarMensagemDeLista, formatarMensagemRespostaBotaoWhatsapp, formatarNotas, formatarTemplates } from "./mixinCommon"
 
+import DOMPurify from 'dompurify';
 
 export const ChatMensagem = ({ menssagens }) => {
     const { mode } = useColorScheme()
@@ -30,8 +31,10 @@ export const ChatMensagem = ({ menssagens }) => {
     return (<Box sx={{ padding: 2 }}>
         {menssagens.map(((mensagem, index) => (
             <div key={mensagem.id}>
+
                 {index === 0 || formatarData(mensagem.createdAt) !== formatarData(menssagens[index - 1].createdAt) && (
-                    <Divider>{formatarData(mensagem.createdAt)}</Divider>
+                    <Divider >
+                        <Chip label={formatarData(mensagem.createdAt)} size="small" /></Divider>
                 )}
 
                 {menssagens.length && index === menssagens.length - 1 && (
@@ -45,6 +48,7 @@ export const ChatMensagem = ({ menssagens }) => {
                     sx={{
 
                         mb: 1,
+                        width: '100%',
                         minWidth: '100px',
                         maxWidth: '350px',
                         ml: mensagem.fromMe && 'auto',
@@ -78,24 +82,20 @@ export const ChatMensagem = ({ menssagens }) => {
                         <Typography variant="body2">MENSSAGEM RESPONDIDA COMPONENT</Typography>
                     )}
                     {!mensagem.isDeleted && isShowOptions && (
-                        <Typography>Menu Com opcoes sobre a mensagem</Typography>
-                    )}
-                    {/* {mensagem.fromMe && (
-                        <div style={{ position: 'relative', height: '200px', width: '200px', background: 'transparent', }}>
-                            <IconButton
-                                sx={{
-                                    position: 'absolute',
-                                    bottom: '8px',
-                                    right: '8px',
-                                    background: 'transparent',
-                                    border: 'none',
+                          <Box sx={{ display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
+                          <IconButton sx={{
 
-                                }}
-                            >
-                                <Icon><Check sx={{ fontSize: '1.2em' }} /></Icon>
-                            </IconButton>
-                        </div>
-                    )} */}
+                              color: '#000', // Cor do ícone
+                              borderColor: 'transparent !important',
+                              backgroundColor: 'transparent !important', // Remove qualquer fundo indesejado
+                              borderRadius: '50%', // Deixa o ícone circular
+                          }}>
+
+                              <ArrowDownward sx={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.45)' }} />
+                          </IconButton>
+                      </Box>
+                    )}
+
                     {mensagem.mediaType === 'audio' && mensagem.mediaUrl && (
                         <Box>
                             {/* biome-ignore lint/a11y/useMediaCaption: <explanation> */}
@@ -142,7 +142,7 @@ export const ChatMensagem = ({ menssagens }) => {
                         />
                     )}
                     {mensagem.mediaType === 'interactive' && (
-                        formatarMensagemRespostaBotaoWhatsapp(mensagem.body)
+                        formatarMensagemRespostaBotaoWhatsapp(DOMPurify.sanitize(mensagem.body))
                     )}
                     {mensagem.mediaType === 'button' && (
                         formatarBotaoWhatsapp(mensagem.body)
@@ -168,22 +168,38 @@ export const ChatMensagem = ({ menssagens }) => {
                     )}
                     {!['vcard', 'contactMessage', 'application', 'audio', 'button', 'list', 'location', 'locationMessage', 'interactive', 'button_reply', 'sticker', 'notes', 'templates', 'transcription'].includes(mensagem.mediaType) && (
                         <>
-
                             {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
-                            <Box dangerouslySetInnerHTML={{ __html: formatarMensagemWhatsapp(mensagem.body) }} sx={{
-                                mt: '2px',
-                                minHeight: '48px',
-                                padding: 2,
-                                borderRadius: '48px',
-                                backgroundColor: mensagem.fromMe ? '#f5f5f5' : mode === 'dark' ? '#bbdefb' : '#e3f2fd',
-                                color: mode === 'dark' ? '#000' : '#000'
+                            <Box
+                                //  dangerouslySetInnerHTML={{ __html: formatarMensagemWhatsapp(DOMPurify.sanitize(mensagem.body)) }}
+                                sx={{
+                                    mt: '2px',
+                                    minHeight: '48px',
+                                    position: 'relative',
+                                    padding: '12px 16px',
+                                    borderRadius: '10px',
+                                    display: 'inline-block',
+                                    backgroundColor: mensagem.fromMe ? '#f5f5f5' : mode === 'dark' ? '#bbdefb' : '#e3f2fd',
+                                    color: mode === 'dark' ? '#000' : '#000'
 
-                            }} />
-                            <Typography>{dataInWords(mensagem.createdAt)}</Typography>
+                                }} >
+                                <Box sx={{ textAlign: 'center', wordWrap: 'break-word' }}>
+                                    {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
+                                    <span dangerouslySetInnerHTML={{ __html: formatarMensagemWhatsapp(DOMPurify.sanitize(mensagem.body)) }} />
+                                </Box>
+                                {mensagem.fromMe ? (
+                                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: '4px' }}>
+                                         <Typography variant="caption"  sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.45)' }}>{dataInWords(mensagem.createdAt)}</Typography>
+                                        <DoneAll sx={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.45)' }} />
+                                    </Box>
+                                 ) : (
+                                    <Typography variant="caption"  sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.45)' }}>{dataInWords(mensagem.createdAt)}</Typography>
+                                 )
+                                
+                                }
+                            </Box>
                         </>
                     )}
                 </Box>
-
             </div>
         )))}
     </Box>)
