@@ -15,7 +15,7 @@ export const RecordingTimer: React.FC<RecordingTimerProps> = ({ exposeRecorderCo
   }, [recorderControls, exposeRecorderControls]);
 
   return (
-    <div >
+    <div style={{ display: 'flex' }}>
       <AudioRecorder
 
         recorderControls={recorderControls}

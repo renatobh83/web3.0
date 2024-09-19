@@ -1,8 +1,8 @@
-import { Cancel, Mic, Send } from '@mui/icons-material';
+import { Cancel, Mic, Send, X } from '@mui/icons-material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import MicIcon from '@mui/icons-material/Mic';
-import { alpha, Avatar, Box, Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, MenuProps, Skeleton, styled, TextField, Tooltip } from "@mui/material";
+import { alpha, Avatar, Box, Button, Card, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, ListItemIcon, Menu, MenuItem, MenuProps, Skeleton, styled, TextField, Tooltip } from "@mui/material";
 import { useState, useEffect, useRef } from "react";
 import { RecordingTimer } from './RecordingTimer';
 import { toast } from 'sonner';
@@ -50,14 +50,25 @@ const StyledMenu = styled((props: MenuProps) => (
         }),
     },
 }));
-import { useAudioRecorder } from "react-audio-voice-recorder";
+import type { useAudioRecorder } from "react-audio-voice-recorder";
+import Close from '@mui/icons-material/Close';
 
 export const InputMenssagem = () => {
+    const [openPreviewImagem, setOpenPreviewImagem] = useState(false);
     const [isRecordingAudio, setIsRecordingAudio] = useState(false)
     const [loading, setIsloading] = useState(false)
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const recorderControlsRef = useRef<ReturnType<typeof useAudioRecorder> | null>(null);
+
+
+    const handleClickOpenPreviewImagem = () => {
+        setOpenPreviewImagem(true);
+    };
+
+    const handleClosePreviewImagem = () => {
+        setOpenPreviewImagem(false);
+    };
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -106,7 +117,6 @@ export const InputMenssagem = () => {
     };
     async function handleCancelRecordingAudio() {
         try {
-            // await Mp3Recorder.stop().getMp3()
             setIsRecordingAudio(false)
             setIsloading(false)
         } catch (error) {
@@ -125,34 +135,32 @@ export const InputMenssagem = () => {
     async function handleSartRecordingAudio() {
         try {
             await navigator.mediaDevices.getUserMedia({ audio: true })
-            // await Mp3Recorder.start()
             setIsRecordingAudio(true)
         } catch (error) {
             setIsRecordingAudio(false)
         }
     }
+
     async function handleStopRecordingAudio(blob: Blob) {
         setIsloading(true)
         try {
-            // const [, blob] = await Mp3Recorder.stop().getMp3()
-            if (blob.size < 10000) {
 
+            if (blob.size < 10000) {
                 setIsloading(false)
                 setIsRecordingAudio(false)
                 return
             }
-
             setIsRecordingAudio(false)
-            let formData = new FormData()
+            const formData = new FormData()
             const filename = `${new Date().getTime()}.mp3`
             formData.append('medias', blob, filename)
             formData.append('body', filename)
             formData.append('fromMe', true)
-            // formData.append('id', uid())
+            formData.append('id', 'lklklklklklk')
             // if (isScheduleDate) {
             //     formData.append('scheduleDate', this.scheduleDate)
             // }
-            console.log(formData)
+
             const ticketId = ticketFocado.id
 
             // await EnviarMensagemTexto(ticketId, formData)
@@ -175,10 +183,20 @@ export const InputMenssagem = () => {
     function cDisableActions() {
         return (isRecordingAudio || ticketFocado.status !== 'open')
     }
+    const handlePaste = (event) => {
+        // Obtendo os dados colados
+        const pastedData = (event.clipboardData || window.Clipboard).getData('text');
+        if (pastedData) {
+            setArqui
+        }
+
+        // Você pode prevenir o comportamento padrão se quiser
+        // event.preventDefault();
+    };
 
     const ticketFocado = {
         status: 'open',
-        id: 3
+        id: 27
     }
 
     return (
@@ -241,6 +259,7 @@ export const InputMenssagem = () => {
                                 onKeyDown={handleKeyDown} // Captura a tecla pressionada
                                 ref={inputEnvioMensagem}
                                 sx={{ maxHeight: '30vh' }}
+                                onPaste={handlePaste}
                             >
 
                             </TextField>
@@ -258,9 +277,9 @@ export const InputMenssagem = () => {
                             {!textChat && !isRecordingAudio && (
 
                                 <Tooltip title=' Enviar Áudio'>
-
                                     <IconButton
                                         onClick={handleSartRecordingAudio}>
+                                        {/* <RecordingTimer exposeRecorderControls={handleRecorderControls} /> */}
                                         <Mic />
                                     </IconButton>
                                 </Tooltip>
@@ -268,27 +287,41 @@ export const InputMenssagem = () => {
 
                         </Box>
                     ) : (
-                        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'start', alignItems: 'center' }} id='audio '>
-                            <Box sx={{ maxWidth: '200px', display: 'flex', gap: 2, alignItems: 'center' }}>
-                                {/* <IconButton aria-label="delete" size="small"
-                                    onClick={handleCancelRecordingAudio}
-                                >
-                                    <Cancel fontSize="inherit" sx={{ bgcolor: 'success' }} />
-                                </IconButton> */}
-                                <Box sx={{ display: 'flex', gap: 1, }}  >
-                                    <RecordingTimer exposeRecorderControls={handleRecorderControls} />
-                                </Box>
-                                {/* <IconButton aria-label="delete" size="small"
-                                    onClick={handleStopRecordingAudio}>
-                                    <Send fontSize="inherit" />
-                                </IconButton> */}
+                        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }} id='audio '>
+                            <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}  >
+                                <RecordingTimer exposeRecorderControls={handleRecorderControls} />
+                                <IconButton size="small"
+                                    onClick={handleCancelRecordingAudio}>
+                                    <Cancel fontSize="inherit" />
+                                </IconButton>
 
                             </Box>
                         </Box>
-
                     )}
+                    {openPreviewImagem && (
+                        <Dialog open={openPreviewImagem} onClose={handleClosePreviewImagem} fullWidth >
+                            <DialogTitle id="abrirModalPreviewImagem">
+                                <IconButton>
+                                    <Close />
+                                </IconButton>
+                            </DialogTitle>
+                            <DialogContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Card sx={{ height: '60vh', minWidth: 'calc(100% - 100px)', maxWidth: 'calc(100% - 100px)' }}>
+                                    <CardMedia
+                                        component="img"
+                                        image="../whatsapp-logo.png"
 
-
+                                    />
+                                </Card>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleClosePreviewImagem}>Cancelar</Button>
+                                <Button onClick={handleClosePreviewImagem} autoFocus>
+                                    Enviar
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                    )}
 
                 </Box>
             )}
