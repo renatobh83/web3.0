@@ -48,7 +48,7 @@ export const InfoCabecalhoMenssagens = () => {
             position="fixed"
             sx={{
                 bgcolor: 'background.paper',
-                width: isContactInfo ? { sm: `calc(100% - (${drawerWidth}px + 300px))` } : { sm: `calc(100% - ${drawerWidth}px)` },
+                width: isContactInfo ? { sm: "calc(100% -  300px)" } : { md: `calc(100% - ${drawerWidth}px)` },
                 ml: isContactInfo ? { sm: `${drawerWidth}px` } : { sm: `${drawerWidth}px` },
                 mr: isContactInfo ? { sm: '300px' } : '0',
             }}
@@ -60,7 +60,7 @@ export const InfoCabecalhoMenssagens = () => {
                     aria-label="open drawer"
                     edge="start"
                     onClick={handleDrawerToggle}
-                    sx={{ mr: 2, display: { sm: 'none' } }}
+                    sx={{ mr: 2, display: { md: 'none' } }}
                 >
                     <MenuIcon />
                 </IconButton>

@@ -70,9 +70,12 @@ export const Chat = () => {
             <Toolbar />
 
             <Box id="scrollableDiv"
-
+                sx={{
+                    minHeight: "calc(100vh - 143px)",
+                    width: '100%'
+                }}
                 style={{
-                    height: "calc(100vh - 124px)",
+                    height: "calc(100vh - 143px)",
                     overflow: 'auto',
                     display: 'flex',
                     flexDirection: 'column-reverse',

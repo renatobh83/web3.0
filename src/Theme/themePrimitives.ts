@@ -333,9 +333,13 @@ export const colorSchemes = {
         ...gray,
       },
       divider: alpha(gray[700], 0.6),
+      // background: {
+      //   default: gray[900],
+      //   paper: "hsl(220, 30%, 7%)",
+      // },
       background: {
-        default: gray[900],
-        paper: "hsl(220, 30%, 7%)",
+        default: "#090E11",
+        paper: "#1E1E1E",
       },
       text: {
         primary: "hsl(0, 0%, 100%)",

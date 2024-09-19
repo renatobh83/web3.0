@@ -767,7 +767,7 @@ export function Atendimento(props: Props) {
                 <Box
                     component="nav"
                     sx={{
-                        width: { sm: drawerWidth, md: 0 },
+                        // width: { sm: drawerWidth, md: 0 },
                         flexShrink: { sm: 0 },
                         overflow: 'auto'
                     }}
@@ -784,8 +784,8 @@ export function Atendimento(props: Props) {
                             keepMounted: true, // Better open performance on mobile.
                         }}
                         sx={{
-                            display: { xs: 'block', sm: 'none' },
-                            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                            display: { xs: 'block', sm: 'block' },
+                            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: { md: drawerWidth, sm: drawerWidth } },
                         }}
                     >
                         {drawer}
@@ -793,7 +793,7 @@ export function Atendimento(props: Props) {
                     <Drawer
                         variant="permanent"
                         sx={{
-                            display: { xs: 'none', sm: 'block' },
+                            display: { xs: 'none', sm: 'none', md: 'block' },
                             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
                         }}
                         open
@@ -804,10 +804,10 @@ export function Atendimento(props: Props) {
                 <Box
                     component="main"
                     sx={{
-                        ml: '380px',
+                        paddingLeft: { md: '380px', sm: '0' },
                         mr: isContactInfo ? '300px' : '0',
                         flexGrow: 1,
-                        width: { sm: `calc(100% - ${drawerWidth}px)` },
+                        width: { md: `calc(100% - ${drawerWidth}px)` },
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between'
