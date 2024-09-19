@@ -35,6 +35,7 @@ import { gray } from '../../Theme/themePrimitives';
 import ToggleColorMode from '../../components/MaterialUi/Login/ToggleColorMode';
 import { useAtendimentoStore } from '../../store/atendimento';
 import { useApplicationStore } from '../../store/application';
+import { InfoCabecalhoMenssagens } from './InforCabecalhoChat';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -751,18 +752,16 @@ export function Atendimento(props: Props) {
     return (
         < >
             <Box sx={{ display: 'flex', }}>
-                {/* <Toolbar>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        edge="start"
-                        onClick={handleDrawerToggle}
-                        sx={{ mr: 2, display: { sm: 'none' } }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-
-                </Toolbar> */}
+                <InfoCabecalhoMenssagens />
+                {/* <IconButton
+                    color="inherit"
+                    aria-label="open drawer"
+                    edge="start"
+                    onClick={handleDrawerToggle}
+                    sx={{ ml: 2, mt: 2, display: { md: 'none' } }}
+                >
+                    <MenuIcon />
+                </IconButton> */}
 
                 <Box
                     component="nav"

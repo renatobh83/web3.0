@@ -65,43 +65,45 @@ export const InfoCabecalhoMenssagens = () => {
                     <MenuIcon />
                 </IconButton>
                 <Box sx={{ display: 'flex', width: '100%', alignItems: 'center' }}>
-                    {!isPerfil ? (
+                    {isPerfil ? (
                         <Box sx={{ width: { sm: 100, md: 300 } }}>
                             <Skeleton />
                             <Skeleton />
                         </Box>
                     ) : (
-                        <Button
-                            onClick={() => setIsContactInfo(!isContactInfo)}
-                            sx={{
-                                width: { sm: 150, md: 300 },
-                                minHeight: 60, height: 60, display: 'flex',
-                                justifyContent: 'flex-start'
-                            }}>
-                            <List sx={{ width: '100%' }} >
-                                <ListItem sx={{ gap: 2 }} disablePadding>
-                                    <ListItemIcon><Avatar /></ListItemIcon>
-                                    <ListItemText secondary={'teste'}>
-                                        <Typography sx={{
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap',
-                                            maxWidth: '90%'
-                                        }} >Renato Lucio de mendonca</Typography>
-                                    </ListItemText>
-                                    <ListItemText sx={{ display: 'flex', justifyContent: 'end' }}>
-                                        <Typography variant="caption" sx={{ fontSize: 9 }}>Ticket 34</Typography>
-                                    </ListItemText>
-                                </ListItem>
-                            </List>
-                        </Button>
+                        <>
+                            <Button
+                                onClick={() => setIsContactInfo(!isContactInfo)}
+                                sx={{
+                                    width: { sm: 150, md: 300 },
+                                    minHeight: 60, height: 60, display: 'flex',
+                                    justifyContent: 'flex-start'
+                                }}>
+                                <List sx={{ width: '100%' }} >
+                                    <ListItem sx={{ gap: 2 }} disablePadding>
+                                        <ListItemIcon><Avatar /></ListItemIcon>
+                                        <ListItemText secondary={'teste'}>
+                                            <Typography sx={{
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap',
+                                                maxWidth: '90%'
+                                            }} >Renato Lucio de mendonca</Typography>
+                                        </ListItemText>
+                                        <ListItemText sx={{ display: 'flex', justifyContent: 'end' }}>
+                                            <Typography variant="caption" sx={{ fontSize: 9 }}>Ticket 34</Typography>
+                                        </ListItemText>
+                                    </ListItem>
+                                </List>
+                            </Button>
+                            <Divider sx={{ flexGrow: '1', mx: 10 }} />
+                            <ButtonGroup variant="outlined" aria-label="Basic button group" size="small">
+                                <Button >Agendar</Button>
+                                <Button>Resolver</Button>
+                                <Button>Transferir</Button>
+                            </ButtonGroup>
+                        </>
                     )}
-                    <Divider sx={{ flexGrow: '1', mx: 10 }} />
-                    <ButtonGroup variant="outlined" aria-label="Basic button group" size="small">
-                        <Button >Agendar</Button>
-                        <Button>Resolver</Button>
-                        <Button>Transferir</Button>
-                    </ButtonGroup>
                 </Box>
             </Toolbar>
         </AppBar >

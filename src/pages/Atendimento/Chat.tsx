@@ -66,7 +66,7 @@ export const Chat = () => {
 
         <Box >
             {/* <InfoCabecalhoMenssagens drawerWidth={drawerWidth} handleDrawerToggle={handleDrawerToggle} /> */}
-            <InfoCabecalhoMenssagens />
+            {/* <InfoCabecalhoMenssagens /> */}
             <Toolbar />
 
             <Box id="scrollableDiv"
