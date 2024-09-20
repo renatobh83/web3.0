@@ -359,8 +359,8 @@ export const InputMenssagem = ({ ticketFocado }) => {
                     display: 'flex',
 
                 }}>
-                    <Button sx={{ p: 2 }} variant="contained" color="success" endIcon={<SendIcon />}>
-                        <Typography variant='h4'>Iniciar atendimento</Typography>
+                    <Button sx={{ p: 2 }} variant="outlined" color="success" endIcon={<SendIcon />}>
+                        <Typography variant='h5'>Iniciar o atendimento</Typography>
                     </Button>
                 </Box>
             )

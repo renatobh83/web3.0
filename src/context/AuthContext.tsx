@@ -89,7 +89,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 window.location.href = "/";
                 // rota dash
             } else {
-                window.location.href = "/";
+                window.location.href = "/atendimento";
                 // 'rota atendimento'
             }
         } catch (error) {

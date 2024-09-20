@@ -34,6 +34,7 @@ import { useApplicationStore } from '../../store/application';
 import { InfoCabecalhoMenssagens } from './InforCabecalhoChat';
 import { ListarUsuarios } from '../../services/user';
 import { toast } from 'sonner';
+import { ModalUsuario } from '../Usuarios/ModalUsuario';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -90,7 +91,7 @@ export function Atendimento(props: Props) {
     const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
 
     const { loadWhatsApps, whatsApps } = useWhatsappStore()
-    const { setUsuarioSelecionado, toggleModalUsuario } = useUsuarioStore();
+    const { setUsuarioSelecionado, toggleModalUsuario, modalUsuario } = useUsuarioStore();
     const { drawerWidth, mobileOpen, setMobileOpen, isClosing, setIsClosing } = useAtendimentoStore()
     const tickets = useAtendimentoTicketStore((s) => s.tickets);
     const [hasFetched, setHasFetched] = useState(false); // Estado para controlar o fetch
@@ -274,8 +275,11 @@ export function Atendimento(props: Props) {
         const value = event.target.value;
         handleSearch(value); // Chama a função debounced
     }
+    const handleOpenModalUsuario = (usuario) => {
+        setUsuarioSelecionado(usuario)
+        toggleModalUsuario()
 
-
+    }
     function handlerNotifications(data) {
         const options = {
             body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
@@ -516,7 +520,8 @@ export function Atendimento(props: Props) {
                     onClose={handleCloseNavMenu}
                     open={openNav}>
                     <MenuList>
-                        <MenuItem>
+                        <MenuItem
+                            onClick={() => handleOpenModalUsuario(usuario)}>
                             <Person />
                             <Typography>Perfil</Typography>
                         </MenuItem>
@@ -913,7 +918,9 @@ export function Atendimento(props: Props) {
                     ) : <Outlet />}
                     {/* <Outlet /> */}
                 </Box>
-
+                {modalUsuario &&
+                    <ModalUsuario />
+                }
             </Box>
 
         </>
