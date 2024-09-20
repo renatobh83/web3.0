@@ -1,17 +1,15 @@
-import * as React from 'react';
-
+import type * as React from 'react';
+import { EventEmitter } from 'events';
 import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
-import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { ArrowDownwardSharp, ContactEmergency, Home, Logout, Person } from '@mui/icons-material';
-import { AppBar, Avatar, Button, Checkbox, FormControl, FormControlLabel, FormGroup, MenuItem, MenuList, SwipeableDrawer, Switch, Tab, Tabs, TextField, Tooltip, useColorScheme } from '@mui/material';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Avatar, Button, Checkbox, FormControl, FormControlLabel, FormGroup, MenuItem, MenuList, Switch, Tab, Tabs, TextField, Tooltip, useColorScheme } from '@mui/material';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import PersonIcon from '@mui/icons-material/Person';
@@ -30,18 +28,19 @@ import { ConsultarTickets } from '../../services/tickets';
 import { type Ticket, useAtendimentoTicketStore } from '../../store/atendimentoTicket';
 import { useUsuarioStore } from '../../store/usuarios';
 import { useWhatsappStore } from '../../store/whatsapp';
-import AppTheme from '../../Theme/AppTheme';
-import { gray } from '../../Theme/themePrimitives';
 import ToggleColorMode from '../../components/MaterialUi/Login/ToggleColorMode';
 import { useAtendimentoStore } from '../../store/atendimento';
 import { useApplicationStore } from '../../store/application';
 import { InfoCabecalhoMenssagens } from './InforCabecalhoChat';
+import { ListarUsuarios } from '../../services/user';
+import { toast } from 'sonner';
 
 interface TabPanelProps {
     children?: React.ReactNode;
     index: number;
     value: number;
 }
+const eventEmitter = new EventEmitter();
 
 function TabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
@@ -81,19 +80,20 @@ interface Props {
 }
 
 export function Atendimento(props: Props) {
+    const nav = useNavigate()
+    const location = useLocation();
+    const { window } = props;
     // Stores
     const resetTickets = useAtendimentoTicketStore((s) => s.resetTickets);
     const setHasMore = useAtendimentoTicketStore((s) => s.setHasMore);
     const loadTickets = useAtendimentoTicketStore((s) => s.loadTickets);
+    const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
+
     const { loadWhatsApps, whatsApps } = useWhatsappStore()
-
     const { setUsuarioSelecionado, toggleModalUsuario } = useUsuarioStore();
-   
     const { drawerWidth, mobileOpen, setMobileOpen, isClosing, setIsClosing } = useAtendimentoStore()
-    const nav = useNavigate()
-    const { window } = props;
     const tickets = useAtendimentoTicketStore((s) => s.tickets);
-
+    const [hasFetched, setHasFetched] = useState(false); // Estado para controlar o fetch
     // const [mobileOpen, setMobileOpen] = React.useState(false);
     // const [isClosing, setIsClosing] = React.useState(false);
     const { isContactInfo } = useAtendimentoStore()
@@ -103,7 +103,11 @@ export function Atendimento(props: Props) {
     const [etiquetas, setEtiquetas] = useState([])
     const [anchorElFiltro, setAnchorElFiltro] = useState<null | HTMLElement>(null);
     const [loading, setLoading] = useState(false)
-    const profile = localStorage.getItem("profile");
+    const [usuarios, setUsuarios] = useState([])
+    const UserQueues = JSON.parse(localStorage.getItem('queues'))
+    const profile = localStorage.getItem('profile')
+    const username = localStorage.getItem('username')
+    const usuario = JSON.parse(localStorage.getItem('usuario'))
 
     const [switchStates, setSwitchStates] = useState(() => {
         const savedStates = JSON.parse(localStorage.getItem("filtrosAtendimento"));
@@ -117,12 +121,57 @@ export function Atendimento(props: Props) {
         const savedData = localStorage.getItem("filtrosAtendimento");
         return savedData ? JSON.parse(savedData) : { status: [], outrosCampos: "" };
     });
-
     const openNav = Boolean(anchorElNav)
     const openFiltro = Boolean(anchorElFiltro)
 
     const { themeMode, toggleThemeMode } = useApplicationStore()
     const { mode, setMode } = useColorScheme()
+
+    const dispararEvento = (data: any) => {
+        eventEmitter.emit('handlerNotifications', data);
+    };
+
+    const cRouteContatos = () => {
+        return location.pathname !== 'chat'
+    }
+    const cFiltroSelecionado = () => {
+        const { queuesIds, showAll, withUnreadMessages, isNotAssignedUser } = pesquisaTickets
+        return !!(queuesIds?.length || showAll || withUnreadMessages || isNotAssignedUser)
+    }
+    // TODO - falta implementar funcao
+    // async downloadPDF() {
+    //     const doc = new jsPDF();
+
+    //     try {
+    //       const response = await LocalizarMensagens({ ticketId: this.ticketFocado.id });
+    //       const mensagens = response.data.messages;
+    //       let yPosition = 10;
+
+    //       mensagens.forEach((mensagem, index) => {
+    //         if (yPosition > 280) {
+    //           doc.addPage();
+    //           yPosition = 10;
+    //         }
+
+    //         const remetente = mensagem.fromMe ? 'Eu' : mensagem.contact.name || 'Contato';
+    //         doc.setFontSize(12);
+    //         doc.text(`Mensagem de: ${remetente}`, 10, yPosition);
+    //         yPosition += 10;
+
+    //         const lines = doc.splitTextToSize(mensagem.body, 180);
+    //         doc.text(lines, 10, yPosition);
+    //         yPosition += lines.length * 10;
+    //         yPosition += 10;
+    //       });
+
+    //       doc.save( 'atendimento_' + this.ticketFocado.id + '_mensagens.pdf');
+    //     } catch (error) {
+    //       console.error('Erro ao baixar as mensagens:', error);
+    //     }
+    //   }
+    const cIsExtraInfo = () => {
+        return ticketFocado?.contact?.extraInfo?.length > 0
+    }
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
@@ -163,7 +212,7 @@ export function Atendimento(props: Props) {
 
         setAnchorElFiltro(event.currentTarget);
     };
-    const username = localStorage.getItem("username");
+
 
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const handleChangeTabs = (_event: any, newValue: number) => {
@@ -182,8 +231,6 @@ export function Atendimento(props: Props) {
             [event.target.name]: event.target.checked,
         });
     };
-
-
 
 
     const statusTickets = useCallback(
@@ -225,17 +272,9 @@ export function Atendimento(props: Props) {
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         handleSearch(value); // Chama a função debounced
-    };
-    function cRouteContatos() {
-        // return this.$route.name === 'chat-contatos'
     }
-    function cFiltroSelecionado() {
-        const { queuesIds, showAll, withUnreadMessages, isNotAssignedUser } = pesquisaTickets
-        return !!(queuesIds?.length || showAll || withUnreadMessages || isNotAssignedUser)
-    }
-    function cIsExtraInfo() {
-        // return this.ticketFocado?.contact?.extraInfo?.length > 0
-    }
+
+
     function handlerNotifications(data) {
         const options = {
             body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
@@ -264,17 +303,17 @@ export function Atendimento(props: Props) {
         //     this.$refs.audioNotificationPlay.play()
         // })
     }
-    const abrirChatContato = async (x) => {
-        redirectToChat: (ticketId: string) => {
-            navigate(`/atendimento/${ticketId}`);
-        }
-        // AbrirChatMensagens(x)
-    }
+
     const listarConfiguracoes = async () => {
         const { data } = await ListarConfiguracoes()
         localStorage.setItem('configuracoes', JSON.stringify(data))
     }
-    const consultarTickets = async (paramsInit = {}) => {
+    const consultaTickets = async (paramsInit = {}) => {
+        console.log('Load')
+        const toastId = toast.info('Aguarde enquanto as configurações estão sendo carregadas...', {
+            position: 'top-center',
+            duration: Number.POSITIVE_INFINITY // Duração infinita até ser manualmente removido
+        });
         const params = {
             ...pesquisaTickets,
             ...paramsInit,
@@ -286,14 +325,17 @@ export function Atendimento(props: Props) {
             setHasMore(data.hasMore);
         } catch (err) {
             console.error(err);
+        } finally {
+            toast.dismiss(toastId)
         }
     };
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     const BuscarTicketFiltro = useCallback(async () => {
+
         resetTickets();
         setLoading(true);
-        await consultarTickets(pesquisaTickets);
+        await consultaTickets(pesquisaTickets);
         setLoading(false);
     }, [pesquisaTickets, resetTickets]);
 
@@ -304,7 +346,7 @@ export function Atendimento(props: Props) {
         try {
             setLoading(true);
             pesquisaTickets.pageNumber++
-            await consultarTickets()
+            await consultaTickets()
             setLoading(false);
         } catch (error) {
             setLoading(false);
@@ -312,6 +354,17 @@ export function Atendimento(props: Props) {
     }
     const [filas, setFilas] = useState([])
 
+
+    async function listarUsuarios() {
+        try {
+            const { data } = await ListarUsuarios()
+
+            setUsuarios(data.users)
+        } catch (error) {
+            console.error(error)
+            toast.error(`Problema ao carregar usuários, ${JSON.stringify(error)}`)
+        }
+    }
     const listarFilas = useCallback(async () => {
         const { data } = await ListarFilas()
         setFilas(data)
@@ -332,8 +385,10 @@ export function Atendimento(props: Props) {
     }, [pesquisaTickets]); // Executa sempre que pesquisaTickets mudar
 
     useEffect(() => {
+        if (hasFetched) return; // Impede execução múltipla
+        setHasFetched(true); // Define que já buscou os dados
         BuscarTicketFiltro();
-    }, [BuscarTicketFiltro]);
+    }, [BuscarTicketFiltro, hasFetched]);
 
     const listarEtiquetas = useCallback(async () => {
         const { data } = await ListarEtiquetas(true)
@@ -341,7 +396,7 @@ export function Atendimento(props: Props) {
     }, [])
 
 
- 
+
 
 
     const pendingTickets = (): Ticket[] => {
@@ -420,13 +475,29 @@ export function Atendimento(props: Props) {
     function groupMessages(): Ticket[] {
         return tickets.filter(ticket => ticket.unreadMessages && ticket.isGroup)
     }
-
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
+        // Adiciona o listener ao montar o componente
+        eventEmitter.on('handlerNotifications', handlerNotifications);
+
+        // Remove o listener ao desmontar o componente
+        return () => {
+            eventEmitter.off('handlerNotifications', handlerNotifications);
+        };
+    }, []);
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+
         listarFilas()
         listarWhatsapps()
-
+        listarUsuarios()
+        listarConfiguracoes()
         listarEtiquetas()
+
+        const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento'))
+        if (!filtros?.pageNumber !== 1) {
+            localStorage.setItem('filtrosAtendimento', JSON.stringify(pesquisaTickets))
+        }
     }, [])
     const drawer = (
         <>
@@ -822,6 +893,7 @@ export function Atendimento(props: Props) {
                     {/* <Outlet context={{ drawerWidth, handleDrawerToggle }} /> */}
                     <Outlet />
                 </Box>
+
             </Box>
 
         </>

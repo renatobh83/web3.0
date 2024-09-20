@@ -69,6 +69,8 @@ export const StyledMenu = styled((props: MenuProps) => (
 
 export const MenusNavbar = () => {
     const navigate = useNavigate()
+    const location = useLocation();
+
     const { notifications, notificationsP } = useNotificationsStore()
     const { mode, setMode } = useColorScheme()
     const [status, setStatus] = useState(false);
@@ -80,7 +82,6 @@ export const MenusNavbar = () => {
     const AbrirChatMensagens = useAtendimentoTicketStore(s => s.AbrirChatMensagens)
     const setHasMore = useAtendimentoTicketStore(s => s.setHasMore)
     const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
-    const location = useLocation();
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
