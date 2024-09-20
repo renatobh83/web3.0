@@ -44,3 +44,10 @@ export function DeleteUsuario(userId: any) {
     method: "delete",
   });
 }
+export function UpdateIsOnlineUsuario(userId, data) {
+  return request({
+    url: `/usersIsOnline/${userId}`,
+    method: "put",
+    data,
+  });
+}

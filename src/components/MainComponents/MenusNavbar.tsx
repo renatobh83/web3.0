@@ -21,6 +21,7 @@ import { useAtendimentoTicketStore } from "../../store/atendimentoTicket";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ModalUsuario } from "../../pages/Usuarios/ModalUsuario";
 import { useUsuarioStore } from "../../store/usuarios";
+import { UpdateIsOnlineUsuario } from "../../services/user";
 
 
 
@@ -147,10 +148,14 @@ export const MenusNavbar = () => {
         setAnchorElNav(event.currentTarget);
     };
 
-    const handleUpdateUser = (e) => {
+    const handleUpdateUser = async (e) => {
         if (usuario) {
             usuario.status = e.target.checked ? 'online' : 'offline'
         }
+        const isOnline = e.target.checked ? 'online' : 'offline'
+        // Criar ROta no server
+        // await UpdateIsOnlineUsuario(usuario.userId, isOnline)
+        // console.log(isOnline)
         localStorage.setItem('usuario', JSON.stringify(usuario));
         setStatus(e.target.checked)
     }
