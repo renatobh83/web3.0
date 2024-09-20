@@ -331,7 +331,7 @@ export const InputMenssagem = () => {
                            
                             </DialogTitle>
                             <DialogContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Card sx={{ height: '60vh', minWidth: 'calc(100% - 100px)', maxWidth: 'calc(100% - 100px)' }}>
+                                <Card sx={{  maxheight: '60vh', minWidth: 'calc(100% - 100px)', maxWidth: 'calc(100% - 100px)' }}>
                                     <CardMedia
                                         component="img"
                                         image={urlMediaPreview.src}

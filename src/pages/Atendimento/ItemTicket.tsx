@@ -1,10 +1,12 @@
 import { Avatar, Badge, Box, Chip, IconButton, ListItem, ListItemAvatar, ListItemButton, Typography } from "@mui/material"
-import type { Ticket } from "../../store/atendimentoTicket"
+import { useAtendimentoTicketStore, type Ticket } from "../../store/atendimentoTicket"
 import PlayArrow from "@mui/icons-material/PlayArrow"
 
 import { CheckCircle, WhatsApp } from "@mui/icons-material"
 import { formatDistance, parseJSON } from "date-fns"
 import { ptBR } from "date-fns/locale"
+import { useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 
 interface ItemTicketProps {
     ticket: Ticket,
@@ -17,7 +19,7 @@ interface ItemTicketProps {
 }
 
 export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicketProps) => {
-
+    const navigate = useNavigate()
     const obterNomeFila = (ticket: Ticket) => {
         const fila = filas.find((f) => f.id === ticket.queueId);
         return fila ? fila.queue : "";
@@ -26,6 +28,22 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
         const data = timestamp ? new Date(Number(timestamp)) : parseJSON(updated);
         return formatDistance(data, new Date(), { locale: ptBR });
     };
+    const AbrirChatMensagens = useAtendimentoTicketStore(s => s.AbrirChatMensagens)
+   
+    useEffect(() => {
+        useAtendimentoTicketStore.setState({
+            redirectToChat: (ticketId: string) => {
+                navigate(`/atendimento/${ticketId}`);
+            },
+        });
+    }, [])
+
+    const abrirChatContato = async (x) => {
+        // redirectToChat: (ticketId: string) => {
+        //     navigate(`/atendimento/${ticketId}`);
+        // }
+        AbrirChatMensagens(x)
+    }
     if (!ticket) { return }
 
     return (
@@ -39,6 +57,7 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
             }}
         >
             <ListItemButton
+               onClick={()=> abrirChatContato(ticket)}
                 sx={{
                     height: 120,
                     width: '100%',

@@ -1,4 +1,4 @@
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 import { InfoCabecalhoMenssagens } from "./InforCabecalhoChat"
 import { Box, CssBaseline, Fade, Toolbar } from "@mui/material";
 import AppTheme from "../../Theme/AppTheme";
@@ -19,6 +19,7 @@ export type OutletContextType = {
 export const Chat = () => {
 
     // const { drawerWidth, handleDrawerToggle } = useOutletContext<OutletContextType>();
+    const {ticketId} = useParams()
     const { mensagens, LocalizarMensagensTicket } = useAtendimentoTicketStore()
 
     const [mensagensTicket, setMensagensTicket] = useState([])
@@ -29,7 +30,7 @@ export const Chat = () => {
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         LocalizarMensagensTicket({
-            ticketId: '26',
+            ticketId: ticketId,
             pageNumber: 1
         })
 

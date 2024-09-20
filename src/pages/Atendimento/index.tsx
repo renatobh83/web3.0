@@ -88,6 +88,7 @@ export function Atendimento(props: Props) {
     const { loadWhatsApps, whatsApps } = useWhatsappStore()
 
     const { setUsuarioSelecionado, toggleModalUsuario } = useUsuarioStore();
+   
     const { drawerWidth, mobileOpen, setMobileOpen, isClosing, setIsClosing } = useAtendimentoStore()
     const nav = useNavigate()
     const { window } = props;
@@ -263,6 +264,12 @@ export function Atendimento(props: Props) {
         //     this.$refs.audioNotificationPlay.play()
         // })
     }
+    const abrirChatContato = async (x) => {
+        redirectToChat: (ticketId: string) => {
+            navigate(`/atendimento/${ticketId}`);
+        }
+        // AbrirChatMensagens(x)
+    }
     const listarConfiguracoes = async () => {
         const { data } = await ListarConfiguracoes()
         localStorage.setItem('configuracoes', JSON.stringify(data))
@@ -334,7 +341,7 @@ export function Atendimento(props: Props) {
     }, [])
 
 
-
+ 
 
 
     const pendingTickets = (): Ticket[] => {
