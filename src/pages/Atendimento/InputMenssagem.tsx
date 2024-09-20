@@ -2,7 +2,11 @@ import { Cancel, Mic, Send, X } from '@mui/icons-material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import MicIcon from '@mui/icons-material/Mic';
-import { alpha, Avatar, Box, Button, Card, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, ListItemIcon, Menu, MenuItem, MenuProps, Skeleton, styled, TextField, Tooltip } from "@mui/material";
+import { alpha, Avatar, Box, Button, Card, CardContent, CardMedia,
+     Dialog, DialogActions, DialogContent, DialogContentText,
+      DialogTitle, Divider, IconButton, ListItemIcon, Menu,
+       MenuItem, MenuProps, Skeleton, styled, TextField, Tooltip } 
+       from "@mui/material";
 import { useState, useEffect, useRef } from "react";
 import { RecordingTimer } from './RecordingTimer';
 import { toast } from 'sonner';
@@ -59,6 +63,8 @@ export const InputMenssagem = () => {
     const [loading, setIsloading] = useState(false)
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
+    const [urlMediaPreview, setUrlMediaPreview] = useState({})
+    const [arquivos, setArquivos] = useState([])
     const recorderControlsRef = useRef<ReturnType<typeof useAudioRecorder> | null>(null);
 
 
@@ -135,6 +141,7 @@ export const InputMenssagem = () => {
     async function handleSartRecordingAudio() {
         try {
             await navigator.mediaDevices.getUserMedia({ audio: true })
+            // recorderControlsRef.current?.startRecording()
             setIsRecordingAudio(true)
         } catch (error) {
             setIsRecordingAudio(false)
@@ -183,16 +190,35 @@ export const InputMenssagem = () => {
     function cDisableActions() {
         return (isRecordingAudio || ticketFocado.status !== 'open')
     }
-    const handlePaste = (event) => {
-        // Obtendo os dados colados
-        const pastedData = (event.clipboardData || window.Clipboard).getData('text');
-        if (pastedData) {
-            setArqui
-        }
 
-        // Você pode prevenir o comportamento padrão se quiser
-        // event.preventDefault();
-    };
+
+      const handlePaste = (event: ClipboardEvent) => {
+        const clipboardItems = event.clipboardData.items;
+      
+        // Percorre os itens da área de transferência
+        for (let i = 0; i < clipboardItems.length; i++) {
+          const item = clipboardItems[i];
+      
+          // Verifica se o item é uma imagem
+          if (item.type.startsWith("image/")) {
+            const file = item.getAsFile(); // Converte para arquivo
+            if (file) {
+              const urlImg = window.URL.createObjectURL(file);
+
+              setOpenPreviewImagem(true)
+              setUrlMediaPreview( {
+                title: `Enviar imagem para `,
+                src: urlImg,
+              })
+              
+              return urlImg;
+            }
+          }
+        }
+      
+        console.log("Nenhuma imagem colada.");
+        return null;
+      };
 
     const ticketFocado = {
         status: 'open',
@@ -301,15 +327,14 @@ export const InputMenssagem = () => {
                     {openPreviewImagem && (
                         <Dialog open={openPreviewImagem} onClose={handleClosePreviewImagem} fullWidth >
                             <DialogTitle id="abrirModalPreviewImagem">
-                                <IconButton>
-                                    <Close />
-                                </IconButton>
+                            { urlMediaPreview.title }
+                           
                             </DialogTitle>
                             <DialogContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <Card sx={{ height: '60vh', minWidth: 'calc(100% - 100px)', maxWidth: 'calc(100% - 100px)' }}>
                                     <CardMedia
                                         component="img"
-                                        image="../whatsapp-logo.png"
+                                        image={urlMediaPreview.src}
 
                                     />
                                 </Card>

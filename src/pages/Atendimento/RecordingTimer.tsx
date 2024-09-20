@@ -11,7 +11,7 @@ export const RecordingTimer: React.FC<RecordingTimerProps> = ({ exposeRecorderCo
 
   useEffect(() => {
     exposeRecorderControls(recorderControls);
-
+    
   }, [recorderControls, exposeRecorderControls]);
 
   return (
@@ -30,7 +30,7 @@ export const RecordingTimer: React.FC<RecordingTimerProps> = ({ exposeRecorderCo
           // sampleSize,
         }}
         onNotAllowedOrFound={(err) => console.table(err)}
-        // downloadOnSavePress={true}
+        downloadOnSavePress={true}
         downloadFileExtension="webm"
         mediaRecorderOptions={{
           audioBitsPerSecond: 128000,
