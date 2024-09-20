@@ -29,7 +29,7 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
         return formatDistance(data, new Date(), { locale: ptBR });
     };
     const AbrirChatMensagens = useAtendimentoTicketStore(s => s.AbrirChatMensagens)
-   
+
     useEffect(() => {
         useAtendimentoTicketStore.setState({
             redirectToChat: (ticketId: string) => {
@@ -39,9 +39,6 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
     }, [])
 
     const abrirChatContato = async (x) => {
-        // redirectToChat: (ticketId: string) => {
-        //     navigate(`/atendimento/${ticketId}`);
-        // }
         AbrirChatMensagens(x)
     }
     if (!ticket) { return }
@@ -57,7 +54,7 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
             }}
         >
             <ListItemButton
-               onClick={()=> abrirChatContato(ticket)}
+                onClick={() => abrirChatContato(ticket)}
                 sx={{
                     height: 120,
                     width: '100%',
@@ -103,7 +100,7 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
                         display="flex"
                         justifyContent="space-between"
                         alignItems="center"
-                        // sx={{ width: '100%' }}
+                    // sx={{ width: '100%' }}
                     >
                         <Typography
                             // fontWeight="bold"/
@@ -118,7 +115,7 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
                             {ticket.name || ticket.contact.name}
                         </Typography>
 
-                     
+
                         {/* <Typography variant="caption" color="textSecondary" sx={{ flexShrink: 0 }}>
                             {dataInWords(ticket.lastMessageAt, ticket.updatedAt)}
                         </Typography> */}
@@ -182,25 +179,25 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
                     alignItems="center"
                     justifyContent='space-around'
                     height={'100%'}
-                  
+
                     sx={{
                         minWidth: 50, // Tamanho fixo para a coluna da direita
                         flexShrink: 0 // Impede que a coluna da direita diminua
                     }}
                 >
-                       <Chip
+                    <Chip
                         label={dataInWords(ticket.lastMessageAt, ticket.updatedAt)}
                         size="small"
-                      
+
                     />
-                 
+
                     <Typography variant="body2" color="textSecondary">
                         #{ticket.id}
                     </Typography>
                     {ticket.status === "closed" && (
-                
-                        <CheckCircle fontSize="medium"  sx={{color: "green !important"}}/>
-                   
+
+                        <CheckCircle fontSize="medium" sx={{ color: "green !important" }} />
+
                     )}
                 </Box>
             </ListItemButton>

@@ -1,12 +1,16 @@
-import { Cancel, Mic, Send, X } from '@mui/icons-material';
+import { ArrowLeft, ArrowRight, Cancel, Mic, Send, X } from '@mui/icons-material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
+import SendIcon from '@mui/icons-material/Send';
 import MicIcon from '@mui/icons-material/Mic';
-import { alpha, Avatar, Box, Button, Card, CardContent, CardMedia,
-     Dialog, DialogActions, DialogContent, DialogContentText,
-      DialogTitle, Divider, IconButton, ListItemIcon, Menu,
-       MenuItem, MenuProps, Skeleton, styled, TextField, Tooltip } 
-       from "@mui/material";
+import {
+    alpha, Avatar, Box, Button, Card, CardContent, CardMedia,
+    Dialog, DialogActions, DialogContent, DialogContentText,
+    DialogTitle, Divider, IconButton, ListItemIcon, Menu,
+    MenuItem, MenuProps, Skeleton, styled, TextField, Tooltip,
+    Typography
+}
+    from "@mui/material";
 import { useState, useEffect, useRef } from "react";
 import { RecordingTimer } from './RecordingTimer';
 import { toast } from 'sonner';
@@ -55,9 +59,9 @@ const StyledMenu = styled((props: MenuProps) => (
     },
 }));
 import type { useAudioRecorder } from "react-audio-voice-recorder";
-import Close from '@mui/icons-material/Close';
+import { useAtendimentoTicketStore } from '../../store/atendimentoTicket';
 
-export const InputMenssagem = () => {
+export const InputMenssagem = ({ ticketFocado }) => {
     const [openPreviewImagem, setOpenPreviewImagem] = useState(false);
     const [isRecordingAudio, setIsRecordingAudio] = useState(false)
     const [loading, setIsloading] = useState(false)
@@ -65,6 +69,7 @@ export const InputMenssagem = () => {
     const open = Boolean(anchorEl);
     const [urlMediaPreview, setUrlMediaPreview] = useState({})
     const [arquivos, setArquivos] = useState([])
+
     const recorderControlsRef = useRef<ReturnType<typeof useAudioRecorder> | null>(null);
 
 
@@ -192,43 +197,39 @@ export const InputMenssagem = () => {
     }
 
 
-      const handlePaste = (event: ClipboardEvent) => {
+    const handlePaste = (event: ClipboardEvent) => {
         const clipboardItems = event.clipboardData.items;
-      
+
         // Percorre os itens da área de transferência
         for (let i = 0; i < clipboardItems.length; i++) {
-          const item = clipboardItems[i];
-      
-          // Verifica se o item é uma imagem
-          if (item.type.startsWith("image/")) {
-            const file = item.getAsFile(); // Converte para arquivo
-            if (file) {
-              const urlImg = window.URL.createObjectURL(file);
+            const item = clipboardItems[i];
 
-              setOpenPreviewImagem(true)
-              setUrlMediaPreview( {
-                title: `Enviar imagem para `,
-                src: urlImg,
-              })
-              
-              return urlImg;
+            // Verifica se o item é uma imagem
+            if (item.type.startsWith("image/")) {
+                const file = item.getAsFile(); // Converte para arquivo
+                if (file) {
+                    const urlImg = window.URL.createObjectURL(file);
+
+                    setOpenPreviewImagem(true)
+                    setUrlMediaPreview({
+                        title: `Enviar imagem para `,
+                        src: urlImg,
+                    })
+
+                    return urlImg;
+                }
             }
-          }
         }
-      
+
         console.log("Nenhuma imagem colada.");
         return null;
-      };
+    };
 
-    const ticketFocado = {
-        status: 'open',
-        id: 27
-    }
 
     return (
         <Box>
-            {ticketFocado.status !== 'pending' && (
-                <Box sx={{
+            {ticketFocado.status !== 'pending' ? (
+                < Box sx={{
                     minHeight: '70px',
                     justifyContent: 'start',
                     alignItems: 'center',
@@ -238,6 +239,7 @@ export const InputMenssagem = () => {
                 }}>
                     {!isRecordingAudio ? (
                         <Box sx={{ alignItems: 'center', display: 'flex', gap: 1, }}>
+
                             <Tooltip title='Enviar arquivo'>
                                 <>
                                     <IconButton
@@ -327,11 +329,11 @@ export const InputMenssagem = () => {
                     {openPreviewImagem && (
                         <Dialog open={openPreviewImagem} onClose={handleClosePreviewImagem} fullWidth >
                             <DialogTitle id="abrirModalPreviewImagem">
-                            { urlMediaPreview.title }
-                           
+                                {urlMediaPreview.title}
+
                             </DialogTitle>
                             <DialogContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Card sx={{  maxheight: '60vh', minWidth: 'calc(100% - 100px)', maxWidth: 'calc(100% - 100px)' }}>
+                                <Card sx={{ maxheight: '60vh', minWidth: 'calc(100% - 100px)', maxWidth: 'calc(100% - 100px)' }}>
                                     <CardMedia
                                         component="img"
                                         image={urlMediaPreview.src}
@@ -349,7 +351,20 @@ export const InputMenssagem = () => {
                     )}
 
                 </Box>
-            )}
+            ) : (
+                <Box sx={{
+                    minHeight: '70px',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    display: 'flex',
+
+                }}>
+                    <Button sx={{ p: 2 }} variant="contained" color="success" endIcon={<SendIcon />}>
+                        <Typography variant='h4'>Iniciar atendimento</Typography>
+                    </Button>
+                </Box>
+            )
+            }
         </Box >
     );
 };

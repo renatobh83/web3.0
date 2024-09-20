@@ -7,8 +7,8 @@ import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { ArrowDownwardSharp, ContactEmergency, Home, Logout, Person } from '@mui/icons-material';
-import { Avatar, Button, Checkbox, FormControl, FormControlLabel, FormGroup, MenuItem, MenuList, Switch, Tab, Tabs, TextField, Tooltip, useColorScheme } from '@mui/material';
+import { ArrowDownwardSharp, ContactEmergency, EmojiEmotions, Home, Logout, Person } from '@mui/icons-material';
+import { Avatar, Button, Checkbox, FormControl, FormControlLabel, FormGroup, Icon, MenuItem, MenuList, Switch, Tab, Tabs, TextField, Tooltip, useColorScheme } from '@mui/material';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
@@ -16,7 +16,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { debounce } from 'lodash'
 import { format } from 'date-fns';
-
+import MoodBadIcon from '@mui/icons-material/MoodBad';
 import { ItemTicket } from './ItemTicket';
 import { SelectComponent } from '../../components/AtendimentoComponent/SelectComponent';
 import { StyledMenu } from '../../components/MainComponents/MenusNavBar';
@@ -176,6 +176,7 @@ export function Atendimento(props: Props) {
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         setMode(themeMode);
+
     }, [themeMode, setMode]);
 
     const handleToggleColor = () => {
@@ -498,6 +499,7 @@ export function Atendimento(props: Props) {
         if (!filtros?.pageNumber !== 1) {
             localStorage.setItem('filtrosAtendimento', JSON.stringify(pesquisaTickets))
         }
+
     }, [])
     const drawer = (
         <>
@@ -891,7 +893,25 @@ export function Atendimento(props: Props) {
                     }}
                 >
                     {/* <Outlet context={{ drawerWidth, handleDrawerToggle }} /> */}
-                    <Outlet />
+
+                    {!ticketFocado.id ? (
+                        <>
+                            <Toolbar />
+                            <Box sx={{
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                gap: 5,
+                                height: '70vh',
+                                display: 'flex', flexDirection: 'column'
+                            }}>
+
+                                <MoodBadIcon sx={{ fontSize: '3.8em' }} />
+
+                                <Typography variant='h4'>Selecione um ticket!</Typography>
+                            </Box>
+                        </>
+                    ) : <Outlet />}
+                    {/* <Outlet /> */}
                 </Box>
 
             </Box>

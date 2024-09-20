@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { Box, Fade, Toolbar } from "@mui/material";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useAtendimentoTicketStore } from "../../store/atendimentoTicket";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChatMensagem } from "./ChatMenssage";
 import { InputMenssagem } from "./InputMenssagem";
 
@@ -15,12 +15,29 @@ export type OutletContextType = {
 export const Chat = () => {
 
     // const { drawerWidth, handleDrawerToggle } = useOutletContext<OutletContextType>();
-    const { ticketId } = useParams()
+
 
     const { mensagens, LocalizarMensagensTicket } = useAtendimentoTicketStore()
+    const { ticketFocado, setTicketFocado } = useAtendimentoTicketStore()
 
-
-
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+        return () => {
+            setTicketFocado({
+                whatsapp: undefined,
+                channel: "",
+                lastMessageAt: undefined,
+                updatedAt: undefined,
+                user: undefined,
+                username: undefined,
+                contactId: undefined,
+                id: 0,
+                name: "",
+                lastMessage: "",
+                profilePicUrl: ""
+            })
+        }
+    }, [])
 
     const [loading, setLoading] = useState(false)
 
@@ -88,15 +105,12 @@ export const Chat = () => {
                             loader={<h4>Loading...</h4>}
                             scrollableTarget="scrollableDiv"
                         >
-
                             <ChatMensagem menssagens={mensagens} />
-
-
                         </InfiniteScroll>
                     </Box>
                 }
             </Box>
-            <InputMenssagem />
+            <InputMenssagem ticketFocado={ticketFocado} />
         </Box >
 
     )
