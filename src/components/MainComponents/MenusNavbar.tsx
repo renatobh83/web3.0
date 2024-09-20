@@ -17,6 +17,8 @@ import { red, green } from "@mui/material/colors";
 import SystemVersion from "./SystemVersion";
 import { toast } from "sonner";
 import { useApplicationStore } from "../../store/application";
+import { useAtendimentoTicketStore } from "../../store/atendimentoTicket";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 
@@ -66,7 +68,7 @@ export const StyledMenu = styled((props: MenuProps) => (
 
 
 export const MenusNavbar = () => {
-
+    const navigate = useNavigate()
     const { notifications, notificationsP } = useNotificationsStore()
     const { mode, setMode } = useColorScheme()
     const [status, setStatus] = useState(false);
@@ -75,6 +77,29 @@ export const MenusNavbar = () => {
     );
     const username = localStorage.getItem("username");
     const { themeMode, toggleThemeMode } = useApplicationStore()
+    const AbrirChatMensagens = useAtendimentoTicketStore(s => s.AbrirChatMensagens)
+    const setHasMore = useAtendimentoTicketStore(s => s.setHasMore)
+    const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
+    const location = useLocation();
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+        useAtendimentoTicketStore.setState({
+            redirectToChat: (ticketId: string) => {
+                navigate(`/atendimento/${ticketId}`);
+            },
+        });
+    }, []);
+    function abrirChatContato(ticket) {
+        // caso esteja em um tamanho mobile, fechar a drawer dos contatos
+        // if (this.$q.screen.lt.md && ticket.status !== 'pending') {
+        //   this.$root.$emit('infor-cabecalo-chat:acao-menu')
+        // }
+
+        if (!(ticket.status !== 'pending' && (ticket.id !== ticketFocado.id || location.pathname !== 'chat'))) return
+        setHasMore(true)
+        AbrirChatMensagens(ticket)
+    }
 
     useEffect(() => {
         setMode(themeMode);
@@ -169,7 +194,8 @@ export const MenusNavbar = () => {
                             <MenuList sx={{ display: 'flex', gap: 2 }}>
                                 <Typography>{+notifications.count + +notificationsP.count} Clientes pendentes na fila </Typography>
                                 {notificationsP.tickets.map(ticket => (
-                                    <MenuItem key={ticket.id} sx={{ display: 'flex', gap: 3 }}>
+                                    <MenuItem key={ticket.id} sx={{ display: 'flex', gap: 3 }}
+                                        onClick={() => abrirChatContato(ticket)}>
                                         <Avatar src={ticket.profilePicUrl} />
                                         <div>
                                             <ListItemText>{ticket.name}</ListItemText>

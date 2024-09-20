@@ -1,8 +1,8 @@
-import { Box, CssBaseline, Stack } from "@mui/material"
+import { Box, Stack } from "@mui/material"
 import { MenuDrawer } from "../components/MainComponents/MenuDrawer"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect } from "react"
 import { Header } from "../components/MainComponents/Header"
-import AppTheme from "../Theme/AppTheme"
+
 import { Outlet } from "react-router-dom"
 import { useNotificationsStore } from "../store/notifications"
 import { useWhatsappStore } from "../store/whatsapp"
@@ -11,34 +11,79 @@ import { ConsultarTickets } from "../services/tickets"
 import { ListarConfiguracoes } from "../services/configuracoes"
 import { ListarWhatsapps } from "../services/sessoesWhatsapp"
 
+import { useAtendimentoTicketStore } from "../store/atendimentoTicket"
+
+import { socket } from "../utils/socket"
+import { useUsersAppStore } from "../store/usersApp"
 
 
 
-
-export const MainLayout: React.FC<{
-    props?: {
-        disableCustomTheme: boolean
-    }
-}> = ({ props }) => {
+export const MainLayout: React.FC = () => {
     const { updateNotifications, updateNotificationsP } = useNotificationsStore()
-    const { whatsApps, loadWhatsApps } = useWhatsappStore()
+    const notificacaoTicket = useAtendimentoTicketStore(s => s.notificacaoTicket)
+    const { loadWhatsApps } = useWhatsappStore()
+    const { setUsersApp } = useUsersAppStore()
+    const usuario = JSON.parse(localStorage.getItem('usuario'))
+    // Nao sendo invocada
+    // function cProblemaConexao() {
+    //     const idx = whatsApps.findIndex(w =>
+    //         ['PAIRING', 'TIMEOUT', 'DISCONNECTED'].includes(w.status)
+    //     )
+    //     return idx !== -1
+    // }
 
-    function cProblemaConexao() {
-        const idx = whatsApps.findIndex(w =>
-            ['PAIRING', 'TIMEOUT', 'DISCONNECTED'].includes(w.status)
-        )
-        return idx !== -1
-    }
-    function cQrCode() {
-        const idx = whatsApps.findIndex(
-            w => w.status === 'qrcode' || w.status === 'DESTROYED'
-        )
-        return idx !== -1
-    }
-    function cOpening() {
-        const idx = whatsApps.findIndex(w => w.status === 'OPENING')
-        return idx !== -1
-    }
+    // function cQrCode() {
+    //     const idx = whatsApps.findIndex(
+    //         w => w.status === 'qrcode' || w.status === 'DESTROYED'
+    //     )
+    //     return idx !== -1
+    // }
+    // function cOpening() {
+    //     const idx = whatsApps.findIndex(w => w.status === 'OPENING')
+    //     return idx !== -1
+    // }
+
+    // function cSessions() {
+    //     return whatsApps.filter(w => ["whatsapp", "baileys"].includes(w.type) && !w.isDeleted && w.status === 'CONNECTED');
+    // }
+    // Invocar no modal Iniciar Conversa Avulsa TODO ainda nao criado
+    // function cSessionsOptions() {
+    //     return cSessions().map(w => ({ label: w.name, value: w.id, type: w.type }))
+    // }
+
+
+    useEffect(() => {
+        console.log('notificacaoTicket Update', notificacaoTicket)
+
+    }, [notificacaoTicket])
+
+    // async function enviarMensagem() {
+    //     const data = {
+    //         whatsappId: this.whatsappId.value,
+    //         whatsappType: this.whatsappId.type,
+    //         number: this.numero,
+    //         message: this.mensagem,
+    //     };
+    //     try {
+    //         await TextoIndividual(data)
+    //         this.$q.notify({
+    //             color: 'positive',
+    //             position: 'top',
+    //             message: 'Mensagem enviada para o número: ' + this.numero,
+    //         });
+    //         this.closeModal();
+    //     } catch (e) {
+    //         this.$q.notify({
+    //             color: 'negative',
+    //             position: 'top',
+    //             message: 'Erro ao enviar mensagem individual: ' + e.data.error,
+    //         });
+    //     }
+    //     this.closeModal();
+    // }
+
+
+
     const listarWhatsapps = useCallback(async () => {
         const { data } = await ListarWhatsapps();
         loadWhatsApps(data);
@@ -48,6 +93,13 @@ export const MainLayout: React.FC<{
         const { data } = await ListarConfiguracoes();
         localStorage.setItem("configuracoes", JSON.stringify(data));
     }, []);
+    const conectarSocket = (usuario: { tenantId: number }) => {
+        socket.on(`${usuario.tenantId}:chat:updateOnlineBubbles`, data => {
+            setUsersApp(data)
+            //   this.$store.commit('SET_USERS_APP', data)
+        })
+    }
+
 
     const consultarTickets = useCallback(async () => {
         const params = {
@@ -101,11 +153,23 @@ export const MainLayout: React.FC<{
         }
     }, [updateNotificationsP, updateNotifications])
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
-        listarWhatsapps();
-        listarConfiguracoes();
-        consultarTickets();
 
+        const conectar = async () => {
+            await listarWhatsapps();
+            await listarConfiguracoes();
+            consultarTickets(); // Descomente se necessário
+            conectarSocket(usuario);
+        };
+
+        conectar();
+
+        return () => {
+            if (socket.connected) {
+                socket.disconnect();
+            }
+        };
     }, [listarWhatsapps, listarConfiguracoes, consultarTickets]);
 
 

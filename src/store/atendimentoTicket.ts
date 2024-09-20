@@ -36,12 +36,13 @@ interface AtendimentoTicketState {
   hasMore: boolean;
   contatos: any[];
   mensagens: any[];
-  redirectToChat?: (ticketId: string) => void;
+  notificacaoTicket: number;
 }
 
 interface AtendimentoTicketActions {
   setHasMore: (payload: boolean) => void;
   loadTickets: (payload: Ticket[]) => void;
+  // redirectToChat: (ticketId: string) => void;
   resetTickets: () => void;
   resetUnread: (payload: { ticketId: string }) => void;
   updateTicket: (payload: Ticket) => void;
@@ -264,10 +265,12 @@ export const useAtendimentoTicketStore = create<
   hasMore: false,
   contatos: [],
   mensagens: [],
+  notificacaoTicket: 0,
 
   // Mutations converted to actions
 
   setHasMore: (payload) => set({ hasMore: payload }),
+
   loadTicketFocado: (payload: any) =>
     set(() => {
       console.log(payload);
@@ -276,6 +279,7 @@ export const useAtendimentoTicketStore = create<
   loadTickets: (payload) =>
     set((state) => {
       const newTickets = orderTickets(payload);
+      // biome-ignore lint/complexity/noForEach: <explanation>
       newTickets.forEach((ticket) => {
         const ticketIndex = state.tickets.findIndex((t) => t.id === ticket.id);
         if (ticketIndex !== -1) {
@@ -336,6 +340,7 @@ export const useAtendimentoTicketStore = create<
         }
 
         return { tickets: updatedTickets.filter((t) => checkTicketFilter(t)) };
+        // biome-ignore lint/style/noUselessElse: <explanation>
       } else {
         const newTicket = {
           ...payload,
@@ -427,9 +432,15 @@ export const useAtendimentoTicketStore = create<
         } else {
           updatedMessages.push(payload);
         }
+
         return { mensagens: updatedMessages };
+        // biome-ignore lint/style/noUselessElse: <explanation>
+      } else {
+        if (!payload.fromMe && payload.ticket.status !== "closed") {
+          state.notificacaoTicket += 1;
+        }
+        return {};
       }
-      return {};
     }),
 
   resetMessages: () => set(() => ({ mensagens: [] })),
@@ -480,6 +491,7 @@ export const useAtendimentoTicketStore = create<
       await get().LocalizarMensagensTicket(params);
 
       const redirectToChat = get().redirectToChat;
+
       if (redirectToChat) {
         redirectToChat(data.id); // Redireciona para a rota do chat
       }
