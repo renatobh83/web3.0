@@ -16,6 +16,9 @@ import { styled } from '@mui/material/styles';
 import ForgotPassword from './ForgotPassword';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from './CustomIcons';
 import { useAuth } from '../../../context/AuthContext';
+import { useState } from 'react';
+import { VisibilityOff, Visibility } from '@mui/icons-material';
+import { InputLabel, OutlinedInput, InputAdornment, IconButton, FormHelperText } from '@mui/material';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -37,11 +40,16 @@ const Card = styled(MuiCard)(({ theme }) => ({
 
 export default function SignInCard() {
     const { login } = useAuth();
-    const [emailError, setEmailError] = React.useState(false);
-    const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-    const [passwordError, setPasswordError] = React.useState(false);
-    const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-    const [open, setOpen] = React.useState(false);
+    const [emailError, setEmailError] = useState(false);
+    const [emailErrorMessage, setEmailErrorMessage] = useState('');
+    const [passwordError, setPasswordError] = useState(false);
+    const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+    const [open, setOpen] = useState(false);
+
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -60,7 +68,13 @@ export default function SignInCard() {
         }
         login(form)
     };
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+    };
 
+    const handleMouseUpPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+    };
     const validateInputs = () => {
         const email = document.getElementById('email') as HTMLInputElement;
         const password = document.getElementById('password') as HTMLInputElement;
@@ -98,7 +112,7 @@ export default function SignInCard() {
                 variant="h4"
                 sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
             >
-                Facça seu login..
+                Faça seu login..
             </Typography>
             <Box
                 component="form"
@@ -136,12 +150,13 @@ export default function SignInCard() {
                             Forgot your password?
                         </Link>
                     </Box> */}
+
                     <TextField
                         error={passwordError}
                         helperText={passwordErrorMessage}
                         name="password"
                         placeholder="••••••"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         id="password"
                         autoComplete="current-password"
                         autoFocus
@@ -149,8 +164,26 @@ export default function SignInCard() {
                         fullWidth
                         variant="outlined"
                         color={passwordError ? 'error' : 'primary'}
+                        slotProps={{
+                            input: {
+                                endAdornment: <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowPassword}
+                                        onMouseDown={handleMouseDownPassword}
+                                        onMouseUp={handleMouseUpPassword}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            },
+                        }}
+
                     />
+
                 </FormControl>
+
                 <FormControlLabel
                     control={<Checkbox value="remember" color="primary" />}
                     label="Remember me"
