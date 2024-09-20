@@ -15,34 +15,22 @@ import { Box } from '@mui/material';
 
 
 export default function Login() {
-    const [mode, setMode] = React.useState<PaletteMode>('light');
-    const [showCustomTheme, setShowCustomTheme] = React.useState(true);
-    const defaultTheme = createTheme({ palette: { mode } });
+    const [mode, _] = React.useState<PaletteMode>('light');
     const SignInSideTheme = createTheme(getSignInSideTheme(mode));
     // This code only runs on the client side, to determine the system color preference
-    React.useEffect(() => {
-        // Check if there is a preferred mode in localStorage
-        const savedMode = localStorage.getItem('themeMode') as PaletteMode | null;
-        if (savedMode) {
-            setMode(savedMode);
-        } else {
-            // If no preference is found, it uses system preference
-            const systemPrefersDark = window.matchMedia(
-                '(prefers-color-scheme: dark)',
-            ).matches;
-            setMode(systemPrefersDark ? 'dark' : 'light');
-        }
-    }, []);
-
-    const toggleColorMode = () => {
-        const newMode = mode === 'dark' ? 'light' : 'dark';
-        setMode(newMode);
-        localStorage.setItem('themeMode', newMode); // Save the selected mode to localStorage
-    };
-
-    const toggleCustomTheme = () => {
-        setShowCustomTheme((prev) => !prev);
-    };
+    // React.useEffect(() => {
+    //     // Check if there is a preferred mode in localStorage
+    //     const savedMode = localStorage.getItem('themeMode') as PaletteMode | null;
+    //     if (savedMode) {
+    //         setMode(savedMode);
+    //     } else {
+    //         // If no preference is found, it uses system preference
+    //         const systemPrefersDark = window.matchMedia(
+    //             '(prefers-color-scheme: dark)',
+    //         ).matches;
+    //         setMode(systemPrefersDark ? 'dark' : 'light');
+    //     }
+    // }, []);
 
     return (
         <Box sx={{ height: '100dvh', display: 'flex', flexDirection: 'column' }}>
