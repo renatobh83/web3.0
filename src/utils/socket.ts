@@ -14,19 +14,19 @@ export const socketIO = () => {
   });
 };
 
-export const socket = socketIO();
+// export const socket = socketIO();
 
-socket.io.on("error", (error) => {
-  // ...
-  console.error("socket error", error);
-});
+// socket.io.on("error", (error) => {
+//   // ...
+//   console.error("socket error", error);
+// });
 
-socket.on("disconnect", (reason) => {
-  console.info("socket disconnect", reason);
+// socket.on("disconnect", (reason) => {
+//   console.info("socket disconnect", reason);
 
-  if (reason === "io server disconnect") {
-    // the disconnection was initiated by the server, you need to reconnect manually
-    socket.connect();
-  }
-  // else the socket will automatically try to reconnect
-});
+//   if (reason === "io server disconnect") {
+//     // the disconnection was initiated by the server, you need to reconnect manually
+//     socket.connect();
+//   }
+//   // else the socket will automatically try to reconnect
+// });

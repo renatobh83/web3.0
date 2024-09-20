@@ -13,17 +13,21 @@ import { ListarWhatsapps } from "../services/sessoesWhatsapp"
 
 import { useAtendimentoTicketStore } from "../store/atendimentoTicket"
 
-import { socket } from "../utils/socket"
+import { socketIO } from "../utils/socket"
 import { useUsersAppStore } from "../store/usersApp"
+import { useSocketInitial } from "../hooks/useSocketInitial"
 
 
 
 export const MainLayout: React.FC = () => {
+    // const socket = socketIO()
     const { updateNotifications, updateNotificationsP } = useNotificationsStore()
     const notificacaoTicket = useAtendimentoTicketStore(s => s.notificacaoTicket)
     const { loadWhatsApps } = useWhatsappStore()
-    const { setUsersApp } = useUsersAppStore()
+
     const usuario = JSON.parse(localStorage.getItem('usuario'))
+
+    useSocketInitial()
     // Nao sendo invocada
     // function cProblemaConexao() {
     //     const idx = whatsApps.findIndex(w =>
@@ -93,12 +97,7 @@ export const MainLayout: React.FC = () => {
         const { data } = await ListarConfiguracoes();
         localStorage.setItem("configuracoes", JSON.stringify(data));
     }, []);
-    const conectarSocket = (usuario: { tenantId: number }) => {
-        socket.on(`${usuario.tenantId}:chat:updateOnlineBubbles`, data => {
-            setUsersApp(data)
-            //   this.$store.commit('SET_USERS_APP', data)
-        })
-    }
+
 
 
     const consultarTickets = useCallback(async () => {
@@ -155,21 +154,14 @@ export const MainLayout: React.FC = () => {
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
-
         const conectar = async () => {
             await listarWhatsapps();
             await listarConfiguracoes();
             consultarTickets(); // Descomente se necessário
-            conectarSocket(usuario);
-        };
 
+        };
         conectar();
 
-        return () => {
-            if (socket.connected) {
-                socket.disconnect();
-            }
-        };
     }, [listarWhatsapps, listarConfiguracoes, consultarTickets]);
 
 
