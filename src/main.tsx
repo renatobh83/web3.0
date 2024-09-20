@@ -16,11 +16,12 @@ const Root = () => {
   );
 };
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <AuthProvider>
-      <Router>
-        <Root />
-      </Router>
-    </AuthProvider>
-  </StrictMode>,
+  // <StrictMode>
+  <AuthProvider>
+    <Router>
+      <Root />
+    </Router>
+  </AuthProvider>
+  //</StrictMode>
+  ,
 )

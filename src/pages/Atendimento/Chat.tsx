@@ -1,12 +1,8 @@
-import { useOutletContext, useParams } from "react-router-dom";
-import { InfoCabecalhoMenssagens } from "./InforCabecalhoChat"
-import { Box, CssBaseline, Fade, Toolbar } from "@mui/material";
-import AppTheme from "../../Theme/AppTheme";
+import { useParams } from "react-router-dom";
+import { Box, Fade, Toolbar } from "@mui/material";
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useWhatsappStore } from "../../store/whatsapp";
 import { useAtendimentoTicketStore } from "../../store/atendimentoTicket";
-import { useEffect, useRef, useState } from "react";
-import { useAtendimentoStore } from "../../store/atendimento";
+import { useRef, useState } from "react";
 import { ChatMensagem } from "./ChatMenssage";
 import { InputMenssagem } from "./InputMenssagem";
 
@@ -19,23 +15,14 @@ export type OutletContextType = {
 export const Chat = () => {
 
     // const { drawerWidth, handleDrawerToggle } = useOutletContext<OutletContextType>();
-    const {ticketId} = useParams()
+    const { ticketId } = useParams()
+
     const { mensagens, LocalizarMensagensTicket } = useAtendimentoTicketStore()
 
-    const [mensagensTicket, setMensagensTicket] = useState([])
+
 
 
     const [loading, setLoading] = useState(false)
-
-    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-    useEffect(() => {
-        LocalizarMensagensTicket({
-            ticketId: ticketId,
-            pageNumber: 1
-        })
-
-    }, [])
-
 
 
 

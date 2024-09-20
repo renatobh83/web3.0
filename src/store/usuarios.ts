@@ -8,6 +8,7 @@ interface Usuario {
   profile: string;
   queues?: any;
   name?: string;
+  id?: string;
 }
 
 interface UsuarioStore {

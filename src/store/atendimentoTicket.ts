@@ -50,6 +50,7 @@ interface AtendimentoTicketActions {
   updateTicketFocadoContact: (payload: any) => void;
   updateContact: (payload: any) => void;
   setTicketFocado: (payload: Ticket) => void;
+  updateMessageStatus: (payload: Message & { ticket: Ticket }) => void;
   loadInitialMessages: (payload: {
     messages: any[];
     messagesOffLine: any[];
@@ -444,7 +445,36 @@ export const useAtendimentoTicketStore = create<
     }),
 
   resetMessages: () => set(() => ({ mensagens: [] })),
+  updateMessageStatus: (payload) => {
+    const { ticketFocado, mensagens } = get();
 
+    // Se o ticket não for o focado, não atualiza.
+    if (ticketFocado?.id !== payload.ticket.id) return;
+
+    const messageIndex = mensagens.findIndex((m) => m.id === payload.id);
+    const updatedMensagens = [...mensagens];
+
+    if (messageIndex !== -1) {
+      updatedMensagens[messageIndex] = payload;
+    }
+
+    // Atualiza as mensagens no estado
+    set({ mensagens: updatedMensagens });
+
+    // Tratar a atualização das mensagens agendadas, se existirem
+    if (ticketFocado?.scheduledMessages) {
+      const updatedScheduledMessages = ticketFocado.scheduledMessages.filter(
+        (m) => m.id !== payload.id
+      );
+
+      set((state) => ({
+        ticketFocado: {
+          ...state.ticketFocado,
+          scheduledMessages: updatedScheduledMessages,
+        },
+      }));
+    }
+  },
   LocalizarMensagensTicket: async (params) => {
     try {
       const mensagens = await LocalizarMensagens(params);

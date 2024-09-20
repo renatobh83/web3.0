@@ -25,6 +25,7 @@ export const useSocketInitial = () => {
     const loadTickets = useAtendimentoTicketStore(state => state.loadTickets)
     const updateMessages = useAtendimentoTicketStore(state => state.updateMessages)
     const updateContact = useContatosStore(state => state.updateContact)
+    const updateMessageStatus = useAtendimentoTicketStore(state => state.updateMessageStatus)
 
     const usuario = JSON.parse(localStorage.getItem("usuario"));
     const userId = +localStorage.getItem("userId");
@@ -241,11 +242,11 @@ export const useSocketInitial = () => {
                         const newTickets = orderTickets(data.tickets)
                         setTimeout(() => {
                             // this.$store.commit('LOAD_TICKETS', newTickets);
-                            loadTickets(newTickets)
+                            // loadTickets(newTickets)
                         }, 200);
                         setTimeout(() => {
                             // this.$store.commit('UPDATE_TICKET', newTickets);
-                            updateTicket(newTickets)
+                            // updateTicket(newTickets)
                             try {
                                 updateMessages(data.payload)
                             } catch (e) {
@@ -262,7 +263,7 @@ export const useSocketInitial = () => {
                 }
             })
             socket.on(`${usuario.tenantId}:ticketList`, async data => {
-                console.log()
+
                 const verify = []
                 if (data.type === 'notification:new') {
                     const params = {
@@ -285,12 +286,10 @@ export const useSocketInitial = () => {
                         console.error(err)
                     }
                     let pass_noti = false
-                    verify.data.tickets
                     // biome-ignore lint/complexity/noForEach: <explanation>
-                    toast.info('testes')
-                        .forEach((element) => { pass_noti = (element.id === data.payload.id ? true : pass_noti) })
+                    verify.data.tickets.forEach((element) => { pass_noti = (element.id === data.payload.id ? true : pass_noti) })
                     if (pass_noti) {
-                        const message = self.Notification('Novo cliente pendente', {
+                        const message = new Notification('Novo cliente pendente', {
                             // biome-ignore lint/style/useTemplate: <explanation>
                             body: 'Cliente: ' + data.payload.contact.name,
                             tag: 'simple-push-demo-notification'
@@ -303,7 +302,7 @@ export const useSocketInitial = () => {
 
                 if (data.type === 'chat:ack' || data.type === 'chat:delete') {
                     //   this.$store.commit('UPDATE_MESSAGE_STATUS', data.payload)
-                    console.log('mensagem UPDATE_MESSAGE_STATUS')
+                    updateMessageStatus(data.payload)
                 }
 
                 if (data.type === 'chat:update') {

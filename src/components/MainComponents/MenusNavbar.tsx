@@ -19,6 +19,8 @@ import { toast } from "sonner";
 import { useApplicationStore } from "../../store/application";
 import { useAtendimentoTicketStore } from "../../store/atendimentoTicket";
 import { useLocation, useNavigate } from "react-router-dom";
+import { ModalUsuario } from "../../pages/Usuarios/ModalUsuario";
+import { useUsuarioStore } from "../../store/usuarios";
 
 
 
@@ -84,6 +86,14 @@ export const MenusNavbar = () => {
     const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    const { setUsuarioSelecionado, toggleModalUsuario, modalUsuario } = useUsuarioStore()
+
+    const handleOpenModalUsuario = (usuario) => {
+        setUsuarioSelecionado(usuario)
+        toggleModalUsuario()
+
+    }
+
     useEffect(() => {
         useAtendimentoTicketStore.setState({
             redirectToChat: (ticketId: string) => {
@@ -251,7 +261,8 @@ export const MenusNavbar = () => {
                                 label={usuario.status} />
                         </FormGroup>
                     </MenuItem>
-                    <MenuItem>
+                    <MenuItem
+                        onClick={() => handleOpenModalUsuario(usuario)}>
                         <Person />
                         <Typography>Perfil</Typography>
                     </MenuItem>
@@ -281,6 +292,9 @@ export const MenusNavbar = () => {
                 <MenuItem value="light">Light</MenuItem>
                 <MenuItem value="dark">Dark</MenuItem>
             </Select> */}
+            {modalUsuario &&
+                <ModalUsuario />
+            }
         </Stack>
     )
 }
