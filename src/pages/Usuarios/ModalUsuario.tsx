@@ -10,6 +10,7 @@ export const ModalUsuario: React.FC = () => {
 
     const [usuario, setUsuario] = useState({
         username: '',
+        name:'',
         email: ''
     })
     const [emailError, setEmailError] = useState(false);
@@ -98,7 +99,8 @@ export const ModalUsuario: React.FC = () => {
                         <Input
                             id="nome"
                             name="nome"
-                            value={usuario.username}
+                            value={usuario.name}
+                            autoComplete="username"
                             onChange={(e) => setUsuario((prev) => ({
                                 ...prev,
                                 name: e.target.value
@@ -112,6 +114,7 @@ export const ModalUsuario: React.FC = () => {
                             color={emailError ? 'error' : 'primary'}
                             id="email"
                             name="email"
+                            autoComplete="email"
                             value={usuario.email}
                             onChange={(e) => setUsuario((prev) => ({
                                 ...prev,
@@ -119,17 +122,19 @@ export const ModalUsuario: React.FC = () => {
                             }))}
                         />
                     </FormControl>
-                    <FormControl sx={{ m: 1 }} variant="standard">
+                    <FormControl sx={{ m: 1 }} variant="standard" fullWidth>
                         <InputLabel htmlFor="password">{passwordError ? passwordErrorMessage : 'Senha'}</InputLabel>
                         <Input
                             error={passwordError}
                             color={passwordError ? 'error' : 'primary'}
                             id="password"
                             name="password"
+                        
                             onChange={(e) => setUsuario((prev) => ({
                                 ...prev,
                                 password: e.target.value
                             }))}
+                            autoComplete="current-password"
                             type={showPassword ? 'text' : 'password'}
                             endAdornment={
                                 <InputAdornment position="end">
@@ -160,7 +165,7 @@ export const ModalUsuario: React.FC = () => {
                             helperText="Selecione o perfil"
                             variant="standard"
                         >
-
+                                PErgi
                         </TextField>
                     </FormControl>
                     <DialogActions>

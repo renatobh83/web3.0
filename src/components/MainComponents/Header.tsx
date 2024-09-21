@@ -1,5 +1,6 @@
 import { AppBar, Toolbar, Stack, Typography, Breadcrumbs, breadcrumbsClasses, styled } from "@mui/material";
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
+import { useLocation } from "react-router-dom";
 
 const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
     margin: theme.spacing(1, 0),
@@ -13,6 +14,7 @@ const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
 }));
 
 export function Header() {
+    const location = useLocation()
     return (
         <Stack
             direction="row"
@@ -30,13 +32,13 @@ export function Header() {
                 aria-label="breadcrumb"
                 separator={<NavigateNextRoundedIcon fontSize="small" />}
             >
-                <Typography variant="body1">Dashboard</Typography>
+                {/* <Typography variant="body1">Dashboard</Typography> */}
                 <Typography variant="body1" sx={{ color: 'text.primary', fontWeight: 600 }}>
-                    Home
+                    {(location.pathname).toUpperCase().replace("/", " ")}
                 </Typography>
             </StyledBreadcrumbs>
             <Stack direction="row" sx={{ gap: 1 }}>
-                Header
+                QUalquer coisa
             </Stack>
         </Stack>
     )

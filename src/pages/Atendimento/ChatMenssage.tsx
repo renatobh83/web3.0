@@ -2,7 +2,7 @@ import { Avatar, Box, Button, Checkbox, Chip, Divider, Icon, IconButton, Popover
 import { formatarData, formatarMensagemWhatsapp } from "../../utils/helpers"
 import { ArrowDownward, CalendarMonth, Check, DoneAll } from "@mui/icons-material"
 import { dataInWords, formatarBotaoWhatsapp, formatarMensagemDeLista, formatarMensagemRespostaBotaoWhatsapp, formatarNotas, formatarTemplates } from "./mixinCommon"
-
+import PlayForWorkIcon from '@mui/icons-material/PlayForWork';
 import DOMPurify from 'dompurify';
 import { useState } from "react";
 
@@ -177,7 +177,7 @@ export const ChatMensagem = ({ menssagens }) => {
                             style={{ objectFit: 'cover', width: 330, height: 15, borderTopLeftRadius: 8, borderTopRightRadius: 8, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}
                         />
                     )}
-                    {/* {mensagem.mediaType === 'interactive' && (
+                    {mensagem.mediaType === 'interactive' && (
                         formatarMensagemRespostaBotaoWhatsapp(DOMPurify.sanitize(mensagem.body))
                     )}
                     {mensagem.mediaType === 'button' && (
@@ -191,7 +191,7 @@ export const ChatMensagem = ({ menssagens }) => {
                     )}
                     {mensagem.mediaType === 'templates' && (
                         formatarTemplates(mensagem.body)
-                    )} */}
+                    )}
                     {!['audio', 'vcard', 'contactMessage', 'locationMessage', 'image', 'imageMessage', 'video', 'videoMessage', 'sticker', 'location', 'interactive', 'button', 'list', 'button_reply', 'sticker', 'notes', 'transcription'].includes(mensagem.mediaType) && mensagem.mediaUrl && (
                         <Box sx={{ mt: '20px' }}>
                             Criar Iframe
@@ -236,7 +236,7 @@ export const ChatMensagem = ({ menssagens }) => {
                                         borderRadius: '50%', // Deixa o ícone circular
                                     }}
                                 >
-                                    <ArrowDownward sx={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.45)' }} />
+                                    <PlayForWorkIcon sx={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.45)' }} />
                                 </IconButton>
 
                                 <Box sx={{ wordWrap: 'break-word' }}>

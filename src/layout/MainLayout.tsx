@@ -185,8 +185,7 @@ export const MainLayout: React.FC = () => {
                         mt: 8,
                     }}
                 >
-                    {/* header inside main */}
-                    <Header />
+                <Header />
                     <Outlet />
                 </Stack>
             </Box>
