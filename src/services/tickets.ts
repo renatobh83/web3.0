@@ -44,7 +44,7 @@ export function AtualizarTicket(ticketId: any, data: any) {
 }
 
 export function LocalizarMensagens(params: { ticketId: any }) {
-  console.log(params)
+ 
   return request({
     url: `/messages/${params.ticketId}`,
     method: "get",

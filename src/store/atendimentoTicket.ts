@@ -517,7 +517,7 @@ export const useAtendimentoTicketStore = create<
         ticketId: data.id,
         pageNumber: 1,
       };
-console.log(params)
+
       // Chama a ação para localizar as mensagens
       await get().LocalizarMensagensTicket(params);
     } catch (error) {

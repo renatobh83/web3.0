@@ -39,7 +39,8 @@ export const ChatMensagem = ({ menssagens }) => {
       setAnchorEl(null);
     };
   const open = Boolean(anchorEl);
-    return (<Box sx={{ padding: 2 , position: 'relative'}}>
+    return (
+        <Box sx={{ padding: 2 , position: 'relative'}}>
         {menssagens.map(((mensagem, index) => (
             <div key={mensagem.id}>
 
@@ -48,21 +49,18 @@ export const ChatMensagem = ({ menssagens }) => {
                         <Chip label={formatarData(mensagem.createdAt)} size="small" /></Divider>
                 )}
 
-                {/* {menssagens.length && index === menssagens.length - 1 && (
+                {menssagens.length && index === menssagens.length - 1 && (
                     // biome-ignore lint/style/useSelfClosingElements: <explanation>
                     <Box style={{ background: 'black' }}></Box>
-                )} */}
+                )}
                 <div key={`chat-message-${mensagem.id}`} id={`chat-message-${mensagem.id}`} />
                 <Box
                     id={`chat-message-${mensagem.id}`}
-
                     sx={{
-
                         mb: 1,
                         width: '100%',
-
                         maxWidth: '350px',
-                        ml: mensagem.fromMe && 'auto',
+                        ml: mensagem.fromMe ? 'auto': 0,
                         mr: !mensagem.fromMe ? 'auto' : 0,
                         textAlign: mensagem.fromMe ? 'right' : 'left',
 
@@ -179,7 +177,7 @@ export const ChatMensagem = ({ menssagens }) => {
                             style={{ objectFit: 'cover', width: 330, height: 15, borderTopLeftRadius: 8, borderTopRightRadius: 8, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}
                         />
                     )}
-                    {mensagem.mediaType === 'interactive' && (
+                    {/* {mensagem.mediaType === 'interactive' && (
                         formatarMensagemRespostaBotaoWhatsapp(DOMPurify.sanitize(mensagem.body))
                     )}
                     {mensagem.mediaType === 'button' && (
@@ -193,7 +191,7 @@ export const ChatMensagem = ({ menssagens }) => {
                     )}
                     {mensagem.mediaType === 'templates' && (
                         formatarTemplates(mensagem.body)
-                    )}
+                    )} */}
                     {!['audio', 'vcard', 'contactMessage', 'locationMessage', 'image', 'imageMessage', 'video', 'videoMessage', 'sticker', 'location', 'interactive', 'button', 'list', 'button_reply', 'sticker', 'notes', 'transcription'].includes(mensagem.mediaType) && mensagem.mediaUrl && (
                         <Box sx={{ mt: '20px' }}>
                             Criar Iframe
@@ -243,7 +241,7 @@ export const ChatMensagem = ({ menssagens }) => {
 
                                 <Box sx={{ wordWrap: 'break-word' }}>
                                     {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
-                                    {/* <span dangerouslySetInnerHTML={{ __html: formatarMensagemWhatsapp(DOMPurify.sanitize(mensagem.body)) }} /> */}
+                                    <span dangerouslySetInnerHTML={{ __html: formatarMensagemWhatsapp(DOMPurify.sanitize(mensagem.body)) }} />
                                 </Box>
                                 {mensagem.fromMe ? (
                                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: '4px' }}>
