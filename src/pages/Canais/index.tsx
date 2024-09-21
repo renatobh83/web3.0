@@ -21,13 +21,23 @@ import { UpdateWhatsapp } from "../../services/sessoesWhatsapp";
 import { toast } from "sonner";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import { ModalWhatsapp } from "./ModalWhatsapp";
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { ModalQrCode } from "./ModalQrCode";
+
+
+
 export const Canais = () => {
+	
+	
 	const [chatflows, setChatflows] = useState([]);
 	const [selectedChatBots, setSelectedChatBots] = useState({});
 	const data = useWhatsappStore((s) => s.whatsApps);
 	const userProfile = localStorage.getItem("profile");
-    const [whatsappSelecionado, setWhatsappSelecionado] = useState({})
-    const [modalWhatsapp, setModalWhatsapp] = useState(false)
+	const [whatsappSelecionado, setWhatsappSelecionado] = useState({});
+	const [modalWhatsapp, setModalWhatsapp] = useState(false);
+	const [modalQrCode, setModalQrCode] = useState(false);
+	const [loading, setLoading] = useState(false)
+
 	const isAdmin = true;
 	// Função para lidar com a mudança de seleção
 
@@ -55,9 +65,9 @@ export const Canais = () => {
 	};
 	const listChatFlow = useCallback(async () => {
 		const { data } = await ListarChatFlow();
-		console.log(data.chatFlow);
+		
 		setChatflows(data.chatFlow);
-	}, []);
+	}, [data]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
@@ -73,11 +83,15 @@ export const Canais = () => {
 		});
 		setSelectedChatBots(defaultValues);
 	}, [data]);
-    
 
-    const handleOpenQrModal = (item) =>{
-        setWhatsappSelecionado(item)
-    }
+	const handleOpenQrModal = (channel) => {
+		setWhatsappSelecionado(channel);
+		setModalQrCode(true)
+	};
+
+	const handleCloseQrModal = () => {
+		setModalQrCode(false)
+	}
 	const handleClearSelection = async (whatsapp) => {
 		// Define o valor como '' (vazio) para remover a seleção
 		setSelectedChatBots((prev) => ({
@@ -99,6 +113,34 @@ export const Canais = () => {
 			}
 		});
 	};
+	async function handleRequestNewQrCode (channel, origem) {
+		if (channel.type === 'telegram' && !channel.tokenTelegram) {
+		  toast.error('Necessário informar o token para Telegram',{
+			position:'top-center'
+		  })
+		}
+		console.log(channel, origem)
+		setLoading(true)
+		try {
+		//   await RequestNewQrCode({ id: channel.id, isQrcode: true })
+		  setTimeout(() => {
+			handleOpenQrModal(channel)
+		  }, 2000)
+		} catch (error) {
+		  console.error(error)
+		} 
+		setLoading(false)
+		setTimeout(() => {
+		//   window.location.reload();
+		}, 1000);
+	  }
+
+	const handleOpenModalWhatsapp = () => {
+		setModalWhatsapp(true);
+	};
+	const handleClosenModalWhatsapp = () => {
+		setModalWhatsapp(false);
+	};
 
 	return (
 		<>
@@ -114,8 +156,8 @@ export const Canais = () => {
 						<Typography component="h2" variant="h6" sx={{ mb: 2 }}>
 							Canais de Comunicação
 						</Typography>
-						<Box >
-							<Button variant="outlined">
+						<Box>
+							<Button variant="outlined" onClick={handleOpenModalWhatsapp}>
 								<AddTaskIcon />
 								Adicionar{" "}
 							</Button>
@@ -126,12 +168,16 @@ export const Canais = () => {
 						spacing={2}
 						columns={12}
 						sx={{ mb: (theme) => theme.spacing(2) }}
-					>
+					 >
 						{data.map((item) => (
 							<Grid key={item.id} size={{ xs: 12, sm: 6, lg: 3 }}>
-								<Card variant="outlined" sx={{ height: "100%", flexGrow: 1 }}>
+								<Card
+									variant="outlined"
+									sx={{ height: "100%", flexGrow: 1 }}
+									id="card"
+								>
 									<CardContent>
-										<Box sx={{ display: "flex", gap: 2,  }}>
+										<Box sx={{ display: "flex", gap: 2 }}>
 											<Avatar />
 											<Box sx={{ display: "flex", flexDirection: "column" }}>
 												<Typography
@@ -146,19 +192,26 @@ export const Canais = () => {
 										</Box>
 										<Divider sx={{ my: 2 }} />
 										<Stack
+											id="stack"
 											direction="column"
 											sx={{
 												justifyContent: "space-between",
 												flexGrow: "1",
 												gap: 1,
+												minHeight: 160,
 											}}
 										>
 											<ItemStatusChannel item={item} />
 											<Box
-												sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: 'space-between' }}
+												sx={{
+													display: "flex",
+													alignItems: "center",
+													gap: 1,
+													justifyContent: "space-between",
+												}}
 											>
 												<Select
-                                                sx={{flexGrow:1}}
+													sx={{ flexGrow: 1 }}
 													value={selectedChatBots[item.id] || ""}
 													onChange={(e) => handleChange(item, e)}
 													label="ChatBot"
@@ -181,19 +234,62 @@ export const Canais = () => {
 											</Box>
 										</Stack>
 										<Divider sx={{ my: 2 }} />
-                                        {item.type === 'whatsapp' && item.status !== 'qrcode' && (
-
-                                        <Button
-                                            onClick={()=>handleOpenQrModal(item, 'btn-qrCode')}
-                                        disabled={!isAdmin}
-                                        >QR Code </Button>
-                                        )}
+										{item.type === "whatsapp" && item.status !== "qrcode" && (
+											<Button
+												onClick={() => handleOpenQrModal(item)}
+												disabled={!isAdmin}
+											>
+												QR Code
+											</Button>
+										)}
+										{item.status === "DISCONNECTED" &&
+											(item.type === "whatsapp" &&
+											item.type === "baileys" &&
+											item.status === "qrcode" ? (
+												<Button>Conectar</Button>
+											) : item.type !== "whatsapp" &&
+												item.type !== "baileys" ? (
+												<Button>Conectar</Button>
+											) : (item.status === "DISCONNECTED" &&
+													item.type === "whatsapp") ||
+												(item.status === "DISCONNECTED" &&
+													item.type === "baileys") ? (
+												<Button
+												onClick={()=>handleRequestNewQrCode(item, 'btn-qrCode')}
+												>Novo QR Code</Button>
+											) : (
+												<></>
+											))}
+										{item.status === "OPENING" && (
+											<Box>
+												<Typography>Conectando...</Typography>
+											</Box>
+										)}
+										<Box sx={{display:'flex', justifyContent:'space-between', flexDirection:'row'}}>
+											<Box>
+											
+											{["OPENING", "CONNECTED", "PAIRING", "TIMEOUT"].includes(
+												item.status,
+											) && <Button>Desconectar</Button>}
+											</Box>
+										  <Button><DeleteOutlineIcon sx={{color:'red'}}/></Button>
+										</Box>
 									</CardContent>
 								</Card>
 							</Grid>
 						))}
 					</Grid>
-                    <ModalWhatsapp/>
+					{modalWhatsapp && (
+						<ModalWhatsapp
+							handleClose={handleClosenModalWhatsapp}
+							isOpen={modalWhatsapp}
+							handleOpen={handleOpenModalWhatsapp}
+						/>
+					)}
+					{modalQrCode && (
+
+					 <ModalQrCode isOpen={modalQrCode} onClose={handleCloseQrModal}/>
+					)}
 				</Box>
 			)}
 		</>

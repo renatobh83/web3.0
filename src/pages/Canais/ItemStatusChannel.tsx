@@ -23,11 +23,12 @@ interface ItemStatusChannelProps {
 export const ItemStatusChannel = ({ item }: ItemStatusChannelProps) => (
 	<>
 		<Box
-    
+	id="itemStatus"
 			sx={{
                 display: "flex",
                 gap: 2,
 				alignItems: "center",
+				minHeight: 106
 			}}
 		>
                 <Box sx={{ maxWidth: 100 }}>
@@ -57,6 +58,24 @@ export const ItemStatusChannel = ({ item }: ItemStatusChannelProps) => (
 							<Typography sx={{ wordWrap: "break-word", flexGrow: 1 }}>
 								Certifique-se de que seu celular esteja conectado à internet e
 								tente novamente, ou solicite um novo QR Code
+							</Typography>
+						)}
+							{item.type === "waba" && (
+							<Typography sx={{ wordWrap: "break-word", flexGrow: 1 }}>
+								Tente conectar novamente. Caso o erro permaneça, confirme se os tokens estão
+								corretos.
+							</Typography>
+						)}
+							{item.type === "telegram" && (
+							<Typography sx={{ wordWrap: "break-word", flexGrow: 1 }}>
+								Tente conectar novamente. Caso o erro permaneça, confirme se o token está
+								correto.
+							</Typography>
+						)}
+							{item.type === "instagram" && (
+							<Typography sx={{ wordWrap: "break-word", flexGrow: 1 }}>
+							Tente conectar novamente. Caso o erro permaneça, confirme se as
+							credenciais estão corretas.
 							</Typography>
 						)}
 					</Box>

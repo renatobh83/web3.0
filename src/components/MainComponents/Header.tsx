@@ -38,7 +38,7 @@ export function Header() {
                 </Typography>
             </StyledBreadcrumbs>
             <Stack direction="row" sx={{ gap: 1 }}>
-                QUalquer coisa
+                
             </Stack>
         </Stack>
     )
