@@ -17,50 +17,23 @@ interface ItemStatusChannelProps {
 		updatedAt: string;
 	};
 }
-type StatusMessageProps = {
-	msg: string;
-};
 
-const StatusMessage = ({ msg }: StatusMessageProps) => {
-	return (
-		<>
-			<Box sx={{ maxWidth: 100 }}>
-				<Avatar />
-			</Box>
-			<Box sx={{ flexGrow: 1 }}>
-				<Typography sx={{ wordWrap: "break-word", flexGrow: 1 }}>
-					{msg}
-				</Typography>
-				<Typography sx={{ wordWrap: "break-word", flexGrow: 1 }}>
-					{msg}
-				</Typography>
-				<Typography sx={{ wordWrap: "break-word", flexGrow: 1 }}>
-					{msg}
-				</Typography>
-			</Box>
-		</>
-	);
-};
+
 
 export const ItemStatusChannel = ({ item }: ItemStatusChannelProps) => (
 	<>
-		<Stack
-			direction="column"
+		<Box
+    
 			sx={{
+                display: "flex",
+                gap: 2,
 				alignItems: "center",
 			}}
 		>
-			<Stack
-				direction="row"
-				sx={{
-					justifyContent: "space-between",
-					gap: 2,
-					alignItems: "center",
-				}}
-			>
-				<Box sx={{ maxWidth: 100 }}>
-					<Avatar />
-				</Box>
+                <Box sx={{ maxWidth: 100 }}>
+                    <Avatar />
+                </Box>
+			<Box>
 				{item.status === "qrcode" && (
 					<Box sx={{ flexGrow: 1 }}>
 						<Typography sx={{ wordWrap: "break-word", flexGrow: 1 }}>
@@ -102,11 +75,12 @@ export const ItemStatusChannel = ({ item }: ItemStatusChannelProps) => (
 						</Typography>
 					</Box>
 				)}
-			</Stack>
 			<Typography variant="caption">
 				{" "}
 				Última Atualização: {formatarData(item.updatedAt, "dd/MM/yyyy HH:mm")}
 			</Typography>
-		</Stack>
+			</Box>
+            
+		</Box>
 	</>
 );
