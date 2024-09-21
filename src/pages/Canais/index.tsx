@@ -1,9 +1,9 @@
 import {
 	Avatar,
 	Box,
+	Button,
 	Card,
 	CardContent,
-	Chip,
 	Divider,
 	IconButton,
 	MenuItem,
@@ -16,19 +16,22 @@ import { useWhatsappStore } from "../../store/whatsapp";
 import { ItemStatusChannel } from "./ItemStatusChannel";
 import { useCallback, useEffect, useState } from "react";
 import { ListarChatFlow } from "../../services/chatflow";
-import { Clear, WhatsApp } from "@mui/icons-material";
+import { Clear, PlusOne } from "@mui/icons-material";
 import { UpdateWhatsapp } from "../../services/sessoesWhatsapp";
 import { toast } from "sonner";
-
+import AddTaskIcon from "@mui/icons-material/AddTask";
+import { ModalWhatsapp } from "./ModalWhatsapp";
 export const Canais = () => {
 	const [chatflows, setChatflows] = useState([]);
 	const [selectedChatBots, setSelectedChatBots] = useState({});
 	const data = useWhatsappStore((s) => s.whatsApps);
 	const userProfile = localStorage.getItem("profile");
-	const isAdmin = localStorage.getItem("profile");
+    const [whatsappSelecionado, setWhatsappSelecionado] = useState({})
+    const [modalWhatsapp, setModalWhatsapp] = useState(false)
+	const isAdmin = true;
 	// Função para lidar com a mudança de seleção
 
-	const handleChange =  (whatsapp, event) => {
+	const handleChange = (whatsapp, event) => {
 		// Atualiza o valor apenas para o card correspondente ao id
 		setSelectedChatBots((prev) => ({
 			...prev,
@@ -39,13 +42,16 @@ export const Canais = () => {
 			chatFlowId: event.target.value,
 		};
 
-		 UpdateWhatsapp(whatsapp.id, form).then(data => {
-           if( data.status === 200){
-            toast.success(`Whatsapp ${whatsapp.id ? 'editado' : 'criado'} com sucesso!`, {
-                position: "top-center"
-            })
-           }
-         })
+		UpdateWhatsapp(whatsapp.id, form).then((data) => {
+			if (data.status === 200) {
+				toast.success(
+					`Whatsapp ${whatsapp.id ? "editado" : "criado"} com sucesso!`,
+					{
+						position: "top-center",
+					},
+				);
+			}
+		});
 	};
 	const listChatFlow = useCallback(async () => {
 		const { data } = await ListarChatFlow();
@@ -67,34 +73,54 @@ export const Canais = () => {
 		});
 		setSelectedChatBots(defaultValues);
 	}, [data]);
+    
 
-    const handleClearSelection =async (whatsapp) => {
-        // Define o valor como '' (vazio) para remover a seleção
-        setSelectedChatBots((prev) => ({
-          ...prev,
-          [whatsapp.id]: '',
-        }));
-        const form = {
+    const handleOpenQrModal = (item) =>{
+        setWhatsappSelecionado(item)
+    }
+	const handleClearSelection = async (whatsapp) => {
+		// Define o valor como '' (vazio) para remover a seleção
+		setSelectedChatBots((prev) => ({
+			...prev,
+			[whatsapp.id]: "",
+		}));
+		const form = {
 			...whatsapp,
 			chatFlowId: null,
 		};
-        UpdateWhatsapp(whatsapp.id, form).then(data => {
-            if( data.status === 200){
-             toast.success(`Whatsapp ${whatsapp.id ? 'editado' : 'criado'} com sucesso!`, {
-                 position: "top-center"
-             })
-            }
-          })
-     
-      };
-    
+		UpdateWhatsapp(whatsapp.id, form).then((data) => {
+			if (data.status === 200) {
+				toast.success(
+					`Whatsapp ${whatsapp.id ? "editado" : "criado"} com sucesso!`,
+					{
+						position: "top-center",
+					},
+				);
+			}
+		});
+	};
+
 	return (
 		<>
 			{userProfile === "admin" && (
 				<Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
-					<Typography component="h2" variant="h6" sx={{ mb: 2 }}>
-						Canais de Comunicação
-					</Typography>
+					<Box
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "space-between",
+						}}
+					>
+						<Typography component="h2" variant="h6" sx={{ mb: 2 }}>
+							Canais de Comunicação
+						</Typography>
+						<Box >
+							<Button variant="outlined">
+								<AddTaskIcon />
+								Adicionar{" "}
+							</Button>
+						</Box>
+					</Box>
 					<Grid
 						container
 						spacing={2}
@@ -105,7 +131,7 @@ export const Canais = () => {
 							<Grid key={item.id} size={{ xs: 12, sm: 6, lg: 3 }}>
 								<Card variant="outlined" sx={{ height: "100%", flexGrow: 1 }}>
 									<CardContent>
-										<Box sx={{ display: "flex", gap: 2 }}>
+										<Box sx={{ display: "flex", gap: 2,  }}>
 											<Avatar />
 											<Box sx={{ display: "flex", flexDirection: "column" }}>
 												<Typography
@@ -129,9 +155,10 @@ export const Canais = () => {
 										>
 											<ItemStatusChannel item={item} />
 											<Box
-												sx={{ display: "flex", alignItems: "center", gap: 1 }}
+												sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: 'space-between' }}
 											>
 												<Select
+                                                sx={{flexGrow:1}}
 													value={selectedChatBots[item.id] || ""}
 													onChange={(e) => handleChange(item, e)}
 													label="ChatBot"
@@ -148,17 +175,25 @@ export const Canais = () => {
 														onClick={() => handleClearSelection(item)}
 														size="small"
 													>
-														<Clear/>
+														<Clear />
 													</IconButton>
 												)}
 											</Box>
 										</Stack>
 										<Divider sx={{ my: 2 }} />
+                                        {item.type === 'whatsapp' && item.status !== 'qrcode' && (
+
+                                        <Button
+                                            onClick={()=>handleOpenQrModal(item, 'btn-qrCode')}
+                                        disabled={!isAdmin}
+                                        >QR Code </Button>
+                                        )}
 									</CardContent>
 								</Card>
 							</Grid>
 						))}
 					</Grid>
+                    <ModalWhatsapp/>
 				</Box>
 			)}
 		</>
