@@ -1,6 +1,6 @@
 import { Close, X } from "@mui/icons-material";
 import { Box, Button, Card, Dialog, IconButton, useTheme } from "@mui/material";
-
+import {QRCodeSVG} from 'qrcode.react';
 interface ModalQrCodeProps {
     isOpen: boolean
     onClose: () => void
@@ -18,7 +18,7 @@ export const ModalQrCode = ({ isOpen, onClose}: ModalQrCodeProps) => {
 	};
     function solicitarQrCode () {
 		// this.$emit('gerar-novo-qrcode', this.channel)
-		setModalQrCode(false)
+		// setModalQrCode(false)
 		setTimeout(() => {
 		  window.location.reload();
 		}, 1000);
@@ -46,11 +46,11 @@ export const ModalQrCode = ({ isOpen, onClose}: ModalQrCodeProps) => {
 				//     'bg-white': theme.palette.mode === 'dark',
 				// })}
 				>
-					{/* {channel.qrcode ? (
+					{channel.qrcode ? (
                         <QRCodeSVG value={channel.qrcode} size={300} level="H" />
                     ) : (
                         <p>Aguardando o Qr Code...</p>
-                    )} */}
+                    )}
 					{/* {channel.wppPass && <p>Código de Pareamento: {channel.wppPass}</p>} */}
 				</div>
 				<div className="mt-4">

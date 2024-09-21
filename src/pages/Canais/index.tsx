@@ -129,10 +129,11 @@ export const Canais = () => {
 		} catch (error) {
 		  console.error(error)
 		} 
+		console.log(modalQrCode)
 		setLoading(false)
 		setTimeout(() => {
 		//   window.location.reload();
-		}, 1000);
+		}, 10000);
 	  }
 
 	const handleOpenModalWhatsapp = () => {
@@ -286,10 +287,10 @@ export const Canais = () => {
 							handleOpen={handleOpenModalWhatsapp}
 						/>
 					)}
-					{modalQrCode && (
+					
 
 					 <ModalQrCode isOpen={modalQrCode} onClose={handleCloseQrModal}/>
-					)}
+					
 				</Box>
 			)}
 		</>
