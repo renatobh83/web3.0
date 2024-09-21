@@ -1,9 +1,10 @@
-import { Avatar, Box, Button, Checkbox, Chip, Divider, Icon, IconButton, Tooltip, Typography, useColorScheme } from "@mui/material"
+import { Avatar, Box, Button, Checkbox, Chip, Divider, Icon, IconButton, Popover, Tooltip, Typography, useColorScheme } from "@mui/material"
 import { formatarData, formatarMensagemWhatsapp } from "../../utils/helpers"
 import { ArrowDownward, CalendarMonth, Check, DoneAll } from "@mui/icons-material"
 import { dataInWords, formatarBotaoWhatsapp, formatarMensagemDeLista, formatarMensagemRespostaBotaoWhatsapp, formatarNotas, formatarTemplates } from "./mixinCommon"
 
 import DOMPurify from 'dompurify';
+import { useState } from "react";
 
 export const ChatMensagem = ({ menssagens }) => {
     const { mode } = useColorScheme()
@@ -28,7 +29,17 @@ export const ChatMensagem = ({ menssagens }) => {
     const openLinkInNewPage = (url) => {
         window.open(url, '_blank');
     }
-    return (<Box sx={{ padding: 2 }}>
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+    const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
+      setAnchorEl(event.currentTarget);
+    };
+  
+    const handlePopoverClose = () => {
+      setAnchorEl(null);
+    };
+  const open = Boolean(anchorEl);
+    return (<Box sx={{ padding: 2 , position: 'relative'}}>
         {menssagens.map(((mensagem, index) => (
             <div key={mensagem.id}>
 
@@ -37,10 +48,10 @@ export const ChatMensagem = ({ menssagens }) => {
                         <Chip label={formatarData(mensagem.createdAt)} size="small" /></Divider>
                 )}
 
-                {menssagens.length && index === menssagens.length - 1 && (
+                {/* {menssagens.length && index === menssagens.length - 1 && (
                     // biome-ignore lint/style/useSelfClosingElements: <explanation>
                     <Box style={{ background: 'black' }}></Box>
-                )}
+                )} */}
                 <div key={`chat-message-${mensagem.id}`} id={`chat-message-${mensagem.id}`} />
                 <Box
                     id={`chat-message-${mensagem.id}`}
@@ -60,17 +71,44 @@ export const ChatMensagem = ({ menssagens }) => {
                         <Checkbox />
                     )}
                     {mensagem.scheduleDate && (
-                        <Tooltip title='Mensagem agendada'>
+                    
 
-                            <Icon style={{ width: 8, height: 8 }}
-                                sx={{
+                            <Icon style={{ width: '25px', height: '25px' , position: "absolute", zIndex: 100}}
+                                     aria-owns={open ? 'mouse-over-popover' : undefined}
+                                     aria-haspopup="true"
+                                     onMouseEnter={handlePopoverOpen}
+                                     onMouseLeave={handlePopoverClose}
+                                      sx={{
                                     color: mensagem.scheduleDate && mensagem.status === 'pending' ? 'green' :
                                         !['pending', 'canceled'].includes(mensagem.status) ? 'blue' : ''
                                 }}>
-
                                 <CalendarMonth />
+                                <Popover
+                                    id="mouse-over-popover"
+                                    sx={{ pointerEvents: 'none',  }}
+                                    open={open}
+                                
+                                    anchorEl={anchorEl}
+                                    anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                    }}
+                                    transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'left',
+                                    }}
+                                    onClose={handlePopoverClose}
+                                    disableRestoreFocus
+                                >
+                                    <Box sx={{ p:2}}>
+
+                                    <Typography sx={{ p: 1 }} variant="subtitle2"> Mensagem agendada</Typography>
+                                    <Typography sx={{ p: 1 }} variant="body2"> Criado em: { formatarData(mensagem.createdAt, 'dd/MM/yyyy HH:mm') }</Typography>
+                                    <Typography sx={{ p: 1 }} variant="body2"> Programado para: { formatarData(mensagem.scheduleDate, 'dd/MM/yyyy HH:mm') }</Typography>
+                                    </Box>
+                                </Popover>
                             </Icon>
-                        </Tooltip>
+                        
                     )}
                     {mensagem.isDeleted && (
                         <Typography variant="body2">Menssagem apagada em {formatarData(mensagem.updatedAt, 'dd/MM/yyyy')}</Typography>
@@ -205,7 +243,7 @@ export const ChatMensagem = ({ menssagens }) => {
 
                                 <Box sx={{ wordWrap: 'break-word' }}>
                                     {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
-                                    <span dangerouslySetInnerHTML={{ __html: formatarMensagemWhatsapp(DOMPurify.sanitize(mensagem.body)) }} />
+                                    {/* <span dangerouslySetInnerHTML={{ __html: formatarMensagemWhatsapp(DOMPurify.sanitize(mensagem.body)) }} /> */}
                                 </Box>
                                 {mensagem.fromMe ? (
                                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: '4px' }}>

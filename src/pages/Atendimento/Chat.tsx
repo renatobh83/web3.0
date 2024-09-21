@@ -92,7 +92,7 @@ export const Chat = () => {
                     </Fade>
                 ) :
                     <Box
-                        style={{ background: 'url(../wa-background.png) ' }}
+                        // style={{ background: 'url(../wa-background.png) ' }}
                         id="scrollableDiv"
                         className="overflow-y-auto relative"
                         ref={scrollContainerRef}
@@ -105,6 +105,9 @@ export const Chat = () => {
                             loader={<h4>Loading...</h4>}
                             scrollableTarget="scrollableDiv"
                         >
+                            
+
+
                             <ChatMensagem menssagens={mensagens} />
                         </InfiniteScroll>
                     </Box>

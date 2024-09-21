@@ -501,6 +501,7 @@ export const useAtendimentoTicketStore = create<
   redirectToChat: (_ticketId) => {
     // A função de navegação será definida no componente onde o hook useNavigate pode ser acessado
   },
+  
   // Ação para abrir o chat de mensagens
   AbrirChatMensagens: async (data) => {
     try {
@@ -516,17 +517,9 @@ export const useAtendimentoTicketStore = create<
         ticketId: data.id,
         pageNumber: 1,
       };
-
+console.log(params)
       // Chama a ação para localizar as mensagens
       await get().LocalizarMensagensTicket(params);
-
-      const redirectToChat = get().redirectToChat;
-
-      if (redirectToChat) {
-        redirectToChat(data.id); // Redireciona para a rota do chat
-      }
-      // Navegar para a rota do chat (supondo que você tenha acesso ao $router aqui)
-      //$router.push({ name: 'chat', params, query: { t: new Date().getTime() } })
     } catch (error) {
       // Tratamento de erro
       if (!error) return;

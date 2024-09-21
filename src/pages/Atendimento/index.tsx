@@ -315,7 +315,7 @@ export function Atendimento(props: Props) {
     }
     const consultaTickets = async (paramsInit = {}) => {
         console.log('Load')
-        const toastId = toast.info('Aguarde enquanto as configurações estão sendo carregadas...', {
+        const toastId = toast.info('Aguarde enquanto os tickets são carregados...', {
             position: 'top-center',
             duration: Number.POSITIVE_INFINITY // Duração infinita até ser manualmente removido
         });
@@ -390,10 +390,10 @@ export function Atendimento(props: Props) {
     }, [pesquisaTickets]); // Executa sempre que pesquisaTickets mudar
 
     useEffect(() => {
-        if (hasFetched) return; // Impede execução múltipla
-        setHasFetched(true); // Define que já buscou os dados
+   
         BuscarTicketFiltro();
-    }, [BuscarTicketFiltro, hasFetched]);
+    }, [BuscarTicketFiltro]);
+
 
     const listarEtiquetas = useCallback(async () => {
         const { data } = await ListarEtiquetas(true)
@@ -614,7 +614,7 @@ export function Atendimento(props: Props) {
                                             cUserQueues={[]}
                                             pesquisaTickets={pesquisaTickets}
                                         />
-                                        <FormControl component="fieldset">
+                                        {/* <FormControl component="fieldset">
                                             <FormGroup aria-label="position" >
                                                 <FormControlLabel
                                                     value={pesquisaTickets.status.includes("open")}
@@ -643,7 +643,7 @@ export function Atendimento(props: Props) {
                                                     labelPlacement="end"
                                                 />
                                             </FormGroup>
-                                        </FormControl>
+                                        </FormControl> */}
                                         <Divider />
 
                                         <div className="flex items-center ml-4">

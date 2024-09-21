@@ -38,8 +38,21 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
         });
     }, [])
 
-    const abrirChatContato = async (x) => {
-        AbrirChatMensagens(x)
+    const goToChat = async (id: string)=>{
+        try {
+            const timestamp = new Date().getTime()
+            navigate(`/atendimento/${id}?t=${timestamp}`,{
+                replace: false,
+                state: {t: new Date().getTime()}
+            })
+            
+        } catch (error) {
+            
+        }
+    }
+    const abrirChatContato = async (ticket) => {
+        AbrirChatMensagens(ticket)
+        goToChat(ticket.id)
     }
     if (!ticket) { return }
 

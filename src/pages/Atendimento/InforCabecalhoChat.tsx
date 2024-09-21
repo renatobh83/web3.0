@@ -5,6 +5,7 @@ import MuiAppBar, { type AppBarProps as MuiAppBarProps } from '@mui/material/App
 import { CalendarMonth, FindInPage, TransferWithinAStation } from "@mui/icons-material";
 import Close from "@mui/icons-material/Close";
 import { useAtendimentoStore } from "../../store/atendimento";
+import { useAtendimentoTicketStore } from "../../store/atendimentoTicket";
 
 // biome-ignore lint/suspicious/noRedeclare: <explanation>
 interface AppBarProps extends MuiAppBarProps {
@@ -35,12 +36,20 @@ const AppBar = styled(MuiAppBar, {
 
 export const InfoCabecalhoMenssagens = () => {
     const { drawerWidth, isClosing, mobileOpen, setMobileOpen, isContactInfo, setIsContactInfo } = useAtendimentoStore()
-    const isPerfil = true
+    const ticketFocado = useAtendimentoTicketStore(s =>s.ticketFocado)
+    
     const handleDrawerToggle = () => {
         if (!isClosing) {
             setMobileOpen(!mobileOpen);
         }
     };
+    const  Value = (obj, prop) =>{
+        try {
+          return obj[prop]
+        } catch (error) {
+          return ''
+        }
+      }
 
     return (
         <AppBar
@@ -48,9 +57,9 @@ export const InfoCabecalhoMenssagens = () => {
             position="fixed"
             sx={{
                 bgcolor: 'background.paper',
-                width: isContactInfo ? { sm: "calc(100% -  300px)" } : { md: `calc(100% - ${drawerWidth}px)` },
-                ml: isContactInfo ? { sm: `${drawerWidth}px` } : { sm: `${drawerWidth}px` },
-                mr: isContactInfo ? { sm: '300px' } : '0',
+                width: isContactInfo ? { md: "calc(100% -  380px)" } : { md: `calc(100% - ${drawerWidth}px)` },
+                // pl: isContactInfo ? { sm: `${drawerWidth}px`} : { md: 0 },
+                pr: isContactInfo ? { sm: '300px' } : '0',
             }}
 
         >
@@ -65,7 +74,7 @@ export const InfoCabecalhoMenssagens = () => {
                     <MenuIcon />
                 </IconButton>
                 <Box sx={{ display: 'flex', width: '100%', alignItems: 'center' }}>
-                    {isPerfil ? (
+                    {!ticketFocado.id ? (
                         <Box sx={{ width: { sm: 100, md: 300 } }}>
                             <Skeleton />
                             <Skeleton />
@@ -81,17 +90,19 @@ export const InfoCabecalhoMenssagens = () => {
                                 }}>
                                 <List sx={{ width: '100%' }} >
                                     <ListItem sx={{ gap: 2 }} disablePadding>
-                                        <ListItemIcon><Avatar /></ListItemIcon>
-                                        <ListItemText secondary={'teste'}>
+                                        <ListItemIcon><Avatar src={Value(ticketFocado.contact, 'profilePicUrl')}/></ListItemIcon>
+                                        <ListItemText secondary={
+                                            Value(ticketFocado.user, 'name') && `Atribuido à: ${Value(ticketFocado.user, 'name')}`
+                                        }>
                                             <Typography sx={{
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
                                                 whiteSpace: 'nowrap',
                                                 maxWidth: '90%'
-                                            }} >Renato Lucio de mendonca</Typography>
+                                            }} >{Value(ticketFocado.contact, 'name') }</Typography>
                                         </ListItemText>
                                         <ListItemText sx={{ display: 'flex', justifyContent: 'end' }}>
-                                            <Typography variant="caption" sx={{ fontSize: 9 }}>Ticket 34</Typography>
+                                            <Typography variant="caption" sx={{ fontSize: 9 }}>{`Ticket ${ticketFocado.id}`}</Typography>
                                         </ListItemText>
                                     </ListItem>
                                 </List>
