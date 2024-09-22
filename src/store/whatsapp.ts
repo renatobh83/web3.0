@@ -1,62 +1,64 @@
-import { create } from "zustand";
+import { create } from 'zustand'
 
 interface WhatsApp {
-	id: number;
-	[key: string]: any;
+  id: number
+  [key: string]: any
 }
 
 interface State {
-	whatsApps: any[];
-	loadWhatsApps: (payload: any[]) => void;
-	updateWhatsApps: (payload: any) => void;
-	updateSession: (payload: any) => void;
-	deleteWhatsApp: (id: number) => void;
-	resetWhatsApps: () => void;
+  whatsApps: any[]
+  loadWhatsApps: (payload: any[]) => void
+  updateWhatsApps: (payload: any) => void
+  updateSession: (payload: any) => void
+  deleteWhatsApp: (id: number) => void
+  resetWhatsApps: () => void
 }
 
-export const useWhatsappStore = create<State>((set) => ({
-	whatsApps: [],
+export const useWhatsappStore = create<State>(set => ({
+  whatsApps: [],
 
-	loadWhatsApps: (payload) =>
-		set(() => ({
-			whatsApps: payload,
-		})),
+  loadWhatsApps: payload =>
+    set(() => ({
+      whatsApps: payload,
+    })),
 
-	updateWhatsApps: (payload) =>
-		set((state) => {
-			const whatsApp = payload;
-			let newWhats = [...state.whatsApps];
-			const whatsAppIndex = newWhats.findIndex((s) => s.id === whatsApp.id);
-			if (whatsAppIndex !== -1) {
-				newWhats[whatsAppIndex] = whatsApp;
-			} else {
-				newWhats = [whatsApp, ...newWhats];
-			}
-			state.whatsApps = [...newWhats];
+  updateWhatsApps: payload =>
+    set(state => {
+      console.log(payload)
+      const whatsApp = payload
+      let newWhats = [...state.whatsApps]
+      const whatsAppIndex = newWhats.findIndex(s => s.id === whatsApp.id)
 
-			// const exists = state.whatsApps.some((w) => w.id === payload.id);
-			// const updatedWhatsApps = exists
-			//   ? state.whatsApps.map((w) => (w.id === payload.id ? payload : w))
-			//   : [payload, ...state.whatsApps];
+      if (whatsAppIndex !== -1) {
+        newWhats[whatsAppIndex] = whatsApp
+      } else {
+        newWhats = [whatsApp, ...newWhats]
+      }
+      state.whatsApps = [...newWhats]
 
-			// return { whatsApps: updatedWhatsApps };
-		}),
+      // const exists = state.whatsApps.some((w) => w.id === payload.id);
+      // const updatedWhatsApps = exists
+      //   ? state.whatsApps.map((w) => (w.id === payload.id ? payload : w))
+      //   : [payload, ...state.whatsApps];
 
-	updateSession: (payload) =>
-		set((state) => {
-			const updatedWhatsApps = state.whatsApps.map((w) =>
-				w.id === payload.id ? { ...w, ...payload } : w,
-			);
-			return { whatsApps: updatedWhatsApps };
-		}),
+      // return { whatsApps: updatedWhatsApps };
+    }),
 
-	deleteWhatsApp: (id) =>
-		set((state) => ({
-			whatsApps: state.whatsApps.filter((w) => w.id !== id),
-		})),
+  updateSession: payload =>
+    set(state => {
+      const updatedWhatsApps = state.whatsApps.map(w =>
+        w.id === payload.id ? { ...w, ...payload } : w
+      )
+      return { whatsApps: updatedWhatsApps }
+    }),
 
-	resetWhatsApps: () =>
-		set(() => ({
-			whatsApps: [],
-		})),
-}));
+  deleteWhatsApp: id =>
+    set(state => ({
+      whatsApps: state.whatsApps.filter(w => w.id !== id),
+    })),
+
+  resetWhatsApps: () =>
+    set(() => ({
+      whatsApps: [],
+    })),
+}))
