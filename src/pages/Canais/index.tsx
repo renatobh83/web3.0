@@ -16,7 +16,7 @@ import { useWhatsappStore } from '../../store/whatsapp'
 import { ItemStatusChannel } from './ItemStatusChannel'
 import { useCallback, useEffect, useState } from 'react'
 import { ListarChatFlow } from '../../services/chatflow'
-import { Clear, PlusOne } from '@mui/icons-material'
+import { Clear, Edit, PlusOne } from '@mui/icons-material'
 import {
   DeleteWhatsappSession,
   ListarWhatsapps,
@@ -38,7 +38,7 @@ export const Canais = () => {
   const loadWhatsApps = useWhatsappStore(s => s.loadWhatsApps)
   const userProfile = localStorage.getItem('profile')
   const [whatsappSelecionado, setWhatsappSelecionado] = useState({})
-  const [modalWhatsapp, setModalWhatsapp] = useState(false)
+  const [modalWhatsapp, setModalWhatsapp] = useState(true)
   const [modalQrCode, setModalQrCode] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -175,7 +175,8 @@ export const Canais = () => {
     setLoading(false)
   }
 
-  const handleOpenModalWhatsapp = () => {
+  const handleOpenModalWhatsapp = (item?: any) => {
+    setWhatsappSelecionado(item)
     setModalWhatsapp(true)
   }
   const handleClosenModalWhatsapp = () => {
@@ -199,7 +200,7 @@ export const Canais = () => {
             <Box>
               <Button variant="outlined" onClick={handleOpenModalWhatsapp}>
                 <AddTaskIcon />
-                Adicionar{' '}
+                Adicionar
               </Button>
             </Box>
           </Box>
@@ -218,8 +219,8 @@ export const Canais = () => {
                 >
                   <CardContent>
                     <Box sx={{ display: 'flex', gap: 2 }}>
-                      <Avatar />
-                      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                      <Avatar src={`./${item.type}-logo.png`} />
+                      <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
                         <Typography
                           component="h2"
                           variant="subtitle2"
@@ -229,6 +230,10 @@ export const Canais = () => {
                         </Typography>
                         <Typography variant="caption">{item.type}</Typography>
                       </Box>
+                      {isAdmin && (
+
+                        <Button onClick={() => handleOpenModalWhatsapp(item)}><Edit /></Button>
+                      )}
                     </Box>
                     <Divider sx={{ my: 2 }} />
                     <Stack
@@ -348,7 +353,7 @@ export const Canais = () => {
             <ModalWhatsapp
               handleClose={handleClosenModalWhatsapp}
               isOpen={modalWhatsapp}
-              handleOpen={handleOpenModalWhatsapp}
+              item={cDadosWhatsappSelecionado()}
             />
           )}
           {modalQrCode && (
