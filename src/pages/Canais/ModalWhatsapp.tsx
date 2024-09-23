@@ -1,16 +1,20 @@
-import { VapingRooms } from "@mui/icons-material";
+import { ConstructionOutlined, VapingRooms } from "@mui/icons-material";
 import {
+	Alert,
 	Box,
 	Button,
 	Dialog,
 	DialogActions,
 	DialogContent,
 	DialogTitle,
+	List,
+	ListItem,
 	MenuItem,
 	TextField,
 } from "@mui/material";
 import { useWhatsappStore } from "../../store/whatsapp";
 import { useEffect, useState } from "react";
+import { CriarWhatsapp, ListarWhatsapps, UpdateWhatsapp } from "../../services/sessoesWhatsapp";
 
 
 
@@ -23,7 +27,7 @@ interface ModalWhatsappProps {
 
 const optionsWhatsappsTypes = [
 	{ label: 'WhatsApp Oficial (WABA)', value: 'waba' },
-	{ label: 'WhatsApp Baileys (QRCode)', value: 'baileys' },
+	// { label: 'WhatsApp Baileys (QRCode)', value: 'baileys' },
 	{ label: 'WhatsApp WebJs (QRCode)', value: 'whatsapp' },
 	{ label: 'Telegram', value: 'telegram' },
 	{ label: 'Instagram', value: 'instagram' },
@@ -50,6 +54,7 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 
 	const [selectedType, setSelectedType] = useState({})
 	const whatsApps = useWhatsappStore(s => s.whatsApps)
+	const loadWhatsApps = useWhatsappStore(s => s.loadWhatsApps)
 
 	const [whatsapp, setWhatsapp] = useState({
 		name: '',
@@ -118,13 +123,20 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 
 	const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		const formData = new FormData(event.currentTarget);
-		const formJson = Object.fromEntries((formData as any).entries());
-		const tipo = formJson.tipo;
-		const nome = formJson.nome;
-		const mensagem = formJson.mensagem;
-		console.log(tipo, nome, mensagem);
-		handleClose();
+		if (item?.id) {
+			UpdateWhatsapp(item.id, whatsapp).then(async () => {
+				const { data } = await ListarWhatsapps()
+				loadWhatsApps(data)
+				handleClose()
+			})
+		} else {
+			CriarWhatsapp(whatsapp).then(async () => {
+				const { data } = await ListarWhatsapps()
+				loadWhatsApps(data)
+				handleClose()
+			})
+		}
+
 	}
 	function channelOptions() {
 		return whatsApps.map(whatsapp => ({
@@ -138,9 +150,10 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 	}
 
 	const handleChange = (event) => {
+		const { name } = event.target;
 		setWhatsapp((prev) => ({
 			...prev,
-			type: event.target.value
+			[name]: event.target.value
 		}))
 	}
 	useEffect(() => {
@@ -164,7 +177,7 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 					select
 					margin="dense"
 					id="tipo"
-					name="tipo"
+					name="type"
 					label="Tipo"
 					type="select"
 					fullWidth
@@ -182,23 +195,25 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 					required
 					margin="dense"
 					id="nome"
-					name="nome"
+					name="name"
 					label="Nome"
 					value={whatsapp.name}
+					onChange={(e) => handleChange(e)}
 					fullWidth
 					variant="standard"
 				/>
 				<Box sx={{ position: 'relative' }}>
 					<TextField
-
 						margin="dense"
 						id="mensagem"
-						name="mensagem"
+						name="farewellMessage"
 						label="Mensagem Despedida:"
 						rows={5}
 						multiline
+						onChange={e => handleChange(e)}
 						fullWidth
 						variant="standard"
+						value={whatsapp.farewellMessage}
 					/>
 					<Box id='btn' sx={{ position: 'absolute', top: '0', right: '0' }}>
 						<Button>
@@ -207,6 +222,25 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 					</Box>
 				</Box>
 			</DialogContent>
+			{whatsapp.type === 'whatsapp' && (
+				<Alert severity="success" variant="filled">
+					<List>
+						<ListItem>Serviço Não Oficial.</ListItem>
+
+					</List>
+				</Alert>
+			)}
+			{whatsapp.type === 'waba' && (
+				<Alert severity="success" variant="filled" color="warning">
+					<List>
+						<ListItem>Estabilidade de conexão garantida</ListItem>
+						<ListItem>Sem risco de banimento</ListItem>
+						<ListItem>Segurança contra roubo de conta</ListItem>
+						<ListItem>Permite o uso de botões</ListItem>
+						<ListItem>Permite o uso de templates</ListItem>
+					</List>
+				</Alert>
+			)}
 			<DialogActions>
 				<Button onClick={() => handleClose()}>Cancelar</Button>
 				<Button type="submit">Gravar</Button>

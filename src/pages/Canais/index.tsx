@@ -18,9 +18,11 @@ import { useCallback, useEffect, useState } from 'react'
 import { ListarChatFlow } from '../../services/chatflow'
 import { Clear, Edit, PlusOne } from '@mui/icons-material'
 import {
+  DeletarWhatsapp,
   DeleteWhatsappSession,
   ListarWhatsapps,
   RequestNewQrCode,
+  StartWhatsappSession,
   UpdateWhatsapp,
 } from '../../services/sessoesWhatsapp'
 import { toast } from 'sonner'
@@ -38,7 +40,7 @@ export const Canais = () => {
   const loadWhatsApps = useWhatsappStore(s => s.loadWhatsApps)
   const userProfile = localStorage.getItem('profile')
   const [whatsappSelecionado, setWhatsappSelecionado] = useState({})
-  const [modalWhatsapp, setModalWhatsapp] = useState(true)
+  const [modalWhatsapp, setModalWhatsapp] = useState(false)
   const [modalQrCode, setModalQrCode] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -69,13 +71,13 @@ export const Canais = () => {
   }
   const listChatFlow = useCallback(async () => {
     const { data } = await ListarChatFlow()
-
     setChatflows(data.chatFlow)
   }, [data])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     listChatFlow()
+    console.log(data)
   }, [])
 
   // Preenche o estado inicial com base no item.chatFlowId
@@ -182,7 +184,44 @@ export const Canais = () => {
   const handleClosenModalWhatsapp = () => {
     setModalWhatsapp(false)
   }
+  async function handleStartWhatsAppSession(whatsAppId) {
+    try {
+      await StartWhatsappSession(whatsAppId)
+      const dataFind = data.find(w => w.id === whatsAppId)
+      if (dataFind.type === 'waba' || data.dataFind === 'telegram') {
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  async function deleteWhatsapp(whatsapp) {
+    toast.message(
+      `Atenção!! Deseja realmente deletar o canal "${whatsapp.name}"?`,
+      {
+        description: 'Os chats abertos desse canal serão fechados, mas poderão ser vistos no painel de atendimento.',
+        position: "top-right",
+        cancel: {
+          label: "Cancel",
+          onClick: () => console.log("Cancel!"),
+        },
+        action: {
+          label: "Confirma",
+          onClick: () => {
+            DeletarWhatsapp(whatsapp.id).then(async () => {
+              toast.success("Canal apagado", {
+                position: "top-right",
 
+              });
+              const { data } = await ListarWhatsapps()
+              loadWhatsApps(data)
+            })
+
+          },
+        },
+      },
+    )
+  }
   return (
     <>
       {userProfile === 'admin' && (
@@ -288,28 +327,21 @@ export const Canais = () => {
                         QR Code
                       </Button>
                     )}
-                    {item.status === 'DISCONNECTED' &&
-                      (item.type === 'whatsapp' &&
-                        item.type === 'baileys' &&
-                        item.status === 'qrcode' ? (
-                        <Button>Conectar</Button>
-                      ) : item.type !== 'whatsapp' &&
-                        item.type !== 'baileys' ? (
-                        <Button>Conectar</Button>
-                      ) : (item.status === 'DISCONNECTED' &&
-                        item.type === 'whatsapp') ||
-                        (item.status === 'DISCONNECTED' &&
-                          item.type === 'baileys') ? (
-                        <Button
-                          onClick={() =>
-                            handleRequestNewQrCode(item, 'btn-qrCode')
-                          }
-                        >
-                          Novo QR Code
-                        </Button>
-                      ) : (
-                        <></>
-                      ))}
+                    {item.status === 'DISCONNECTED' && (
+                      item.type === 'whatsapp' ?
+                        <Button onClick={() => handleStartWhatsAppSession(item.id)}>
+                          Conectar
+                        </Button> :
+                        item.type !== 'whatsapp' ?
+                          <Button>
+                            Conectar
+                          </Button> :
+                          item.status === 'DISCONNECTED' && item.type === 'whatsapp' ?
+                            <Button onClick={() => handleRequestNewQrCode(item, 'btn-qrCode')}>
+                              Novo QR Code
+                            </Button> :
+                            <></>
+                    )}
                     <Box
                       sx={{
                         display: 'flex',
@@ -339,7 +371,7 @@ export const Canais = () => {
                           )}
                       </Box>
                       <Button
-
+                        onClick={() => deleteWhatsapp(item)}
                       >
                         <DeleteOutlineIcon sx={{ color: 'red' }} />
                       </Button>
