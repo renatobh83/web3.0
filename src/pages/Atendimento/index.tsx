@@ -379,7 +379,6 @@ export function Atendimento(props: Props) {
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     const listarWhatsapps = useCallback(async () => {
         const { data } = await ListarWhatsapps()
-        // this.$store.commit('LOAD_WHATSAPPS', data)
         loadWhatsApps(data)
     }, [])
 
@@ -390,7 +389,7 @@ export function Atendimento(props: Props) {
     }, [pesquisaTickets]); // Executa sempre que pesquisaTickets mudar
 
     useEffect(() => {
-   
+
         BuscarTicketFiltro();
     }, [BuscarTicketFiltro]);
 

@@ -19,6 +19,7 @@ import { ListarChatFlow } from '../../services/chatflow'
 import { Clear, PlusOne } from '@mui/icons-material'
 import {
   DeleteWhatsappSession,
+  ListarWhatsapps,
   RequestNewQrCode,
   UpdateWhatsapp,
 } from '../../services/sessoesWhatsapp'
@@ -27,11 +28,14 @@ import AddTaskIcon from '@mui/icons-material/AddTask'
 import { ModalWhatsapp } from './ModalWhatsapp'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { ModalQrCode } from './ModalQrCode'
+import { eventEmitter } from '../../hooks/useSocketInitial'
+
 
 export const Canais = () => {
   const [chatflows, setChatflows] = useState([])
   const [selectedChatBots, setSelectedChatBots] = useState({})
   const data = useWhatsappStore(s => s.whatsApps)
+  const loadWhatsApps = useWhatsappStore(s => s.loadWhatsApps)
   const userProfile = localStorage.getItem('profile')
   const [whatsappSelecionado, setWhatsappSelecionado] = useState({})
   const [modalWhatsapp, setModalWhatsapp] = useState(false)
@@ -88,6 +92,20 @@ export const Canais = () => {
     setWhatsappSelecionado(channel)
     setModalQrCode(true)
   }
+  // const handleUpdateSession = (session) => {
+  //   // this.$store.commit('UPDATE_SESSION', session);
+  //   console.log(session)
+  //   // window.location.reload();
+  // }
+  // useEffect(() => {
+  //   // Adiciona o listener ao montar o componente
+  //   eventEmitter.on('UPDATE_SESSION', handleUpdateSession);
+
+  //   // Remove o listener ao desmontar o componente
+  //   return () => {
+  //     eventEmitter.off('UPDATE_SESSION', handleUpdateSession);
+  //   };
+  // }, []);
 
   const handleCloseQrModal = () => {
     setModalQrCode(false)
@@ -96,7 +114,7 @@ export const Canais = () => {
     const { id } = whatsappSelecionado
     return data.find(w => w.id === id)
   }
-  const updateWhatsApps = useWhatsappStore(s => s.updateWhatsApps)
+
 
   const handleDisconectWhatsSession = (whatsAppId: string) => {
     toast.info('Atenção!! Deseja realmente desconectar?', {
@@ -109,13 +127,9 @@ export const Canais = () => {
         label: 'Confirma',
         onClick: () => {
           DeleteWhatsappSession(whatsAppId)
-            .then(() => {
-              const whatsapp = data.find(w => w.id === whatsAppId)
-
-              updateWhatsApps({
-                ...whatsapp,
-                status: 'DISCONNECTED',
-              })
+            .then(async () => {
+              const { data } = await ListarWhatsapps()
+              loadWhatsApps(data)
             })
             .catch(e => console.log(e))
         },
@@ -124,7 +138,6 @@ export const Canais = () => {
   }
   const handleClearSelection = async whatsapp => {
     // Define o valor como '' (vazio) para remover a seleção
-
     setSelectedChatBots(prev => ({
       ...prev,
       [whatsapp.id]: '',
@@ -144,14 +157,13 @@ export const Canais = () => {
       }
     })
   }
+
   async function handleRequestNewQrCode(channel, origem) {
     if (channel.type === 'telegram' && !channel.tokenTelegram) {
       toast.error('Necessário informar o token para Telegram', {
         position: 'top-center',
       })
     }
-
-    console.log(channel)
     try {
       await RequestNewQrCode({ id: channel.id, isQrcode: true })
       setTimeout(() => {
@@ -160,11 +172,7 @@ export const Canais = () => {
     } catch (error) {
       console.error(error)
     }
-    console.log(modalQrCode)
     setLoading(false)
-    setTimeout(() => {
-      //   window.location.reload();
-    }, 10000)
   }
 
   const handleOpenModalWhatsapp = () => {
@@ -265,7 +273,8 @@ export const Canais = () => {
                         )}
                       </Box>
                     </Stack>
-                    <Divider sx={{ my: 2 }} />
+                    <Divider sx={{ my: 2 }} id='actions' />
+
                     {item.type === 'whatsapp' && item.status === 'qrcode' && (
                       <Button
                         onClick={() => handleOpenQrModal(item)}
@@ -276,14 +285,14 @@ export const Canais = () => {
                     )}
                     {item.status === 'DISCONNECTED' &&
                       (item.type === 'whatsapp' &&
-                      item.type === 'baileys' &&
-                      item.status === 'qrcode' ? (
+                        item.type === 'baileys' &&
+                        item.status === 'qrcode' ? (
                         <Button>Conectar</Button>
                       ) : item.type !== 'whatsapp' &&
                         item.type !== 'baileys' ? (
                         <Button>Conectar</Button>
                       ) : (item.status === 'DISCONNECTED' &&
-                          item.type === 'whatsapp') ||
+                        item.type === 'whatsapp') ||
                         (item.status === 'DISCONNECTED' &&
                           item.type === 'baileys') ? (
                         <Button
@@ -296,18 +305,20 @@ export const Canais = () => {
                       ) : (
                         <></>
                       ))}
-                    {item.status === 'OPENING' && (
-                      <Box>
-                        <Typography>Conectando...</Typography>
-                      </Box>
-                    )}
                     <Box
                       sx={{
                         display: 'flex',
                         justifyContent: 'space-between',
                         flexDirection: 'row',
+                        alignItems: 'center'
                       }}
                     >
+                      {item.status === 'OPENING' && (
+                        <Box>
+                          <Typography>Conectando...</Typography>
+                        </Box>
+                      )}
+                      <Divider orientation="vertical" />
                       <Box>
                         {[
                           'OPENING',
@@ -315,15 +326,15 @@ export const Canais = () => {
                           'PAIRING',
                           'TIMEOUT',
                         ].includes(item.status) && (
-                          <Button
-                            onClick={() => handleDisconectWhatsSession(item.id)}
-                          >
-                            Desconectar
-                          </Button>
-                        )}
+                            <Button
+                              onClick={() => handleDisconectWhatsSession(item.id)}
+                            >
+                              Desconectar
+                            </Button>
+                          )}
                       </Box>
                       <Button
-                        onClick={() => handleDisconectWhatsSession(item.id)}
+
                       >
                         <DeleteOutlineIcon sx={{ color: 'red' }} />
                       </Button>
@@ -353,3 +364,7 @@ export const Canais = () => {
     </>
   )
 }
+function loadWhatsApps(arg0: any) {
+  throw new Error('Function not implemented.')
+}
+

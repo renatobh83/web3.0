@@ -53,7 +53,7 @@ export const StyledMenu = styled((props: MenuProps) => (
             '& .MuiSvgIcon-root': {
                 fontSize: 18,
                 color: theme.palette.text.secondary,
-                marginRight: theme.spacing(1.5),
+                // marginRight: theme.spacing(1.5),
             },
             '&:active': {
                 backgroundColor: alpha(
@@ -210,9 +210,9 @@ export const MenusNavbar = () => {
                             <MenuList sx={{ display: 'flex', gap: 2 }}>
                                 <Typography>{+notifications.count + +notificationsP.count} Clientes pendentes na fila </Typography>
                                 {notificationsP.tickets.map(ticket => (
-                                    <MenuItem key={ticket.id} sx={{ display: 'flex', gap: 3 }}
+                                    <MenuItem key={ticket.id} sx={{ display: 'flex', gap: 3, }}
                                         onClick={() => abrirChatContato(ticket)}>
-                                        <Avatar src={ticket.profilePicUrl} />
+                                        <Avatar src={ticket.profilePicUrl ?? ''} />
                                         <div>
                                             <ListItemText>{ticket.name}</ListItemText>
                                             <Typography variant="body2" sx={{ color: 'text.secondary' }}>

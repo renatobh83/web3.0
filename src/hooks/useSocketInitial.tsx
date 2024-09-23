@@ -10,12 +10,13 @@ import { useAtendimentoTicketStore } from "../store/atendimentoTicket";
 import { useContatosStore } from "../store/contatos";
 import { useWebSocketStore } from "../store/socket";
 import { useUsersAppStore } from "../store/usersApp";
+// import { EventEmitter } from "events";
 
+// export const eventEmitter = new EventEmitter();
 
 export const useSocketInitial = () => {
     const { ws, setWs, getWs } = useWebSocketStore();
     const wsRef = useRef<WebSocket | null>(null);
-
     const updateWhatsapps = useWhatsappStore(state => state.updateWhatsApps)
     const deleteWhatsApp = useWhatsappStore(state => state.deleteWhatsApp)
     const updateSession = useWhatsappStore(state => state.updateSession)
@@ -66,6 +67,8 @@ export const useSocketInitial = () => {
                 console.log('socket ON: UPDATE_SESSION')
                 if (data.action === 'update') {
                     updateSession(data.session)
+                    // eventEmitter.emit('UPDATE_SESSION', data.session);
+                    // console.log('Emit')
                     //   this.$root.$emit('UPDATE_SESSION', data.session)
                 }
 

@@ -21,7 +21,7 @@ export const MainLayout: React.FC = () => {
   // const socket = socketIO()
   const { updateNotifications, updateNotificationsP } = useNotificationsStore()
   const notificacaoTicket = useAtendimentoTicketStore(s => s.notificacaoTicket)
-  const { loadWhatsApps } = useWhatsappStore()
+  const { loadWhatsApps, whatsApps } = useWhatsappStore()
 
   const usuario = JSON.parse(localStorage.getItem('usuario'))
 
@@ -85,6 +85,7 @@ export const MainLayout: React.FC = () => {
   const listarWhatsapps = useCallback(async () => {
     const { data } = await ListarWhatsapps()
     loadWhatsApps(data)
+
   }, [])
 
   const listarConfiguracoes = useCallback(async () => {
@@ -151,6 +152,7 @@ export const MainLayout: React.FC = () => {
       await listarConfiguracoes()
       consultarTickets() // Descomente se necessário
     }
+
     conectar()
   }, [listarWhatsapps, listarConfiguracoes, consultarTickets])
 
