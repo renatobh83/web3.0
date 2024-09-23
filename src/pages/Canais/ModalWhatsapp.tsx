@@ -1,4 +1,3 @@
-import { ConstructionOutlined, VapingRooms } from "@mui/icons-material";
 import {
 	Alert,
 	Box,
@@ -12,6 +11,7 @@ import {
 	MenuItem,
 	TextField,
 } from "@mui/material";
+import FunctionsIcon from '@mui/icons-material/Functions';
 import { useWhatsappStore } from "../../store/whatsapp";
 import { useEffect, useState } from "react";
 import { CriarWhatsapp, ListarWhatsapps, UpdateWhatsapp } from "../../services/sessoesWhatsapp";
@@ -217,7 +217,7 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 					/>
 					<Box id='btn' sx={{ position: 'absolute', top: '0', right: '0' }}>
 						<Button>
-							<VapingRooms />
+							<FunctionsIcon />
 						</Button>
 					</Box>
 				</Box>
