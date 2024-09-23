@@ -22,6 +22,7 @@ import { CriarWhatsapp, ListarWhatsapps, UpdateWhatsapp } from "../../services/s
 interface ModalWhatsappProps {
 	isOpen: boolean
 	handleClose: () => void
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	item?: any
 }
 
@@ -52,7 +53,6 @@ const variaveisAniversario = [
 ]
 export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps) => {
 
-	const [selectedType, setSelectedType] = useState({})
 	const whatsApps = useWhatsappStore(s => s.whatsApps)
 	const loadWhatsApps = useWhatsappStore(s => s.loadWhatsApps)
 
@@ -156,6 +156,7 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 			[name]: event.target.value
 		}))
 	}
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		if (item?.id) {
 			setWhatsapp({ ...item })
