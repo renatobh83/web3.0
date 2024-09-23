@@ -2,8 +2,10 @@ import {
   Avatar,
   Box,
   Button,
+  CardMedia,
   Checkbox,
   Chip,
+  Dialog,
   Divider,
   Icon,
   IconButton,
@@ -12,6 +14,7 @@ import {
   Typography,
   useColorScheme,
 } from '@mui/material'
+
 import { formatarData, formatarMensagemWhatsapp } from '../../utils/helpers'
 import {
   ArrowDownward,
@@ -32,6 +35,8 @@ import DOMPurify from 'dompurify'
 import { useState } from 'react'
 
 export const ChatMensagem = ({ menssagens }) => {
+  const [modalImageUrl, setModalImageUrl] = useState<string | null>(null)
+  const [modalOpen, setModalOpen] = useState(false)
   const { mode } = useColorScheme()
   const ativarMultiEncaminhamento = false
   const ticketFocado = { isGroup: false }
@@ -190,6 +195,7 @@ export const ChatMensagem = ({ menssagens }) => {
               </Box>
             )}
 
+            {mensagem.mediaUrl}
             {mensagem.mediaType === 'audio' && mensagem.mediaUrl && (
               <Box>
                 {/* biome-ignore lint/a11y/useMediaCaption: <explanation> */}
@@ -214,15 +220,50 @@ export const ChatMensagem = ({ menssagens }) => {
             {['location', 'locationMessage'].includes(mensagem.mediaType) &&
               // CRIAR MODAL ABRIR MAPs
               openLinkInNewPage(mensagem.body)}
+            {/* 
             {(mensagem.mediaType === 'imageMessage' ||
               (mensagem.mediaType === 'image' &&
                 !mensagem.mediaUrl.includes('.webp'))) &&
-              !mensagem.isSticker && <span>Criar modal</span>}
-            {mensagem.mediaType === 'image' &&
-              mensagem.mediaUrl.includes('.webp') && <span>Criar modal</span>}
+              !mensagem.isSticker && (
+                <>{mensagem.mediaUrl}</>
+                // <CardMedia
+                //   onClick={() => {
+                //     setModalImageUrl(mensagem.mediaUrl || null)
+                //     setModalOpen(true)
+                //   }}
+                //   component="img"
+                //   height="194"
+                //   // image={mensagem.mediaUrl}
+                //   alt={mensagem.id}
+                // />
+              )} */}
+            {/* {mensagem.mediaType === 'image' &&
+              mensagem.mediaUrl.includes('.webp') && (
+                <CardMedia
+                  onClick={() => {
+                    setModalImageUrl(mensagem.mediaUrl || null)
+                    setModalOpen(true)
+                  }}
+                  component="img"
+                  height="194"
+                  // image={mensagem.mediaUrl}
+                  alt="Paella dish"
+                />
+              )} */}
             {mensagem.mediaType === 'image' &&
               !mensagem.mediaUrl.includes('.webp') &&
-              mensagem.isSticker && <span>Criar modal</span>}
+              mensagem.isSticker && (
+                <CardMedia
+                  onClick={() => {
+                    setModalImageUrl(mensagem.mediaUrl || null)
+                    setModalOpen(true)
+                  }}
+                  component="img"
+                  height="194"
+                  // image={mensagem.mediaUrl}
+                  alt="Paella dish"
+                />
+              )}
             {mensagem.mediaType === 'video' ||
               (mensagem.mediaType === 'videoMessage' && (
                 // biome-ignore lint/a11y/useMediaCaption: <explanation>
@@ -240,17 +281,47 @@ export const ChatMensagem = ({ menssagens }) => {
                   }}
                 />
               ))}
-            {mensagem.mediaType === 'interactive' &&
-              formatarMensagemRespostaBotaoWhatsapp(
-                DOMPurify.sanitize(mensagem.body)
-              )}
-            {mensagem.mediaType === 'button' &&
-              formatarBotaoWhatsapp(mensagem.body)}
-            {mensagem.mediaType === 'list' &&
-              formatarMensagemDeLista(mensagem.body)}
-            {mensagem.mediaType === 'notes' && formatarNotas(mensagem.body)}
-            {mensagem.mediaType === 'templates' &&
-              formatarTemplates(mensagem.body)}
+            {mensagem.mediaType === 'interactive' && (
+              <Box
+                dangerouslySetInnerHTML={{
+                  __html: formatarMensagemRespostaBotaoWhatsapp(
+                    DOMPurify.sanitize(mensagem.body)
+                  ),
+                }}
+              />
+            )}
+            {mensagem.mediaType === 'button' && (
+              <Box
+                dangerouslySetInnerHTML={{
+                  __html: formatarBotaoWhatsapp(
+                    DOMPurify.sanitize(mensagem.body)
+                  ),
+                }}
+              />
+            )}
+            {mensagem.mediaType === 'list' && (
+              <Box
+                dangerouslySetInnerHTML={{
+                  __html: formatarMensagemDeLista(
+                    DOMPurify.sanitize(mensagem.body)
+                  ),
+                }}
+              />
+            )}
+            {mensagem.mediaType === 'notes' && (
+              <Box
+                dangerouslySetInnerHTML={{
+                  __html: formatarNotas(DOMPurify.sanitize(mensagem.body)),
+                }}
+              />
+            )}
+            {mensagem.mediaType === 'templates' && (
+              <Box
+                dangerouslySetInnerHTML={{
+                  __html: formatarTemplates(DOMPurify.sanitize(mensagem.body)),
+                }}
+              />
+            )}
             {![
               'audio',
               'vcard',
@@ -271,11 +342,23 @@ export const ChatMensagem = ({ menssagens }) => {
               'transcription',
             ].includes(mensagem.mediaType) &&
               mensagem.mediaUrl && <Box sx={{ mt: '20px' }}>Criar Iframe</Box>}
+
             {['image', 'video', 'imageMessage', 'videoMessage'].includes(
               mensagem.mediaType
             ) &&
               mensagem.mediaUrl && (
-                <Box sx={{ mt: '20px' }}>Criar Funcao para donwload</Box>
+                <Box sx={{ mt: '20px' }}>
+                  <CardMedia
+                    onClick={() => {
+                      setModalImageUrl(mensagem.mediaUrl || null)
+                      setModalOpen(true)
+                    }}
+                    component="img"
+                    height="194"
+                    image={mensagem.mediaUrl}
+                    alt="Paella dish"
+                  />
+                </Box>
               )}
             {![
               'vcard',
@@ -290,6 +373,7 @@ export const ChatMensagem = ({ menssagens }) => {
               'button_reply',
               'sticker',
               'notes',
+              'image',
               'templates',
               'transcription',
             ].includes(mensagem.mediaType) && (
@@ -373,6 +457,12 @@ export const ChatMensagem = ({ menssagens }) => {
               </>
             )}
           </Box>
+          {/* Modal de Imagem */}
+          {modalImageUrl && (
+            <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
+              <img src={modalImageUrl} alt="Imagem" />
+            </Dialog>
+          )}
         </div>
       ))}
     </Box>
