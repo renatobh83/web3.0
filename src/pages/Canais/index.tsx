@@ -225,7 +225,7 @@ export const Canais = () => {
   return (
     <>
       {userProfile === 'admin' && (
-        <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
+        <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2 }}>
           <Box
             sx={{
               display: 'flex',
@@ -270,11 +270,20 @@ export const Canais = () => {
                         <Typography variant="caption">{item.type}</Typography>
                       </Box>
                       {isAdmin && (
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
 
-                        <Button onClick={() => handleOpenModalWhatsapp(item)}><Edit /></Button>
+                          <Button size='small' onClick={() => handleOpenModalWhatsapp(item)}><Edit /></Button>
+                          <Button
+                            size='small'
+                            onClick={() => deleteWhatsapp(item)}
+                          >
+                            <DeleteOutlineIcon sx={{ color: 'red' }} />
+                          </Button>
+                        </Box>
                       )}
                     </Box>
-                    <Divider sx={{ my: 2 }} />
+                    <Divider sx={{ my: 1 }} />
+
                     <Stack
                       id="stack"
                       direction="column"
@@ -283,6 +292,7 @@ export const Canais = () => {
                         flexGrow: '1',
                         gap: 1,
                         minHeight: 160,
+
                       }}
                     >
                       <ItemStatusChannel item={item} />
@@ -317,31 +327,35 @@ export const Canais = () => {
                         )}
                       </Box>
                     </Stack>
-                    <Divider sx={{ my: 2 }} id='actions' />
-
-                    {item.type === 'whatsapp' && item.status === 'qrcode' && (
-                      <Button
-                        onClick={() => handleOpenQrModal(item)}
-                        disabled={!isAdmin}
-                      >
-                        QR Code
-                      </Button>
-                    )}
-                    {item.status === 'DISCONNECTED' && (
-                      item.type === 'whatsapp' ?
-                        <Button onClick={() => handleStartWhatsAppSession(item.id)}>
-                          Conectar
-                        </Button> :
-                        item.type !== 'whatsapp' ?
-                          <Button>
+                    <Divider sx={{ my: 1 }} id='actions' />
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      {item.type === 'whatsapp' && item.status === 'qrcode' && (
+                        <Button
+                          variant='outlined'
+                          onClick={() => handleOpenQrModal(item)}
+                          disabled={!isAdmin}
+                        >
+                          QR Code
+                        </Button>
+                      )}
+                      {item.status === 'DISCONNECTED' && (
+                        item.type === 'whatsapp' ?
+                          <Button
+                            variant='outlined'
+                            onClick={() => handleStartWhatsAppSession(item.id)}>
                             Conectar
                           </Button> :
-                          item.status === 'DISCONNECTED' && item.type === 'whatsapp' ?
-                            <Button onClick={() => handleRequestNewQrCode(item, 'btn-qrCode')}>
-                              Novo QR Code
+                          item.type !== 'whatsapp' ?
+                            <Button variant='outlined'>
+                              Conectar
                             </Button> :
-                            <></>
-                    )}
+                            item.status === 'DISCONNECTED' && item.type === 'whatsapp' ?
+                              <Button variant='outlined' onClick={() => handleRequestNewQrCode(item, 'btn-qrCode')}>
+                                Novo QR Code
+                              </Button> :
+                              <></>
+                      )}
+                    </Box>
                     <Box
                       sx={{
                         display: 'flex',
@@ -364,17 +378,13 @@ export const Canais = () => {
                           'TIMEOUT',
                         ].includes(item.status) && (
                             <Button
+                              variant='outlined'
                               onClick={() => handleDisconectWhatsSession(item.id)}
                             >
                               Desconectar
                             </Button>
                           )}
                       </Box>
-                      <Button
-                        onClick={() => deleteWhatsapp(item)}
-                      >
-                        <DeleteOutlineIcon sx={{ color: 'red' }} />
-                      </Button>
                     </Box>
                   </CardContent>
                 </Card>
