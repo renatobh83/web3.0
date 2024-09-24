@@ -73,27 +73,70 @@ export const Chat = () => {
         <Box >
             {/* <InfoCabecalhoMenssagens drawerWidth={drawerWidth} handleDrawerToggle={handleDrawerToggle} /> */}
             {/* <InfoCabecalhoMenssagens /> */}
-            <Toolbar />
-
-            <Box id="scrollableDiv"
+            {/* <Toolbar /> */}
+            <Box id='page-container'
                 sx={{
-                    minHeight: "calc(100vh - 143px)",
-                    width: '100%'
-                }}
-                style={{
-                    height: "calc(100vh - 143px)",
-                    overflow: 'auto',
-                    display: 'flex',
-                    flexDirection: 'column-reverse',
+                    paddingTop: '61px',
+                    paddingBottom: '73px'
                 }}>
                 {!mensagens.length ? (
                     <Fade in={true} timeout={4000}>
                         <div>Nao tem nada de novo</div>
                     </Fade>
                 ) :
+                    // <Box
+                    //     id="scrollableDiv2"
+                    //     className="overflow-y-auto relative"
+                    //     ref={scrollContainerRef}
+                    //     onScroll={onScroll}
+                    // >
+                    <InfiniteScroll
+
+                        style={{
+                            background: 'url(../wa-background.png)',
+                            backgroundPosition: 'center center !important',
+                            scrollbarWidth: 'none',
+                            overflow: 'hidden !important'
+                        }}
+                        dataLength={mensagens.length}
+                        next={onLoadMore}
+                        hasMore={false}
+                        loader={<h4>Loading...</h4>}
+                        scrollableTarget="scrollableDiv"
+                    >
+                        <ChatMensagem menssagens={mensagens} />
+                    </InfiniteScroll>
+                    // </Box>
+                }
+            </Box>
+            {/* <Box id="scrollableDiv"
+                sx={{
+                    minHeight: "calc(100vh - 143px)",
+                    height: "calc(100vh - 143px)",
+                    width: '100%',
+                    overflowY: 'auto',
+                    display: 'flex',
+                    flexDirection: 'column-reverse',
+                }}
+            >
+                {!mensagens.length ? (
+                    <Fade in={true} timeout={4000}>
+                        <div>Nao tem nada de novo</div>
+                    </Fade>
+                ) :
                     <Box
-                        // style={{ background: 'url(../wa-background.png) ' }}
-                        id="scrollableDiv"
+                        sx={{
+                            width: '100% !important',
+                            height: '100% !important',
+                            overflow: 'auto',
+                            scrollbarWidth: 'none'
+                        }}
+                        style={{
+                            background: 'url(../wa-background.png) ',
+
+
+                        }}
+                        id="scrollableDiv2"
                         className="overflow-y-auto relative"
                         ref={scrollContainerRef}
                         onScroll={onScroll}
@@ -105,15 +148,15 @@ export const Chat = () => {
                             loader={<h4>Loading...</h4>}
                             scrollableTarget="scrollableDiv"
                         >
-                            
+
 
 
                             <ChatMensagem menssagens={mensagens} />
                         </InfiniteScroll>
                     </Box>
                 }
-            </Box>
-            <InputMenssagem ticketFocado={ticketFocado} />
+            </Box> */}
+            {/* <InputMenssagem ticketFocado={ticketFocado} /> */}
         </Box >
 
     )
