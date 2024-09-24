@@ -67,9 +67,7 @@ service.interceptors.response.use(
       if (error.config.url.indexOf("logout") === -1) {
         handlerError(error);
         // setTimeout(() => {
-        //   Router.push({
-        //     name: "login",
-        //   });
+        //   window.location.href = "/login";
         // }, 2000);
       }
     } else if (error.response && error.response.status === 500) {

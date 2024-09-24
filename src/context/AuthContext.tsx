@@ -10,6 +10,8 @@ import {
 import { toast } from "sonner";
 import { RealizarLogin } from "../services/login.js";
 import { useUserStore } from "../store/user.js";
+import { socketIO } from "../utils/socket.js";
+import { Errors } from "../utils/error.js";
 
 // import { socketIO } from "../utils/socket.js";
 
@@ -79,21 +81,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setUserState(data);
 
             // IMPLEMENTAR SOCKET
-            // const ws = socketIO()
-            // ws.emit(`${data.tenantId}:setUserActive`)
-            // ws.disconnect()
-            // ws.close()
+            const ws = socketIO()
+            ws.emit(`${data.tenantId}:setUserActive`)
+            ws.disconnect()
+            ws.close()
 
-            toast.success("Login realizado com sucesso!");
+            toast.success("Login realizado com sucesso!", {
+                position: 'top-center'
+            });
+
             if (data.profile === "admin") {
-                window.location.href = "/";
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 2000)
+
                 // rota dash
             } else {
                 window.location.href = "/atendimento";
                 // 'rota atendimento'
             }
         } catch (error) {
-            console.log(error);
+            Errors(error)
         }
 
         localStorage.setItem('token', token);

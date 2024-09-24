@@ -66,7 +66,8 @@ export default function SignInCard() {
             email: data.get('email'),
             password: data.get('password'),
         }
-        login(form)
+        if (validateInputs())
+            login(form)
     };
     const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();

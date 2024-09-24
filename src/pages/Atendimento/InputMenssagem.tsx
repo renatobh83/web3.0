@@ -2,6 +2,7 @@ import { Cancel, Mic, Send } from '@mui/icons-material'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions'
 import SendIcon from '@mui/icons-material/Send'
+
 import { uid } from 'uid'
 import {
   alpha,
@@ -69,6 +70,8 @@ const StyledMenu = styled((props: MenuProps) => (
 }))
 import type { useAudioRecorder } from 'react-audio-voice-recorder'
 import { EnviarMensagemTexto } from '../../services/tickets'
+
+import { Errors } from '../../utils/error'
 
 export const InputMenssagem = ({ ticketFocado }) => {
   const [openPreviewImagem, setOpenPreviewImagem] = useState(false)
@@ -164,14 +167,16 @@ export const InputMenssagem = ({ ticketFocado }) => {
   }
   // Função que será chamada para enviar a mensagem
   const enviarMensagem = async () => {
-    console.log('Mensagem enviada:', textChat)
+
     const ticketId = ticketFocado.id
     const message = prepararMensagemTexto()
-    console.log(message)
+
     try {
       if (!textChat) return
       await EnviarMensagemTexto(ticketId, message)
-    } catch (error) {}
+    } catch (err) {
+      Errors(err)
+    }
     setTextChat('') // Limpa o campo após enviar a mensagem
   }
 
@@ -348,7 +353,7 @@ export const InputMenssagem = ({ ticketFocado }) => {
                 ref={inputEnvioMensagem}
                 sx={{ maxHeight: '30vh' }}
                 onPaste={handlePaste}
-              ></TextField>
+              />
               {textChat && (
                 <Tooltip title="Enviar Mensagem">
                   <IconButton
