@@ -84,12 +84,7 @@ export const Chat = () => {
                         <div>Nao tem nada de novo</div>
                     </Fade>
                 ) :
-                    // <Box
-                    //     id="scrollableDiv2"
-                    //     className="overflow-y-auto relative"
-                    //     ref={scrollContainerRef}
-                    //     onScroll={onScroll}
-                    // >
+
                     <InfiniteScroll
 
                         style={{
@@ -106,8 +101,9 @@ export const Chat = () => {
                     >
                         <ChatMensagem menssagens={mensagens} />
                     </InfiniteScroll>
-                    // </Box>
                 }
+
+                {/* <InputMenssagem ticketFocado={ticketFocado} /> */}
             </Box>
             {/* <Box id="scrollableDiv"
                 sx={{
@@ -156,7 +152,7 @@ export const Chat = () => {
                     </Box>
                 }
             </Box> */}
-            {/* <InputMenssagem ticketFocado={ticketFocado} /> */}
+
         </Box >
 
     )

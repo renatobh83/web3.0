@@ -293,14 +293,14 @@ export const InputMenssagem = ({ ticketFocado }) => {
     <Box>
       {ticketFocado.status !== 'pending' ? (
         <Box
-          sx={{
-            minHeight: '70px',
-            justifyContent: 'start',
-            alignItems: 'center',
-            pb: 2,
-            px: 1,
-            pt: 2,
-          }}
+        // sx={{
+        //   minHeight: '70px',
+        //   justifyContent: 'start',
+        //   alignItems: 'center',
+        //   pb: 2,
+        //   px: 1,
+        //   pt: 2,
+        // }}
         >
           {!isRecordingAudio ? (
             <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
