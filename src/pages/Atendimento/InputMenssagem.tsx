@@ -290,158 +290,161 @@ export const InputMenssagem = ({ ticketFocado }) => {
   }
 
   return (
-    <Box>
-      {ticketFocado.status !== 'pending' ? (
-        <Box
-        // sx={{
-        //   minHeight: '70px',
-        //   justifyContent: 'start',
-        //   alignItems: 'center',
-        //   pb: 2,
-        //   px: 1,
-        //   pt: 2,
-        // }}
-        >
-          {!isRecordingAudio ? (
-            <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
-              <Tooltip title="Enviar arquivo">
-                <>
-                  <IconButton
-                    // disabled={cDisableActions()}
-                    sx={{ borderRadius: '50%' }}
-                    size="small"
-                    onClick={handleButtonClick}
-                    disableRipple
-                  >
-                    <AttachFileIcon />
-                  </IconButton>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    style={{ display: 'none' }} // Esconde o input
-                    onChange={handleFileChange} // Função que lida com a seleção do arquivo
-                  />
-                </>
-              </Tooltip>
-              <Tooltip title="Emoji">
-                <>
-                  <IconButton
-                    // disabled={cDisableActions()}
-                    sx={{ borderRadius: '50%' }}
-                    size="small"
-                    onClick={handleClick}
-                    disableRipple
-                  >
-                    <EmojiEmotionsIcon />
-                  </IconButton>
-                  <StyledMenu
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                  >
-                    Criar compoente para EMOJi
-                  </StyledMenu>
-                </>
-              </Tooltip>
-              <TextField
-                label="Digite sua mensagem"
-                variant="standard"
-                fullWidth
-                value={textChat}
-                onChange={e => setTextChat(e.target.value)}
-                onKeyDown={handleKeyDown} // Captura a tecla pressionada
-                ref={inputEnvioMensagem}
-                sx={{ maxHeight: '30vh' }}
-                onPaste={handlePaste}
-              />
-              {textChat && (
-                <Tooltip title="Enviar Mensagem">
-                  <IconButton
-                    disabled={ticketFocado.status !== 'open'}
-                    onClick={enviarMensagem}
-                  >
-                    <Send />
-                  </IconButton>
+    <>
+      {
+        ticketFocado.status !== 'pending' ? (
+          <Box id="input"
+            sx={{
+              display: 'flex',
+              py: 2,
+              position: 'relative',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              flexWrap: 'wrap'
+            }}
+          >
+            {!isRecordingAudio ? (
+              <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
+                <Tooltip title="Enviar arquivo">
+                  <>
+                    <IconButton
+                      // disabled={cDisableActions()}
+                      sx={{ borderRadius: '50%' }}
+                      size="small"
+                      onClick={handleButtonClick}
+                      disableRipple
+                    >
+                      <AttachFileIcon />
+                    </IconButton>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      style={{ display: 'none' }} // Esconde o input
+                      onChange={handleFileChange} // Função que lida com a seleção do arquivo
+                    />
+                  </>
                 </Tooltip>
-              )}
-              {!textChat && !isRecordingAudio && (
-                <Tooltip title=" Enviar Áudio">
-                  <IconButton onClick={handleSartRecordingAudio}>
-                    {/* <RecordingTimer exposeRecorderControls={handleRecorderControls} /> */}
-                    <Mic />
-                  </IconButton>
+                <Tooltip title="Emoji">
+                  <>
+                    <IconButton
+                      // disabled={cDisableActions()}
+                      sx={{ borderRadius: '50%' }}
+                      size="small"
+                      onClick={handleClick}
+                      disableRipple
+                    >
+                      <EmojiEmotionsIcon />
+                    </IconButton>
+                    <StyledMenu
+                      anchorEl={anchorEl}
+                      open={open}
+                      onClose={handleClose}
+                    >
+                      Criar compoente para EMOJi
+                    </StyledMenu>
+                  </>
                 </Tooltip>
-              )}
-            </Box>
-          ) : (
-            <Box
-              sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}
-              id="audio "
-            >
-              <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
-                <RecordingTimer
-                  exposeRecorderControls={handleRecorderControls}
+                <TextField
+
+                  label="Digite sua mensagem"
+                  variant="standard"
+                  fullWidth
+                  value={textChat}
+                  onChange={e => setTextChat(e.target.value)}
+                  onKeyDown={handleKeyDown} // Captura a tecla pressionada
+                  ref={inputEnvioMensagem}
+                  sx={{ maxHeight: '30vh', flexFlow: 1 }}
+                  onPaste={handlePaste}
                 />
-                <IconButton size="small" onClick={handleCancelRecordingAudio}>
-                  <Cancel fontSize="inherit" />
-                </IconButton>
+                {textChat && (
+                  <Tooltip title="Enviar Mensagem">
+                    <IconButton
+                      disabled={ticketFocado.status !== 'open'}
+                      onClick={enviarMensagem}
+                    >
+                      <Send />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                {!textChat && !isRecordingAudio && (
+                  <Tooltip title=" Enviar Áudio">
+                    <IconButton onClick={handleSartRecordingAudio}>
+                      {/* <RecordingTimer exposeRecorderControls={handleRecorderControls} /> */}
+                      <Mic />
+                    </IconButton>
+                  </Tooltip>
+                )}
               </Box>
-            </Box>
-          )}
-          {openPreviewImagem && (
-            <Dialog
-              open={openPreviewImagem}
-              onClose={handleClosePreviewImagem}
-              fullWidth
-            >
-              <DialogTitle id="abrirModalPreviewImagem">
-                {urlMediaPreview.title}
-              </DialogTitle>
-              <DialogContent
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
+            ) : (
+              <Box
+                sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+                id="audio "
               >
-                <Card
+                <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+                  <RecordingTimer
+                    exposeRecorderControls={handleRecorderControls}
+                  />
+                  <IconButton size="small" onClick={handleCancelRecordingAudio}>
+                    <Cancel fontSize="inherit" />
+                  </IconButton>
+                </Box>
+              </Box>
+            )}
+            {openPreviewImagem && (
+              <Dialog
+                open={openPreviewImagem}
+                onClose={handleClosePreviewImagem}
+                fullWidth
+              >
+                <DialogTitle id="abrirModalPreviewImagem">
+                  {urlMediaPreview.title}
+                </DialogTitle>
+                <DialogContent
                   sx={{
-                    maxheight: '60vh',
-                    minWidth: 'calc(100% - 100px)',
-                    maxWidth: 'calc(100% - 100px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
                 >
-                  <CardMedia component="img" image={urlMediaPreview.src} />
-                </Card>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleClosePreviewImagem}>Cancelar</Button>
-                <Button onClick={handleClosePreviewImagem} autoFocus>
-                  Enviar
-                </Button>
-              </DialogActions>
-            </Dialog>
-          )}
-        </Box>
-      ) : (
-        <Box
-          sx={{
-            minHeight: '70px',
-            justifyContent: 'center',
-            alignItems: 'center',
-            display: 'flex',
-          }}
-        >
-          <Button
-            sx={{ p: 2 }}
-            variant="outlined"
-            color="success"
-            endIcon={<SendIcon />}
+                  <Card
+                    sx={{
+                      maxheight: '60vh',
+                      minWidth: 'calc(100% - 100px)',
+                      maxWidth: 'calc(100% - 100px)',
+                    }}
+                  >
+                    <CardMedia component="img" image={urlMediaPreview.src} />
+                  </Card>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleClosePreviewImagem}>Cancelar</Button>
+                  <Button onClick={handleClosePreviewImagem} autoFocus>
+                    Enviar
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            )}
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              minHeight: '70px',
+              justifyContent: 'center',
+              alignItems: 'center',
+              display: 'flex',
+            }}
           >
-            <Typography variant="h5">Iniciar o atendimento</Typography>
-          </Button>
-        </Box>
-      )}
-    </Box>
+            <Button
+              sx={{ p: 2 }}
+              variant="outlined"
+              color="success"
+              endIcon={<SendIcon />}
+            >
+              <Typography variant="h5">Iniciar o atendimento</Typography>
+            </Button>
+          </Box>
+        )
+      }
+    </>
   )
 }

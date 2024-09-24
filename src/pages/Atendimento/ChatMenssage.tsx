@@ -558,23 +558,19 @@ export const ChatMensagem = ({ menssagens }) => {
         </Box>
       </Box>
       <Box
-        sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 2000 }}
+        // alterar left
+        sx={{ position: 'fixed', bottom: 0, left: 380, right: 0, zIndex: 2000 }}
         component={'footer'}>
         <Box sx={{
           fontFamily: '"Roboto", sans-serif'
-        }}><Box id='Drop_area'>
-            <Box id='content' sx={{
-              display: 'flex',
-              py: 2,
-              position: 'relative',
-              alignItems: 'center',
-              justifyContent: 'flex-start',
-              flexWrap: 'wrap'
-            }}>
+        }}>
+          <Box id='Drop_area'>
+            <Box id='content'
+            >
               <InputMenssagem ticketFocado={ticketFocado} />
             </Box>
-
-          </Box></Box>
+          </Box>
+        </Box>
       </Box>
     </>
   )
