@@ -171,7 +171,9 @@ export const ChatMensagem = ({ menssagens }) => {
                             borderRadius: '4px'
                           }}
                         >
-                          <Box id='text-content'>
+                          <Box id='text-content'
+                            onMouseOver={() => setHoveredIndex(mensagem.id)}
+                            onMouseLeave={() => setHoveredIndex(null)}>
                             <div>
                               <Box sx={{
                                 minWidth: '100px',
@@ -182,18 +184,23 @@ export const ChatMensagem = ({ menssagens }) => {
                               }}>
                                 {/* Ativar o checkbox encaminhar mensagem */}
                                 {ativarMultiEncaminhamento && (
-                                  <Box id={`box-chat-message-${mensagem.id}`} sx={{ position: 'relative' }}>
-                                    {mensagem.fromMe ? (
-                                      <Checkbox
-                                        key={mensagem.id}
-                                        checked={checkboxStates[mensagem.id] || false}
-                                        onChange={() => handleCheckboxChange(mensagem)}
-                                        sx={{ position: 'absolute', left: 0, zIndex: 99999 }} />) :
-                                      <Checkbox key={mensagem.id}
-                                        checked={checkboxStates[mensagem.id] || false}
-                                        onChange={() => handleCheckboxChange(mensagem)} sx={{ position: 'absolute', right: 0, zIndex: 99999 }} />
-                                    }
-                                  </Box>)}
+                                  mensagem.fromMe ? (
+                                    <Checkbox
+                                      key={mensagem.id}
+                                      checked={checkboxStates[mensagem.id] || false}
+                                      onChange={() => handleCheckboxChange(mensagem)}
+                                      sx={{
+                                        position: 'absolute',
+                                        left: '-35px', zIndex: 99999
+                                      }} />) :
+                                    <Checkbox key={mensagem.id}
+                                      checked={checkboxStates[mensagem.id] || false}
+                                      onChange={() => handleCheckboxChange(mensagem)}
+                                      sx={{
+                                        position: 'absolute',
+                                        right: '-35px', zIndex: 99999
+                                      }} />
+                                )}
 
                                 {/* Mostrar mensagens com agendamento */}
                                 {mensagem.scheduleDate && (
@@ -272,7 +279,8 @@ export const ChatMensagem = ({ menssagens }) => {
                                       display: hoveredIndex === mensagem.id ? 'block' : 'none',
                                       position: 'absolute',
                                       zIndex: '99999',
-                                      left: mensagem.fromMe ? '-9px' : 'none',
+                                      top: 0,
+                                      left: mensagem.fromMe ? '-8px' : 'none',
                                       right: mensagem.fromMe ? 'none' : '0',
                                       padding: '0px', // Remove o espaçamento extra em torno do ícone
                                       fontSize: '16px', // Ajusta o tamanho do ícone
@@ -334,11 +342,36 @@ export const ChatMensagem = ({ menssagens }) => {
                                       component="img"
                                       height="100px"
                                       width="100px"
-                                    // image={mensagem.mediaUrl}
+                                      image={mensagem.mediaUrl}
                                     />
                                   )}
-                                {mensagem.mediaType === 'video' ||
-                                  (mensagem.mediaType === 'videoMessage' && (
+                                {(mensagem.mediaType === 'imageMessage' || (mensagem.mediaType === 'image' && !mensagem.mediaUrl.includes('.webp'))) && !mensagem.isSticker && (
+                                  <CardMedia
+                                    onClick={() => {
+                                      setModalImageUrl(mensagem.mediaUrl || null)
+                                      setModalOpen(true)
+                                    }}
+                                    component="img"
+                                    height="150px"
+                                    width="330px"
+                                    image={mensagem.mediaUrl}
+                                  />
+                                )}
+                                {mensagem.mediaType === 'image' && !mensagem.mediaUrl.includes('.webp') && mensagem.isSticker && (
+                                  <CardMedia
+                                    onClick={() => {
+                                      setModalImageUrl(mensagem.mediaUrl || null)
+                                      setModalOpen(true)
+                                    }}
+                                    component="img"
+                                    height="100px"
+                                    width="100px"
+                                    image={mensagem.mediaUrl}
+                                  />
+                                )}
+                                {/* video */}
+                                {(mensagem.mediaType === 'video' ||
+                                  mensagem.mediaType === 'videoMessage') && (
                                     // biome-ignore lint/a11y/useMediaCaption: <explanation>
                                     <video
                                       controls
@@ -346,14 +379,14 @@ export const ChatMensagem = ({ menssagens }) => {
                                       style={{
                                         objectFit: 'cover',
                                         width: 330,
-                                        height: 15,
+                                        height: 150,
                                         borderTopLeftRadius: 8,
                                         borderTopRightRadius: 8,
                                         borderBottomLeftRadius: 8,
                                         borderBottomRightRadius: 8,
                                       }}
                                     />
-                                  ))}
+                                  )}
                                 {mensagem.mediaType === 'interactive' && (
                                   <Box
                                     dangerouslySetInnerHTML={{
@@ -415,6 +448,10 @@ export const ChatMensagem = ({ menssagens }) => {
                                   'transcription',
                                 ].includes(mensagem.mediaType) &&
                                   mensagem.mediaUrl && <Box sx={{ mt: '20px' }}>Criar Iframe</Box>}
+                                {/* nome do arquivo  */}
+                                {/* {['image', 'video', 'imageMessage', 'videoMessage'].includes(mensagem.mediaType) && mensagem.mediaUrl && (
+                                  <Box>{formatarMensagemWhatsapp(mensagem.body || mensagem.mediaName)}</Box>
+                                )} */}
                                 {![
                                   'vcard',
                                   'contactMessage',
@@ -428,7 +465,6 @@ export const ChatMensagem = ({ menssagens }) => {
                                   'button_reply',
                                   'sticker',
                                   'notes',
-                                  'image',
                                   'templates',
                                   'transcription',
                                 ].includes(mensagem.mediaType) && (
@@ -448,7 +484,6 @@ export const ChatMensagem = ({ menssagens }) => {
 
                                         }}
                                       >
-
 
                                         <Box sx={{ wordWrap: 'break-word' }}>
                                           {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
@@ -498,9 +533,13 @@ export const ChatMensagem = ({ menssagens }) => {
                       </Box>
 
                     </Box>
-
-
                   </Box>
+                  {/* Modal de Imagem */}
+                  {modalImageUrl && (
+                    <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
+                      <img src={modalImageUrl} alt="Imagem" />
+                    </Dialog>
+                  )}
                 </div>
               ))}
             </span>
