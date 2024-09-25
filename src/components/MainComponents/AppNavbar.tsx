@@ -5,7 +5,8 @@ import MuiToolbar from '@mui/material/Toolbar';
 import { tabsClasses } from '@mui/material/Tabs';
 import { Box, Button, IconButton, Menu } from '@mui/material';
 import { MenuOutlined } from '@mui/icons-material';
-import { MenusNavbar } from './MenusNavBar';
+import { MenusNavbar } from './MenusNavbar';
+
 
 
 const Toolbar = styled(MuiToolbar)({
