@@ -35,6 +35,7 @@ import { InputMenssagem } from './InputMenssagem'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 import { useMixinSocket1 } from '../../hooks/useMinxinScoket1'
 import { EventEmitter } from 'events'
+import { useSocketInitial } from '../../hooks/useSocketInitial'
 export const eventEmitter = new EventEmitter()
 export const ChatMensagem = ({ menssagens }) => {
 
@@ -123,6 +124,7 @@ export const ChatMensagem = ({ menssagens }) => {
     }, 200);
   };
   const { socketTicketList } = useMixinSocket1()
+  useSocketInitial()
   useEffect(() => {
     // Adiciona o listener ao montar o componente
     eventEmitter.on('scrollToBottomMessageChat', scrollToBottom)

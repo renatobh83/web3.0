@@ -93,11 +93,10 @@ export const useMixinSocket1 = () => {
                         data.payload.ticket.id !== ticketFocado.id
                     ) {
                         if (checkTicketFilter(data.payload.ticket)) {
-                            // handlerNotifications(data.payload)
+                            handlerNotifications(data.payload)
                         }
                     }
                     updateMessages(data.payload)
-
                     scrollToBottom()
                 }
                 if (data.type === 'chat:ack' || data.type === 'chat:delete') {
