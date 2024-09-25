@@ -205,7 +205,7 @@ export const useSocketInitial = () => {
                 }
             })
             socket.on(`${usuario.tenantId}:ticketList`, async (data) => {
-                console.log(data)
+
                 if (data.type === 'chat:create') {
                     console.log('socket ON: CHAT:CREATE')
                     // if (data.payload.ticket.userId !== userId) return

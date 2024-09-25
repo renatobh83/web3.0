@@ -1,16 +1,12 @@
 import {
-  Avatar,
   Box,
   Button,
   CardMedia,
   Checkbox,
-  Chip,
   Dialog,
-  Divider,
   Icon,
   IconButton,
   Popover,
-  Tooltip,
   Typography,
   useColorScheme,
 } from '@mui/material'
@@ -19,7 +15,6 @@ import { formatarData, formatarMensagemWhatsapp } from '../../utils/helpers'
 import {
   ArrowDownward,
   CalendarMonth,
-  Check,
   DoneAll,
 } from '@mui/icons-material'
 import {
@@ -30,12 +25,12 @@ import {
   formatarNotas,
   formatarTemplates,
 } from './mixinCommon'
-import PlayForWorkIcon from '@mui/icons-material/PlayForWork'
 import DOMPurify from 'dompurify'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { MensagemRespondida } from './MensagemRespondida'
 import { InputMenssagem } from './InputMenssagem'
+import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 
 export const ChatMensagem = ({ menssagens }) => {
   const [modalImageUrl, setModalImageUrl] = useState<string | null>(null)
@@ -43,7 +38,7 @@ export const ChatMensagem = ({ menssagens }) => {
   const [modalOpen, setModalOpen] = useState(false)
   const { mode } = useColorScheme()
   const ativarMultiEncaminhamento = false
-  const ticketFocado = { isGroup: false }
+  const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
   const [isShowOptions, setIsShowOptions] = useState(false)
   const isGroupLabel = mensagem => {
     try {
@@ -63,6 +58,7 @@ export const ChatMensagem = ({ menssagens }) => {
   const openLinkInNewPage = url => {
     window.open(url, '_blank')
   }
+
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -125,7 +121,8 @@ export const ChatMensagem = ({ menssagens }) => {
           width: '100%',
           position: 'relative',
           contain: 'strict',
-          willChange: 'scroll-position'
+          willChange: 'scroll-position',
+
         }}>
 
         <Box
@@ -135,23 +132,25 @@ export const ChatMensagem = ({ menssagens }) => {
             width: '100% !important',
             height: '100% !important',
             position: 'relative',
-            overflow: 'auto'
+            overflow: 'auto',
+
           }}>
           <Box id="scrollarae-absoulte" sx={{
             position: 'absolute',
             minHeight: '100%',
-            minWidth: '100%'
+            minWidth: '100%',
+
           }}>
             <Box id='messages' sx={
               {
-                p: 2
+                p: 2,
+
               }
             }>
 
               <span>
                 {menssagens.map((mensagem, index) => (
                   <div key={mensagem.id}>
-
                     <Box id={mensagem.id} />
                     <Box sx={{
                       fontWeight: '500',
@@ -557,6 +556,7 @@ export const ChatMensagem = ({ menssagens }) => {
           </Box>
         </Box>
       </Box>
+      <div id="inicioListaMensagensChat" />
       <Box
 
         sx={{ position: 'fixed', bottom: 0, left: { sm: 0, md: 380, xs: 0 }, right: 0, zIndex: 2000, px: 1 }}
@@ -565,6 +565,7 @@ export const ChatMensagem = ({ menssagens }) => {
           py: 2,
           fontFamily: '"Roboto", sans-serif'
         }}>
+
           <InputMenssagem ticketFocado={ticketFocado} />
         </Box>
       </Box>

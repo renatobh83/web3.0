@@ -1,10 +1,9 @@
-import { useParams } from "react-router-dom";
-import { Box, Fade, Toolbar } from "@mui/material";
+import { Box, Fade } from "@mui/material";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useAtendimentoTicketStore } from "../../store/atendimentoTicket";
 import { useEffect, useRef, useState } from "react";
 import { ChatMensagem } from "./ChatMenssage";
-import { InputMenssagem } from "./InputMenssagem";
+
 
 export type OutletContextType = {
     drawerWidth: number;
@@ -22,6 +21,7 @@ export const Chat = () => {
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
+
         return () => {
             setTicketFocado({
                 whatsapp: undefined,
@@ -74,16 +74,18 @@ export const Chat = () => {
             {/* <InfoCabecalhoMenssagens drawerWidth={drawerWidth} handleDrawerToggle={handleDrawerToggle} /> */}
             {/* <InfoCabecalhoMenssagens /> */}
             {/* <Toolbar /> */}
-            <Box id='page-container'
+            <Box id="scrollableDiv"
                 sx={{
                     paddingTop: '61px',
-                    paddingBottom: '73px'
+                    paddingBottom: '73px',
+                    flexDirection: 'column-reverse',
                 }}>
                 {!mensagens.length ? (
                     <Fade in={true} timeout={4000}>
                         <div>Nao tem nada de novo</div>
                     </Fade>
                 ) :
+
 
                     <InfiniteScroll
 
@@ -97,10 +99,14 @@ export const Chat = () => {
                         next={onLoadMore}
                         hasMore={false}
                         loader={<h4>Loading...</h4>}
-                        scrollableTarget="scrollableDiv"
+                        scrollableTarget='inicioListaMensagensChat'
+
                     >
                         <ChatMensagem menssagens={mensagens} />
+
+
                     </InfiniteScroll>
+
                 }
 
                 {/* <InputMenssagem ticketFocado={ticketFocado} /> */}

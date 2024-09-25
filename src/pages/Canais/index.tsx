@@ -77,7 +77,7 @@ export const Canais = () => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     listChatFlow()
-    console.log(data)
+
   }, [])
 
   // Preenche o estado inicial com base no item.chatFlowId

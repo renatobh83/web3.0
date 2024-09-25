@@ -6,6 +6,7 @@ import { useAtendimentoTicketStore } from '../store/atendimentoTicket.js'
 import { useContatosStore } from '../store/contatos.js'
 import { useNotificationsStore } from '../store/notifications.js'
 import { socketIO } from '../utils/socket.js'
+import { eventEmitter } from '../pages/Atendimento/index.js'
 
 export const useMixinSocket = () => {
   const { setTicketFocado, ticketFocado, updateMessages, updateTicket } =
@@ -18,7 +19,9 @@ export const useMixinSocket = () => {
 
   const usuario = JSON.parse(localStorage.getItem('usuario'))
   const userId = +JSON.parse(localStorage.getItem('userId'))
-
+  const dispararEvento = (data: any) => {
+    eventEmitter.emit('handlerNotifications', data)
+  }
   const [loading, setLoading] = useState(false)
 
   // Ref para armazenar a instância do WebSocket

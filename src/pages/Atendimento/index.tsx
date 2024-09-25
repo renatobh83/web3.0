@@ -63,13 +63,14 @@ import { ListarUsuarios } from '../../services/user'
 import { toast } from 'sonner'
 import { ModalUsuario } from '../Usuarios/ModalUsuario'
 import { useMixinSocket } from '../../hooks/useMixinSocket'
+import { useMixinSocket1 } from '../../hooks/useMinxinScoket1'
 
 interface TabPanelProps {
   children?: React.ReactNode
   index: number
   value: number
 }
-const eventEmitter = new EventEmitter()
+export const eventEmitter = new EventEmitter()
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props
@@ -108,12 +109,16 @@ export function Atendimento(props: Props) {
   const nav = useNavigate()
   const location = useLocation()
   const { window } = props
+  // useMixinSocket()
+
+
+
   // Stores
   const resetTickets = useAtendimentoTicketStore(s => s.resetTickets)
   const setHasMore = useAtendimentoTicketStore(s => s.setHasMore)
   const loadTickets = useAtendimentoTicketStore(s => s.loadTickets)
   const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
-  useMixinSocket()
+  const setTicketFocado = useAtendimentoTicketStore(s => s.setTicketFocado)
   const { loadWhatsApps, whatsApps } = useWhatsappStore()
   const { setUsuarioSelecionado, toggleModalUsuario, modalUsuario } =
     useUsuarioStore()
@@ -121,6 +126,7 @@ export function Atendimento(props: Props) {
     useAtendimentoStore()
   const tickets = useAtendimentoTicketStore(s => s.tickets)
   const [hasFetched, setHasFetched] = useState(false) // Estado para controlar o fetch
+
   // const [mobileOpen, setMobileOpen] = React.useState(false);
   // const [isClosing, setIsClosing] = React.useState(false);
   const { isContactInfo } = useAtendimentoStore()
@@ -135,6 +141,10 @@ export function Atendimento(props: Props) {
   const profile = localStorage.getItem('profile')
   const username = localStorage.getItem('username')
   const usuario = JSON.parse(localStorage.getItem('usuario'))
+
+
+
+  const { socketTicket, socketDisconnect, socketTicketList } = useMixinSocket1()
 
   const [switchStates, setSwitchStates] = useState(() => {
     const savedStates = JSON.parse(localStorage.getItem('filtrosAtendimento'))
@@ -307,6 +317,7 @@ export function Atendimento(props: Props) {
     toggleModalUsuario()
   }
   function handlerNotifications(data) {
+
     const options = {
       body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
       icon: data.ticket.contact.profilePicUrl,
@@ -342,7 +353,7 @@ export function Atendimento(props: Props) {
     localStorage.setItem('configuracoes', JSON.stringify(data))
   }
   const consultaTickets = async (paramsInit = {}) => {
-    console.log('Load')
+
     const toastId = toast.info(
       'Aguarde enquanto os tickets são carregados...',
       {
@@ -524,10 +535,17 @@ export function Atendimento(props: Props) {
   useEffect(() => {
     // Adiciona o listener ao montar o componente
     eventEmitter.on('handlerNotifications', handlerNotifications)
-
     // Remove o listener ao desmontar o componente
     return () => {
       eventEmitter.off('handlerNotifications', handlerNotifications)
+    }
+  }, [])
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    socketTicket()
+    socketTicketList()
+    return () => {
+      socketDisconnect()
     }
   }, [])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -537,13 +555,17 @@ export function Atendimento(props: Props) {
     listarUsuarios()
     listarConfiguracoes()
     listarEtiquetas()
-
+    resetTickets()
     const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento'))
     if (!filtros?.pageNumber !== 1) {
       localStorage.setItem(
         'filtrosAtendimento',
         JSON.stringify(pesquisaTickets)
       )
+    }
+    return () => {
+      resetTickets()
+      setTicketFocado({})
     }
   }, [])
   const drawer = (

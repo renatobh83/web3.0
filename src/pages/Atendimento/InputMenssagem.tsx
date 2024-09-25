@@ -74,6 +74,9 @@ import { EnviarMensagemTexto } from '../../services/tickets'
 import { Errors } from '../../utils/error'
 
 export const InputMenssagem = ({ ticketFocado }) => {
+
+
+
   const [openPreviewImagem, setOpenPreviewImagem] = useState(false)
   const [isRecordingAudio, setIsRecordingAudio] = useState(false)
   const [loading, setIsloading] = useState(false)
@@ -350,7 +353,7 @@ export const InputMenssagem = ({ ticketFocado }) => {
                   onChange={e => setTextChat(e.target.value)}
                   onKeyDown={handleKeyDown} // Captura a tecla pressionada
                   ref={inputEnvioMensagem}
-                  sx={{ maxHeight: '30vh', flexFlow: 1 }}
+                  // sx={{ maxHeight: '30vh', flexFlow: 1 }}
                   onPaste={handlePaste}
                 />
                 {textChat && (

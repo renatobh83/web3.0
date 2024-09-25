@@ -208,7 +208,7 @@ export const MenusNavbar = () => {
                                 <Typography >Não a nada de novo por aqui!!</Typography>
                             </MenuItem> :
                             <MenuList sx={{ display: 'flex', gap: 2 }}>
-                                <Typography>{+notifications.count + +notificationsP.count} Clientes pendentes na fila </Typography>
+                                <Typography>{notificationsP.count} Clientes pendentes na fila </Typography>
                                 {notificationsP.tickets.map(ticket => (
                                     <MenuItem key={ticket.id} sx={{ display: 'flex', gap: 3, }}
                                         onClick={() => abrirChatContato(ticket)}>
