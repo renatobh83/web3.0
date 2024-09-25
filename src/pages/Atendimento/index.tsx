@@ -17,6 +17,7 @@ import {
 } from '@mui/icons-material'
 import {
   Avatar,
+  Badge,
   Button,
   Checkbox,
   FormControl,
@@ -730,11 +731,32 @@ export function Atendimento(props: Props) {
           value={tabTicketsStatus}
           onChange={(_event, newValue) => setTabTicketsStatus(newValue)}
         >
-          <Tab label="Aberto" value="open" disableRipple />
+          <Tab label={openTickets().length ?
+            <Badge
+              color="error"
+              variant="dot"
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }} > Abertos
+            </Badge> : 'Abertos'}
+            value="open" disableRipple />
+
+          <Tab label={pendingTickets().length ?
+            <Badge
+              color="error"
+              variant="dot"
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }} > Pendente
+            </Badge> : 'Pendente'}
+            value="pending" disableRipple />
+
+
+
           {/* <Badge color="error" className="absolute left-0 top-0" /> */}
-          <Tab label="Pendente" value="pending" disableRipple />
-          {/* <Badge color="error" className="absolute left-0 top-0" /> */}
-          <Tab label="Fechado" value="closed" disableRipple />
+          <Tab label='Fechado' value="closed" disableRipple />
           {/* <Badge color="error" className="absolute left-0 top-0" /> */}
           {/* {chatBotLane === "enabled" && (
                                     <Tab
@@ -765,9 +787,25 @@ export function Atendimento(props: Props) {
           value={tabTicketsStatus}
           onChange={(_event, newValue) => setTabTicketsStatus(newValue)}
         >
-          <Tab label="Abertos" value="open" disableRipple />
+          <Tab label={openGroupTickets().length ?
+            <Badge
+              color="error"
+              variant="dot"
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }} > Abertos
+            </Badge> : 'Abertos'} value="open" disableRipple />
 
-          <Tab label="Pendente" value="pending" disableRipple />
+          <Tab label={pendingGroupTickets().length ?
+            <Badge
+              color="error"
+              variant="dot"
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }} > Pendente
+            </Badge> : 'Pendente'} value="pending" disableRipple />
           <Tab label="Fechado" value="closed" disableRipple />
         </Tabs>
       )}

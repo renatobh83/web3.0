@@ -292,7 +292,7 @@ export const InputMenssagem = ({ ticketFocado }) => {
   return (
     <>
       {
-        ticketFocado.status !== 'pending' ? (
+        (ticketFocado.status !== 'pending' && !isRecordingAudio) ? (
           <Box id="input"
             sx={{
               display: 'flex',
