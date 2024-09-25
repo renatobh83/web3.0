@@ -287,7 +287,9 @@ export const useSocketInitial = () => {
                         updateNotificationsP(data_noti.data)
                         verify.push(data_noti)
                     } catch (err) {
-                        toast.error('Algum problema')
+                        toast.message('Algum problema', {
+                            description: `${err}`
+                        })
                         console.error(err)
                     }
                     let pass_noti = false
