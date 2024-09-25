@@ -172,7 +172,7 @@ export const ChatMensagem = ({ menssagens }) => {
                                 : mode === 'dark'
                                   ? '#bbdefb'
                                   : '#e3f2fd',
-
+                              color: mode === 'dark' ? '#000' : '#000',
                               minHeight: '48px',
                               padding: 1,
                               wordBreak: 'break-word',
@@ -558,18 +558,14 @@ export const ChatMensagem = ({ menssagens }) => {
         </Box>
       </Box>
       <Box
-        // alterar left
-        sx={{ position: 'fixed', bottom: 0, left: 380, right: 0, zIndex: 2000 }}
+
+        sx={{ position: 'fixed', bottom: 0, left: { sm: 0, md: 380, xs: 0 }, right: 0, zIndex: 2000, px: 1 }}
         component={'footer'}>
-        <Box sx={{
+        <Box id='Drop_area' sx={{
+          py: 2,
           fontFamily: '"Roboto", sans-serif'
         }}>
-          <Box id='Drop_area'>
-            <Box id='content'
-            >
-              <InputMenssagem ticketFocado={ticketFocado} />
-            </Box>
-          </Box>
+          <InputMenssagem ticketFocado={ticketFocado} />
         </Box>
       </Box>
     </>
