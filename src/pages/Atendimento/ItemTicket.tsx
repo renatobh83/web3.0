@@ -38,16 +38,16 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
         });
     }, [])
 
-    const goToChat = async (id: string)=>{
+    const goToChat = async (id: string) => {
         try {
             const timestamp = new Date().getTime()
-            navigate(`/atendimento/${id}?t=${timestamp}`,{
+            navigate(`/atendimento/${id}?t=${timestamp}`, {
                 replace: false,
-                state: {t: new Date().getTime()}
+                state: { t: new Date().getTime() }
             })
-            
+
         } catch (error) {
-            
+
         }
     }
     const abrirChatContato = async (ticket) => {
@@ -69,7 +69,7 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
             <ListItemButton
                 onClick={() => abrirChatContato(ticket)}
                 sx={{
-                    height: 120,
+
                     width: '100%',
                     borderLeft: '6px solid',
                     bgcolor: 'background.paper',

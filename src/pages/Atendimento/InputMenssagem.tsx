@@ -1,4 +1,4 @@
-import { Cancel, Mic, Send } from '@mui/icons-material'
+import { Cancel, Close, Mic, Send } from '@mui/icons-material'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions'
 import SendIcon from '@mui/icons-material/Send'
@@ -72,6 +72,7 @@ import type { useAudioRecorder } from 'react-audio-voice-recorder'
 import { EnviarMensagemTexto } from '../../services/tickets'
 
 import { Errors } from '../../utils/error'
+import FileUploader from '../../components/AtendimentoComponent/FileUploader'
 
 export const InputMenssagem = ({ ticketFocado }) => {
 
@@ -83,7 +84,7 @@ export const InputMenssagem = ({ ticketFocado }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const [urlMediaPreview, setUrlMediaPreview] = useState({})
-  const [arquivos, setArquivos] = useState([])
+  const [arquivos, setArquivos] = useState<File[]>([]);
 
   const recorderControlsRef = useRef<ReturnType<
     typeof useAudioRecorder
@@ -113,12 +114,34 @@ export const InputMenssagem = ({ ticketFocado }) => {
       fileInputRef.current.click() // Dispara o clique no input de tipo file
     }
   }
-
+  const handleFileRemove = (fileName: string) => {
+    setArquivos(arquivos.filter(file => file.name !== fileName));
+  };
   // Função chamada quando o arquivo é selecionado
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      const file = event.target.files[0]
-      console.log('Arquivo selecionado:', file)
+    const selectedFiles = event.target.files;
+    if (selectedFiles) {
+      const validFiles: File[] = [];
+      const maxSize = 2 * 1024 * 1024; // 2MB
+      const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+
+        // Verifica o tipo de arquivo
+        if (!validTypes.includes(file.type)) {
+          toast.error(`Tipo de arquivo inválido: ${file.name}`);
+          return;
+        }
+
+        // Verifica o tamanho do arquivo
+        if (file.size > maxSize) {
+          toast.error(`Arquivo muito grande: ${file.name}`);
+          return;
+        }
+
+        validFiles.push(file);
+      }
+      setArquivos([...arquivos, ...validFiles])
     }
   }
 
@@ -127,7 +150,7 @@ export const InputMenssagem = ({ ticketFocado }) => {
   const [textChat, setTextChat] = useState('')
   const prepararMensagemTexto = () => {
     if (textChat.trim() === '') {
-      throw new Error('Mensagem Inexistente')
+      toast.error('Mensagem Inexistente')
     }
 
     // if (textChat.trim() && textChat.trim().startsWith('/')) {
@@ -150,9 +173,9 @@ export const InputMenssagem = ({ ticketFocado }) => {
     // }
     let mensagem = textChat.trim()
     const username = localStorage.getItem('username')
-    if (username) {
-      mensagem = `*${username}*:\n ${mensagem}`
-    }
+    // if (username) {
+    //   mensagem = `*${username}*:\n ${mensagem}`
+    // }
     const message = {
       read: 1,
       fromMe: true,
@@ -168,19 +191,48 @@ export const InputMenssagem = ({ ticketFocado }) => {
     // }
     return message
   }
+  function prepararUploadMedia() {
+    if (!arquivos.length) {
+      throw new Error('Não existem arquivos para envio')
+    }
+    const formDatas = arquivos.map(media => {
+      const formData = new FormData()
+      formData.append('fromMe', true)
+      formData.append('medias', media)
+      formData.append('body', media.name)
+      formData.append('idFront', uid())
+      // formData.append('isSticker', this.sticker)
+      // if (this.isScheduleDate) {
+      //   formData.append('scheduleDate', this.scheduleDate)
+      // }
+      return formData
+    })
+    return formDatas
+  }
   // Função que será chamada para enviar a mensagem
   const enviarMensagem = async () => {
 
     const ticketId = ticketFocado.id
-    const message = prepararMensagemTexto()
-
+    setIsloading(true)
     try {
-      if (!textChat) return
-      await EnviarMensagemTexto(ticketId, message)
+      if (!cMostrarEnvioArquivo()) {
+        const message = prepararMensagemTexto()
+        await EnviarMensagemTexto(ticketId, message)
+      } else {
+        const formDatas = prepararUploadMedia()
+
+        for (const formData of formDatas) {
+          await EnviarMensagemTexto(ticketId, formData)
+        }
+      }
+      setTextChat('') // Limpa o campo após enviar a mensagem
+      setArquivos([])
+
     } catch (err) {
       Errors(err)
+    } finally {
+      setIsloading(false)
     }
-    setTextChat('') // Limpa o campo após enviar a mensagem
   }
 
   // Função para capturar o evento de tecla
@@ -291,7 +343,9 @@ export const InputMenssagem = ({ ticketFocado }) => {
     console.log('Nenhuma imagem colada.')
     return null
   }
-
+  function cMostrarEnvioArquivo() {
+    return arquivos.length > 0
+  }
   return (
     <>
       {
@@ -303,10 +357,19 @@ export const InputMenssagem = ({ ticketFocado }) => {
               position: 'relative',
             }}
           >
+
             {!isRecordingAudio ? (
               <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
                 <Tooltip title="Enviar arquivo">
                   <>
+
+
+                    {/* <input
+                      type="file"
+                      multiple
+                      accept=".txt, .xml, .jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
+                      className="p-2 border rounded"
+                    /> */}
                     <IconButton
                       // disabled={cDisableActions()}
                       sx={{ borderRadius: '50%' }}
@@ -318,12 +381,15 @@ export const InputMenssagem = ({ ticketFocado }) => {
                     </IconButton>
                     <input
                       type="file"
+                      accept=".txt, .xml, .jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
                       ref={fileInputRef}
+                      multiple
                       style={{ display: 'none' }} // Esconde o input
                       onChange={handleFileChange} // Função que lida com a seleção do arquivo
                     />
                   </>
                 </Tooltip>
+
                 <Tooltip title="Emoji">
                   <>
                     <IconButton
@@ -344,18 +410,36 @@ export const InputMenssagem = ({ ticketFocado }) => {
                     </StyledMenu>
                   </>
                 </Tooltip>
-                <TextField
+                {cMostrarEnvioArquivo() ? (
+                  <Box sx={{ display: 'flex', width: '100%' }}>
+                    {arquivos.map((file, index) => (
+                      // biome-ignore lint/a11y/noLabelWithoutControl: <explanation>
+                      <label key={index} style={{ display: 'flex', marginBottom: '8px', alignItems: 'center' }}>
+                        {file.name}
 
-                  label="Digite sua mensagem"
-                  variant="standard"
-                  fullWidth
-                  value={textChat}
-                  onChange={e => setTextChat(e.target.value)}
-                  onKeyDown={handleKeyDown} // Captura a tecla pressionada
-                  ref={inputEnvioMensagem}
-                  // sx={{ maxHeight: '30vh', flexFlow: 1 }}
-                  onPaste={handlePaste}
-                />
+                        <IconButton
+                          color="secondary"
+                          sx={{ border: 'none' }}
+                          size="small"
+                          onClick={() => handleFileRemove(file.name)}>
+                          <Close />
+                        </IconButton>
+                      </label>
+                    ))}
+                  </Box>
+                ) :
+                  <TextField
+                    label="Digite sua mensagem"
+                    variant="standard"
+                    fullWidth
+                    value={textChat}
+                    onChange={e => setTextChat(e.target.value)}
+                    onKeyDown={handleKeyDown} // Captura a tecla pressionada
+                    ref={inputEnvioMensagem}
+                    sx={{ maxHeight: '30vh', flexFlow: 1 }}
+                    onPaste={handlePaste}
+                  />
+                }
                 {textChat && (
                   <Tooltip title="Enviar Mensagem">
                     <IconButton
@@ -366,7 +450,15 @@ export const InputMenssagem = ({ ticketFocado }) => {
                     </IconButton>
                   </Tooltip>
                 )}
-                {!textChat && !isRecordingAudio && (
+                {cMostrarEnvioArquivo() && (<Tooltip title="Enviar Mensagem">
+                  <IconButton
+                    disabled={ticketFocado.status !== 'open'}
+                    onClick={enviarMensagem}
+                  >
+                    <Send />
+                  </IconButton>
+                </Tooltip>)}
+                {(!textChat && !isRecordingAudio && !cMostrarEnvioArquivo()) && (
                   <Tooltip title=" Enviar Áudio">
                     <IconButton onClick={handleSartRecordingAudio}>
                       {/* <RecordingTimer exposeRecorderControls={handleRecorderControls} /> */}

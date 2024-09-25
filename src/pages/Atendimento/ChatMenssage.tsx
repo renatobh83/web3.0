@@ -3,7 +3,9 @@ import {
   Button,
   CardMedia,
   Checkbox,
+  Chip,
   Dialog,
+  Divider,
   Icon,
   IconButton,
   Popover,
@@ -26,11 +28,12 @@ import {
   formatarTemplates,
 } from './mixinCommon'
 import DOMPurify from 'dompurify'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { MensagemRespondida } from './MensagemRespondida'
 import { InputMenssagem } from './InputMenssagem'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
+import { useMixinSocket1 } from '../../hooks/useMinxinScoket1'
 
 export const ChatMensagem = ({ menssagens }) => {
   const [modalImageUrl, setModalImageUrl] = useState<string | null>(null)
@@ -110,6 +113,10 @@ export const ChatMensagem = ({ menssagens }) => {
       return newCheckboxStates;
     });
   }
+  const { scrollToBottom } = useMixinSocket1()
+  // useEffect(() => {
+  //   scrollToBottom()
+  // }, [scrollToBottom])
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   return (
     <>
@@ -150,7 +157,20 @@ export const ChatMensagem = ({ menssagens }) => {
 
               <span>
                 {menssagens.map((mensagem, index) => (
+
                   <div key={mensagem.id}>
+                    {index === 0 ||
+                      (formatarData(mensagem.createdAt) !==
+                        formatarData(menssagens[index - 1].createdAt) && (
+                          <Divider
+                            key={`hr - ${// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                              index}`}>
+                            <Chip label={formatarData(mensagem.createdAt)} size="small" />
+                          </Divider>
+                        ))}
+                    {menssagens.length && index === menssagens.length - 1 && (
+                      <Box id="inicioListaMensagensChat" />
+                    )}
                     <Box id={mensagem.id} />
                     <Box sx={{
                       fontWeight: '500',
@@ -163,7 +183,9 @@ export const ChatMensagem = ({ menssagens }) => {
                           flexDirection: mensagem.fromMe && 'row-reverse',
                           display: 'flex'
                         }}>
+
                         <Box>
+
                           <Box
                             sx={{
                               backgroundColor: mensagem.fromMe
@@ -183,14 +205,17 @@ export const ChatMensagem = ({ menssagens }) => {
                             <Box id='text-content'
                               onMouseOver={() => setHoveredIndex(mensagem.id)}
                               onMouseLeave={() => setHoveredIndex(null)}>
+
                               <div>
                                 <Box sx={{
                                   minWidth: '100px',
                                   maxWidth: '350px',
                                   lineHeight: '1.2',
                                   wordBreak: 'break-word',
-                                  textAlign: mensagem.fromMe ? 'right' : 'left',
+                                  // textAlign: mensagem.fromMe ? 'right' : 'left',
                                 }}>
+
+
                                   {/* Ativar o checkbox encaminhar mensagem */}
                                   {ativarMultiEncaminhamento && (
                                     mensagem.fromMe ? (

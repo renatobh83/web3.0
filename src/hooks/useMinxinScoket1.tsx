@@ -33,7 +33,6 @@ export const useMixinSocket1 = () => {
         s => s.updateNotificationsP
     )
     const scrollToBottom = () => {
-
         setTimeout(() => {
             document.getElementById('inicioListaMensagensChat')?.scrollIntoView({ behavior: 'smooth' });
         }, 200);
