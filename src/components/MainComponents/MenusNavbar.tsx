@@ -25,7 +25,7 @@ import { UpdateIsOnlineUsuario } from "../../services/user";
 
 
 
-export const StyledMenu = styled((props: MenuProps) => (
+const StyledMenu = styled((props: MenuProps) => (
     <Menu
         elevation={0}
         anchorOrigin={{
