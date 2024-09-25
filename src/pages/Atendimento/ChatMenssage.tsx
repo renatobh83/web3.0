@@ -34,8 +34,11 @@ import { MensagemRespondida } from './MensagemRespondida'
 import { InputMenssagem } from './InputMenssagem'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 import { useMixinSocket1 } from '../../hooks/useMinxinScoket1'
-
+import { EventEmitter } from 'events'
+export const eventEmitter = new EventEmitter()
 export const ChatMensagem = ({ menssagens }) => {
+
+
   const [modalImageUrl, setModalImageUrl] = useState<string | null>(null)
   const lastMessageRef = useRef<HTMLInputElement | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
@@ -113,10 +116,24 @@ export const ChatMensagem = ({ menssagens }) => {
       return newCheckboxStates;
     });
   }
-  const { scrollToBottom } = useMixinSocket1()
-  // useEffect(() => {
-  //   scrollToBottom()
-  // }, [scrollToBottom])
+
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      document.getElementById('inicioListaMensagensChat')?.scrollIntoView({ behavior: 'smooth' });
+    }, 200);
+  };
+  const { socketTicketList } = useMixinSocket1()
+  useEffect(() => {
+    // Adiciona o listener ao montar o componente
+    eventEmitter.on('scrollToBottomMessageChat', scrollToBottom)
+    // Remove o listener ao desmontar o componente
+    scrollToBottom()
+    socketTicketList()
+    return () => {
+      eventEmitter.off('scrollToBottomMessageChat', scrollToBottom)
+    }
+  }, [])
+
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   return (
     <>

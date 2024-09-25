@@ -6,9 +6,11 @@ import type { Socket } from "socket.io-client";
 import checkTicketFilter from "../utils/checkTicketFilter";
 import { ConsultarTickets } from "../services/tickets";
 import { useNotificationsStore } from "../store/notifications";
-import { eventEmitter } from "../pages/Atendimento";
+
 import { toast } from "sonner";
-import { DefaultEventsMap } from "@socket.io/component-emitter";
+import { eventEmitter } from "../pages/Atendimento/ChatMenssage";
+
+
 
 
 const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
@@ -34,8 +36,9 @@ export const useMixinSocket1 = () => {
     )
     const scrollToBottom = () => {
         setTimeout(() => {
-            document.getElementById('inicioListaMensagensChat')?.scrollIntoView({ behavior: 'smooth' });
-        }, 200);
+            eventEmitter.emit('scrollToBottomMessageChat')
+        }, 200)
+
     };
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
@@ -90,10 +93,11 @@ export const useMixinSocket1 = () => {
                         data.payload.ticket.id !== ticketFocado.id
                     ) {
                         if (checkTicketFilter(data.payload.ticket)) {
-                            handlerNotifications(data.payload)
+                            // handlerNotifications(data.payload)
                         }
                     }
                     updateMessages(data.payload)
+
                     scrollToBottom()
                 }
                 if (data.type === 'chat:ack' || data.type === 'chat:delete') {
@@ -167,5 +171,5 @@ export const useMixinSocket1 = () => {
         socketRef.current = null;
     }, []);
 
-    return { socketTicket, socketDisconnect, socketTicketList, scrollToBottom }
+    return { socketTicket, socketDisconnect, socketTicketList }
 }

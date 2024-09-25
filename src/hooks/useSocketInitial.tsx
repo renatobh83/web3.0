@@ -10,6 +10,7 @@ import { useAtendimentoTicketStore } from "../store/atendimentoTicket";
 import { useContatosStore } from "../store/contatos";
 import { useWebSocketStore } from "../store/socket";
 import { useUsersAppStore } from "../store/usersApp";
+import { eventEmitter } from "../pages/Atendimento/ChatMenssage";
 // import { EventEmitter } from "events";
 
 // export const eventEmitter = new EventEmitter();
@@ -218,6 +219,7 @@ export const useSocketInitial = () => {
                             icon: data.payload.ticket.contact.profilePicUrl,
                         })
                     }
+                    eventEmitter.emit('scrollToBottomMessageChat')
                     updateMessages(data.payload)
                     const params = {
                         searchParam: '',
