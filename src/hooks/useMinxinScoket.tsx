@@ -174,7 +174,6 @@ export const useMixinSocket = () => {
     }, [socketRef]);
 
     function socketTicketList() {
-
         socketTicketListNew()
     }
     const socketDisconnect = useCallback(() => {

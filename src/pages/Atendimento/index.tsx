@@ -184,7 +184,7 @@ export function Atendimento(props: Props) {
 
 
 
-  const { socketTicket, socketDisconnect, socketTicketList } = useMixinSocket()
+  const { socketDisconnect, socketTicketList } = useMixinSocket()
 
   const [switchStates, setSwitchStates] = useState(() => {
     const savedStates = JSON.parse(localStorage.getItem('filtrosAtendimento'))
@@ -582,7 +582,7 @@ export function Atendimento(props: Props) {
   }, [])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    console.log('usMin in index', location.pathname)
+
     socketTicketList()
     return () => {
       socketDisconnect()

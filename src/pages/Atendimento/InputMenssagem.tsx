@@ -72,10 +72,14 @@ import type { useAudioRecorder } from 'react-audio-voice-recorder'
 import { EnviarMensagemTexto } from '../../services/tickets'
 
 import { Errors } from '../../utils/error'
-import FileUploader from '../../components/AtendimentoComponent/FileUploader'
+import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
+interface InputMenssagemProps {
+  isScheduleDate?: boolean,
 
-export const InputMenssagem = ({ ticketFocado }) => {
+}
 
+export const InputMenssagem = () => {
+  const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
 
 
   const [openPreviewImagem, setOpenPreviewImagem] = useState(false)
@@ -282,21 +286,21 @@ export const InputMenssagem = ({ ticketFocado }) => {
         setIsRecordingAudio(false)
         return
       }
+
       setIsRecordingAudio(false)
       const formData = new FormData()
       const filename = `${new Date().getTime()}.mp3`
       formData.append('medias', blob, filename)
       formData.append('body', filename)
       formData.append('fromMe', true)
-      formData.append('id', 'lklklklklklk')
       // if (isScheduleDate) {
       //     formData.append('scheduleDate', this.scheduleDate)
       // }
 
       const ticketId = ticketFocado.id
 
-      // await EnviarMensagemTexto(ticketId, formData)
-      // this.arquivos = []
+      await EnviarMensagemTexto(ticketId, formData)
+
       setTextChat('')
       // this.$emit('update:replyingMessage', null)
       // this.abrirFilePicker = false
@@ -312,6 +316,7 @@ export const InputMenssagem = ({ ticketFocado }) => {
       toast.error(`Ocorreu um erro!, ${JSON.stringify(error)}`)
     }
   }
+
   function cDisableActions() {
     return isRecordingAudio || ticketFocado.status !== 'open'
   }
@@ -348,8 +353,9 @@ export const InputMenssagem = ({ ticketFocado }) => {
   }
   return (
     <>
+
       {
-        (ticketFocado.status !== 'pending' && !isRecordingAudio) ? (
+        ticketFocado.status === 'open' ? (
           <Box
             id="input"
             sx={{
@@ -458,14 +464,14 @@ export const InputMenssagem = ({ ticketFocado }) => {
                     <Send />
                   </IconButton>
                 </Tooltip>)}
-                {(!textChat && !isRecordingAudio && !cMostrarEnvioArquivo()) && (
+                {/* {(!textChat && !isRecordingAudio && !cMostrarEnvioArquivo()) && (
                   <Tooltip title=" Enviar Áudio">
-                    <IconButton onClick={handleSartRecordingAudio}>
-                      {/* <RecordingTimer exposeRecorderControls={handleRecorderControls} /> */}
-                      <Mic />
+                    <IconButton onClick={handleSartRecordingAudio}> */}
+                {/* <RecordingTimer exposeRecorderControls={handleRecorderControls} /> */}
+                {/* <Mic />
                     </IconButton>
                   </Tooltip>
-                )}
+                )} */}
               </Box>
             ) : (
               <Box

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChatMensagem } from "./ChatMenssage";
 import { useMixinSocket } from "../../hooks/useMinxinScoket";
 import { useSocketInitial } from "../../hooks/useSocketInitial";
+import { ModalAgendamentoMensagem } from "./ModalAgendamentoMensagem";
 
 
 export type OutletContextType = {
@@ -35,7 +36,7 @@ export const Chat = () => {
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
-        console.log('usMin in index', location.pathname)
+
         socketTicketList()
 
     }, [])
@@ -61,23 +62,22 @@ export const Chat = () => {
     useSocketInitial()
     const onLoadMore = async () => {
         if (loading) return
-        if (!hasMore || ticketFocado.id) {
-            console.log('isComplet')
-        }
+        // if (!hasMore || ticketFocado.id) {
+        //     return
+        // }
         const nextPageNumber = params.pageNumber + 1
         try {
             setLoading(true)
-            const p = {
+            const params = {
                 ticketId: ticketFocado.id,
                 pageNumber: nextPageNumber,
             }
-            await LocalizarMensagensTicket(p)
+            await LocalizarMensagensTicket(params)
             // Atualiza os params com a nova página após o carregamento
             setParams((prevParams) => ({
                 ...prevParams,
                 pageNumber: nextPageNumber, // Atualiza para a nova página
             }));
-
             setLoading(false)
         } catch (error) {
             setLoading(false)
@@ -109,7 +109,7 @@ export const Chat = () => {
                     <div>Sem resultados :(</div>
                 </Fade>
             ) :
-                <InfiniteScroll
+                (<InfiniteScroll
                     style={{
                         background: 'url(../wa-background.png)',
                         backgroundPosition: 'center center !important',
@@ -126,11 +126,10 @@ export const Chat = () => {
 
                 >
                     <ChatMensagem menssagens={cMessages} />
-
-
-                </InfiniteScroll>
+                </InfiniteScroll>)
 
             }
+            <ModalAgendamentoMensagem />
         </Box>
         // <Box >
         // <InfoCabecalhoMenssagens drawerWidth={drawerWidth} handleDrawerToggle={handleDrawerToggle} />

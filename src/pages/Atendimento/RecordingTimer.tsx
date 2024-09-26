@@ -1,7 +1,7 @@
 import type React from "react";
 import { useEffect } from "react";
-import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
 
+import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
 interface RecordingTimerProps {
   exposeRecorderControls: (controls: ReturnType<typeof useAudioRecorder>) => void;
 }
@@ -11,7 +11,7 @@ export const RecordingTimer: React.FC<RecordingTimerProps> = ({ exposeRecorderCo
 
   useEffect(() => {
     exposeRecorderControls(recorderControls);
-    
+
   }, [recorderControls, exposeRecorderControls]);
 
   return (

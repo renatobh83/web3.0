@@ -71,6 +71,9 @@ export const InfoCabecalhoMenssagens = () => {
 			setMobileOpen(!mobileOpen);
 		}
 	};
+	const handleModalAgendamento = () => {
+		alert('Criar modal agenda')
+	}
 	const Value = (obj, prop) => {
 		try {
 			return obj[prop];
@@ -113,6 +116,7 @@ export const InfoCabecalhoMenssagens = () => {
 							<Button
 								onClick={() => setIsContactInfo(!isContactInfo)}
 								sx={{
+									flexGrow: 1,
 									width: { sm: 150, md: 300 },
 									minHeight: 60,
 									height: 60,
@@ -127,10 +131,21 @@ export const InfoCabecalhoMenssagens = () => {
 												src={Value(ticketFocado.contact, "profilePicUrl")}
 											/>
 										</ListItemIcon>
+
 										<ListItemText
+											sx={{
+												display: { xs: 'none', sm: 'none', md: 'block' }
+											}}
 											secondary={
-												Value(ticketFocado.user, "name") &&
-												`Atribuido à: ${Value(ticketFocado.user, "name")}`
+												Value(ticketFocado.user, "name") && (
+													<Typography
+
+														variant="caption"
+														sx={{
+															fontSize: 9,
+														}}
+													>{`Ticket ${ticketFocado.id}`}</Typography>
+												)
 											}
 										>
 											<Typography
@@ -138,36 +153,39 @@ export const InfoCabecalhoMenssagens = () => {
 													overflow: "hidden",
 													textOverflow: "ellipsis",
 													whiteSpace: "nowrap",
-													maxWidth: "90%",
+													maxWidth: "80%",
 												}}
 											>
 												{Value(ticketFocado.contact, "name")}
 											</Typography>
-										</ListItemText>
-										<ListItemText
-											sx={{ display: "flex", justifyContent: "end" }}
-										>
 											<Typography
-												variant="caption"
-												sx={{ fontSize: 9 }}
-											>{`Ticket ${ticketFocado.id}`}</Typography>
+												// variant="caption"
+												sx={{
+													fontSize: 10,
+													overflow: "hidden",
+													textOverflow: "ellipsis",
+													whiteSpace: "nowrap",
+													maxWidth: "80%",
+												}}
+											>{`Atribuido à: ${Value(ticketFocado.user, "name")}`}</Typography>
 										</ListItemText>
+
 									</ListItem>
 								</List>
 							</Button>
-							<Divider sx={{ flexGrow: "1", mx: 10 }} />
+
 							<ButtonGroup
 								variant="outlined"
 								aria-label="Basic button group"
 								size="small"
 							>
 								<Tooltip title="Agendar">
-									<Button>
+									<Button onClick={() => handleModalAgendamento()}>
 										<CalendarMonth />
 									</Button>
 								</Tooltip>
 								{ticketFocado.status === "closed" ? (
-									<Button><Replay/></Button>
+									<Button><Replay /></Button>
 								) : (
 									ticketFocado.status === "open" && (
 										<>
