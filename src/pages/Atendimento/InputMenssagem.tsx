@@ -73,12 +73,13 @@ import { EnviarMensagemTexto } from '../../services/tickets'
 
 import { Errors } from '../../utils/error'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
+import { AgendamentoComponent } from '../../components/AtendimentoComponent/AgendamentoComponent'
 interface InputMenssagemProps {
   isScheduleDate?: boolean,
 
 }
 
-export const InputMenssagem = () => {
+export const InputMenssagem: React.FC<InputMenssagemProps> = ({ isScheduleDate }) => {
   const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
 
 
@@ -348,6 +349,16 @@ export const InputMenssagem = () => {
     console.log('Nenhuma imagem colada.')
     return null
   }
+
+  const schedule = {
+    selected: { label: 'Agendamento customizado', value: 'custom', func: null },
+    options: [
+      { label: 'Agendamento customizado', value: 'custom', func: null },
+      { label: 'Em 30 minutos', value: '30_mins', func: () => add(new Date(), { minutes: 30 }) },
+      { label: 'Amanhã', value: 'amanha', func: () => add(new Date(), { days: 1 }) },
+      { label: 'Próxima semana', value: 'prox_semana', func: () => add(new Date(), { weeks: 1 }) },
+    ],
+  }
   function cMostrarEnvioArquivo() {
     return arquivos.length > 0
   }
@@ -363,7 +374,9 @@ export const InputMenssagem = () => {
               position: 'relative',
             }}
           >
-
+            {isScheduleDate && (
+              <AgendamentoComponent />
+            )}
             {!isRecordingAudio ? (
               <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
                 <Tooltip title="Enviar arquivo">
@@ -416,6 +429,7 @@ export const InputMenssagem = () => {
                     </StyledMenu>
                   </>
                 </Tooltip>
+
                 {cMostrarEnvioArquivo() ? (
                   <Box sx={{ display: 'flex', width: '100%' }}>
                     {arquivos.map((file, index) => (
