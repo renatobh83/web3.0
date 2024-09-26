@@ -65,8 +65,7 @@ import { InfoCabecalhoMenssagens } from './InforCabecalhoChat'
 import { ListarUsuarios } from '../../services/user'
 import { toast } from 'sonner'
 import { ModalUsuario } from '../Usuarios/ModalUsuario'
-import { useMixinSocket } from '../../hooks/useMixinSocket'
-import { useMixinSocket1 } from '../../hooks/useMinxinScoket1'
+import { useMixinSocket } from '../../hooks/useMinxinScoket'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -141,12 +140,8 @@ function a11yProps(index: number, name: string) {
   }
 }
 
-// const drawerWidth = 380;
+
 interface Props {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * Remove this when copying and pasting into your project.
-   */
   window?: () => Window
 }
 
@@ -189,7 +184,7 @@ export function Atendimento(props: Props) {
 
 
 
-  const { socketTicket, socketDisconnect, socketTicketList } = useMixinSocket1()
+  const { socketTicket, socketDisconnect, socketTicketList } = useMixinSocket()
 
   const [switchStates, setSwitchStates] = useState(() => {
     const savedStates = JSON.parse(localStorage.getItem('filtrosAtendimento'))
@@ -587,7 +582,7 @@ export function Atendimento(props: Props) {
   }, [])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    socketTicket()
+
     socketTicketList()
     return () => {
       socketDisconnect()
@@ -613,6 +608,9 @@ export function Atendimento(props: Props) {
       setTicketFocado({})
     }
   }, [])
+
+
+  useEffect(() => { }, [])
   const drawer = (
     <>
       <Toolbar sx={{ justifyContent: 'space-between' }}>

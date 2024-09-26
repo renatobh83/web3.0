@@ -9,6 +9,7 @@ import { useNotificationsStore } from "../store/notifications";
 
 import { toast } from "sonner";
 import { eventEmitter } from "../pages/Atendimento/ChatMenssage";
+import { useWebSocketStore } from "../store/socket";
 
 
 
@@ -17,7 +18,7 @@ const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
 const userId = +localStorage.getItem('userId');
 
 
-export const useMixinSocket1 = () => {
+export const useMixinSocket = () => {
 
     const ticketFocado = useAtendimentoTicketStore(state => state.ticketFocado)
     const setTicketFocado = useAtendimentoTicketStore(state => state.setTicketFocado)
@@ -29,7 +30,7 @@ export const useMixinSocket1 = () => {
     const [loading, setLoading] = useState(false)
     const socketRef = useRef<Socket | null>(null);
 
-
+    const { ws, getWs, setWs } = useWebSocketStore()
     const updateNotifications = useNotificationsStore(s => s.updateNotifications)
     const updateNotificationsP = useNotificationsStore(
         s => s.updateNotificationsP
@@ -40,14 +41,20 @@ export const useMixinSocket1 = () => {
         }, 200)
 
     };
+    useEffect(() => {
+        if (!getWs()) {
+            const socket = socketIO()
+            setWs(socket);
+        }
+    }, [])
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         let socket: Socket<DefaultEventsMap, DefaultEventsMap> | null = null
         if (!socketRef.current) {
-            socket = socketIO()
+            socket = ws
             socketRef.current = socket
             // Token inválido, desconecta e redireciona
-            socket.on(`tokenInvalid:${socket.id}`, () => {
+            socket?.on(`tokenInvalid:${socket.id}`, () => {
                 socket.disconnect();
                 localStorage.removeItem('token');
                 localStorage.removeItem('username');
@@ -61,10 +68,11 @@ export const useMixinSocket1 = () => {
         }
         return () => {
             if (socket) {
-                socket.disconnect()
+                // socket.disconnect()
+                console.log('Socket disconnected')
             }
         };
-    }, [ticketFocado])
+    }, [])
     const handlerNotifications = (data: any) => {
         eventEmitter.emit('handlerNotifications', data)
     }
@@ -168,6 +176,7 @@ export const useMixinSocket1 = () => {
     }
     const socketDisconnect = useCallback(() => {
         socketRef.current = null;
+        console.log('Create ref')
     }, []);
 
     return { socketTicket, socketDisconnect, socketTicketList }

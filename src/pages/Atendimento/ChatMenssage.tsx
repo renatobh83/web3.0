@@ -33,10 +33,14 @@ import { toast } from 'sonner'
 import { MensagemRespondida } from './MensagemRespondida'
 import { InputMenssagem } from './InputMenssagem'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
-import { useMixinSocket1 } from '../../hooks/useMinxinScoket1'
+
 import { EventEmitter } from 'events'
 import { useSocketInitial } from '../../hooks/useSocketInitial'
+import { useMixinSocket } from '../../hooks/useMinxinScoket'
 export const eventEmitter = new EventEmitter()
+
+
+
 export const ChatMensagem = ({ menssagens }) => {
 
 
@@ -123,14 +127,12 @@ export const ChatMensagem = ({ menssagens }) => {
       document.getElementById('inicioListaMensagensChat')?.scrollIntoView({ behavior: 'smooth' });
     }, 200);
   };
-  const { socketTicketList } = useMixinSocket1()
-  useSocketInitial()
   useEffect(() => {
     // Adiciona o listener ao montar o componente
     eventEmitter.on('scrollToBottomMessageChat', scrollToBottom)
     // Remove o listener ao desmontar o componente
     scrollToBottom()
-    socketTicketList()
+
     return () => {
       eventEmitter.off('scrollToBottomMessageChat', scrollToBottom)
     }
@@ -155,11 +157,12 @@ export const ChatMensagem = ({ menssagens }) => {
           id='scrollarea_container'
           sx={{
             scrollbarWidth: 'none',
+            display: 'flex',
             width: '100% !important',
             height: '100% !important',
             position: 'relative',
             overflow: 'auto',
-
+            flexDirection: 'column-reverse',
           }}>
           <Box id="scrollarae-absoulte" sx={{
             position: 'absolute',
@@ -190,6 +193,7 @@ export const ChatMensagem = ({ menssagens }) => {
                     {menssagens.length && index === menssagens.length - 1 && (
                       <Box id="inicioListaMensagensChat" />
                     )}
+
                     <Box id={mensagem.id} />
                     <Box sx={{
                       fontWeight: '500',

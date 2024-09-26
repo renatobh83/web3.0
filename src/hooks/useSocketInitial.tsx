@@ -17,6 +17,7 @@ import { eventEmitter } from "../pages/Atendimento/ChatMenssage";
 
 export const useSocketInitial = () => {
     const { ws, setWs, getWs } = useWebSocketStore();
+
     const wsRef = useRef<WebSocket | null>(null);
     const updateWhatsapps = useWhatsappStore(state => state.updateWhatsApps)
     const deleteWhatsApp = useWhatsappStore(state => state.deleteWhatsApp)
@@ -188,11 +189,10 @@ export const useSocketInitial = () => {
                         const newTickets = orderTickets(data.tickets)
                         // console.log('try ORDER_TICKETS', newTickets.map(ticket => ({ id: ticket.id, lastMessageAt: ticket.lastMessageAt })))
                         setTimeout(() => {
-                            // console.log('try LOAD_TICKETS')
+
                             loadTickets(newTickets);
                         }, 200);
                         setTimeout(() => {
-                            // console.log('try UPDATE_TICKET')
                             updateTicket(newTickets);
                         }, 400);
                         setTimeout(() => {
@@ -211,7 +211,7 @@ export const useSocketInitial = () => {
                     console.log('socket ON: CHAT:CREATE')
                     // if (data.payload.ticket.userId !== userId) return
                     // if (data.payload.fromMe) return
-                    if (data.payload.ticket.userId === userId) {
+                    if ((data.payload.ticket.userId === userId && !data.payload.fromMe)) {
                         new Notification('Contato: ' + data.payload.ticket.contact.name, {
                             body: 'Mensagem: ' + data.payload.body,
                             tag: 'simple-push-demo-notification',
@@ -219,7 +219,7 @@ export const useSocketInitial = () => {
                             icon: data.payload.ticket.contact.profilePicUrl,
                         })
                     }
-                    eventEmitter.emit('scrollToBottomMessageChat')
+
                     updateMessages(data.payload)
                     const params = {
                         searchParam: '',
@@ -239,16 +239,15 @@ export const useSocketInitial = () => {
 
                         updateNotifications(data)
                         const orderTickets = (tickets) => {
-                            console.log('inside')
                             const newTickes = orderBy(tickets, (obj) => parseISO(obj.lastMessageAt || obj.updatedAt), ['asc'])
                             return [...newTickes]
                         }
 
                         const newTickets = orderTickets(data.tickets)
-                        setTimeout(() => {
-                            // this.$store.commit('LOAD_TICKETS', newTickets);
-                            // loadTickets(newTickets)
-                        }, 200);
+                        // setTimeout(() => {
+                        //     // this.$store.commit('LOAD_TICKETS', newTickets);
+                        //     // loadTickets(newTickets)
+                        // }, 200);
                         setTimeout(() => {
                             // this.$store.commit('UPDATE_TICKET', newTickets);
                             // updateTicket(newTickets)
@@ -261,6 +260,11 @@ export const useSocketInitial = () => {
                             updateContact(newTickets);
                             updateNotifications(data);
                         }, 600);
+                        try {
+                            eventEmitter.emit('scrollToBottomMessageChat')
+                        } catch (error) {
+
+                        }
 
                     } catch (err) {
                         console.log('error try', err)
@@ -373,5 +377,4 @@ export const useSocketInitial = () => {
             }
         };
     }, [getWs, setWs]);
-    return ws;
 };

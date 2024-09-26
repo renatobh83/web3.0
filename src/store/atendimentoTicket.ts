@@ -437,7 +437,12 @@ export const useAtendimentoTicketStore = create<
         return { mensagens: updatedMessages };
         // biome-ignore lint/style/noUselessElse: <explanation>
       } else {
-        if (!payload.fromMe && payload.ticket.status !== "closed") {
+        if (
+          !payload.fromMe &&
+          payload.ticket.status !== "closed" &&
+          payload.ack === 0
+        ) {
+          console.log(payload);
           state.notificacaoTicket += 1;
         }
         return {};
@@ -478,22 +483,16 @@ export const useAtendimentoTicketStore = create<
   LocalizarMensagensTicket: async (params) => {
     try {
       const mensagens = await LocalizarMensagens(params);
-      set((state) => ({
+      const { loadInitialMessages, loadMoreMessages } = get(); // Acessa os métodos da store
+
+      set(() => ({
         hasMore: mensagens.data.hasMore,
-        mensagens:
-          params.pageNumber === 1
-            ? orderMessages([
-                ...mensagens.data.messages,
-                ...mensagens.data.messagesOffLine,
-              ])
-            : [
-                ...state.mensagens,
-                ...orderMessages([
-                  ...mensagens.data.messages,
-                  ...mensagens.data.messagesOffLine,
-                ]),
-              ],
       }));
+      if (params.pageNumber === 1) {
+        loadInitialMessages(mensagens.data);
+      } else {
+        loadMoreMessages(mensagens.data);
+      }
     } catch (error) {
       console.error("Erro ao localizar mensagens:", error);
     }
@@ -501,7 +500,7 @@ export const useAtendimentoTicketStore = create<
   redirectToChat: (_ticketId) => {
     // A função de navegação será definida no componente onde o hook useNavigate pode ser acessado
   },
-  
+
   // Ação para abrir o chat de mensagens
   AbrirChatMensagens: async (data) => {
     try {

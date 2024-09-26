@@ -73,7 +73,7 @@ const StyledMenu = styled((props: MenuProps) => (
 export const MenusNavbar = () => {
     const navigate = useNavigate()
     const location = useLocation();
-
+    const notificacaoTicket = useAtendimentoTicketStore(s => s.notificacaoTicket)
     const { notifications, notificationsP } = useNotificationsStore()
     const { mode, setMode } = useColorScheme()
     const [status, setStatus] = useState(false);
@@ -175,6 +175,9 @@ export const MenusNavbar = () => {
             toast.error(`Não foi possível realizar logout ${error}`)
         }
     }
+    useEffect(() => {
+        console.log('notificacaoTicket Update', notificacaoTicket)
+    }, [notificacaoTicket])
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
 
@@ -189,7 +192,7 @@ export const MenusNavbar = () => {
                 <>
                     <Button onClick={handleClick}>
                         {+notificationsP.count + +notifications.count === 0 ? <NotificationsNoneIcon /> :
-                            <Badge badgeContent={+notificationsP.count + +notifications.count} color="primary">
+                            <Badge badgeContent={notificacaoTicket} color="primary">
                                 <NotificationsIcon />
                             </Badge>
                         }

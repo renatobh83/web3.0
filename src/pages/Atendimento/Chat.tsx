@@ -3,6 +3,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { useAtendimentoTicketStore } from "../../store/atendimentoTicket";
 import { useEffect, useRef, useState } from "react";
 import { ChatMensagem } from "./ChatMenssage";
+import { useMixinSocket } from "../../hooks/useMinxinScoket";
 
 
 export type OutletContextType = {
@@ -12,16 +13,32 @@ export type OutletContextType = {
 
 
 export const Chat = () => {
-
+    const { socketTicket } = useMixinSocket()
     // const { drawerWidth, handleDrawerToggle } = useOutletContext<OutletContextType>();
-
-
     const { mensagens, LocalizarMensagensTicket } = useAtendimentoTicketStore()
-    const { ticketFocado, setTicketFocado } = useAtendimentoTicketStore()
+    const { ticketFocado, setTicketFocado, hasMore } = useAtendimentoTicketStore()
+    const [loading, setLoading] = useState(false)
+    const [replyingMessage, setReplyingMessage] = useState(null)
+    const [cMessages, setCMessages] = useState([])
+    const [params, setParams] = useState({
+        ticketId: null,
+        pageNumber: 1,
+    })
+
+
+    useEffect(() => {
+        setReplyingMessage(null)
+        setCMessages(mensagens)
+    }, [mensagens])
+
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
+        socketTicket()
 
+    }, [])
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
         return () => {
             setTicketFocado({
                 whatsapp: undefined,
@@ -39,24 +56,30 @@ export const Chat = () => {
         }
     }, [])
 
-    const [loading, setLoading] = useState(false)
-
-
 
     const onLoadMore = async () => {
         if (loading) return
-        console.log("onload")
+        if (!hasMore || ticketFocado.id) {
+            console.log('isComplet')
+        }
+        const nextPageNumber = params.pageNumber + 1
         try {
             setLoading(true)
+            const p = {
+                ticketId: ticketFocado.id,
+                pageNumber: nextPageNumber,
+            }
+            await LocalizarMensagensTicket(p)
+            // Atualiza os params com a nova página após o carregamento
+            setParams((prevParams) => ({
+                ...prevParams,
+                pageNumber: nextPageNumber, // Atualiza para a nova página
+            }));
 
+            setLoading(false)
         } catch (error) {
-
+            setLoading(false)
         }
-        // if (!loading && ticketFocado) {
-        //   setLoading(true);
-        //   // Fetch more messages here...
-        //   setLoading(false);
-        // }
     };
     const [scrollIcon, setScrollIcon] = useState(false);
     const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -68,98 +91,98 @@ export const Chat = () => {
             setScrollIcon(true);
         }
     };
+
     return (
+        <Box
+            id="scrollInfinit"
 
-        <Box >
-            {/* <InfoCabecalhoMenssagens drawerWidth={drawerWidth} handleDrawerToggle={handleDrawerToggle} /> */}
-            {/* <InfoCabecalhoMenssagens /> */}
-            {/* <Toolbar /> */}
-            <Box id="scrollableDiv"
-                sx={{
-                    paddingTop: '61px',
-                    paddingBottom: '73px',
-                    flexDirection: 'column-reverse',
-                }}>
-                {!mensagens.length ? (
-                    <Fade in={true} timeout={4000}>
-                        <div>Nao tem nada de novo</div>
-                    </Fade>
-                ) :
+            sx={{
+                paddingTop: '61px',
+                paddingBottom: '73px',
 
+                overflowY: 'auto',
+            }}>
+            {!mensagens.length ? (
+                <Fade in={true} timeout={4000}>
+                    <div>Sem resultados :(</div>
+                </Fade>
+            ) :
+                <InfiniteScroll
+                    style={{
+                        background: 'url(../wa-background.png)',
+                        backgroundPosition: 'center center !important',
+                        scrollbarWidth: 'none',
+                        overflow: 'hidden !important',
 
-                    <InfiniteScroll
+                    }}
+                    dataLength={cMessages.length}
+                    next={onLoadMore}
+                    inverse={true}
+                    hasMore={hasMore}
+                    loader={<></>}
+                    scrollableTarget='scrollarea_container'
 
-                        style={{
-                            background: 'url(../wa-background.png)',
-                            backgroundPosition: 'center center !important',
-                            scrollbarWidth: 'none',
-                            overflow: 'hidden !important'
-                        }}
-                        dataLength={mensagens.length}
-                        next={onLoadMore}
-                        hasMore={false}
-                        loader={<h4>Loading...</h4>}
-                        scrollableTarget='inicioListaMensagensChat'
-
-                    >
-                        <ChatMensagem menssagens={mensagens} />
+                >
+                    <ChatMensagem menssagens={cMessages} />
 
 
-                    </InfiniteScroll>
+                </InfiniteScroll>
 
-                }
+            }
+        </Box>
+        // <Box >
+        // <InfoCabecalhoMenssagens drawerWidth={drawerWidth} handleDrawerToggle={handleDrawerToggle} />
+        //  <InfoCabecalhoMenssagens />
+        // <Toolbar />
 
-                {/* <InputMenssagem ticketFocado={ticketFocado} /> */}
-            </Box>
-            {/* <Box id="scrollableDiv"
-                sx={{
-                    minHeight: "calc(100vh - 143px)",
-                    height: "calc(100vh - 143px)",
-                    width: '100%',
-                    overflowY: 'auto',
-                    display: 'flex',
-                    flexDirection: 'column-reverse',
-                }}
-            >
-                {!mensagens.length ? (
-                    <Fade in={true} timeout={4000}>
-                        <div>Nao tem nada de novo</div>
-                    </Fade>
-                ) :
-                    <Box
-                        sx={{
-                            width: '100% !important',
-                            height: '100% !important',
-                            overflow: 'auto',
-                            scrollbarWidth: 'none'
-                        }}
-                        style={{
-                            background: 'url(../wa-background.png) ',
-
-
-                        }}
-                        id="scrollableDiv2"
-                        className="overflow-y-auto relative"
-                        ref={scrollContainerRef}
-                        onScroll={onScroll}
-                    >
-                        <InfiniteScroll
-                            dataLength={mensagens.length}
-                            next={onLoadMore}
-                            hasMore={false}
-                            loader={<h4>Loading...</h4>}
-                            scrollableTarget="scrollableDiv"
-                        >
+        //  <Box id="scrollableDiv"
+        //             sx={{
+        //                 minHeight: "calc(100vh - 143px)",
+        //                 height: "calc(100vh - 143px)",
+        //                 width: '100%',
+        //                 overflowY: 'auto',
+        //                 display: 'flex',
+        //                 flexDirection: 'column-reverse',
+        //             }}
+        //         >
+        //             {!mensagens.length ? (
+        //                 <Fade in={true} timeout={4000}>
+        //                     <div>Nao tem nada de novo</div>
+        //                 </Fade>
+        //             ) :
+        //                 <Box
+        //                     sx={{
+        //                         width: '100% !important',
+        //                         height: '100% !important',
+        //                         overflow: 'auto',
+        //                         scrollbarWidth: 'none'
+        //                     }}
+        //                     style={{
+        //                         background: 'url(../wa-background.png) ',
 
 
+        //                     }}
+        //                     id="scrollableDiv2"
+        //                     className="overflow-y-auto relative"
+        //                     ref={scrollContainerRef}
+        //                     onScroll={onScroll}
+        //                 >
+        //                     <InfiniteScroll
+        //                         dataLength={mensagens.length}
+        //                         next={onLoadMore}
+        //                         hasMore={false}
+        //                         loader={<h4>Loading...</h4>}
+        //                         scrollableTarget="scrollableDiv"
+        //                     >
 
-                            <ChatMensagem menssagens={mensagens} />
-                        </InfiniteScroll>
-                    </Box>
-                }
-            </Box> */}
 
-        </Box >
+
+        //                         <ChatMensagem menssagens={mensagens} />
+        //                     </InfiniteScroll>
+        //                 </Box>
+        //             }
+        //         </Box>
+        // </Box >
 
     )
 }

@@ -20,7 +20,7 @@ import { useSocketInitial } from '../hooks/useSocketInitial'
 export const MainLayout: React.FC = () => {
   // const socket = socketIO()
   const { updateNotifications, updateNotificationsP } = useNotificationsStore()
-  const notificacaoTicket = useAtendimentoTicketStore(s => s.notificacaoTicket)
+
   const { loadWhatsApps, whatsApps } = useWhatsappStore()
 
   const usuario = JSON.parse(localStorage.getItem('usuario'))
@@ -53,9 +53,7 @@ export const MainLayout: React.FC = () => {
   //     return cSessions().map(w => ({ label: w.name, value: w.id, type: w.type }))
   // }
 
-  useEffect(() => {
-    console.log('notificacaoTicket Update', notificacaoTicket)
-  }, [notificacaoTicket])
+
 
   // async function enviarMensagem() {
   //     const data = {
@@ -150,10 +148,12 @@ export const MainLayout: React.FC = () => {
     const conectar = async () => {
       await listarWhatsapps()
       await listarConfiguracoes()
+
       consultarTickets() // Descomente se necessário
     }
 
     conectar()
+
   }, [listarWhatsapps, listarConfiguracoes, consultarTickets])
 
   // const [open, setOpen] = useState(false);
