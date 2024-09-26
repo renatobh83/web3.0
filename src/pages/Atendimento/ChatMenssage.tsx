@@ -35,8 +35,6 @@ import { InputMenssagem } from './InputMenssagem'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 
 import { EventEmitter } from 'events'
-import { useSocketInitial } from '../../hooks/useSocketInitial'
-import { useMixinSocket } from '../../hooks/useMinxinScoket'
 export const eventEmitter = new EventEmitter()
 
 

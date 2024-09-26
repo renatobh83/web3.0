@@ -4,6 +4,7 @@ import { useAtendimentoTicketStore } from "../../store/atendimentoTicket";
 import { useEffect, useRef, useState } from "react";
 import { ChatMensagem } from "./ChatMenssage";
 import { useMixinSocket } from "../../hooks/useMinxinScoket";
+import { useSocketInitial } from "../../hooks/useSocketInitial";
 
 
 export type OutletContextType = {
@@ -13,7 +14,7 @@ export type OutletContextType = {
 
 
 export const Chat = () => {
-    const { socketTicket } = useMixinSocket()
+    const { socketTicket, socketTicketList } = useMixinSocket()
     // const { drawerWidth, handleDrawerToggle } = useOutletContext<OutletContextType>();
     const { mensagens, LocalizarMensagensTicket } = useAtendimentoTicketStore()
     const { ticketFocado, setTicketFocado, hasMore } = useAtendimentoTicketStore()
@@ -34,7 +35,8 @@ export const Chat = () => {
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
-        socketTicket()
+        console.log('usMin in index', location.pathname)
+        socketTicketList()
 
     }, [])
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -56,7 +58,7 @@ export const Chat = () => {
         }
     }, [])
 
-
+    useSocketInitial()
     const onLoadMore = async () => {
         if (loading) return
         if (!hasMore || ticketFocado.id) {

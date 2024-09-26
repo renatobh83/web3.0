@@ -9,6 +9,7 @@ import { useNotificationsStore } from "../store/notifications";
 
 import { toast } from "sonner";
 import { eventEmitter } from "../pages/Atendimento/ChatMenssage";
+import { eventEmitter as eventNotification } from '../pages/Atendimento/index'
 import { useWebSocketStore } from "../store/socket";
 
 
@@ -41,17 +42,15 @@ export const useMixinSocket = () => {
         }, 200)
 
     };
-    useEffect(() => {
-        if (!getWs()) {
-            const socket = socketIO()
-            setWs(socket);
-        }
-    }, [])
+
+
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
+
         let socket: Socket<DefaultEventsMap, DefaultEventsMap> | null = null
-        if (!socketRef.current) {
-            socket = ws
+        if (!getWs()) {
+            socket = socketIO()
+            setWs(socket);
             socketRef.current = socket
             // Token inválido, desconecta e redireciona
             socket?.on(`tokenInvalid:${socket.id}`, () => {
@@ -72,9 +71,11 @@ export const useMixinSocket = () => {
                 console.log('Socket disconnected')
             }
         };
-    }, [])
+    }, [getWs, setWs])
+
+
     const handlerNotifications = (data: any) => {
-        eventEmitter.emit('handlerNotifications', data)
+        eventNotification.emit('handlerNotifications', data)
     }
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     const socketTicket = useCallback(() => {
@@ -95,17 +96,20 @@ export const useMixinSocket = () => {
         socket?.on('connect', () => {
             socket.on(`${usuario.tenantId}:ticketList`, async data => {
                 if (data.type === 'chat:create') {
+
+                    scrollToBottom()
                     if (
                         !data.payload.read &&
                         (data.payload.ticket.userId === userId || !data.payload.ticket.userId) &&
                         data.payload.ticket.id !== ticketFocado.id
                     ) {
                         if (checkTicketFilter(data.payload.ticket)) {
+
                             handlerNotifications(data.payload)
                         }
                     }
                     updateMessages(data.payload)
-                    scrollToBottom()
+
                 }
                 if (data.type === 'chat:ack' || data.type === 'chat:delete') {
                     updateMessageStatus(data.payload)
@@ -119,7 +123,7 @@ export const useMixinSocket = () => {
                     updateNotifications(data.payload)
                 }
             })
-            socket.on(`${usuario.tenantId}:ticketList`, async data => {
+            socket?.on(`${usuario.tenantId}:ticketList`, async data => {
                 let verify = []
                 if (data.type === 'notification:new') {
                     // console.log(data)
@@ -166,17 +170,16 @@ export const useMixinSocket = () => {
                 updateContatos(data.payload)
             })
         })
-        return () => {
-            socket?.disconnect()
-        }
 
-    }, []);
+    }, [socketRef]);
+
     function socketTicketList() {
+
         socketTicketListNew()
     }
     const socketDisconnect = useCallback(() => {
         socketRef.current = null;
-        console.log('Create ref')
+
     }, []);
 
     return { socketTicket, socketDisconnect, socketTicketList }

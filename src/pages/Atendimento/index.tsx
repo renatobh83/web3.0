@@ -357,7 +357,7 @@ export function Atendimento(props: Props) {
     toggleModalUsuario()
   }
   function handlerNotifications(data) {
-
+    console.log(data)
     const options = {
       body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
       icon: data.ticket.contact.profilePicUrl,
@@ -582,7 +582,7 @@ export function Atendimento(props: Props) {
   }, [])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-
+    console.log('usMin in index', location.pathname)
     socketTicketList()
     return () => {
       socketDisconnect()
