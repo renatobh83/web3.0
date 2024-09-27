@@ -7,6 +7,7 @@ import { useMixinSocket } from "../../hooks/useMinxinScoket";
 import { useSocketInitial } from "../../hooks/useSocketInitial";
 import { ModalAgendamentoMensagem } from "./ModalAgendamentoMensagem";
 import { useAtendimentoStore } from "../../store/atendimento";
+import { InputMenssagem } from "./InputMenssagem";
 
 
 export type OutletContextType = {
@@ -114,26 +115,40 @@ export const Chat = () => {
                     <div>Sem resultados :(</div>
                 </Fade>
             ) :
-                (<InfiniteScroll
-                    style={{
-                        background: 'url(../wa-background.png)',
-                        backgroundPosition: 'center center !important',
-                        scrollbarWidth: 'none',
-                        overflow: 'hidden !important',
+                (
 
-                    }}
-                    dataLength={cMessages.length}
-                    next={onLoadMore}
-                    inverse={true}
-                    hasMore={hasMore}
-                    loader={<></>}
-                    scrollableTarget='scrollarea_container'
+                    <InfiniteScroll
+                        style={{
+                            background: 'url(../wa-background.png)',
+                            backgroundPosition: 'center center !important',
+                            scrollbarWidth: 'none',
+                            overflow: 'hidden !important',
 
-                >
-                    <ChatMensagem menssagens={cMessages} />
-                </InfiniteScroll>)
+                        }}
+                        dataLength={cMessages.length}
+                        next={onLoadMore}
+                        inverse={true}
+                        hasMore={hasMore}
+                        // biome-ignore lint/complexity/noUselessFragments: <explanation>
+                        loader={<></>}
+                        scrollableTarget='scrollarea_container'
+
+                    >
+                        <ChatMensagem menssagens={cMessages} />
+                    </InfiniteScroll>
+
+
+                )
 
             }
+            <Box
+
+                sx={{ position: 'fixed', bottom: 0, left: { sm: 0, md: 380, xs: 0 }, right: 0, zIndex: 2000, px: 1 }}
+                component={'footer'}>
+                <Box id='Drop_area'>
+                    <InputMenssagem />
+                </Box>
+            </Box>
             {modalAgendamento &&
                 <ModalAgendamentoMensagem />
             }

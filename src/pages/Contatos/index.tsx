@@ -3,7 +3,9 @@ import { filter } from "lodash";
 import { useState } from "react";
 import { useContatosStore } from "../../store/contatos";
 import { useWhatsappStore } from "../../store/whatsapp";
-import { Delete, Edit, Message } from "@mui/icons-material";
+import { Delete, Edit, Message, WhatsApp } from "@mui/icons-material";
+import { toast } from "sonner";
+import { ModalNovoTicket } from "../Atendimento/ModalNovoTicket";
 
 const CustomTableContainer = styled(TableContainer)(({ theme }) => ({
     // Customize styles with Tailwind CSS classes
@@ -18,6 +20,20 @@ const CustomTableContainer = styled(TableContainer)(({ theme }) => ({
 export const Contatos: React.FC<{
     isChatContact?: boolean;
 }> = ({ isChatContact = false }) => {
+    const { whatsApps } = useWhatsappStore()
+    const [openModalNovoTicket, setOpenModalNovoTicket] = useState(false)
+    const handleSaveTicket = async (contact: { id: any }, channel: any) => {
+        if (!contact.id) return;
+        const itens = [];
+        const channelId = null;
+        whatsApps.forEach((w: { type: any; name: any; id: any }) => {
+            if (w.type === channel) {
+                itens.push({ label: w.name, value: w.id });
+            }
+        });
+        toast.info(contact.name);
+        setOpenModalNovoTicket(true)
+    };
     const columns = [
         {
             name: "profilePicUrl",
@@ -116,11 +132,11 @@ export const Contatos: React.FC<{
                     sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}
                     className="flex justify-center space-x-2">
                     {params.row.number && cSessionsWpp().length > 0 && (
-                        <Tooltip title="Edit">
+                        <Tooltip title="Abrir ticket">
                             <IconButton
-                            // onClick={() => handleSaveTicket(params.row, "whatsapp")}
+                                onClick={() => handleSaveTicket(params.row, "whatsapp")}
                             >
-                                <Message />
+                                <WhatsApp />
                             </IconButton>
                         </Tooltip>
                     )}
@@ -150,7 +166,9 @@ export const Contatos: React.FC<{
                 w.status === "CONNECTED",
         );
     }
-
+    const closeModalNovoTicket = () => {
+        setOpenModalNovoTicket(false)
+    }
     const [pagination, setPagination] = useState({ page: 0, rowsPerPage: 5 });
     const [filter, setFilter] = useState("");
     const contatos = useContatosStore((s) => s.contatos);
@@ -226,6 +244,7 @@ export const Contatos: React.FC<{
                 rowsPerPage={pagination.rowsPerPage}
                 onRowsPerPageChange={handleRowsPerPageChange}
             />
+            <ModalNovoTicket open={openModalNovoTicket} close={closeModalNovoTicket} />
         </Box>
     )
 

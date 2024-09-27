@@ -603,14 +603,7 @@ export const ChatMensagem = ({ menssagens }) => {
         </Box>
       </Box>
       <div id="inicioListaMensagensChat" />
-      <Box
 
-        sx={{ position: 'fixed', bottom: 0, left: { sm: 0, md: 380, xs: 0 }, right: 0, zIndex: 2000, px: 1 }}
-        component={'footer'}>
-        <Box id='Drop_area'>
-          <InputMenssagem />
-        </Box>
-      </Box>
     </>
   )
 }
