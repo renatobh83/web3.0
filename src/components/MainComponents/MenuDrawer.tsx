@@ -132,6 +132,9 @@ export const MenuDrawer: React.FC = () => {
                 <AppNavbar DrawOpen={handleDrawerOpen} DrawClose={handleDrawerClose} open={open} />
             </AppBar>
             <Drawer
+                sx={{
+                    display: { xs: open ? 'block' : 'none', md: 'block' }
+                }}
                 variant="permanent"
                 open={open}
                 onMouseOver={handleDrawerOpen}

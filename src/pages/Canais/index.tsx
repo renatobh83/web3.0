@@ -252,6 +252,7 @@ export const Canais = () => {
             {data.map(item => (
               <Grid key={item.id} size={{ xs: 12, sm: 6, lg: 3 }}>
                 <Card
+
                   variant="outlined"
                   sx={{ height: '100%', flexGrow: 1 }}
                   id="card"

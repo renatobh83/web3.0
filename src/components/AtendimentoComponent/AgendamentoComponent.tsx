@@ -50,11 +50,7 @@ export const AgendamentoComponent = () => {
 
                 <Box component="section" sx={{ display: 'flex', gap: 1, p: 2, justifyContent: 'space-between', border: '1px dashed grey' }}>
                     <Typography sx={{ flexGrow: 1 }}>{resultData.toString()}</Typography>
-                    <DateTimePicker
-                        label="Controlled picker"
-                    // value={value}
-                    // onChange={(newValue) => setValue(newValue)}
-                    />
+
                 </Box>
 
             </FormControl>
