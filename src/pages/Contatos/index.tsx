@@ -219,8 +219,7 @@ export const Contatos: React.FC<{
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {contatos
-                            .filter((row) => row.name.includes(filter))
+                        {contatos?.filter((row) => row.name.includes(filter))
                             .slice(
                                 pagination.page * pagination.rowsPerPage,
                                 pagination.page * pagination.rowsPerPage +
