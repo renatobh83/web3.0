@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography'
 import {
   ArrowDownwardSharp,
   ContactEmergency,
+  ContactPage,
   EmojiEmotions,
   Home,
   Logout,
@@ -20,6 +21,7 @@ import {
   Avatar,
   Badge,
   Button,
+  ButtonProps,
   Checkbox,
   FormControl,
   FormControlLabel,
@@ -66,6 +68,7 @@ import { ListarUsuarios } from '../../services/user'
 import { toast } from 'sonner'
 import { ModalUsuario } from '../Usuarios/ModalUsuario'
 import { useMixinSocket } from '../../hooks/useMinxinScoket'
+import { ModalNovoTicket } from './ModalNovoTicket'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -151,6 +154,7 @@ export function Atendimento(props: Props) {
   const { window } = props
   // useMixinSocket()
 
+  const [openModalNovoTicket, setOpenModalNovoTicket] = useState(false)
 
 
   // Stores
@@ -611,8 +615,24 @@ export function Atendimento(props: Props) {
     }
   }, [])
 
+  const closeModalNovoTicket = () => {
+    setOpenModalNovoTicket(false)
+  }
 
-  useEffect(() => { }, [])
+  const handleClick = () => {
+    if (mobileOpen) {
+      // Lógica para quando estiver dentro de um modal
+      setOpenModalNovoTicket(true)
+      // Executa a função para o modal
+    } else {
+      // Lógica para quando estiver no desktop
+
+      nav('/atendimento/chat-contatos')
+      return
+      // Executa a função para o desktop
+    }
+  };
+
   const drawer = (
     <>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
@@ -669,7 +689,7 @@ export function Atendimento(props: Props) {
           </Tooltip>
         </Tabs>
 
-        <Toolbar sx={{ justifyContent: 'space-between' }} disableGutters>
+        <Toolbar sx={{ justifyContent: 'space-between', px: 1 }} disableGutters>
           <Button onClick={handleOpenFiltro} size="medium">
             <FilterAltIcon />
           </Button>
@@ -780,13 +800,16 @@ export function Atendimento(props: Props) {
             </MenuList>
           </StyledMenu>
           <TextField
+
             id="standard-basic"
             label="Pesquisa"
             variant="standard"
             size="small"
             onChange={handleInputChange}
           />
-          <ContactEmergency />
+          <Button onClick={handleClick}>
+            <ContactPage />
+          </Button>
         </Toolbar>
         <Divider />
       </List>
@@ -845,37 +868,40 @@ export function Atendimento(props: Props) {
                                     <Tooltip title="Conversas Privadas" className="bg-padrao text-gray-900 font-bold" />
                                 )} */}
         </Tabs>
-      )}
+      )
+      }
 
-      {tabTickets === 1 && (
-        <Tabs
-          sx={{ mt: 2, mb: 2 }}
-          variant="fullWidth"
-          value={tabTicketsStatus}
-          onChange={(_event, newValue) => setTabTicketsStatus(newValue)}
-        >
-          <Tab label={openGroupTickets().length ?
-            <Badge
-              color="error"
-              variant="dot"
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }} > Abertos
-            </Badge> : 'Abertos'} value="open" disableRipple />
+      {
+        tabTickets === 1 && (
+          <Tabs
+            sx={{ mt: 2, mb: 2 }}
+            variant="fullWidth"
+            value={tabTicketsStatus}
+            onChange={(_event, newValue) => setTabTicketsStatus(newValue)}
+          >
+            <Tab label={openGroupTickets().length ?
+              <Badge
+                color="error"
+                variant="dot"
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }} > Abertos
+              </Badge> : 'Abertos'} value="open" disableRipple />
 
-          <Tab label={pendingGroupTickets().length ?
-            <Badge
-              color="error"
-              variant="dot"
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }} > Pendente
-            </Badge> : 'Pendente'} value="pending" disableRipple />
-          <Tab label="Fechado" value="closed" disableRipple />
-        </Tabs>
-      )}
+            <Tab label={pendingGroupTickets().length ?
+              <Badge
+                color="error"
+                variant="dot"
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }} > Pendente
+              </Badge> : 'Pendente'} value="pending" disableRipple />
+            <Tab label="Fechado" value="closed" disableRipple />
+          </Tabs>
+        )
+      }
 
       <TabPanel value={tabTickets} index={0}>
         <List
@@ -1011,6 +1037,7 @@ export function Atendimento(props: Props) {
   const container =
     window !== undefined ? () => window().document.body : undefined
 
+
   return (
     <>
       <Box sx={{ display: 'flex' }}>
@@ -1082,30 +1109,11 @@ export function Atendimento(props: Props) {
         >
           {/* <Outlet context={{ drawerWidth, handleDrawerToggle }} /> */}
 
-          {!ticketFocado.id ? (
-            <>
-              <Toolbar />
-              <Box
-                sx={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: 5,
-                  height: '70vh',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                <MoodBadIcon sx={{ fontSize: '3.8em' }} />
-
-                <Typography variant="h4">Selecione um ticket!</Typography>
-              </Box>
-            </>
-          ) : (
-            <Outlet />
-          )}
-          {/* <Outlet /> */}
+          <Outlet />
         </Box>
+
         {modalUsuario && <ModalUsuario />}
+        {openModalNovoTicket && <ModalNovoTicket open={openModalNovoTicket} close={closeModalNovoTicket} />}
       </Box>
     </>
   )

@@ -25,6 +25,7 @@ const AppRoutes = () => {
 						</Route>
 						<Route path="/atendimento" element={<Atendimento />}>
 							<Route path=":ticketId" element={<Chat />} />
+							<Route path='chat-contatos' element={<MainLayout />} />
 						</Route>
 					</>
 				) : (

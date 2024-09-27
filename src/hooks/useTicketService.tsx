@@ -20,7 +20,7 @@ export const useTicketService = () => {
         setLoading(true);
         try {
             await AtualizarStatusTicket(ticket.id, 'open', userId);
-            toast.success(`Atendimento Iniciado || ${ticket.name} - Ticket: ${ticket.id}`);
+            toast.success(`Atendimento Iniciado || ${ticket.contact?.name} - Ticket: ${ticket.id}`);
         } catch (error) {
             console.error(error);
             toast.error('Não foi possível atualizar o status');
@@ -32,13 +32,6 @@ export const useTicketService = () => {
     const atualizarStatusTicket = (ticket: Ticket, status: 'open' | 'pending' | 'closed') => {
         const contatoName = ticket.contact?.name || '';
         const ticketId = ticket.id;
-        console.log(ticket)
-        // Define os textos de acordo com o status
-        const title = {
-            open: 'Atendimento será iniciado, ok?',
-            pending: 'Retornar à fila?',
-            closed: 'Encerrar o atendimento?',
-        };
 
         const toastMessage = {
             open: 'Atendimento iniciado!',
@@ -55,7 +48,9 @@ export const useTicketService = () => {
             setLoading(true);
             try {
                 await AtualizarStatusTicket(ticketId, status, userId);
-                toast.success(`${toastMessage[status]} || ${contatoName} (Ticket ${ticketId})`);
+                toast.success(`${toastMessage[status]} || ${contatoName} (Ticket ${ticketId})`, {
+                    position: 'top-right'
+                });
                 setDialogOpen(false);
                 // Exemplo de redirecionamento após encerrar atendimento
                 // if (status !== 'open') navigate('/chat-empty');

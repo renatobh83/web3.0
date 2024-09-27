@@ -4,9 +4,10 @@ import { useAtendimentoTicketStore, type Ticket } from "../../store/atendimentoT
 import { CheckCircle, WhatsApp } from "@mui/icons-material"
 import { formatDistance, parseJSON } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useTicketService } from "../../hooks/useTicketService"
+import { ObterContato } from "../../services/contatos"
 
 interface ItemTicketProps {
     ticket: Ticket,
@@ -20,22 +21,38 @@ interface ItemTicketProps {
 
 export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicketProps) => {
     const navigate = useNavigate()
-    const obterNomeFila = (ticket: Ticket) => {
-        const fila = filas.find((f) => f.id === ticket.queueId);
-        return fila ? fila.queue : "";
-    };
+    const { iniciarAtendimento } = useTicketService()
     const dataInWords = (timestamp: string, updated: string) => {
         const data = timestamp ? new Date(Number(timestamp)) : parseJSON(updated);
         return formatDistance(data, new Date(), { locale: ptBR });
     };
+    const obterNomeFila = (ticket: Ticket) => {
+        const fila = filas.find((f) => f.id === ticket.queueId);
+        return fila ? fila.queue : "";
+    };
+    const [timeLabel, setTimeLabel] = useState<string>(() =>
+        dataInWords(ticket.lastMessageAt, ticket.updatedAt)
+    );
+
     const AbrirChatMensagens = useAtendimentoTicketStore(s => s.AbrirChatMensagens)
+    useEffect(() => {
+        // Função que atualiza a label
+        const updateTimeLabel = () => {
+            setTimeLabel(dataInWords(ticket.lastMessageAt, ticket.updatedAt));
+        };
+        // Atualizar a cada 1 minuto (60000 ms)
+        const interval = setInterval(updateTimeLabel, 60000);
+        // Limpar o intervalo quando o componente desmontar
+        return () => clearInterval(interval);
+    }, [ticket.lastMessageAt, ticket.updatedAt]);
 
     useEffect(() => {
-        useAtendimentoTicketStore.setState({
-            redirectToChat: (ticketId: string) => {
-                navigate(`/atendimento/${ticketId}`);
-            },
-        });
+
+        // useAtendimentoTicketStore.setState({
+        //     redirectToChat: (ticketId: string) => {
+        //         navigate(`/atendimento/${ticketId}`);
+        //     },
+        // });
     }, [])
 
     const goToChat = async (id: string) => {
@@ -55,8 +72,13 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
         goToChat(ticket.id)
     }
 
-    const { iniciarAtendimento } = useTicketService()
+
     if (!ticket) { return }
+    const borderColor = {
+        open: '#1976d2',
+        pending: '#c10015',
+        closed: '#21ba45'
+    }
 
     return (
         <ListItem
@@ -71,9 +93,8 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
             <ListItemButton
                 onClick={() => abrirChatContato(ticket)}
                 sx={{
-
                     width: '100%',
-                    borderLeft: '6px solid',
+                    borderLeft: `5px solid ${borderColor[ticket?.status]}`,
                     bgcolor: 'background.paper',
                     display: 'flex',
                     alignItems: 'center',
@@ -91,7 +112,6 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
                                     sx={{ mr: 1 }}
                                 >
                                 </Badge>
-
                             </Avatar>
                         </Button> :
                         <Avatar
@@ -194,8 +214,8 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
                     display="flex"
                     flexDirection="column"
                     alignItems="center"
-                    justifyContent='space-around'
-                    height={'100%'}
+                    justifyContent='space-between'
+                    height={'90px'}
 
                     sx={{
                         minWidth: 50, // Tamanho fixo para a coluna da direita
@@ -203,11 +223,9 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
                     }}
                 >
                     <Chip
-                        label={dataInWords(ticket.lastMessageAt, ticket.updatedAt)}
+                        label={timeLabel}
                         size="small"
-
                     />
-
                     <Typography variant="body2" color="textSecondary">
                         #{ticket.id}
                     </Typography>

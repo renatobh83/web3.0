@@ -1,4 +1,4 @@
-import { Box, Fade } from "@mui/material";
+import { Box, Fade, Toolbar, Typography } from "@mui/material";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useAtendimentoTicketStore } from "../../store/atendimentoTicket";
 import { useEffect, useRef, useState } from "react";
@@ -94,7 +94,10 @@ export const Chat = () => {
         } else {
             setScrollIcon(true);
         }
+
+
     };
+
 
     return (
         <Box
