@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import { Atendimento } from "./pages/Atendimento";
 import { Chat } from "./pages/Atendimento/Chat";
 import { Canais } from "./pages/Canais";
+import { Contatos } from "./pages/Contatos";
 
 const AppRoutes = () => {
 	const { isAuthenticated } = useAuth();
@@ -17,6 +18,7 @@ const AppRoutes = () => {
 				{isAuthenticated ? (
 					<>
 						<Route path="/" element={<MainLayout />}>
+							<Route path="/contatos" element={<Contatos isChatContact={false} />} />
 							{/* <Route index element={<Dasboard />} /> */}
 							{/* <Route path="/usuarios" element={<Usuarios />} />
               <Route path="/contatos" element={<Contatos isChatContact={false} />} />
@@ -25,8 +27,9 @@ const AppRoutes = () => {
 						</Route>
 						<Route path="/atendimento" element={<Atendimento />}>
 							<Route path=":ticketId" element={<Chat />} />
-							<Route path='chat-contatos' element={<MainLayout />} />
+							<Route path='chat-contatos' element={<Contatos isChatContact={true} />} />
 						</Route>
+
 					</>
 				) : (
 					<Route path="*" element={<Navigate to="/login" />} />

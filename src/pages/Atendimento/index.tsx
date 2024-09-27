@@ -69,6 +69,8 @@ import { toast } from 'sonner'
 import { ModalUsuario } from '../Usuarios/ModalUsuario'
 import { useMixinSocket } from '../../hooks/useMinxinScoket'
 import { ModalNovoTicket } from './ModalNovoTicket'
+import { ListarContatos } from '../../services/contatos'
+import { useContatosStore } from '../../store/contatos'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -618,7 +620,16 @@ export function Atendimento(props: Props) {
   const closeModalNovoTicket = () => {
     setOpenModalNovoTicket(false)
   }
+  const { contatos, loadContacts } = useContatosStore()
+  const listaContatos = useCallback(async () => {
+    const { data } = await ListarContatos()
+    loadContacts(data.contacts)
+  }, [
 
+  ])
+  useEffect(() => {
+    listaContatos()
+  }, [contatos])
   const handleClick = () => {
     if (mobileOpen) {
       // Lógica para quando estiver dentro de um modal
@@ -1036,6 +1047,7 @@ export function Atendimento(props: Props) {
   // Remove this const when copying and pasting into your project.
   const container =
     window !== undefined ? () => window().document.body : undefined
+
 
 
   return (
