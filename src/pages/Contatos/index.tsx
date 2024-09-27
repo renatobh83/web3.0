@@ -1,4 +1,4 @@
-import { Avatar, Box, IconButton, styled, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Toolbar, Tooltip } from "@mui/material";
+import { Avatar, Box, IconButton, styled, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Toolbar, Tooltip } from "@mui/material";
 import { filter } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { useContatosStore } from "../../store/contatos";
@@ -193,52 +193,53 @@ export const Contatos: React.FC<{
     ])
     useEffect(() => {
         listaContatos()
-    }, [contatos])
+    }, [])
     return (
         <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2, px: 4 }}>
             {isChatContact && (
                 <Toolbar />
             )}
             <Box>Contatos</Box>
-            <CustomTableContainer
 
-                sx={{ bgcolor: 'background.paper' }}>
-                <TableContainer
-                    sx={{ mt: '4px' }}
-                    id={`tabela-contatos-${isChatContact ? "atendimento" : ""}`}
-                >
-                    <TableHead>
-                        <TableRow>
-                            {columns.map((col) => (
-                                <TableCell
-                                    key={col.name}
-                                    sx={{ width: `${100 / columns.length}%`, flexGrow: 1, textAlign: 'center' }}>
-                                    {col.label}
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {contatos?.filter((row) => row.name.includes(filter))
-                            .slice(
-                                pagination.page * pagination.rowsPerPage,
-                                pagination.page * pagination.rowsPerPage +
-                                pagination.rowsPerPage,
-                            )
-                            .map((row) => (
-                                <TableRow key={row.id}>
-                                    {columns.map((col) => (
-                                        <TableCell key={col.field} sx={{ width: `${100 / columns.length}%`, flexGrow: 1 }}>
-                                            {col.renderCell
-                                                ? col.renderCell({ value: row[col.field], row })
-                                                : row[col.field]}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))}
-                    </TableBody>
-                </TableContainer>
-            </CustomTableContainer>
+
+            <TableContainer
+                component={'table'}
+                sx={{ mt: '4px', bgcolor: 'background.paper' }}
+                id={`tabela-contatos-${isChatContact ? "atendimento" : ""}`}
+            >
+                <TableHead>
+                    <TableRow>
+                        {columns.map((col) => (
+                            <TableCell
+                                key={col.name}
+                                sx={{ width: `${100 / columns.length}%`, flexGrow: 1, textAlign: 'center' }}>
+                                {col.label}
+                            </TableCell>
+                        ))}
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {contatos?.filter((row) => row.name.includes(filter))
+                        .slice(
+                            pagination.page * pagination.rowsPerPage,
+                            pagination.page * pagination.rowsPerPage +
+                            pagination.rowsPerPage,
+                        )
+                        .map((row) => (
+                            <TableRow key={row.id}>
+                                {columns.map((col) => (
+                                    <TableCell key={col.field} sx={{ width: `${100 / columns.length}%`, flexGrow: 1 }}>
+                                        {col.renderCell
+                                            ? col.renderCell({ value: row[col.field], row })
+                                            : row[col.field]}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))}
+                </TableBody>
+            </TableContainer>
+
+
             <TablePagination
                 component="div"
                 count={contatos.length}
