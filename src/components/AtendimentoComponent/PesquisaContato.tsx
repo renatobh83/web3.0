@@ -1,5 +1,6 @@
 import { Autocomplete, TextField } from "@mui/material";
-import React, { useState } from "react";
+import type React from "react";
+import { useState } from "react";
 import { ListarContatos } from "../../services/contatos";
 interface PesquisaContatoProps {
     getContatoSelecionado: (contato: string) => void

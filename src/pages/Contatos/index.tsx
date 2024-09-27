@@ -1,4 +1,4 @@
-import { Avatar, Box, IconButton, styled, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Toolbar, Tooltip } from "@mui/material";
+import { Avatar, Box, IconButton, styled, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Toolbar, Tooltip, Typography } from "@mui/material";
 import { filter } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { useContatosStore } from "../../store/contatos";
@@ -21,7 +21,6 @@ const CustomTableContainer = styled(Table)(({ theme }) => ({
 export const Contatos: React.FC<{
     isChatContact?: boolean;
 }> = ({ isChatContact = false }) => {
-    const { whatsApps } = useWhatsappStore()
     const [openModalNovoTicket, setOpenModalNovoTicket] = useState(false)
     const handleSaveTicket = async (contact) => {
         if (!contact.id) return;
@@ -194,15 +193,20 @@ export const Contatos: React.FC<{
     useEffect(() => {
         listaContatos()
     }, [])
+    if (!contatos) {
+        return <Box component={'span'}>Carregando...</Box>
+    }
     return (
-        <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2, px: 4 }}>
+        <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, px: 4 }}>
             {isChatContact && (
                 <Toolbar />
             )}
-            <Box>Contatos</Box>
 
+            <Typography component="h2" variant="h6">
+                Contatos
+            </Typography>
 
-            <TableContainer
+            <CustomTableContainer
                 component={'table'}
                 sx={{ mt: '4px', bgcolor: 'background.paper' }}
                 id={`tabela-contatos-${isChatContact ? "atendimento" : ""}`}
@@ -237,7 +241,7 @@ export const Contatos: React.FC<{
                             </TableRow>
                         ))}
                 </TableBody>
-            </TableContainer>
+            </CustomTableContainer>
 
 
             <TablePagination

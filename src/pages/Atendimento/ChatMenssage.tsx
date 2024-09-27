@@ -16,8 +16,10 @@ import {
 import { formatarData, formatarMensagemWhatsapp } from '../../utils/helpers'
 import {
   ArrowDownward,
+  ArrowLeft,
   CalendarMonth,
   DoneAll,
+  TipsAndUpdates,
 } from '@mui/icons-material'
 import {
   dataInWords,
@@ -220,9 +222,13 @@ export const ChatMensagem = ({ menssagens }) => {
                               wordBreak: 'break-word',
                               position: 'relative',
                               lineHeight: '1.2',
-                              borderRadius: '4px'
+                              borderRadius: '20px',
+                              borderBottomLeftRadius: mensagem.fromMe ? '20px' : '0px',
+                              borderBottomRightRadius: mensagem.fromMe ? '0px' : '20px',
                             }}
                           >
+
+
                             <Box id='text-content'
                               onMouseOver={() => setHoveredIndex(mensagem.id)}
                               onMouseLeave={() => setHoveredIndex(null)}>
@@ -533,10 +539,11 @@ export const ChatMensagem = ({ menssagens }) => {
                                             minWidth: '100px',
                                             minHeight: '48px',
                                             position: 'relative',
-                                            padding: '12px 16px',
+                                            padding: ' 12px 0 8px 0',
                                             borderRadius: '16px',
-                                            display: 'inline-block',
-
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: 2,
                                           }}
                                         >
 
@@ -601,7 +608,7 @@ export const ChatMensagem = ({ menssagens }) => {
             </Box>
           </Box>
         </Box>
-      </Box>
+      </Box >
       <div id="inicioListaMensagensChat" />
 
     </>
