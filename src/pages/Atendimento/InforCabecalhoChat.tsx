@@ -14,6 +14,7 @@ import {
 	Skeleton,
 	ButtonGroup,
 	Tooltip,
+
 } from "@mui/material";
 import AirlineStopsIcon from '@mui/icons-material/AirlineStops';
 import MenuIcon from "@mui/icons-material/Menu";
@@ -29,6 +30,7 @@ import {
 } from "@mui/icons-material";
 import { useAtendimentoStore } from "../../store/atendimento";
 import { useAtendimentoTicketStore } from "../../store/atendimentoTicket";
+import { ModalAgendamentoMensagem } from "./ModalAgendamentoMensagem";
 
 // biome-ignore lint/suspicious/noRedeclare: <explanation>
 interface AppBarProps extends MuiAppBarProps {
@@ -65,7 +67,7 @@ export const InfoCabecalhoMenssagens = () => {
 		setIsContactInfo,
 	} = useAtendimentoStore();
 	const ticketFocado = useAtendimentoTicketStore((s) => s.ticketFocado);
-
+	const setModalAgendamento = useAtendimentoStore(s => s.setModalAgendamento)
 	const handleDrawerToggle = () => {
 		if (!isClosing) {
 			setMobileOpen(!mobileOpen);
@@ -105,7 +107,7 @@ export const InfoCabecalhoMenssagens = () => {
 				>
 					<MenuIcon />
 				</IconButton>
-				<Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
+				<Box sx={{ display: "flex", width: "100%", alignItems: "center", gap: 2 }}>
 					{!ticketFocado.id ? (
 						<Box sx={{ width: { sm: 100, md: 300 } }}>
 							<Skeleton />
@@ -116,7 +118,7 @@ export const InfoCabecalhoMenssagens = () => {
 							<Button
 								onClick={() => setIsContactInfo(!isContactInfo)}
 								sx={{
-									flexGrow: 1,
+
 									width: { sm: 150, md: 300 },
 									minHeight: 60,
 									height: 60,
@@ -173,14 +175,14 @@ export const InfoCabecalhoMenssagens = () => {
 									</ListItem>
 								</List>
 							</Button>
-
+							<Divider sx={{ flexGrow: 1, }} />
 							<ButtonGroup
 								variant="outlined"
 								aria-label="Basic button group"
 								size="small"
 							>
 								<Tooltip title="Agendar">
-									<Button onClick={() => handleModalAgendamento()}>
+									<Button onClick={() => setModalAgendamento()}>
 										<CalendarMonth />
 									</Button>
 								</Tooltip>
@@ -214,6 +216,7 @@ export const InfoCabecalhoMenssagens = () => {
 					)}
 				</Box>
 			</Toolbar>
+
 		</AppBar>
 	);
 };

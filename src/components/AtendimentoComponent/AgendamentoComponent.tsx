@@ -1,8 +1,16 @@
-import { CalendarMonth } from "@mui/icons-material";
-import { Box, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material"
+import { CalendarMonth, Close } from "@mui/icons-material";
+import { Box, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material"
 import { add } from "date-fns"
 import { useState } from "react";
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
+import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+import { MobileDateTimePicker } from "@mui/x-date-pickers/MobileDateTimePicker";
+import dayjs from "dayjs";
+import 'dayjs/locale/pt-br'; // Importa a localização em português
+
+dayjs.locale('pt-br'); // Define a localidade para português
 export const AgendamentoComponent = () => {
     const schedule = {
         selected: { label: 'Agendamento customizado', value: 'custom', func: null },
@@ -13,6 +21,7 @@ export const AgendamentoComponent = () => {
             { label: 'Próxima semana', value: 'prox_semana', func: () => add(new Date(), { weeks: 1 }) },
         ],
     }
+    const [custom, setCustom] = useState(false)
     const [selectedValue, setSelectedValue] = useState(schedule.selected.value);
     const [resultData, setResultData] = useState('')
 
@@ -24,19 +33,25 @@ export const AgendamentoComponent = () => {
             const result = selectedOption.func(); // Executa a função associada
 
             setResultData(result)
+            setCustom(false)
         } else {
             setResultData('')
+            setCustom(true)
         }
     }
+    const handleCustomDate = (newValue) => {
+        console.log(resultData)
+        console.log(newValue)
+    }
+
     return (
         <Box sx={{ mb: 2, gap: 2, display: 'flex', flexDirection: 'column' }}>
             <FormControl variant="standard" fullWidth>
-                <InputLabel id="demo-simple-select-standard-label">Agendamento</InputLabel>
                 <Select
                     sx={{ p: 1 }}
                     labelId="schedule-select-label"
                     value={selectedValue}
-                    onChange={handleChange}
+                    onChange={(newDate) => handleChange(newDate)}
                     label="Agendamento"
                 >
                     {schedule.options.map(option => (
@@ -47,13 +62,42 @@ export const AgendamentoComponent = () => {
                 </Select>
             </FormControl>
             <FormControl fullWidth>
+                <Box component="section" sx={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    border: '1px dashed grey', p: 1
+                }}>
 
-                <Box component="section" sx={{ display: 'flex', gap: 1, p: 2, justifyContent: 'space-between', border: '1px dashed grey' }}>
-                    <Typography sx={{ flexGrow: 1 }}>{resultData.toString()}</Typography>
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
+                        <MobileDateTimePicker sx={{ width: '100%', border: 'none' }}
+                            value={dayjs(resultData.toString())}
+                            format="DD/MM/YY hh:MM"
+
+                            onChange={handleCustomDate}
+                            // biome-ignore lint/complexity/noUselessTernary: <explanation>
+                            readOnly={custom ? false : true}
+                            slotProps={{
+                                textField: {
+
+                                    InputProps: {
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton>
+                                                    <CalendarMonth />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    },
+
+                                },
+                            }}
+
+
+                        />
+                    </LocalizationProvider>
 
                 </Box>
 
-            </FormControl>
-        </Box>
+            </FormControl >
+        </Box >
     )
 }

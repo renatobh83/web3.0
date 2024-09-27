@@ -6,6 +6,7 @@ import { ChatMensagem } from "./ChatMenssage";
 import { useMixinSocket } from "../../hooks/useMinxinScoket";
 import { useSocketInitial } from "../../hooks/useSocketInitial";
 import { ModalAgendamentoMensagem } from "./ModalAgendamentoMensagem";
+import { useAtendimentoStore } from "../../store/atendimento";
 
 
 export type OutletContextType = {
@@ -18,6 +19,7 @@ export const Chat = () => {
     const { socketTicket, socketTicketList } = useMixinSocket()
     // const { drawerWidth, handleDrawerToggle } = useOutletContext<OutletContextType>();
     const { mensagens, LocalizarMensagensTicket } = useAtendimentoTicketStore()
+    const modalAgendamento = useAtendimentoStore(s => s.modalAgendamento)
     const { ticketFocado, setTicketFocado, hasMore } = useAtendimentoTicketStore()
     const [loading, setLoading] = useState(false)
     const [replyingMessage, setReplyingMessage] = useState(null)
@@ -129,7 +131,9 @@ export const Chat = () => {
                 </InfiniteScroll>)
 
             }
-            <ModalAgendamentoMensagem />
+            {modalAgendamento &&
+                <ModalAgendamentoMensagem />
+            }
         </Box>
         // <Box >
         // <InfoCabecalhoMenssagens drawerWidth={drawerWidth} handleDrawerToggle={handleDrawerToggle} />
