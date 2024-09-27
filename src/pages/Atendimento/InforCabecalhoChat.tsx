@@ -14,6 +14,11 @@ import {
 	Skeleton,
 	ButtonGroup,
 	Tooltip,
+	CircularProgress,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
 
 } from "@mui/material";
 import AirlineStopsIcon from '@mui/icons-material/AirlineStops';
@@ -29,8 +34,10 @@ import {
 	RestartAlt,
 } from "@mui/icons-material";
 import { useAtendimentoStore } from "../../store/atendimento";
-import { useAtendimentoTicketStore } from "../../store/atendimentoTicket";
+import { Ticket, useAtendimentoTicketStore } from "../../store/atendimentoTicket";
 import { ModalAgendamentoMensagem } from "./ModalAgendamentoMensagem";
+import { useTicketService } from "../../hooks/useTicketService";
+import { useState } from "react";
 
 // biome-ignore lint/suspicious/noRedeclare: <explanation>
 interface AppBarProps extends MuiAppBarProps {
@@ -58,6 +65,10 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 export const InfoCabecalhoMenssagens = () => {
+	const { atualizarStatusTicket, loading, dialogData } = useTicketService()
+	const [dialogOpen, setDialogOpen] = useState(false);
+	const [_, setDialogContent] = useState<{ status: string; ticket: Ticket } | null>(null);
+	const [confirmAction, setConfirmAction] = useState<(() => Promise<void>) | null>(null);
 	const {
 		drawerWidth,
 		isClosing,
@@ -84,6 +95,14 @@ export const InfoCabecalhoMenssagens = () => {
 		}
 	};
 
+	const handleUpdateStatus = (ticket, status: 'open' | 'pending' | 'closed') => {
+		const { handleConfirm } = atualizarStatusTicket(ticket, status);
+
+		setDialogOpen(true); // Abre o diálogo
+		setDialogContent({ status, ticket }); // Define os dados do diálogo
+		setConfirmAction(() => handleConfirm); // Armazena a ação de confirmação
+
+	};
 	return (
 		<AppBar
 			open={isContactInfo}
@@ -187,17 +206,21 @@ export const InfoCabecalhoMenssagens = () => {
 									</Button>
 								</Tooltip>
 								{ticketFocado.status === "closed" ? (
-									<Button><Replay /></Button>
+									<Tooltip title="Reabir">
+										<Button onClick={() => handleUpdateStatus(ticketFocado, "open")}
+										><Replay />
+										</Button>
+									</Tooltip>
 								) : (
 									ticketFocado.status === "open" && (
 										<>
 											<Tooltip title="Resolver">
-												<Button>
+												<Button onClick={() => handleUpdateStatus(ticketFocado, "closed")}>
 													<MessageOutlined />
 												</Button>
 											</Tooltip>
 											<Tooltip title="Retornar à fila pendentes">
-												<Button>
+												<Button onClick={() => handleUpdateStatus(ticketFocado, 'pending')}>
 													<RestartAlt />
 												</Button>
 											</Tooltip>
@@ -216,7 +239,33 @@ export const InfoCabecalhoMenssagens = () => {
 					)}
 				</Box>
 			</Toolbar>
-
+			{dialogOpen &&
+				<Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+					<DialogTitle>{dialogData?.status === 'closed' ? 'Encerrar o atendimento?' : 'Retornar a Pendente'}</DialogTitle>
+					<DialogContent>
+						{loading ? (
+							<CircularProgress />
+						) : (
+							<div>
+								Cliente: {dialogData?.ticket.contact?.name} || Ticket: {dialogData?.ticket.id}
+							</div>
+						)}
+					</DialogContent>
+					<DialogActions>
+						<Button onClick={() => setDialogOpen(false)} color="secondary">
+							Não
+						</Button>
+						<Button onClick={async () => {
+							if (confirmAction) {
+								await confirmAction(); // Executa a função de confirmação
+							}
+							setDialogOpen(false); // Fecha o diálogo após a confirmação
+						}} color="primary" disabled={loading}>
+							Sim
+						</Button>
+					</DialogActions>
+				</Dialog>
+			}
 		</AppBar>
 	);
 };

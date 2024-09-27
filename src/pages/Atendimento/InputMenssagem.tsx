@@ -74,6 +74,7 @@ import { EnviarMensagemTexto } from '../../services/tickets'
 import { Errors } from '../../utils/error'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 import { AgendamentoComponent } from '../../components/AtendimentoComponent/AgendamentoComponent'
+import { useTicketService } from '../../hooks/useTicketService'
 interface InputMenssagemProps {
   isScheduleDate?: boolean,
 
@@ -81,7 +82,7 @@ interface InputMenssagemProps {
 
 export const InputMenssagem: React.FC<InputMenssagemProps> = ({ isScheduleDate }) => {
   const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
-
+  const { iniciarAtendimento } = useTicketService()
 
   const [openPreviewImagem, setOpenPreviewImagem] = useState(false)
   const [isRecordingAudio, setIsRecordingAudio] = useState(false)
@@ -366,11 +367,11 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({ isScheduleDate }
     <>
 
       {
-        ticketFocado.status === 'open' ? (
+        ticketFocado.status !== 'pending' ? (
           <Box
             id="input"
             sx={{
-
+              pb: 2,
               position: 'relative',
             }}
           >
@@ -390,7 +391,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({ isScheduleDate }
                       className="p-2 border rounded"
                     /> */}
                     <IconButton
-                      // disabled={cDisableActions()}
+                      disabled={cDisableActions()}
                       sx={{ borderRadius: '50%' }}
                       size="small"
                       onClick={handleButtonClick}
@@ -412,7 +413,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({ isScheduleDate }
                 <Tooltip title="Emoji">
                   <>
                     <IconButton
-                      // disabled={cDisableActions()}
+                      disabled={cDisableActions()}
                       sx={{ borderRadius: '50%' }}
                       size="small"
                       onClick={handleClick}
@@ -453,6 +454,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({ isScheduleDate }
                     variant="standard"
                     fullWidth
                     value={textChat}
+                    disabled={cDisableActions()}
                     onChange={e => setTextChat(e.target.value)}
                     onKeyDown={handleKeyDown} // Captura a tecla pressionada
                     ref={inputEnvioMensagem}
@@ -548,9 +550,10 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({ isScheduleDate }
           >
             <Button
               sx={{ p: 2 }}
-              variant="outlined"
-              color="success"
+              variant="contained"
+              color='success'
               endIcon={<SendIcon />}
+              onClick={() => iniciarAtendimento(ticketFocado)}
             >
               <Typography variant="h5">Iniciar o atendimento</Typography>
             </Button>

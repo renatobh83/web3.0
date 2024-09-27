@@ -408,6 +408,7 @@ export function Atendimento(props: Props) {
     try {
       if (pesquisaTickets.status.lengh === 0) return
       const { data } = await ConsultarTickets(params)
+
       loadTickets(data.tickets)
       setHasMore(data.hasMore)
     } catch (err) {
@@ -524,6 +525,7 @@ export function Atendimento(props: Props) {
     return Object.values(groupedTickets)
   }
   function closedTickets(): Ticket[] {
+
     return tickets.filter(
       ticket => ticket.status === 'closed' && !ticket.isGroup
     )
@@ -904,6 +906,7 @@ export function Atendimento(props: Props) {
               />
             ))}
           {tabTicketsStatus === 'closed' &&
+
             closedTickets().map(ticket => (
               <ItemTicket
                 key={ticket.id}

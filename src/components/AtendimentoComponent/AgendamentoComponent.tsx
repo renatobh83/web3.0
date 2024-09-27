@@ -70,11 +70,11 @@ export const AgendamentoComponent = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
                         <MobileDateTimePicker sx={{ width: '100%', border: 'none' }}
                             value={dayjs(resultData.toString())}
-                            format="DD/MM/YY hh:MM"
+
 
                             onChange={handleCustomDate}
-                            // biome-ignore lint/complexity/noUselessTernary: <explanation>
-                            readOnly={custom ? false : true}
+
+
                             slotProps={{
                                 textField: {
 

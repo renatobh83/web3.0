@@ -1,12 +1,12 @@
-import { Avatar, Badge, Box, Chip, IconButton, ListItem, ListItemAvatar, ListItemButton, Typography } from "@mui/material"
+import { Avatar, Badge, Box, Button, Chip, ListItem, ListItemAvatar, ListItemButton, Typography } from "@mui/material"
 import { useAtendimentoTicketStore, type Ticket } from "../../store/atendimentoTicket"
-import PlayArrow from "@mui/icons-material/PlayArrow"
 
 import { CheckCircle, WhatsApp } from "@mui/icons-material"
 import { formatDistance, parseJSON } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import { useTicketService } from "../../hooks/useTicketService"
 
 interface ItemTicketProps {
     ticket: Ticket,
@@ -54,6 +54,8 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
         AbrirChatMensagens(ticket)
         goToChat(ticket.id)
     }
+
+    const { iniciarAtendimento } = useTicketService()
     if (!ticket) { return }
 
     return (
@@ -81,15 +83,17 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
                 {/* Imagem de perfil */}
                 <ListItemAvatar>
                     {ticket.status === "pending" ?
-                        <Avatar sx={{ width: 50, height: 50 }}>
-                            <Badge
-                                badgeContent={ticket.unreadMessages}
-                                color="secondary"
-                                sx={{ mr: 1 }}
-                            >
-                                <PlayArrow />
-                            </Badge>
-                        </Avatar> :
+                        <Button onClick={() => iniciarAtendimento(ticket)}>
+                            <Avatar sx={{ width: 50, height: 50 }} >
+                                <Badge
+                                    badgeContent={ticket.unreadMessages}
+                                    color="secondary"
+                                    sx={{ mr: 1 }}
+                                >
+                                </Badge>
+
+                            </Avatar>
+                        </Button> :
                         <Avatar
                             alt={ticket.name || ticket.contact.name}
                             src={ticket.profilePicUrl} // Substitua pelo caminho da imagem
@@ -178,7 +182,7 @@ export const ItemTicket = ({ etiquetas, filas, ticket, buscaTicket }: ItemTicket
                     </Box>
 
                     <Typography variant="caption" color="textSecondary">
-                        Usuário:  {ticket.username} {/* Substitua pela lógica */}
+                        Usuário:  {ticket.username}
                     </Typography>
                     <Typography variant="caption" color="textSecondary">
                         Fila: {ticket.queue || obterNomeFila(ticket)}

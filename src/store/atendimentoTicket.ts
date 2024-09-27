@@ -280,6 +280,7 @@ export const useAtendimentoTicketStore = create<
   loadTickets: (payload) =>
     set((state) => {
       const newTickets = orderTickets(payload);
+
       // biome-ignore lint/complexity/noForEach: <explanation>
       newTickets.forEach((ticket) => {
         const ticketIndex = state.tickets.findIndex((t) => t.id === ticket.id);
