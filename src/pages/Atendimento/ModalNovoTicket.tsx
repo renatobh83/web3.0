@@ -11,12 +11,13 @@ import { useNavigate } from "react-router-dom";
 
 interface ModalNovoTicketProps {
     open: boolean,
-    close: () => void
+    close: () => void,
+    isContact?: any
 }
 
 
 
-export const ModalNovoTicket = ({ open, close }: ModalNovoTicketProps) => {
+export const ModalNovoTicket = ({ open, close, isContact }: ModalNovoTicketProps) => {
     const userId = +localStorage.getItem('userId')
     const navigate = useNavigate()
     const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
@@ -39,7 +40,13 @@ export const ModalNovoTicket = ({ open, close }: ModalNovoTicketProps) => {
 
         }
     }
+    useEffect(() => {
 
+        if (isContact) {
+            setContatoSelecionado(isContact)
+            handleSelectChannel()
+        }
+    }, [])
     const handleSelectChannel = () => {
         if (!contatoSelecionado.id) return
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>

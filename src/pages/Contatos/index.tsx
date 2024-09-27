@@ -1,13 +1,14 @@
-import { Avatar, Box, IconButton, styled, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Toolbar, Tooltip } from "@mui/material";
+import { Avatar, Box, IconButton, styled, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Toolbar, Tooltip } from "@mui/material";
 import { filter } from "lodash";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useContatosStore } from "../../store/contatos";
 import { useWhatsappStore } from "../../store/whatsapp";
 import { Delete, Edit, Message, WhatsApp } from "@mui/icons-material";
 import { toast } from "sonner";
 import { ModalNovoTicket } from "../Atendimento/ModalNovoTicket";
+import { ListarContatos } from "../../services/contatos";
 
-const CustomTableContainer = styled(TableContainer)(({ theme }) => ({
+const CustomTableContainer = styled(Table)(({ theme }) => ({
     // Customize styles with Tailwind CSS classes
     padding: theme.spacing(2),
     width: "100%",
@@ -22,16 +23,10 @@ export const Contatos: React.FC<{
 }> = ({ isChatContact = false }) => {
     const { whatsApps } = useWhatsappStore()
     const [openModalNovoTicket, setOpenModalNovoTicket] = useState(false)
-    const handleSaveTicket = async (contact: { id: any }, channel: any) => {
+    const handleSaveTicket = async (contact) => {
         if (!contact.id) return;
-        const itens = [];
-        const channelId = null;
-        whatsApps.forEach((w: { type: any; name: any; id: any }) => {
-            if (w.type === channel) {
-                itens.push({ label: w.name, value: w.id });
-            }
-        });
-        toast.info(contact.name);
+
+
         setOpenModalNovoTicket(true)
     };
     const columns = [
@@ -47,7 +42,6 @@ export const Contatos: React.FC<{
                     height: '48px',
                     borderRadius: '50%',
                     border: 1,
-
                     overflow: 'hidden'
                 }} >
                     {params.value ? (
@@ -55,7 +49,6 @@ export const Contatos: React.FC<{
                             sx={{ objectFit: 'cover', width: '100%', height: '100%' }}
                             src={params.value}
                             alt="Profile"
-
                         />
                     ) : (
                         <Box
@@ -66,7 +59,7 @@ export const Contatos: React.FC<{
                                 width: '100%',
                                 height: '100%'
                             }}
-                            className="flex items-center justify-center w-full h-full text-gray-500">
+                        >
                             <Avatar />
                         </Box>
                     )}
@@ -134,7 +127,7 @@ export const Contatos: React.FC<{
                     {params.row.number && cSessionsWpp().length > 0 && (
                         <Tooltip title="Abrir ticket">
                             <IconButton
-                                onClick={() => handleSaveTicket(params.row, "whatsapp")}
+                                onClick={() => { setContatoSelecionado(params.row); handleSaveTicket(params.row) }}
                             >
                                 <WhatsApp />
                             </IconButton>
@@ -169,27 +162,38 @@ export const Contatos: React.FC<{
     const closeModalNovoTicket = () => {
         setOpenModalNovoTicket(false)
     }
-    const [pagination, setPagination] = useState({ page: 0, rowsPerPage: 5 });
+    const [pagination, setPagination] = useState({ page: 0, rowsPerPage: 10 });
     const [filter, setFilter] = useState("");
     const contatos = useContatosStore((s) => s.contatos);
+    const loadContacts = useContatosStore((s) => s.loadContacts)
     const whatsapp = useWhatsappStore((s) => s.whatsApps);
+    const [contatoSelecionado, setContatoSelecionado] = useState(null)
     const [loading, setLoading] = useState(false);
+
     const handlePageChange = (event: unknown, newPage: number) => {
         setPagination((prev) => ({ ...prev, page: newPage }));
     };
+
     const handleRowsPerPageChange = (
         event: React.ChangeEvent<HTMLInputElement>,
     ) => {
-        setPagination({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
-    };
+        setPagination({ page: 0, rowsPerPage: Number.parseInt(event.target.value, 10) });
+    }
     const [params, setParams] = useState({
         pageNumber: 1,
         searchParam: null,
         hasMore: true,
     });
 
+    const listaContatos = useCallback(async () => {
+        const { data } = await ListarContatos()
+        loadContacts(data.contacts)
+    }, [
 
-
+    ])
+    useEffect(() => {
+        listaContatos()
+    }, [contatos])
     return (
         <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2, px: 4 }}>
             {isChatContact && (
@@ -244,7 +248,7 @@ export const Contatos: React.FC<{
                 rowsPerPage={pagination.rowsPerPage}
                 onRowsPerPageChange={handleRowsPerPageChange}
             />
-            <ModalNovoTicket open={openModalNovoTicket} close={closeModalNovoTicket} />
+            {openModalNovoTicket && <ModalNovoTicket open={openModalNovoTicket} close={closeModalNovoTicket} isContact={contatoSelecionado} />}
         </Box>
     )
 
