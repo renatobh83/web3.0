@@ -449,7 +449,9 @@ export function Atendimento(props: Props) {
       setUsuarios(data.users)
     } catch (error) {
       console.error(error)
-      toast.error(`Problema ao carregar usuários, ${JSON.stringify(error)}`)
+      toast.error(`Problema ao carregar usuários, ${JSON.stringify(error)}`, {
+        position: 'top-center',
+      })
     }
   }
   const listarFilas = useCallback(async () => {

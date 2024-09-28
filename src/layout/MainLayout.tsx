@@ -53,8 +53,6 @@ export const MainLayout: React.FC = () => {
   //     return cSessions().map(w => ({ label: w.name, value: w.id, type: w.type }))
   // }
 
-
-
   // async function enviarMensagem() {
   //     const data = {
   //         whatsappId: this.whatsappId.value,
@@ -83,7 +81,6 @@ export const MainLayout: React.FC = () => {
   const listarWhatsapps = useCallback(async () => {
     const { data } = await ListarWhatsapps()
     loadWhatsApps(data)
-
   }, [])
 
   const listarConfiguracoes = useCallback(async () => {
@@ -112,7 +109,9 @@ export const MainLayout: React.FC = () => {
       }, 500)
       // this.$store.commit('SET_HAS_MORE', data.hasMore)
     } catch (err) {
-      toast.error('Algum problema ao consultar tickets')
+      toast.error('Algum problema ao consultar tickets', {
+        position: 'top-center',
+      })
       console.error(err)
     }
     const params2 = {
@@ -138,7 +137,9 @@ export const MainLayout: React.FC = () => {
       // this.$store.commit('SET_HAS_MORE', data.hasMore)
       // console.log(this.notifications)
     } catch (err) {
-      toast.error('Algum problema ao consultar tickets ')
+      toast.error('Algum problema ao consultar tickets ', {
+        position: 'top-center',
+      })
       console.error(err)
     }
   }, [updateNotificationsP, updateNotifications])
@@ -153,7 +154,6 @@ export const MainLayout: React.FC = () => {
     }
 
     conectar()
-
   }, [listarWhatsapps, listarConfiguracoes, consultarTickets])
 
   // const [open, setOpen] = useState(false);

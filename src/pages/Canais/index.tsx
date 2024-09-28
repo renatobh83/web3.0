@@ -32,7 +32,6 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { ModalQrCode } from './ModalQrCode'
 import { eventEmitter } from '../../hooks/useSocketInitial'
 
-
 export const Canais = () => {
   const [chatflows, setChatflows] = useState([])
   const [selectedChatBots, setSelectedChatBots] = useState({})
@@ -77,7 +76,6 @@ export const Canais = () => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     listChatFlow()
-
   }, [])
 
   // Preenche o estado inicial com base no item.chatFlowId
@@ -116,7 +114,6 @@ export const Canais = () => {
     const { id } = whatsappSelecionado
     return data.find(w => w.id === id)
   }
-
 
   const handleDisconectWhatsSession = (whatsAppId: string) => {
     toast.info('Atenção!! Deseja realmente desconectar?', {
@@ -189,7 +186,7 @@ export const Canais = () => {
       await StartWhatsappSession(whatsAppId)
       const dataFind = data.find(w => w.id === whatsAppId)
       if (dataFind.type === 'waba' || data.dataFind === 'telegram') {
-        window.location.reload();
+        window.location.reload()
       }
     } catch (error) {
       console.error(error)
@@ -199,33 +196,34 @@ export const Canais = () => {
     toast.message(
       `Atenção!! Deseja realmente deletar o canal "${whatsapp.name}"?`,
       {
-        description: 'Os chats abertos desse canal serão fechados, mas poderão ser vistos no painel de atendimento.',
-        position: "top-right",
+        description:
+          'Os chats abertos desse canal serão fechados, mas poderão ser vistos no painel de atendimento.',
+        position: 'top-center',
         cancel: {
-          label: "Cancel",
-          onClick: () => console.log("Cancel!"),
+          label: 'Cancel',
+          onClick: () => console.log('Cancel!'),
         },
         action: {
-          label: "Confirma",
+          label: 'Confirma',
           onClick: () => {
             DeletarWhatsapp(whatsapp.id).then(async () => {
-              toast.success("Canal apagado", {
-                position: "top-right",
-
-              });
+              toast.success('Canal apagado', {
+                position: 'top-center',
+              })
               const { data } = await ListarWhatsapps()
               loadWhatsApps(data)
             })
-
           },
         },
-      },
+      }
     )
   }
   return (
     <>
       {userProfile === 'admin' && (
-        <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2 }}>
+        <Box
+          sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2 }}
+        >
           <Box
             sx={{
               display: 'flex',
@@ -252,7 +250,6 @@ export const Canais = () => {
             {data.map(item => (
               <Grid key={item.id} size={{ xs: 12, sm: 6, lg: 3 }}>
                 <Card
-
                   variant="outlined"
                   sx={{ height: '100%', flexGrow: 1 }}
                   id="card"
@@ -260,7 +257,13 @@ export const Canais = () => {
                   <CardContent>
                     <Box sx={{ display: 'flex', gap: 2 }}>
                       <Avatar src={`./${item.type}-logo.png`} />
-                      <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          flexGrow: 1,
+                        }}
+                      >
                         <Typography
                           component="h2"
                           variant="subtitle2"
@@ -272,10 +275,14 @@ export const Canais = () => {
                       </Box>
                       {isAdmin && (
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-
-                          <Button size='small' onClick={() => handleOpenModalWhatsapp(item)}><Edit /></Button>
                           <Button
-                            size='small'
+                            size="small"
+                            onClick={() => handleOpenModalWhatsapp(item)}
+                          >
+                            <Edit />
+                          </Button>
+                          <Button
+                            size="small"
                             onClick={() => deleteWhatsapp(item)}
                           >
                             <DeleteOutlineIcon sx={{ color: 'red' }} />
@@ -293,7 +300,6 @@ export const Canais = () => {
                         flexGrow: '1',
                         gap: 1,
                         minHeight: 160,
-
                       }}
                     >
                       <ItemStatusChannel item={item} />
@@ -328,41 +334,53 @@ export const Canais = () => {
                         )}
                       </Box>
                     </Stack>
-                    <Divider sx={{ my: 1 }} id='actions' />
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <Divider sx={{ my: 1 }} id="actions" />
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                    >
                       {item.type === 'whatsapp' && item.status === 'qrcode' && (
                         <Button
-                          variant='outlined'
+                          variant="outlined"
                           onClick={() => handleOpenQrModal(item)}
                           disabled={!isAdmin}
                         >
                           QR Code
                         </Button>
                       )}
-                      {item.status === 'DISCONNECTED' && (
-                        item.type === 'whatsapp' ?
+                      {item.status === 'DISCONNECTED' &&
+                        (item.type === 'whatsapp' ? (
                           <Button
-                            variant='outlined'
-                            onClick={() => handleStartWhatsAppSession(item.id)}>
+                            variant="outlined"
+                            onClick={() => handleStartWhatsAppSession(item.id)}
+                          >
                             Conectar
-                          </Button> :
-                          item.type !== 'whatsapp' ?
-                            <Button variant='outlined'>
-                              Conectar
-                            </Button> :
-                            item.status === 'DISCONNECTED' && item.type === 'whatsapp' ?
-                              <Button variant='outlined' onClick={() => handleRequestNewQrCode(item, 'btn-qrCode')}>
-                                Novo QR Code
-                              </Button> :
-                              <></>
-                      )}
+                          </Button>
+                        ) : item.type !== 'whatsapp' ? (
+                          <Button variant="outlined">Conectar</Button>
+                        ) : item.status === 'DISCONNECTED' &&
+                          item.type === 'whatsapp' ? (
+                          <Button
+                            variant="outlined"
+                            onClick={() =>
+                              handleRequestNewQrCode(item, 'btn-qrCode')
+                            }
+                          >
+                            Novo QR Code
+                          </Button>
+                        ) : (
+                          <></>
+                        ))}
                     </Box>
                     <Box
                       sx={{
                         display: 'flex',
                         justifyContent: 'space-between',
                         flexDirection: 'row',
-                        alignItems: 'center'
+                        alignItems: 'center',
                       }}
                     >
                       {item.status === 'OPENING' && (
@@ -378,13 +396,13 @@ export const Canais = () => {
                           'PAIRING',
                           'TIMEOUT',
                         ].includes(item.status) && (
-                            <Button
-                              variant='outlined'
-                              onClick={() => handleDisconectWhatsSession(item.id)}
-                            >
-                              Desconectar
-                            </Button>
-                          )}
+                          <Button
+                            variant="outlined"
+                            onClick={() => handleDisconectWhatsSession(item.id)}
+                          >
+                            Desconectar
+                          </Button>
+                        )}
                       </Box>
                     </Box>
                   </CardContent>
@@ -415,4 +433,3 @@ export const Canais = () => {
 function loadWhatsApps(arg0: any) {
   throw new Error('Function not implemented.')
 }
-

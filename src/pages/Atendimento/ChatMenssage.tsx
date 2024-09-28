@@ -39,11 +39,7 @@ import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 import { EventEmitter } from 'events'
 export const eventEmitter = new EventEmitter()
 
-
-
 export const ChatMensagem = ({ menssagens }) => {
-
-
   const [modalImageUrl, setModalImageUrl] = useState<string | null>(null)
   const lastMessageRef = useRef<HTMLInputElement | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
@@ -80,53 +76,61 @@ export const ChatMensagem = ({ menssagens }) => {
     setAnchorEl(null)
   }
   const open = Boolean(anchorEl)
-  const [mensagensParaEncaminhar, setmensagensParaEncaminhar] = useState([]);
-  const [checkboxStates, setCheckboxStates] = useState<{ [key: string]: boolean }>({});
+  const [mensagensParaEncaminhar, setmensagensParaEncaminhar] = useState([])
+  const [checkboxStates, setCheckboxStates] = useState<{
+    [key: string]: boolean
+  }>({})
 
   // Função para gerenciar a seleção de mensagens
-  const handleEerificarEncaminharMensagem = (mensagem) => {
-    setmensagensParaEncaminhar((prev) => {
-      const index = prev.findIndex((m) => m.id === mensagem.id);
+  const handleEerificarEncaminharMensagem = mensagem => {
+    setmensagensParaEncaminhar(prev => {
+      const index = prev.findIndex(m => m.id === mensagem.id)
 
       // Se a mensagem não estiver na lista e ainda não atingiu o limite
       if (index === -1) {
         if (prev.length < 10) {
-          const newMessages = [...prev, mensagem];
-          return newMessages; // Adiciona a nova mensagem
+          const newMessages = [...prev, mensagem]
+          return newMessages // Adiciona a nova mensagem
         }
-        toast.error('Permitido no máximo 10 mensagens.');
-        return prev; // Não permite adicionar mais mensagens
+        toast.error('Permitido no máximo 10 mensagens.', {
+          position: 'top-center',
+        })
+        return prev // Não permite adicionar mais mensagens
       }
 
       // Se a mensagem já estiver na lista, remove ela
-      const updatedMessages = prev.filter((m) => m.id !== mensagem.id);
-      return updatedMessages;
-    });
-  };
+      const updatedMessages = prev.filter(m => m.id !== mensagem.id)
+      return updatedMessages
+    })
+  }
 
   // Função para lidar com mudanças no estado do checkbox
-  const handleCheckboxChange = (mensagem) => {
-    setCheckboxStates((prev) => {
-      const currentState = prev[mensagem.id] || false;
+  const handleCheckboxChange = mensagem => {
+    setCheckboxStates(prev => {
+      const currentState = prev[mensagem.id] || false
 
       // Somente permite a mudança de estado se o limite de 10 não for atingido
       if (!currentState && mensagensParaEncaminhar.length >= 10) {
-        toast.error('Permitido no máximo 10 mensagens.');
-        return prev;
+        toast.error('Permitido no máximo 10 mensagens.', {
+          position: 'top-center',
+        })
+        return prev
       }
 
       // Atualiza o estado do checkbox e chama a função de verificação de mensagens
-      const newCheckboxStates = { ...prev, [mensagem.id]: !currentState };
-      handleEerificarEncaminharMensagem(mensagem);
-      return newCheckboxStates;
-    });
+      const newCheckboxStates = { ...prev, [mensagem.id]: !currentState }
+      handleEerificarEncaminharMensagem(mensagem)
+      return newCheckboxStates
+    })
   }
 
   const scrollToBottom = () => {
     setTimeout(() => {
-      document.getElementById('inicioListaMensagensChat')?.scrollIntoView({ behavior: 'smooth' });
-    }, 200);
-  };
+      document
+        .getElementById('inicioListaMensagensChat')
+        ?.scrollIntoView({ behavior: 'smooth' })
+    }, 200)
+  }
   useEffect(() => {
     // Adiciona o listener ao montar o componente
     eventEmitter.on('scrollToBottomMessageChat', scrollToBottom)
@@ -138,10 +142,11 @@ export const ChatMensagem = ({ menssagens }) => {
     }
   }, [])
 
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   return (
     <>
-      <Box id='box-message'
+      <Box
+        id="box-message"
         sx={{
           minHeight: 'calc(-135px + 100vh)',
           height: 'calc(-135px + 100vh)',
@@ -150,11 +155,10 @@ export const ChatMensagem = ({ menssagens }) => {
           position: 'relative',
           contain: 'strict',
           willChange: 'scroll-position',
-
-        }}>
-
+        }}
+      >
         <Box
-          id='scrollarea_container'
+          id="scrollarea_container"
           sx={{
             scrollbarWidth: 'none',
             display: 'flex',
@@ -163,52 +167,61 @@ export const ChatMensagem = ({ menssagens }) => {
             position: 'relative',
             overflow: 'auto',
             flexDirection: 'column-reverse',
-          }}>
-          <Box id="scrollarae-absoulte" sx={{
-            position: 'absolute',
-            minHeight: '100%',
-            minWidth: '100%',
-
-          }}>
-            <Box id='messages' sx={
-              {
+          }}
+        >
+          <Box
+            id="scrollarae-absoulte"
+            sx={{
+              position: 'absolute',
+              minHeight: '100%',
+              minWidth: '100%',
+            }}
+          >
+            <Box
+              id="messages"
+              sx={{
                 p: 2,
-
-              }
-            }>
-
+              }}
+            >
               <span>
                 {menssagens.map((mensagem, index) => (
-
                   <div key={mensagem.id}>
                     {index === 0 ||
                       (formatarData(mensagem.createdAt) !==
                         formatarData(menssagens[index - 1].createdAt) && (
-                          <Divider
-                            key={`hr - ${// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                              index}`}>
-                            <Chip label={formatarData(mensagem.createdAt)} size="small" />
-                          </Divider>
-                        ))}
+                        <Divider
+                          key={`hr - ${
+                            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                            index
+                          }`}
+                        >
+                          <Chip
+                            label={formatarData(mensagem.createdAt)}
+                            size="small"
+                          />
+                        </Divider>
+                      ))}
                     {menssagens.length && index === menssagens.length - 1 && (
                       <Box id="inicioListaMensagensChat" />
                     )}
 
                     <Box id={mensagem.id} />
-                    <Box sx={{
-                      fontWeight: '500',
-                      mb: 1
-                    }}>
-                      <Box id='message-container'
+                    <Box
+                      sx={{
+                        fontWeight: '500',
+                        mb: 1,
+                      }}
+                    >
+                      <Box
+                        id="message-container"
                         sx={{
                           alignItems: 'flex-end',
                           flexWrap: 'nowrap',
                           flexDirection: mensagem.fromMe && 'row-reverse',
-                          display: 'flex'
-                        }}>
-
+                          display: 'flex',
+                        }}
+                      >
                         <Box>
-
                           <Box
                             sx={{
                               backgroundColor: mensagem.fromMe
@@ -223,45 +236,62 @@ export const ChatMensagem = ({ menssagens }) => {
                               position: 'relative',
                               lineHeight: '1.2',
                               borderRadius: '20px',
-                              borderBottomLeftRadius: mensagem.fromMe ? '20px' : '0px',
-                              borderBottomRightRadius: mensagem.fromMe ? '0px' : '20px',
+                              borderBottomLeftRadius: mensagem.fromMe
+                                ? '20px'
+                                : '0px',
+                              borderBottomRightRadius: mensagem.fromMe
+                                ? '0px'
+                                : '20px',
                             }}
                           >
-
-
-                            <Box id='text-content'
+                            <Box
+                              id="text-content"
                               onMouseOver={() => setHoveredIndex(mensagem.id)}
-                              onMouseLeave={() => setHoveredIndex(null)}>
-
+                              onMouseLeave={() => setHoveredIndex(null)}
+                            >
                               <div>
-                                <Box sx={{
-                                  minWidth: '100px',
-                                  maxWidth: '350px',
-                                  lineHeight: '1.2',
-                                  wordBreak: 'break-word',
-                                  // textAlign: mensagem.fromMe ? 'right' : 'left',
-                                }}>
-
-
+                                <Box
+                                  sx={{
+                                    minWidth: '100px',
+                                    maxWidth: '350px',
+                                    lineHeight: '1.2',
+                                    wordBreak: 'break-word',
+                                    // textAlign: mensagem.fromMe ? 'right' : 'left',
+                                  }}
+                                >
                                   {/* Ativar o checkbox encaminhar mensagem */}
-                                  {ativarMultiEncaminhamento && (
-                                    mensagem.fromMe ? (
+                                  {ativarMultiEncaminhamento &&
+                                    (mensagem.fromMe ? (
                                       <Checkbox
                                         key={mensagem.id}
-                                        checked={checkboxStates[mensagem.id] || false}
-                                        onChange={() => handleCheckboxChange(mensagem)}
+                                        checked={
+                                          checkboxStates[mensagem.id] || false
+                                        }
+                                        onChange={() =>
+                                          handleCheckboxChange(mensagem)
+                                        }
                                         sx={{
                                           position: 'absolute',
-                                          left: '-35px', zIndex: 99999
-                                        }} />) :
-                                      <Checkbox key={mensagem.id}
-                                        checked={checkboxStates[mensagem.id] || false}
-                                        onChange={() => handleCheckboxChange(mensagem)}
+                                          left: '-35px',
+                                          zIndex: 99999,
+                                        }}
+                                      />
+                                    ) : (
+                                      <Checkbox
+                                        key={mensagem.id}
+                                        checked={
+                                          checkboxStates[mensagem.id] || false
+                                        }
+                                        onChange={() =>
+                                          handleCheckboxChange(mensagem)
+                                        }
                                         sx={{
                                           position: 'absolute',
-                                          right: '-35px', zIndex: 99999
-                                        }} />
-                                  )}
+                                          right: '-35px',
+                                          zIndex: 99999,
+                                        }}
+                                      />
+                                    ))}
 
                                   {/* Mostrar mensagens com agendamento */}
                                   {mensagem.scheduleDate && (
@@ -272,15 +302,20 @@ export const ChatMensagem = ({ menssagens }) => {
                                         position: 'absolute',
                                         zIndex: 100,
                                       }}
-                                      aria-owns={open ? 'mouse-over-popover' : undefined}
+                                      aria-owns={
+                                        open ? 'mouse-over-popover' : undefined
+                                      }
                                       aria-haspopup="true"
                                       onMouseEnter={handlePopoverOpen}
                                       onMouseLeave={handlePopoverClose}
                                       sx={{
                                         color:
-                                          mensagem.scheduleDate && mensagem.status === 'pending'
+                                          mensagem.scheduleDate &&
+                                          mensagem.status === 'pending'
                                             ? 'green'
-                                            : !['pending', 'canceled'].includes(mensagem.status)
+                                            : !['pending', 'canceled'].includes(
+                                                  mensagem.status
+                                                )
                                               ? 'blue'
                                               : '',
                                       }}
@@ -303,19 +338,34 @@ export const ChatMensagem = ({ menssagens }) => {
                                         disableRestoreFocus
                                       >
                                         <Box sx={{ p: 2 }}>
-                                          <Typography sx={{ p: 1 }} variant="subtitle2">
+                                          <Typography
+                                            sx={{ p: 1 }}
+                                            variant="subtitle2"
+                                          >
                                             {' '}
                                             Mensagem agendada
                                           </Typography>
-                                          <Typography sx={{ p: 1 }} variant="body2">
+                                          <Typography
+                                            sx={{ p: 1 }}
+                                            variant="body2"
+                                          >
                                             {' '}
                                             Criado em:{' '}
-                                            {formatarData(mensagem.createdAt, 'dd/MM/yyyy HH:mm')}
+                                            {formatarData(
+                                              mensagem.createdAt,
+                                              'dd/MM/yyyy HH:mm'
+                                            )}
                                           </Typography>
-                                          <Typography sx={{ p: 1 }} variant="body2">
+                                          <Typography
+                                            sx={{ p: 1 }}
+                                            variant="body2"
+                                          >
                                             {' '}
                                             Programado para:{' '}
-                                            {formatarData(mensagem.scheduleDate, 'dd/MM/yyyy HH:mm')}
+                                            {formatarData(
+                                              mensagem.scheduleDate,
+                                              'dd/MM/yyyy HH:mm'
+                                            )}
                                           </Typography>
                                         </Box>
                                       </Popover>
@@ -324,20 +374,30 @@ export const ChatMensagem = ({ menssagens }) => {
                                   {mensagem.isDeleted && (
                                     <Typography variant="body2">
                                       Menssagem apagada em{' '}
-                                      {formatarData(mensagem.updatedAt, 'dd/MM/yyyy')}
+                                      {formatarData(
+                                        mensagem.updatedAt,
+                                        'dd/MM/yyyy'
+                                      )}
                                     </Typography>
                                   )}
                                   {isGroupLabel(mensagem) && (
-                                    <Typography variant="body2">{isGroupLabel(mensagem)}</Typography>
+                                    <Typography variant="body2">
+                                      {isGroupLabel(mensagem)}
+                                    </Typography>
                                   )}
                                   {mensagem.quotedMsg && (
-                                    <MensagemRespondida mensagem={mensagem.quotedMsg} />
+                                    <MensagemRespondida
+                                      mensagem={mensagem.quotedMsg}
+                                    />
                                   )}
                                   {/* ATIVAR ENCAMINHAMENTO E RESPONDER */}
                                   {!mensagem.isDeleted && (
                                     <IconButton
                                       sx={{
-                                        display: hoveredIndex === mensagem.id ? 'block' : 'none',
+                                        display:
+                                          hoveredIndex === mensagem.id
+                                            ? 'block'
+                                            : 'none',
                                         position: 'absolute',
                                         zIndex: '99999',
                                         top: 0,
@@ -346,33 +406,41 @@ export const ChatMensagem = ({ menssagens }) => {
                                         padding: '0px', // Remove o espaçamento extra em torno do ícone
                                         fontSize: '16px', // Ajusta o tamanho do ícone
                                         color: '#000 !important', // Cor do ícone
-                                        backgroundColor: 'transparent !important', // Remove qualquer fundo indesejado
+                                        backgroundColor:
+                                          'transparent !important', // Remove qualquer fundo indesejado
                                         borderRadius: '50%', // Deixa o ícone circular
-                                        border: 'none'
+                                        border: 'none',
                                       }}
                                       onClick={() => alert('OpenMenu')}
                                     >
                                       <ArrowDownward
-                                        sx={{ fontSize: '20px', color: 'rgba(0, 0, 0, 0.45)' }}
+                                        sx={{
+                                          fontSize: '20px',
+                                          color: 'rgba(0, 0, 0, 0.45)',
+                                        }}
                                       />
                                     </IconButton>
                                   )}
                                   {/* AUDIO */}
-                                  {mensagem.mediaType === 'audio' && mensagem.mediaUrl && (
-                                    <Box
-                                      sx={{ width: 330, height: '100%' }}>
-                                      {/* biome-ignore lint/a11y/useMediaCaption: <explanation> */}
-                                      <audio
-                                        style={{ width: '100%' }}
-                                        controls
-                                        controlsList="download playbackrate volume"
-                                      >
-                                        <source src={mensagem.mediaUrl} type="audio/ogg" />
-
-                                      </audio>
-                                    </Box>
-                                  )}
-                                  {['vcard', 'contactMessage'].includes(mensagem.mediaType) && (
+                                  {mensagem.mediaType === 'audio' &&
+                                    mensagem.mediaUrl && (
+                                      <Box sx={{ width: 330, height: '100%' }}>
+                                        {/* biome-ignore lint/a11y/useMediaCaption: <explanation> */}
+                                        <audio
+                                          style={{ width: '100%' }}
+                                          controls
+                                          controlsList="download playbackrate volume"
+                                        >
+                                          <source
+                                            src={mensagem.mediaUrl}
+                                            type="audio/ogg"
+                                          />
+                                        </audio>
+                                      </Box>
+                                    )}
+                                  {['vcard', 'contactMessage'].includes(
+                                    mensagem.mediaType
+                                  ) && (
                                     // Criar Componento VCARD
                                     <Button>Download</Button>
                                   )}
@@ -380,7 +448,9 @@ export const ChatMensagem = ({ menssagens }) => {
                                   {mensagem.mediaType === 'sticker' && (
                                     <CardMedia
                                       onClick={() => {
-                                        setModalImageUrl(mensagem.mediaUrl || null)
+                                        setModalImageUrl(
+                                          mensagem.mediaUrl || null
+                                        )
                                         setModalOpen(true)
                                       }}
                                       component="img"
@@ -389,7 +459,9 @@ export const ChatMensagem = ({ menssagens }) => {
                                       image={mensagem.mediaUrl}
                                     />
                                   )}
-                                  {['location', 'locationMessage'].includes(mensagem.mediaType) &&
+                                  {['location', 'locationMessage'].includes(
+                                    mensagem.mediaType
+                                  ) &&
                                     // CRIAR MODAL ABRIR MAPs
                                     openLinkInNewPage(mensagem.body)}
                                   {/* FIGURINHAS */}
@@ -397,7 +469,9 @@ export const ChatMensagem = ({ menssagens }) => {
                                     mensagem.mediaUrl.includes('.webp') && (
                                       <CardMedia
                                         onClick={() => {
-                                          setModalImageUrl(mensagem.mediaUrl || null)
+                                          setModalImageUrl(
+                                            mensagem.mediaUrl || null
+                                          )
                                           setModalOpen(true)
                                         }}
                                         component="img"
@@ -406,54 +480,64 @@ export const ChatMensagem = ({ menssagens }) => {
                                         image={mensagem.mediaUrl}
                                       />
                                     )}
-                                  {(mensagem.mediaType === 'imageMessage' || (mensagem.mediaType === 'image' && !mensagem.mediaUrl.includes('.webp'))) && !mensagem.isSticker && (
-                                    <CardMedia
-                                      onClick={() => {
-                                        setModalImageUrl(mensagem.mediaUrl || null)
-                                        setModalOpen(true)
-                                      }}
-                                      component="img"
-                                      height="150px"
-                                      width="330px"
-                                      image={mensagem.mediaUrl}
-                                    />
-                                  )}
-                                  {mensagem.mediaType === 'image' && !mensagem.mediaUrl.includes('.webp') && mensagem.isSticker && (
-                                    <CardMedia
-                                      onClick={() => {
-                                        setModalImageUrl(mensagem.mediaUrl || null)
-                                        setModalOpen(true)
-                                      }}
-                                      component="img"
-                                      height="100px"
-                                      width="100px"
-                                      image={mensagem.mediaUrl}
-                                    />
-                                  )}
+                                  {(mensagem.mediaType === 'imageMessage' ||
+                                    (mensagem.mediaType === 'image' &&
+                                      !mensagem.mediaUrl.includes('.webp'))) &&
+                                    !mensagem.isSticker && (
+                                      <CardMedia
+                                        onClick={() => {
+                                          setModalImageUrl(
+                                            mensagem.mediaUrl || null
+                                          )
+                                          setModalOpen(true)
+                                        }}
+                                        component="img"
+                                        height="150px"
+                                        width="330px"
+                                        image={mensagem.mediaUrl}
+                                      />
+                                    )}
+                                  {mensagem.mediaType === 'image' &&
+                                    !mensagem.mediaUrl.includes('.webp') &&
+                                    mensagem.isSticker && (
+                                      <CardMedia
+                                        onClick={() => {
+                                          setModalImageUrl(
+                                            mensagem.mediaUrl || null
+                                          )
+                                          setModalOpen(true)
+                                        }}
+                                        component="img"
+                                        height="100px"
+                                        width="100px"
+                                        image={mensagem.mediaUrl}
+                                      />
+                                    )}
                                   {/* video */}
                                   {(mensagem.mediaType === 'video' ||
                                     mensagem.mediaType === 'videoMessage') && (
-                                      // biome-ignore lint/a11y/useMediaCaption: <explanation>
-                                      <video
-                                        controls
-                                        src={mensagem.mediaUrl}
-                                        style={{
-                                          objectFit: 'cover',
-                                          width: 330,
-                                          height: 150,
-                                          borderTopLeftRadius: 8,
-                                          borderTopRightRadius: 8,
-                                          borderBottomLeftRadius: 8,
-                                          borderBottomRightRadius: 8,
-                                        }}
-                                      />
-                                    )}
+                                    // biome-ignore lint/a11y/useMediaCaption: <explanation>
+                                    <video
+                                      controls
+                                      src={mensagem.mediaUrl}
+                                      style={{
+                                        objectFit: 'cover',
+                                        width: 330,
+                                        height: 150,
+                                        borderTopLeftRadius: 8,
+                                        borderTopRightRadius: 8,
+                                        borderBottomLeftRadius: 8,
+                                        borderBottomRightRadius: 8,
+                                      }}
+                                    />
+                                  )}
                                   {mensagem.mediaType === 'interactive' && (
                                     <Box
                                       dangerouslySetInnerHTML={{
-                                        __html: formatarMensagemRespostaBotaoWhatsapp(
-                                          DOMPurify.sanitize(mensagem.body)
-                                        ),
+                                        __html:
+                                          formatarMensagemRespostaBotaoWhatsapp(
+                                            DOMPurify.sanitize(mensagem.body)
+                                          ),
                                       }}
                                     />
                                   )}
@@ -478,14 +562,18 @@ export const ChatMensagem = ({ menssagens }) => {
                                   {mensagem.mediaType === 'notes' && (
                                     <Box
                                       dangerouslySetInnerHTML={{
-                                        __html: formatarNotas(DOMPurify.sanitize(mensagem.body)),
+                                        __html: formatarNotas(
+                                          DOMPurify.sanitize(mensagem.body)
+                                        ),
                                       }}
                                     />
                                   )}
                                   {mensagem.mediaType === 'templates' && (
                                     <Box
                                       dangerouslySetInnerHTML={{
-                                        __html: formatarTemplates(DOMPurify.sanitize(mensagem.body)),
+                                        __html: formatarTemplates(
+                                          DOMPurify.sanitize(mensagem.body)
+                                        ),
                                       }}
                                     />
                                   )}
@@ -508,7 +596,11 @@ export const ChatMensagem = ({ menssagens }) => {
                                     'notes',
                                     'transcription',
                                   ].includes(mensagem.mediaType) &&
-                                    mensagem.mediaUrl && <Box sx={{ mt: '20px' }}>Criar Iframe</Box>}
+                                    mensagem.mediaUrl && (
+                                      <Box sx={{ mt: '20px' }}>
+                                        Criar Iframe
+                                      </Box>
+                                    )}
                                   {/* nome do arquivo  */}
                                   {/* {['image', 'video', 'imageMessage', 'videoMessage'].includes(mensagem.mediaType) && mensagem.mediaUrl && (
                                   <Box>{formatarMensagemWhatsapp(mensagem.body || mensagem.mediaName)}</Box>
@@ -529,76 +621,86 @@ export const ChatMensagem = ({ menssagens }) => {
                                     'templates',
                                     'transcription',
                                   ].includes(mensagem.mediaType) && (
-                                      <>
-                                        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
-                                        <Box
-
-                                          //  dangerouslySetInnerHTML={{ __html: formatarMensagemWhatsapp(DOMPurify.sanitize(mensagem.body)) }}
-                                          sx={{
-                                            mt: '2px',
-                                            minWidth: '100px',
-                                            minHeight: '48px',
-                                            position: 'relative',
-                                            padding: ' 12px 0 8px 0',
-                                            borderRadius: '16px',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            gap: 2,
-                                          }}
-                                        >
-
-                                          <Box sx={{ wordWrap: 'break-word' }}>
-                                            {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
-                                            <span
-                                              dangerouslySetInnerHTML={{
-                                                __html: formatarMensagemWhatsapp(
-                                                  DOMPurify.sanitize(mensagem.body)
-                                                ),
-                                              }}
-                                            />
-                                          </Box>
-                                          {mensagem.fromMe ? (
-                                            <Box
-                                              sx={{
-                                                display: 'flex',
-                                                justifyContent: 'flex-end',
-                                                alignItems: 'center',
-                                                mt: '4px',
-                                              }}
-                                            >
-                                              <Typography
-                                                variant="caption"
-                                                sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.45)' }}
-                                              >
-                                                {dataInWords(mensagem.createdAt)}
-                                              </Typography>
-                                              <DoneAll
-                                                sx={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.45)' }}
-                                              />
-                                            </Box>
-                                          ) : (
+                                    <>
+                                      {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
+                                      <Box
+                                        //  dangerouslySetInnerHTML={{ __html: formatarMensagemWhatsapp(DOMPurify.sanitize(mensagem.body)) }}
+                                        sx={{
+                                          mt: '2px',
+                                          minWidth: '100px',
+                                          minHeight: '48px',
+                                          position: 'relative',
+                                          padding: ' 12px 0 8px 0',
+                                          borderRadius: '16px',
+                                          display: 'flex',
+                                          flexDirection: 'column',
+                                          gap: 2,
+                                        }}
+                                      >
+                                        <Box sx={{ wordWrap: 'break-word' }}>
+                                          {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
+                                          <span
+                                            dangerouslySetInnerHTML={{
+                                              __html: formatarMensagemWhatsapp(
+                                                DOMPurify.sanitize(
+                                                  mensagem.body
+                                                )
+                                              ),
+                                            }}
+                                          />
+                                        </Box>
+                                        {mensagem.fromMe ? (
+                                          <Box
+                                            sx={{
+                                              display: 'flex',
+                                              justifyContent: 'flex-end',
+                                              alignItems: 'center',
+                                              mt: '4px',
+                                            }}
+                                          >
                                             <Typography
                                               variant="caption"
-                                              sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.45)' }}
+                                              sx={{
+                                                fontSize: '12px',
+                                                color: 'rgba(0, 0, 0, 0.45)',
+                                              }}
                                             >
                                               {dataInWords(mensagem.createdAt)}
                                             </Typography>
-                                          )}
-                                        </Box>
-                                      </>
-                                    )}
+                                            <DoneAll
+                                              sx={{
+                                                fontSize: '16px',
+                                                color: 'rgba(0, 0, 0, 0.45)',
+                                              }}
+                                            />
+                                          </Box>
+                                        ) : (
+                                          <Typography
+                                            variant="caption"
+                                            sx={{
+                                              fontSize: '12px',
+                                              color: 'rgba(0, 0, 0, 0.45)',
+                                            }}
+                                          >
+                                            {dataInWords(mensagem.createdAt)}
+                                          </Typography>
+                                        )}
+                                      </Box>
+                                    </>
+                                  )}
                                 </Box>
-
                               </div>
                             </Box>
                           </Box>
                         </Box>
-
                       </Box>
                     </Box>
                     {/* Modal de Imagem */}
                     {modalImageUrl && (
-                      <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
+                      <Dialog
+                        open={modalOpen}
+                        onClose={() => setModalOpen(false)}
+                      >
                         <img src={modalImageUrl} alt="Imagem" />
                       </Dialog>
                     )}
@@ -608,9 +710,8 @@ export const ChatMensagem = ({ menssagens }) => {
             </Box>
           </Box>
         </Box>
-      </Box >
+      </Box>
       <div id="inicioListaMensagensChat" />
-
     </>
   )
 }

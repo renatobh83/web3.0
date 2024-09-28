@@ -1,4 +1,4 @@
-import { Cancel, Close, Mic, Send } from '@mui/icons-material'
+import { Cancel, Close, Mic, Send, Try } from '@mui/icons-material'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions'
 import SendIcon from '@mui/icons-material/Send'
@@ -75,12 +75,16 @@ import { Errors } from '../../utils/error'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 import { AgendamentoComponent } from '../../components/AtendimentoComponent/AgendamentoComponent'
 import { useTicketService } from '../../hooks/useTicketService'
+import { add } from 'lodash'
+import { useAtendimentoStore } from '../../store/atendimento'
+import { useNavigate } from 'react-router-dom'
 interface InputMenssagemProps {
-  isScheduleDate?: boolean,
-
+  isScheduleDate?: boolean
 }
 
-export const InputMenssagem: React.FC<InputMenssagemProps> = ({ isScheduleDate }) => {
+export const InputMenssagem: React.FC<InputMenssagemProps> = ({
+  isScheduleDate,
+}) => {
   const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
   const { iniciarAtendimento } = useTicketService()
 
@@ -90,7 +94,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({ isScheduleDate }
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const [urlMediaPreview, setUrlMediaPreview] = useState({})
-  const [arquivos, setArquivos] = useState<File[]>([]);
+  const [arquivos, setArquivos] = useState<File[]>([])
 
   const recorderControlsRef = useRef<ReturnType<
     typeof useAudioRecorder
@@ -121,31 +125,35 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({ isScheduleDate }
     }
   }
   const handleFileRemove = (fileName: string) => {
-    setArquivos(arquivos.filter(file => file.name !== fileName));
-  };
+    setArquivos(arquivos.filter(file => file.name !== fileName))
+  }
   // Função chamada quando o arquivo é selecionado
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = event.target.files;
+    const selectedFiles = event.target.files
     if (selectedFiles) {
-      const validFiles: File[] = [];
-      const maxSize = 2 * 1024 * 1024; // 2MB
-      const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+      const validFiles: File[] = []
+      const maxSize = 2 * 1024 * 1024 // 2MB
+      const validTypes = ['image/jpeg', 'image/png', 'application/pdf']
       for (let i = 0; i < selectedFiles.length; i++) {
-        const file = selectedFiles[i];
+        const file = selectedFiles[i]
 
         // Verifica o tipo de arquivo
         if (!validTypes.includes(file.type)) {
-          toast.error(`Tipo de arquivo inválido: ${file.name}`);
-          return;
+          toast.error(`Tipo de arquivo inválido: ${file.name}`, {
+            position: 'top-center',
+          })
+          return
         }
 
         // Verifica o tamanho do arquivo
         if (file.size > maxSize) {
-          toast.error(`Arquivo muito grande: ${file.name}`);
-          return;
+          toast.error(`Arquivo muito grande: ${file.name}`, {
+            position: 'top-center',
+          })
+          return
         }
 
-        validFiles.push(file);
+        validFiles.push(file)
       }
       setArquivos([...arquivos, ...validFiles])
     }
@@ -156,7 +164,9 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({ isScheduleDate }
   const [textChat, setTextChat] = useState('')
   const prepararMensagemTexto = () => {
     if (textChat.trim() === '') {
-      toast.error('Mensagem Inexistente')
+      toast.error('Mensagem Inexistente', {
+        position: 'top-center',
+      })
     }
 
     // if (textChat.trim() && textChat.trim().startsWith('/')) {
@@ -217,7 +227,6 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({ isScheduleDate }
   }
   // Função que será chamada para enviar a mensagem
   const enviarMensagem = async () => {
-
     const ticketId = ticketFocado.id
     setIsloading(true)
     try {
@@ -233,7 +242,6 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({ isScheduleDate }
       }
       setTextChat('') // Limpa o campo após enviar a mensagem
       setArquivos([])
-
     } catch (err) {
       Errors(err)
     } finally {
@@ -256,7 +264,9 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({ isScheduleDate }
       setIsRecordingAudio(false)
       setIsloading(false)
     } catch (error) {
-      toast.error(`Ocorreu um erro!, ${error}`)
+      toast.error(`Ocorreu um erro!, ${error}`, {
+        position: 'top-center',
+      })
     }
   }
 
@@ -315,7 +325,9 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({ isScheduleDate }
     } catch (error) {
       setIsloading(false)
       setIsRecordingAudio(false)
-      toast.error(`Ocorreu um erro!, ${JSON.stringify(error)}`)
+      toast.error(`Ocorreu um erro!, ${JSON.stringify(error)}`, {
+        position: 'top-center',
+      })
     }
   }
 
@@ -355,211 +367,247 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({ isScheduleDate }
     selected: { label: 'Agendamento customizado', value: 'custom', func: null },
     options: [
       { label: 'Agendamento customizado', value: 'custom', func: null },
-      { label: 'Em 30 minutos', value: '30_mins', func: () => add(new Date(), { minutes: 30 }) },
-      { label: 'Amanhã', value: 'amanha', func: () => add(new Date(), { days: 1 }) },
-      { label: 'Próxima semana', value: 'prox_semana', func: () => add(new Date(), { weeks: 1 }) },
+      {
+        label: 'Em 30 minutos',
+        value: '30_mins',
+        func: () => add(new Date(), { minutes: 30 }),
+      },
+      {
+        label: 'Amanhã',
+        value: 'amanha',
+        func: () => add(new Date(), { days: 1 }),
+      },
+      {
+        label: 'Próxima semana',
+        value: 'prox_semana',
+        func: () => add(new Date(), { weeks: 1 }),
+      },
     ],
+  }
+  const { mobileOpen, setMobileOpen } = useAtendimentoStore()
+  const navigate = useNavigate()
+  const goToChat = async (id: string) => {
+    try {
+      const timestamp = new Date().getTime()
+      navigate(`/atendimento/${id}?t=${timestamp}`, {
+        replace: false,
+        state: { t: new Date().getTime() },
+      })
+    } catch (error) {
+    } finally {
+      if (mobileOpen) setMobileOpen(false)
+    }
+  }
+  const abrirAtendimento = ticket => {
+    try {
+      iniciarAtendimento(ticket)
+    } finally {
+      goToChat(ticket.id)
+    }
   }
   function cMostrarEnvioArquivo() {
     return arquivos.length > 0
   }
   return (
     <>
-
-      {
-        ticketFocado.status !== 'pending' ? (
-          <Box
-            id="input"
-            sx={{
-              pb: 2,
-              position: 'relative',
-            }}
-          >
-            {isScheduleDate && (
-              <AgendamentoComponent />
-            )}
-            {!isRecordingAudio ? (
-              <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
-                <Tooltip title="Enviar arquivo">
-                  <>
-
-
-                    {/* <input
+      {ticketFocado.status !== 'pending' ? (
+        <Box
+          id="input"
+          sx={{
+            pb: 2,
+            position: 'relative',
+          }}
+        >
+          {isScheduleDate && <AgendamentoComponent />}
+          {!isRecordingAudio ? (
+            <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
+              <Tooltip title="Enviar arquivo">
+                <>
+                  {/* <input
                       type="file"
                       multiple
                       accept=".txt, .xml, .jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
                       className="p-2 border rounded"
                     /> */}
-                    <IconButton
-                      disabled={cDisableActions()}
-                      sx={{ borderRadius: '50%' }}
-                      size="small"
-                      onClick={handleButtonClick}
-                      disableRipple
-                    >
-                      <AttachFileIcon />
-                    </IconButton>
-                    <input
-                      type="file"
-                      accept=".txt, .xml, .jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
-                      ref={fileInputRef}
-                      multiple
-                      style={{ display: 'none' }} // Esconde o input
-                      onChange={handleFileChange} // Função que lida com a seleção do arquivo
-                    />
-                  </>
-                </Tooltip>
-
-                <Tooltip title="Emoji">
-                  <>
-                    <IconButton
-                      disabled={cDisableActions()}
-                      sx={{ borderRadius: '50%' }}
-                      size="small"
-                      onClick={handleClick}
-                      disableRipple
-                    >
-                      <EmojiEmotionsIcon />
-                    </IconButton>
-                    <StyledMenu
-                      anchorEl={anchorEl}
-                      open={open}
-                      onClose={handleClose}
-                    >
-                      Criar compoente para EMOJi
-                    </StyledMenu>
-                  </>
-                </Tooltip>
-
-                {cMostrarEnvioArquivo() ? (
-                  <Box sx={{ display: 'flex', width: '100%' }}>
-                    {arquivos.map((file, index) => (
-                      // biome-ignore lint/a11y/noLabelWithoutControl: <explanation>
-                      <label key={index} style={{ display: 'flex', marginBottom: '8px', alignItems: 'center' }}>
-                        {file.name}
-
-                        <IconButton
-                          color="secondary"
-                          sx={{ border: 'none' }}
-                          size="small"
-                          onClick={() => handleFileRemove(file.name)}>
-                          <Close />
-                        </IconButton>
-                      </label>
-                    ))}
-                  </Box>
-                ) :
-                  <TextField
-                    label="Digite sua mensagem"
-                    variant="standard"
-                    fullWidth
-                    value={textChat}
+                  <IconButton
                     disabled={cDisableActions()}
-                    onChange={e => setTextChat(e.target.value)}
-                    onKeyDown={handleKeyDown} // Captura a tecla pressionada
-                    ref={inputEnvioMensagem}
-                    sx={{ maxHeight: '30vh', flexFlow: 1 }}
-                    onPaste={handlePaste}
+                    sx={{ borderRadius: '50%' }}
+                    size="small"
+                    onClick={handleButtonClick}
+                    disableRipple
+                  >
+                    <AttachFileIcon />
+                  </IconButton>
+                  <input
+                    type="file"
+                    accept=".txt, .xml, .jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
+                    ref={fileInputRef}
+                    multiple
+                    style={{ display: 'none' }} // Esconde o input
+                    onChange={handleFileChange} // Função que lida com a seleção do arquivo
                   />
-                }
-                {textChat && (
-                  <Tooltip title="Enviar Mensagem">
-                    <IconButton
-                      disabled={ticketFocado.status !== 'open'}
-                      onClick={enviarMensagem}
+                </>
+              </Tooltip>
+
+              <Tooltip title="Emoji">
+                <>
+                  <IconButton
+                    disabled={cDisableActions()}
+                    sx={{ borderRadius: '50%' }}
+                    size="small"
+                    onClick={handleClick}
+                    disableRipple
+                  >
+                    <EmojiEmotionsIcon />
+                  </IconButton>
+                  <StyledMenu
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                  >
+                    Criar compoente para EMOJi
+                  </StyledMenu>
+                </>
+              </Tooltip>
+
+              {cMostrarEnvioArquivo() ? (
+                <Box sx={{ display: 'flex', width: '100%' }}>
+                  {arquivos.map((file, index) => (
+                    // biome-ignore lint/a11y/noLabelWithoutControl: <explanation>
+                    <label
+                      key={index}
+                      style={{
+                        display: 'flex',
+                        marginBottom: '8px',
+                        alignItems: 'center',
+                      }}
                     >
-                      <Send />
-                    </IconButton>
-                  </Tooltip>
-                )}
-                {cMostrarEnvioArquivo() && (<Tooltip title="Enviar Mensagem">
+                      {file.name}
+
+                      <IconButton
+                        color="secondary"
+                        sx={{ border: 'none' }}
+                        size="small"
+                        onClick={() => handleFileRemove(file.name)}
+                      >
+                        <Close />
+                      </IconButton>
+                    </label>
+                  ))}
+                </Box>
+              ) : (
+                <TextField
+                  label="Digite sua mensagem"
+                  variant="standard"
+                  fullWidth
+                  value={textChat}
+                  disabled={cDisableActions()}
+                  onChange={e => setTextChat(e.target.value)}
+                  onKeyDown={handleKeyDown} // Captura a tecla pressionada
+                  ref={inputEnvioMensagem}
+                  sx={{ maxHeight: '30vh', flexFlow: 1 }}
+                  onPaste={handlePaste}
+                />
+              )}
+              {textChat && (
+                <Tooltip title="Enviar Mensagem">
                   <IconButton
                     disabled={ticketFocado.status !== 'open'}
                     onClick={enviarMensagem}
                   >
                     <Send />
                   </IconButton>
-                </Tooltip>)}
-                {/* {(!textChat && !isRecordingAudio && !cMostrarEnvioArquivo()) && (
+                </Tooltip>
+              )}
+              {cMostrarEnvioArquivo() && (
+                <Tooltip title="Enviar Mensagem">
+                  <IconButton
+                    disabled={ticketFocado.status !== 'open'}
+                    onClick={enviarMensagem}
+                  >
+                    <Send />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {/* {(!textChat && !isRecordingAudio && !cMostrarEnvioArquivo()) && (
                   <Tooltip title=" Enviar Áudio">
                     <IconButton onClick={handleSartRecordingAudio}> */}
-                {/* <RecordingTimer exposeRecorderControls={handleRecorderControls} /> */}
-                {/* <Mic />
+              {/* <RecordingTimer exposeRecorderControls={handleRecorderControls} /> */}
+              {/* <Mic />
                     </IconButton>
                   </Tooltip>
                 )} */}
+            </Box>
+          ) : (
+            <Box
+              sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+              id="audio "
+            >
+              <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+                <RecordingTimer
+                  exposeRecorderControls={handleRecorderControls}
+                />
+                <IconButton size="small" onClick={handleCancelRecordingAudio}>
+                  <Cancel fontSize="inherit" />
+                </IconButton>
               </Box>
-            ) : (
-              <Box
-                sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}
-                id="audio "
+            </Box>
+          )}
+          {openPreviewImagem && (
+            <Dialog
+              open={openPreviewImagem}
+              onClose={handleClosePreviewImagem}
+              fullWidth
+            >
+              <DialogTitle id="abrirModalPreviewImagem">
+                {urlMediaPreview.title}
+              </DialogTitle>
+              <DialogContent
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
               >
-                <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
-                  <RecordingTimer
-                    exposeRecorderControls={handleRecorderControls}
-                  />
-                  <IconButton size="small" onClick={handleCancelRecordingAudio}>
-                    <Cancel fontSize="inherit" />
-                  </IconButton>
-                </Box>
-              </Box>
-            )}
-            {openPreviewImagem && (
-              <Dialog
-                open={openPreviewImagem}
-                onClose={handleClosePreviewImagem}
-                fullWidth
-              >
-                <DialogTitle id="abrirModalPreviewImagem">
-                  {urlMediaPreview.title}
-                </DialogTitle>
-                <DialogContent
+                <Card
                   sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    maxheight: '60vh',
+                    minWidth: 'calc(100% - 100px)',
+                    maxWidth: 'calc(100% - 100px)',
                   }}
                 >
-                  <Card
-                    sx={{
-                      maxheight: '60vh',
-                      minWidth: 'calc(100% - 100px)',
-                      maxWidth: 'calc(100% - 100px)',
-                    }}
-                  >
-                    <CardMedia component="img" image={urlMediaPreview.src} />
-                  </Card>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleClosePreviewImagem}>Cancelar</Button>
-                  <Button onClick={handleClosePreviewImagem} autoFocus>
-                    Enviar
-                  </Button>
-                </DialogActions>
-              </Dialog>
-            )}
-          </Box>
-        ) : (
-          <Box
-            sx={{
-              minHeight: '70px',
-              justifyContent: 'center',
-              alignItems: 'center',
-              display: 'flex',
-            }}
+                  <CardMedia component="img" image={urlMediaPreview.src} />
+                </Card>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClosePreviewImagem}>Cancelar</Button>
+                <Button onClick={handleClosePreviewImagem} autoFocus>
+                  Enviar
+                </Button>
+              </DialogActions>
+            </Dialog>
+          )}
+        </Box>
+      ) : (
+        <Box
+          sx={{
+            minHeight: '70px',
+            justifyContent: 'center',
+            alignItems: 'center',
+            display: 'flex',
+          }}
+        >
+          <Button
+            sx={{ p: 2 }}
+            variant="contained"
+            color="success"
+            endIcon={<SendIcon />}
+            onClick={() => abrirAtendimento(ticketFocado)}
           >
-            <Button
-              sx={{ p: 2 }}
-              variant="contained"
-              color='success'
-              endIcon={<SendIcon />}
-              onClick={() => iniciarAtendimento(ticketFocado)}
-            >
-              <Typography variant="h5">Iniciar o atendimento</Typography>
-            </Button>
-          </Box>
-        )
-      }
+            <Typography variant="h5">Iniciar o atendimento</Typography>
+          </Button>
+        </Box>
+      )}
     </>
   )
 }
