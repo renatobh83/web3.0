@@ -9,6 +9,9 @@ import {
 import Grid from '@mui/material/Grid2'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
+import { CriarContato, EditarContato } from '../../services/contatos'
+import { toast } from 'sonner'
+import { Errors } from '../../utils/error'
 interface Contato {
   name: string
   number: string
@@ -33,13 +36,29 @@ export const ContatoModal: React.FC<{
     formState: { errors },
   } = useForm<Contato>()
 
-  const contactId = true
-
   const onSubimit = contato => {
     if (contact) {
-      console.log(contato, 'edit')
+      EditarContato(contact.id, contato)
+        .then(() => {
+          toast.success('Contato editado', {
+            position: 'top-center',
+          })
+          close()
+        })
+        .catch(err => {
+          Errors(err)
+        })
     } else {
-      console.log(contato, 'create')
+      CriarContato(contato)
+        .then(() => {
+          toast.success('Contato criado', {
+            position: 'top-center',
+          })
+          close()
+        })
+        .catch(err => {
+          Errors(err)
+        })
     }
   }
 
@@ -88,12 +107,12 @@ export const ContatoModal: React.FC<{
       console.log(contact)
       setValue('name', contact.name || '')
       setValue('email', contact.email || '')
-      setValue('number', formatPhoneNumber(contact.number) || '')
+      setValue('number', contact.number || '')
       setValue('cpf', contact.cpf || '')
       setValue('birthdayDate', contact.birthdayDate || '')
       setValue('firstName', contact.name || '')
     }
-  }, [])
+  }, [contact])
   return (
     <Dialog open={open}>
       <DialogTitle>
@@ -123,19 +142,19 @@ export const ContatoModal: React.FC<{
                 fullWidth
                 label="Número"
                 variant="outlined"
-                value={watch('number')}
-                placeholder="+DDI (DDD) 9999 9999"
+                // value={watch('number')}
+                // placeholder="+DDI (DDD) 9999 9999"
                 {...register('number', {
                   required: 'Número é obrigatório',
-                  pattern: {
-                    value: /^\+\d{2} \(\d{2}\) \d{4,5}-\d{4}$/,
-                    message: 'Número inválido',
-                  },
+                  // pattern: {
+                  //   value: /^\+\d{2} \(\d{2}\) \d{4,5}-\d{4}$/,
+                  //   message: 'Número inválido',
+                  // },
                 })}
-                onChange={e => {
-                  const formattedNumber = formatPhoneNumber(e.target.value)
-                  setValue('number', formattedNumber) // Atualiza o valor do formulário com o número formatado
-                }}
+                // onChange={e => {
+                //   const formattedNumber = formatPhoneNumber(e.target.value)
+                //   setValue('number', formattedNumber) // Atualiza o valor do formulário com o número formatado
+                // }}
                 error={!!errors.number}
                 helperText="Número do celular deverá conter 9 dígitos e ser precedido do DDI E DDD."
               />
@@ -148,7 +167,7 @@ export const ContatoModal: React.FC<{
                 label="E-mail"
                 variant="outlined"
                 {...register('email', {
-                  required: 'Email é obrigatório',
+                  // required: 'Email é obrigatório',
                   pattern: {
                     value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
                     message: 'Email inválido',
@@ -167,7 +186,7 @@ export const ContatoModal: React.FC<{
                 variant="outlined"
                 placeholder="CPF/CNPJ"
                 value={watch('cpf')}
-                {...register('cpf', { required: 'CPF/CNPJ é obrigatório' })}
+                {...register('cpf')}
                 error={!!errors.cpf}
                 onChange={e => {
                   const formattedCPF = formatCPFNumber(e.target.value)
@@ -186,7 +205,7 @@ export const ContatoModal: React.FC<{
                 value={watch('birthdayDate')}
                 placeholder="01/01/1990"
                 {...register('birthdayDate', {
-                  required: 'Data de Aniversário é obrigatória',
+                  // required: 'Data de Aniversário é obrigatória',
                 })}
                 onChange={e => {
                   const formattedNumber = formatDN(e.target.value)
@@ -205,7 +224,7 @@ export const ContatoModal: React.FC<{
                 variant="outlined"
                 placeholder="Primeiro Nome"
                 {...register('firstName', {
-                  required: 'Primeiro Nome é obrigatório',
+                  // required: 'Primeiro Nome é obrigatório',
                 })}
                 error={!!errors.firstName}
                 helperText="Primeiro nome"
@@ -220,7 +239,7 @@ export const ContatoModal: React.FC<{
                 variant="outlined"
                 placeholder="Sobrenome"
                 {...register('lastName', {
-                  required: 'Sobrenome é obrigatório',
+                  // required: 'Sobrenome é obrigatório',
                 })}
                 error={!!errors.lastName}
                 helperText="Sobrenome"
@@ -235,7 +254,7 @@ export const ContatoModal: React.FC<{
                 variant="outlined"
                 placeholder="Empresa"
                 {...register('businessName', {
-                  required: 'Empresa é obrigatório',
+                  // required: 'Empresa é obrigatório',
                 })}
                 error={!!errors.businessName}
                 helperText="Empresa"

@@ -24,8 +24,9 @@ import { useWhatsappStore } from '../../store/whatsapp'
 import { Delete, Edit, Message, WhatsApp } from '@mui/icons-material'
 
 import { ModalNovoTicket } from '../Atendimento/ModalNovoTicket'
-import { ListarContatos } from '../../services/contatos'
+import { DeletarContato, ListarContatos } from '../../services/contatos'
 import { ContatoModal } from './ModalContato'
+import { toast } from 'sonner'
 
 const CustomTableContainer = styled(Table)(({ theme }) => ({
   // Customize styles with Tailwind CSS classes
@@ -163,9 +164,7 @@ export const Contatos: React.FC<{
             </IconButton>
           </Tooltip>
           <Tooltip title="Delete">
-            <IconButton
-            // onClick={() => handleDelete(params.row.id)}
-            >
+            <IconButton onClick={() => handleDelete(params.row)}>
               <Delete />
             </IconButton>
           </Tooltip>
@@ -186,8 +185,7 @@ export const Contatos: React.FC<{
   }
   const [pagination, setPagination] = useState({ page: 0, rowsPerPage: 10 })
   const [filter, setFilter] = useState('')
-  const contatos = useContatosStore(s => s.contatos)
-  const loadContacts = useContatosStore(s => s.loadContacts)
+  const { contatos, loadContacts } = useContatosStore()
   const whatsapp = useWhatsappStore(s => s.whatsApps)
   const [contatoSelecionado, setContatoSelecionado] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -213,6 +211,31 @@ export const Contatos: React.FC<{
     setContatoSelecionado(contato)
     setModalOpen(true)
   }
+
+  const handleDelete = contato => {
+    toast.message(
+      `Atenção!! Deseja realmente deletar o contto "${contato.name}"?`,
+      {
+        description: '',
+        position: 'top-center',
+        cancel: {
+          label: 'Cancel',
+          onClick: () => console.log('Cancel!'),
+        },
+        action: {
+          label: 'Confirma',
+          onClick: () => {
+            DeletarContato(contato.id).then(async () => {
+              toast.success('Contato apagado', {
+                position: 'top-center',
+              })
+              listaContatos()
+            })
+          },
+        },
+      }
+    )
+  }
   const closeModal = () => {
     setModalOpen(false)
     setContatoSelecionado(null)
@@ -221,6 +244,7 @@ export const Contatos: React.FC<{
     const { data } = await ListarContatos()
     loadContacts(data.contacts)
   }, [])
+
   useEffect(() => {
     listaContatos()
   }, [])
