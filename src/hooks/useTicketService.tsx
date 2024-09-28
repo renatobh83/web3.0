@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { Errors } from '../utils/error.js'
 import { useNavigate } from 'react-router-dom'
+import { useAtendimentoStore } from '../store/atendimento.js'
 
 interface Ticket {
   id: number
@@ -20,7 +21,7 @@ export const useTicketService = () => {
     status: string
     ticket: Ticket
   } | null>(null)
-
+  const { mobileOpen, setMobileOpen } = useAtendimentoStore()
   const goToChat = async (id: number) => {
     try {
       const timestamp = new Date().getTime()
@@ -49,7 +50,7 @@ export const useTicketService = () => {
         position: 'top-center',
       })
     } finally {
-      //   goToChat(ticket.id)
+      goToChat(ticket.id)
       setLoading(false)
     }
   }

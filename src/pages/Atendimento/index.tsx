@@ -359,7 +359,6 @@ export function Atendimento(props: Props) {
     toggleModalUsuario()
   }
   function handlerNotifications(data) {
-    console.log(data)
     const options = {
       body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
       icon: data.ticket.contact.profilePicUrl,

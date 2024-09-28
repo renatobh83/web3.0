@@ -142,7 +142,6 @@ export const Chat = () => {
           bottom: 0,
           left: { sm: 0, md: 380, xs: 0 },
           right: 0,
-          zIndex: 2000,
           px: 1,
         }}
         component={'footer'}

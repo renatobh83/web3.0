@@ -298,7 +298,9 @@ export const useSocketInitial = () => {
         }
       })
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
+        console.log(data)
         const verify = []
+
         if (data.type === 'notification:new') {
           const params = {
             searchParam: '',
@@ -313,6 +315,7 @@ export const useSocketInitial = () => {
           }
           try {
             const data_noti = await ConsultarTickets(params)
+
             updateNotificationsP(data_noti.data)
             verify.push(data_noti)
           } catch (err) {
@@ -323,6 +326,7 @@ export const useSocketInitial = () => {
             console.error(err)
           }
           let pass_noti = false
+
           // biome-ignore lint/complexity/noForEach: <explanation>
           verify.data.tickets.forEach(element => {
             pass_noti = element.id === data.payload.id ? true : pass_noti
