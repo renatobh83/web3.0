@@ -34,6 +34,7 @@ export const useSocketInitial = () => {
     state => state.updateMessages
   )
   const updateContact = useContatosStore(state => state.updateContact)
+  const deleteContact = useContatosStore(state => state.deleteContact)
   const updateMessageStatus = useAtendimentoTicketStore(
     state => state.updateMessageStatus
   )
@@ -355,6 +356,10 @@ export const useSocketInitial = () => {
         if (data.type === 'contact:update') {
           console.log('socket ON: CONTACT:UPDATE')
           updateContact(data.payload)
+        }
+        if (data.type === 'contact:delete') {
+          console.log('socket ON: CONTACT:DELETE')
+          deleteContact(data.payload)
         }
       })
 

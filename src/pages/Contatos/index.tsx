@@ -225,11 +225,10 @@ export const Contatos: React.FC<{
         action: {
           label: 'Confirma',
           onClick: () => {
-            DeletarContato(contato.id).then(async () => {
+            DeletarContato(contato.id).then(async data => {
               toast.success('Contato apagado', {
                 position: 'top-center',
               })
-              listaContatos()
             })
           },
         },
