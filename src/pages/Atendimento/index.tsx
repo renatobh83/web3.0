@@ -112,7 +112,7 @@ const StyledMenu = styled((props: MenuProps) => (
       '&:active': {
         backgroundColor: alpha(
           theme.palette.primary.main,
-          theme.palette.action.selectedOpacity,
+          theme.palette.action.selectedOpacity
         ),
       },
     },
@@ -120,7 +120,7 @@ const StyledMenu = styled((props: MenuProps) => (
       color: theme.palette.grey[300],
     }),
   },
-}));
+}))
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props
   return (
@@ -145,7 +145,6 @@ function a11yProps(index: number, name: string) {
   }
 }
 
-
 interface Props {
   window?: () => Window
 }
@@ -157,7 +156,6 @@ export function Atendimento(props: Props) {
   // useMixinSocket()
 
   const [openModalNovoTicket, setOpenModalNovoTicket] = useState(false)
-
 
   // Stores
   const resetTickets = useAtendimentoTicketStore(s => s.resetTickets)
@@ -187,8 +185,6 @@ export function Atendimento(props: Props) {
   const profile = localStorage.getItem('profile')
   const username = localStorage.getItem('username')
   const usuario = JSON.parse(localStorage.getItem('usuario'))
-
-
 
   const { socketDisconnect, socketTicketList } = useMixinSocket()
 
@@ -399,7 +395,6 @@ export function Atendimento(props: Props) {
     localStorage.setItem('configuracoes', JSON.stringify(data))
   }
   const consultaTickets = async (paramsInit = {}) => {
-
     const toastId = toast.info(
       'Aguarde enquanto os tickets são carregados...',
       {
@@ -531,7 +526,6 @@ export function Atendimento(props: Props) {
     return Object.values(groupedTickets)
   }
   function closedTickets(): Ticket[] {
-
     return tickets.filter(
       ticket => ticket.status === 'closed' && !ticket.isGroup
     )
@@ -590,7 +584,6 @@ export function Atendimento(props: Props) {
   }, [])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-
     socketTicketList()
     return () => {
       socketDisconnect()
@@ -624,12 +617,11 @@ export function Atendimento(props: Props) {
   const listaContatos = useCallback(async () => {
     const { data } = await ListarContatos()
     loadContacts(data.contacts)
-  }, [
+  }, [])
 
-  ])
   useEffect(() => {
     listaContatos()
-  }, [contatos])
+  }, [])
   const handleClick = () => {
     if (mobileOpen) {
       // Lógica para quando estiver dentro de um modal
@@ -642,7 +634,7 @@ export function Atendimento(props: Props) {
       return
       // Executa a função para o desktop
     }
-  };
+  }
 
   const drawer = (
     <>
@@ -811,7 +803,6 @@ export function Atendimento(props: Props) {
             </MenuList>
           </StyledMenu>
           <TextField
-
             id="standard-basic"
             label="Pesquisa"
             variant="standard"
@@ -832,32 +823,52 @@ export function Atendimento(props: Props) {
           value={tabTicketsStatus}
           onChange={(_event, newValue) => setTabTicketsStatus(newValue)}
         >
-          <Tab label={openTickets().length ?
-            <Badge
-              color="error"
-              variant="dot"
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }} > Abertos
-            </Badge> : 'Abertos'}
-            value="open" disableRipple />
+          <Tab
+            label={
+              openTickets().length ? (
+                <Badge
+                  color="error"
+                  variant="dot"
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                >
+                  {' '}
+                  Abertos
+                </Badge>
+              ) : (
+                'Abertos'
+              )
+            }
+            value="open"
+            disableRipple
+          />
 
-          <Tab label={pendingTickets().length ?
-            <Badge
-              color="error"
-              variant="dot"
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }} > Pendente
-            </Badge> : 'Pendente'}
-            value="pending" disableRipple />
-
-
+          <Tab
+            label={
+              pendingTickets().length ? (
+                <Badge
+                  color="error"
+                  variant="dot"
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                >
+                  {' '}
+                  Pendente
+                </Badge>
+              ) : (
+                'Pendente'
+              )
+            }
+            value="pending"
+            disableRipple
+          />
 
           {/* <Badge color="error" className="absolute left-0 top-0" /> */}
-          <Tab label='Fechado' value="closed" disableRipple />
+          <Tab label="Fechado" value="closed" disableRipple />
           {/* <Badge color="error" className="absolute left-0 top-0" /> */}
           {/* {chatBotLane === "enabled" && (
                                     <Tab
@@ -879,40 +890,61 @@ export function Atendimento(props: Props) {
                                     <Tooltip title="Conversas Privadas" className="bg-padrao text-gray-900 font-bold" />
                                 )} */}
         </Tabs>
-      )
-      }
+      )}
 
-      {
-        tabTickets === 1 && (
-          <Tabs
-            sx={{ mt: 2, mb: 2 }}
-            variant="fullWidth"
-            value={tabTicketsStatus}
-            onChange={(_event, newValue) => setTabTicketsStatus(newValue)}
-          >
-            <Tab label={openGroupTickets().length ?
-              <Badge
-                color="error"
-                variant="dot"
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }} > Abertos
-              </Badge> : 'Abertos'} value="open" disableRipple />
+      {tabTickets === 1 && (
+        <Tabs
+          sx={{ mt: 2, mb: 2 }}
+          variant="fullWidth"
+          value={tabTicketsStatus}
+          onChange={(_event, newValue) => setTabTicketsStatus(newValue)}
+        >
+          <Tab
+            label={
+              openGroupTickets().length ? (
+                <Badge
+                  color="error"
+                  variant="dot"
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                >
+                  {' '}
+                  Abertos
+                </Badge>
+              ) : (
+                'Abertos'
+              )
+            }
+            value="open"
+            disableRipple
+          />
 
-            <Tab label={pendingGroupTickets().length ?
-              <Badge
-                color="error"
-                variant="dot"
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }} > Pendente
-              </Badge> : 'Pendente'} value="pending" disableRipple />
-            <Tab label="Fechado" value="closed" disableRipple />
-          </Tabs>
-        )
-      }
+          <Tab
+            label={
+              pendingGroupTickets().length ? (
+                <Badge
+                  color="error"
+                  variant="dot"
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                >
+                  {' '}
+                  Pendente
+                </Badge>
+              ) : (
+                'Pendente'
+              )
+            }
+            value="pending"
+            disableRipple
+          />
+          <Tab label="Fechado" value="closed" disableRipple />
+        </Tabs>
+      )}
 
       <TabPanel value={tabTickets} index={0}>
         <List
@@ -943,7 +975,6 @@ export function Atendimento(props: Props) {
               />
             ))}
           {tabTicketsStatus === 'closed' &&
-
             closedTickets().map(ticket => (
               <ItemTicket
                 key={ticket.id}
@@ -1048,8 +1079,6 @@ export function Atendimento(props: Props) {
   const container =
     window !== undefined ? () => window().document.body : undefined
 
-
-
   return (
     <>
       <Box sx={{ display: 'flex' }}>
@@ -1125,7 +1154,12 @@ export function Atendimento(props: Props) {
         </Box>
 
         {modalUsuario && <ModalUsuario />}
-        {openModalNovoTicket && <ModalNovoTicket open={openModalNovoTicket} close={closeModalNovoTicket} />}
+        {openModalNovoTicket && (
+          <ModalNovoTicket
+            open={openModalNovoTicket}
+            close={closeModalNovoTicket}
+          />
+        )}
       </Box>
     </>
   )
