@@ -74,9 +74,22 @@ export const ItemTicket = ({
   //     //     },
   //     // });
   //   }, [])
-
+  const { mobileOpen, setMobileOpen } = useAtendimentoStore()
+  const goToChat = async (id: string) => {
+    try {
+      const timestamp = new Date().getTime()
+      navigate(`/atendimento/${id}?t=${timestamp}`, {
+        replace: false,
+        state: { t: new Date().getTime() },
+      })
+    } catch (error) {
+    } finally {
+      if (mobileOpen) setMobileOpen(false)
+    }
+  }
   const abrirChatContato = async ticket => {
     AbrirChatMensagens(ticket)
+    goToChat(ticket.id)
   }
 
   if (!ticket) {
