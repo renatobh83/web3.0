@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Button,
   IconButton,
   styled,
   Tab,
@@ -11,18 +12,20 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  TextField,
   Toolbar,
   Tooltip,
   Typography,
 } from '@mui/material'
-import { filter } from 'lodash'
-import { Suspense, useCallback, useEffect, useState } from 'react'
+import ImportExportIcon from '@mui/icons-material/ImportExport'
+import { useCallback, useEffect, useState } from 'react'
 import { useContatosStore } from '../../store/contatos'
 import { useWhatsappStore } from '../../store/whatsapp'
 import { Delete, Edit, Message, WhatsApp } from '@mui/icons-material'
-import { toast } from 'sonner'
+
 import { ModalNovoTicket } from '../Atendimento/ModalNovoTicket'
 import { ListarContatos } from '../../services/contatos'
+import { ContatoModal } from './ModalContato'
 
 const CustomTableContainer = styled(Table)(({ theme }) => ({
   // Customize styles with Tailwind CSS classes
@@ -155,9 +158,7 @@ export const Contatos: React.FC<{
             </Tooltip>
           )}
           <Tooltip title="Edit">
-            <IconButton
-            // onClick={() => handleEdit(params.row.id)}
-            >
+            <IconButton onClick={() => handleEdit(params.row)}>
               <Edit />
             </IconButton>
           </Tooltip>
@@ -190,7 +191,7 @@ export const Contatos: React.FC<{
   const whatsapp = useWhatsappStore(s => s.whatsApps)
   const [contatoSelecionado, setContatoSelecionado] = useState(null)
   const [loading, setLoading] = useState(false)
-
+  const [modalOpen, setModalOpen] = useState(false)
   const handlePageChange = (event: unknown, newPage: number) => {
     setPagination(prev => ({ ...prev, page: newPage }))
   }
@@ -208,7 +209,14 @@ export const Contatos: React.FC<{
     searchParam: null,
     hasMore: true,
   })
-
+  const handleEdit = contato => {
+    setContatoSelecionado(contato)
+    setModalOpen(true)
+  }
+  const closeModal = () => {
+    setModalOpen(false)
+    setContatoSelecionado(null)
+  }
   const listaContatos = useCallback(async () => {
     const { data } = await ListarContatos()
     loadContacts(data.contacts)
@@ -218,15 +226,62 @@ export const Contatos: React.FC<{
   }, [])
 
   return (
-    <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, px: 4 }}>
+    <Box
+      sx={{
+        width: '100%',
+        maxWidth: { sm: '100%', md: '1700px' },
+        px: 4,
+        pt: 2,
+      }}
+    >
       {isChatContact && <Toolbar />}
 
-      <Typography component="h2" variant="h6">
-        Contatos
-      </Typography>
-
+      <Box
+        sx={{ display: 'flex', p: 2, gap: 1, justifyContent: 'space-between' }}
+      >
+        <Typography component="h2" variant="h6">
+          Contatos
+        </Typography>
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="Localize"
+          value={filter}
+          onChange={e => setFilter(e.target.value)}
+          // InputProps={{
+          //   startAdornment: <SearchIcon />,
+          // }}
+        />
+        <Box sx={{ gap: 2, display: 'flex' }}>
+          <Button
+            sx={{ display: isChatContact ? 'none' : 'flex' }}
+            variant="contained"
+            color="warning"
+            // onClick={handleImport}
+            startIcon={<ImportExportIcon />}
+          >
+            Importar
+          </Button>
+          <Button
+            sx={{ display: isChatContact ? 'none' : 'flex' }}
+            variant="contained"
+            color="warning"
+            // onClick={handleExport}
+            startIcon={<ImportExportIcon />}
+          >
+            Exportar
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => setModalOpen(true)}
+          >
+            Adicionar
+          </Button>
+        </Box>
+      </Box>
       <CustomTableContainer
-        component={'table'}
+        // component={'table'}
         sx={{ mt: '4px', bgcolor: 'background.paper' }}
         id={`tabela-contatos-${isChatContact ? 'atendimento' : ''}`}
       >
@@ -248,7 +303,9 @@ export const Contatos: React.FC<{
         </TableHead>
         <TableBody>
           {contatos
-            ?.filter(row => row?.name?.includes(filter))
+            ?.filter(row =>
+              row?.name?.toLowerCase().includes(filter.toLowerCase())
+            )
             .slice(
               pagination.page * pagination.rowsPerPage,
               pagination.page * pagination.rowsPerPage + pagination.rowsPerPage
@@ -282,6 +339,13 @@ export const Contatos: React.FC<{
           open={openModalNovoTicket}
           close={closeModalNovoTicket}
           isContact={contatoSelecionado}
+        />
+      )}
+      {modalOpen && (
+        <ContatoModal
+          open={modalOpen}
+          close={closeModal}
+          contact={contatoSelecionado}
         />
       )}
     </Box>
