@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 import { Errors } from '../utils/error.js'
 import { useNavigate } from 'react-router-dom'
 import { useAtendimentoStore } from '../store/atendimento.js'
+import { useAtendimentoTicketStore } from '../store/atendimentoTicket.js'
 
 interface Ticket {
   id: number
@@ -21,6 +22,7 @@ export const useTicketService = () => {
     status: string
     ticket: Ticket
   } | null>(null)
+  const { AbrirChatMensagens } = useAtendimentoTicketStore()
   const { mobileOpen, setMobileOpen } = useAtendimentoStore()
   const goToChat = async (id: number) => {
     try {
@@ -45,7 +47,9 @@ export const useTicketService = () => {
           position: 'top-center',
         }
       )
-      goToChat(data.id)
+      AbrirChatMensagens(data.id).then(() => {
+        goToChat(data.id)
+      })
     } catch (error) {
       console.error(error)
       toast.error('Não foi possível atualizar o status', {
