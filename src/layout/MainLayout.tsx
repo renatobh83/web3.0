@@ -79,13 +79,17 @@ export const MainLayout: React.FC = () => {
   // }
 
   const listarWhatsapps = useCallback(async () => {
-    const { data } = await ListarWhatsapps()
-    loadWhatsApps(data)
+    if (!whatsApps.length) {
+      const { data } = await ListarWhatsapps()
+      loadWhatsApps(data)
+    }
   }, [])
 
   const listarConfiguracoes = useCallback(async () => {
-    const { data } = await ListarConfiguracoes()
-    localStorage.setItem('configuracoes', JSON.stringify(data))
+    if (!localStorage.getItem('configuracoes')) {
+      const { data } = await ListarConfiguracoes()
+      localStorage.setItem('configuracoes', JSON.stringify(data))
+    }
   }, [])
 
   const consultarTickets = useCallback(async () => {

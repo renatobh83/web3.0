@@ -1,29 +1,31 @@
-import { create } from "zustand";
+import { create } from 'zustand'
 
 interface WhatsApp {
-  id: number;
-  [key: string]: any;
+  id: number
+  [key: string]: any
 }
 
 interface State {
-  whatsApps: any[];
-  loadWhatsApps: (payload: any[]) => void;
-  updateWhatsApps: (payload: any) => void;
-  updateSession: (payload: any) => void;
-  deleteWhatsApp: (id: number) => void;
-  resetWhatsApps: () => void;
+  whatsApps: any[]
+  chatFlows: any[]
+  loadChatFlows: (payload: any[]) => void
+  loadWhatsApps: (payload: any[]) => void
+  updateWhatsApps: (payload: any) => void
+  updateSession: (payload: any) => void
+  deleteWhatsApp: (id: number) => void
+  resetWhatsApps: () => void
 }
 
-export const useWhatsappStore = create<State>((set) => ({
+export const useWhatsappStore = create<State>(set => ({
   whatsApps: [],
-
-  loadWhatsApps: (payload) =>
+  chatFlows: [],
+  loadWhatsApps: payload =>
     set(() => ({
       whatsApps: payload,
     })),
-
-  updateWhatsApps: (payload) =>
-    set((state) => {
+  loadChatFlows: payload => set(() => ({ chatFlows: payload })),
+  updateWhatsApps: payload =>
+    set(state => {
       // console.log(payload)
       // const whatsApp = payload
       // let newWhats = [...state.whatsApps]
@@ -41,21 +43,21 @@ export const useWhatsappStore = create<State>((set) => ({
       // return { whatsApps: updatedWhatsApps };
     }),
 
-  updateSession: (payload) =>
-    set((state) => {
-      const updatedWhatsApps = state.whatsApps.map((w) =>
+  updateSession: payload =>
+    set(state => {
+      const updatedWhatsApps = state.whatsApps.map(w =>
         w.id === payload.id ? { ...w, ...payload } : w
-      );
-      return { whatsApps: updatedWhatsApps };
+      )
+      return { whatsApps: updatedWhatsApps }
     }),
 
-  deleteWhatsApp: (id) =>
-    set((state) => ({
-      whatsApps: state.whatsApps.filter((w) => w.id !== id),
+  deleteWhatsApp: id =>
+    set(state => ({
+      whatsApps: state.whatsApps.filter(w => w.id !== id),
     })),
 
   resetWhatsApps: () =>
     set(() => ({
       whatsApps: [],
     })),
-}));
+}))

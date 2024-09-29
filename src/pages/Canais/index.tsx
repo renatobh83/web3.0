@@ -33,7 +33,7 @@ import { ModalQrCode } from './ModalQrCode'
 import { eventEmitter } from '../../hooks/useSocketInitial'
 
 export const Canais = () => {
-  const [chatflows, setChatflows] = useState([])
+  const { chatFlows, loadChatFlows } = useWhatsappStore()
   const [selectedChatBots, setSelectedChatBots] = useState({})
   const data = useWhatsappStore(s => s.whatsApps)
   const loadWhatsApps = useWhatsappStore(s => s.loadWhatsApps)
@@ -70,12 +70,13 @@ export const Canais = () => {
   }
   const listChatFlow = useCallback(async () => {
     const { data } = await ListarChatFlow()
-    setChatflows(data.chatFlow)
-  }, [data])
+    console.log(data)
+    loadChatFlows(data.chatFlow)
+  }, [])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    listChatFlow()
+    if (!chatFlows.length) listChatFlow()
   }, [])
 
   // Preenche o estado inicial com base no item.chatFlowId
@@ -210,8 +211,8 @@ export const Canais = () => {
               toast.success('Canal apagado', {
                 position: 'top-center',
               })
-              const { data } = await ListarWhatsapps()
-              loadWhatsApps(data)
+              // const { data } = await ListarWhatsapps()
+              // loadWhatsApps(data)
             })
           },
         },
@@ -317,7 +318,7 @@ export const Canais = () => {
                           onChange={e => handleChange(item, e)}
                           label="ChatBot"
                         >
-                          {chatflows?.map(chatflow => (
+                          {chatFlows?.map(chatflow => (
                             <MenuItem value={chatflow.id} key={chatflow.id}>
                               {chatflow.name}
                             </MenuItem>

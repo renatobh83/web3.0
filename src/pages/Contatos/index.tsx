@@ -246,7 +246,7 @@ export const Contatos: React.FC<{
   }, [])
 
   useEffect(() => {
-    listaContatos()
+    if (!contatos.length) listaContatos()
   }, [])
 
   return (

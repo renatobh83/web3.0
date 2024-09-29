@@ -390,8 +390,10 @@ export function Atendimento(props: Props) {
   }
 
   const listarConfiguracoes = async () => {
-    const { data } = await ListarConfiguracoes()
-    localStorage.setItem('configuracoes', JSON.stringify(data))
+    if (!localStorage.getItem('configuracoes')) {
+      const { data } = await ListarConfiguracoes()
+      localStorage.setItem('configuracoes', JSON.stringify(data))
+    }
   }
   const consultaTickets = async (paramsInit = {}) => {
     const toastId = toast.info(
@@ -444,10 +446,8 @@ export function Atendimento(props: Props) {
   async function listarUsuarios() {
     try {
       const { data } = await ListarUsuarios()
-
       setUsuarios(data.users)
     } catch (error) {
-      console.error(error)
       toast.error(`Problema ao carregar usuários, ${JSON.stringify(error)}`, {
         position: 'top-center',
       })
@@ -461,8 +461,10 @@ export function Atendimento(props: Props) {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listarWhatsapps = useCallback(async () => {
-    const { data } = await ListarWhatsapps()
-    loadWhatsApps(data)
+    if (!whatsApps.length) {
+      const { data } = await ListarWhatsapps()
+      loadWhatsApps(data)
+    }
   }, [])
 
   useEffect(() => {
@@ -621,7 +623,7 @@ export function Atendimento(props: Props) {
   }, [])
 
   useEffect(() => {
-    listaContatos()
+    if (!contatos.length) listaContatos()
   }, [])
   const handleClick = () => {
     if (mobileOpen) {
