@@ -299,10 +299,10 @@ export const useSocketInitial = () => {
         }
       })
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
-        console.log(data)
         const verify = []
 
         if (data.type === 'notification:new') {
+          console.log('socket ON: notification:New')
           const params = {
             searchParam: '',
             pageNumber: 1,
@@ -329,7 +329,7 @@ export const useSocketInitial = () => {
           let pass_noti = false
 
           // biome-ignore lint/complexity/noForEach: <explanation>
-          verify.data.tickets.forEach(element => {
+          verify?.data?.tickets.forEach(element => {
             pass_noti = element.id === data.payload.id ? true : pass_noti
           })
           if (pass_noti) {

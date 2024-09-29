@@ -30,6 +30,7 @@ export const useTicketService = () => {
         state: { t: new Date().getTime() },
       })
     } catch (error) {
+      Errors(error)
     } finally {
       if (mobileOpen) setMobileOpen(false)
     }
@@ -37,20 +38,20 @@ export const useTicketService = () => {
   const iniciarAtendimento = async (ticket: Ticket) => {
     setLoading(true)
     try {
-      await AtualizarStatusTicket(ticket.id, 'open', userId)
+      const { data } = await AtualizarStatusTicket(ticket.id, 'open', userId)
       toast.success(
         `Atendimento Iniciado || ${ticket.contact?.name} - Ticket: ${ticket.id}`,
         {
           position: 'top-center',
         }
       )
+      goToChat(data.id)
     } catch (error) {
       console.error(error)
       toast.error('Não foi possível atualizar o status', {
         position: 'top-center',
       })
     } finally {
-      goToChat(ticket.id)
       setLoading(false)
     }
   }
