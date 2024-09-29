@@ -359,7 +359,7 @@ export const useSocketInitial = () => {
         }
         if (data.type === 'contact:delete') {
           console.log('socket ON: CONTACT:DELETE')
-          deleteContact(data.payload)
+          deleteContact(data.payload.id)
         }
       })
 

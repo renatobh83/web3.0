@@ -229,6 +229,7 @@ export const Contatos: React.FC<{
               toast.success('Contato apagado', {
                 position: 'top-center',
               })
+              console.log(contatos)
             })
           },
         },
@@ -324,6 +325,7 @@ export const Contatos: React.FC<{
             ))}
           </TableRow>
         </TableHead>
+
         <TableBody>
           {contatos
             ?.filter(row =>
