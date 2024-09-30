@@ -21,6 +21,8 @@ import {
 	DialogTitle,
 	FormControl,
 	Select,
+	MenuItem,
+	InputLabel,
 
 } from "@mui/material";
 import AirlineStopsIcon from '@mui/icons-material/AirlineStops';
@@ -349,55 +351,54 @@ export const InfoCabecalhoMenssagens = () => {
 				</Dialog>
 			}
 			{modalTransferirTicket &&
-				<Dialog open={modalTransferirTicket} onClose={() => setModalTransferirTicket(false)}>
+				<Dialog open={modalTransferirTicket} onClose={() => setModalTransferirTicket(false)} fullWidth maxWidth='sm'>
 					<DialogTitle>Transferir Ticket</DialogTitle>
 					<DialogContent>
-						<FormControl fullWidth margin="normal">
+						<FormControl fullWidth margin="dense">
+							<InputLabel id="demo-simple-select-standard-label">Fila</InputLabel>
 							<Select
-								native
+
+								variant="outlined"
+
 								value={filaSelecionada || ''}
 								onChange={(e) => setFilaSelecionada(Number(e.target.value))}
 							>
-								<option value="" disabled>
-									Selecione a fila
-								</option>
+
 								{filas.map((fila) => (
-									<option key={fila.id} value={fila.id}>
+									<MenuItem key={fila.id} value={fila.id}>
 										{fila.queue}
-									</option>
+									</MenuItem>
 								))}
 							</Select>
 						</FormControl>
 
 						<FormControl fullWidth margin="normal">
-
+							<InputLabel id="demo-simple-select-standard-label">Usuario</InputLabel>
 							<Select
 								sx={{ p: 1 }}
-								native
+								label="usuario"
 								value={usuarioSelecionado || ''}
 								onChange={(e) => setUsuarioSelecionado(Number(e.target.value))}
 							// disabled={!filaSelecionada}
 							>
-								<option value="" >
-									Selecione o usuário
-								</option>
+
 								{usuarios
 									// .filter((user) =>
 									// 	user.queues.some((queue) => queue.id === filaSelecionada)
 									// )
 									.map((user) => (
-										<option key={user.id} value={user.id}>
+										<MenuItem key={user.id} value={user.id}>
 											{user.name}
-										</option>
+										</MenuItem>
 									))}
 							</Select>
 						</FormControl>
 					</DialogContent>
 					<DialogActions>
-						<Button onClick={() => setModalTransferirTicket(false)} color="secondary">
+						<Button onClick={() => setModalTransferirTicket(false)} color="secondary" variant="contained" size="small">
 							Cancelar
 						</Button>
-						<Button onClick={confirmarTransferenciaTicket} color="primary">
+						<Button onClick={confirmarTransferenciaTicket} color="success" variant="contained" size="small">
 							Transferir
 						</Button>
 					</DialogActions>

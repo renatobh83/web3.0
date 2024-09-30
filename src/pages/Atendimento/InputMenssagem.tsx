@@ -85,8 +85,10 @@ interface InputMenssagemProps {
 export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   isScheduleDate,
 }) => {
-  const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
   const { iniciarAtendimento } = useTicketService()
+  const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
+  const { setModalAgendamento, modalAgendamento } = useAtendimentoStore()
+
   const [ScheduleDate, setScheduleDate] = useState('')
   const [openPreviewImagem, setOpenPreviewImagem] = useState(false)
   const [isRecordingAudio, setIsRecordingAudio] = useState(false)
@@ -233,7 +235,6 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   const enviarMensagem = async () => {
     const ticketId = ticketFocado.id
     setIsloading(true)
-
     try {
       if (!cMostrarEnvioArquivo()) {
         const message = prepararMensagemTexto()
@@ -247,10 +248,14 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
       }
       setTextChat('') // Limpa o campo após enviar a mensagem
       setArquivos([])
+      if (modalAgendamento)
+        setModalAgendamento()
     } catch (err) {
+      console.log(err)
       Errors(err)
     } finally {
       setIsloading(false)
+
     }
   }
 

@@ -177,6 +177,7 @@ export function Atendimento(props: Props) {
   const UserQueues = JSON.parse(localStorage.getItem('queues'))
   const profile = decryptData(localStorage.getItem("profile")!);
   const username = localStorage.getItem('username')
+  const userid = localStorage.getItem('userId')
   const usuario = JSON.parse(decryptData(localStorage.getItem("usuario")!));
 
   const { socketDisconnect, socketTicketList } = useMixinSocket()
@@ -498,9 +499,13 @@ export function Atendimento(props: Props) {
 
   function openTickets(): Ticket[] {
     const filteredTickets = tickets.filter(
-      ticket => ticket.status === 'open' && !ticket.isGroup
+      ticket => {
+        if (profile === 'admin') {
+          return ticket.status === 'open' && !ticket.isGroup
+        }
+        return (ticket.status === 'open' && !ticket.isGroup && ticket.userId === +userid)
+      }
     )
-
     const groupedTickets = filteredTickets.reduce((acc, ticket) => {
       const key = `${ticket.whatsappId}_${ticket.userId}_${ticket.status}_${ticket.contactId}`
       if (!acc[key] || acc[key].id > ticket.id) {
@@ -508,7 +513,7 @@ export function Atendimento(props: Props) {
       }
       return acc
     }, {})
-    console.log(groupedTickets)
+
     const groupedTicketIds = new Set(
       Object.values(groupedTickets).map(ticket => ticket.id)
     )
