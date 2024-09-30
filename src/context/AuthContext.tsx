@@ -20,6 +20,7 @@ import { useApplicationStore } from "../store/application.js";
 interface AuthContextType {
     isAuthenticated: boolean;
     decryptData: (encryptedData: string) => void
+    encryptData: (data: string) => void
     login: (form: any) => void;
     logout: () => void;
 
@@ -43,6 +44,18 @@ const pesquisaTicketsFiltroPadrao = {
     includeNotQueueDefined: true,
     // date: new Date(),
 };
+const logoff = () => {
+    toast.error('Dados removido do localStorage, sera necessario logar na aplicacao novamente', {
+        position: 'top-center'
+    })
+    // Remove todos os dados do localStorage
+    localStorage.clear();
+
+    setTimeout(() => {
+        // Redireciona o usuário para a página de login (ou outro fluxo de logoff)
+        window.location.href = '/login'; // Substitua '/login' pela rota de login da sua aplicação
+    }, 2000);
+};
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // const { socket } = useWebSocket()
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -53,9 +66,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return CryptoJS.AES.encrypt(data, secretKey).toString();
     }
 
-    const decryptData = (encryptedData: string) => {
-        const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
-        return bytes.toString(CryptoJS.enc.Utf8);
+    const decryptData = (key: string) => {
+        const encrypted = localStorage.getItem(key);
+
+        if (!encrypted) {
+            // Se o dado não existir no localStorage, executa o logoff
+            console.error(`A chave ${key} não foi encontrada. Fazendo logoff...`);
+            logoff();
+            return null;
+        }
+
+        try {
+            // Tenta descriptografar o dado
+            const bytes = CryptoJS.AES.decrypt(encrypted, secretKey);
+            const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+
+            if (!decryptedData) {
+                throw new Error(`Falha ao descriptografar a chave ${key}`);
+            }
+
+            return decryptedData;
+        } catch (error) {
+            console.error(`Erro ao descriptografar os dados para a chave ${key}:`, error);
+            // Se a descriptografia falhar, também faz logoff
+            logoff();
+            return null;
+        }
     };
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -126,7 +162,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return <div>Loading...</div>; // Renderiza um estado de carregamento enquanto verifica o token
     }
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout, decryptData }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, decryptData, encryptData }}>
             {children}
         </AuthContext.Provider>
     );

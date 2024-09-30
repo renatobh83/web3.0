@@ -175,10 +175,10 @@ export function Atendimento(props: Props) {
   const [loading, setLoading] = useState(false)
   const [usuarios, setUsuarios] = useState([])
   const UserQueues = JSON.parse(localStorage.getItem('queues'))
-  const profile = decryptData(localStorage.getItem("profile")!);
+  const profile = decryptData("profile");
   const username = localStorage.getItem('username')
   const userid = localStorage.getItem('userId')
-  const usuario = JSON.parse(decryptData(localStorage.getItem("usuario")!));
+  const usuario = JSON.parse(decryptData("usuario"));
 
   const { socketDisconnect, socketTicketList } = useMixinSocket()
 

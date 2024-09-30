@@ -36,6 +36,8 @@ import { useUsuarioStore } from '../../store/usuarios'
 import { UpdateIsOnlineUsuario } from '../../services/user'
 import { RealizarLogout } from '../../services/login'
 import { useAuth } from '../../context/AuthContext'
+import { useAtendimentoStore } from '../../store/atendimento'
+import { Errors } from '../../utils/error'
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -89,7 +91,7 @@ export const MenusNavbar = () => {
   const { mode, setMode } = useColorScheme()
   const [status, setStatus] = useState(false)
   const [usuario, setUsuario] = useState(
-    JSON.parse(decryptData(localStorage.getItem("usuario")!))
+    JSON.parse(decryptData("usuario"))
   )
   const username = localStorage.getItem('username')
   const { themeMode, toggleThemeMode } = useApplicationStore()
@@ -108,19 +110,23 @@ export const MenusNavbar = () => {
     toggleModalUsuario()
   }
 
-  useEffect(() => {
-    useAtendimentoTicketStore.setState({
-      redirectToChat: (ticketId: string) => {
-        navigate(`/atendimento/${ticketId}`)
-      },
-    })
-  }, [])
+  const { mobileOpen, setMobileOpen } = useAtendimentoStore()
+  const goToChat = async (id: number) => {
+    try {
+      const timestamp = new Date().getTime()
+      navigate(`/atendimento/${id}?t=${timestamp}`, {
+        replace: false,
+        state: { t: new Date().getTime() },
+      })
+    } catch (error) {
+      Errors(error)
+    } finally {
+      if (mobileOpen) setMobileOpen(false)
+    }
+  }
   function abrirChatContato(ticket) {
-    // caso esteja em um tamanho mobile, fechar a drawer dos contatos
-    // if (this.$q.screen.lt.md && ticket.status !== 'pending') {
-    //   this.$root.$emit('infor-cabecalo-chat:acao-menu')
-    // }
-
+    console.log(!(ticket.status !== 'pending' &&
+      (ticket.id !== ticketFocado.id || location.pathname !== 'chat')))
     if (
       !(
         ticket.status !== 'pending' &&
@@ -128,8 +134,10 @@ export const MenusNavbar = () => {
       )
     )
       return
+
     setHasMore(true)
     AbrirChatMensagens(ticket)
+    goToChat(ticket.id)
   }
 
   useEffect(() => {
@@ -148,7 +156,7 @@ export const MenusNavbar = () => {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
-
+  const { encryptData } = useAuth()
   const open = Boolean(anchorEl)
   const openNav = Boolean(anchorElNav)
 
@@ -171,10 +179,7 @@ export const MenusNavbar = () => {
       usuario.status = e.target.checked ? 'online' : 'offline'
     }
     const isOnline = e.target.checked ? 'online' : 'offline'
-    // Criar ROta no server
-    // await UpdateIsOnlineUsuario(usuario.userId, isOnline)
-    // console.log(isOnline)
-    localStorage.setItem('usuario', JSON.stringify(usuario))
+    localStorage.setItem('usuario', encryptData(JSON.stringify(usuario)))
     setStatus(e.target.checked)
   }
   const efetuarLogout = async () => {
@@ -200,6 +205,7 @@ export const MenusNavbar = () => {
   }, [notificacaoTicket])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
+
     if (usuario) {
       setStatus(usuario.status === 'online')
     }
@@ -236,10 +242,15 @@ export const MenusNavbar = () => {
               </MenuItem>
             ) : (
               <MenuList sx={{ display: 'flex', gap: 2 }}>
-                <Typography>
-                  {notificationsP.count} Clientes pendentes na fila{' '}
-                </Typography>
-                {notificationsP.tickets.map(ticket => (
+                {+ notificationsP.count > 0 && (
+                  <MenuItem onClick={() => navigate('/atendimento')}>
+                    <Typography>
+                      {notificationsP.count} Clientes pendentes na fila{' '}
+                    </Typography>
+                  </MenuItem>
+                )}
+
+                {notifications.tickets.map(ticket => (
                   <MenuItem
                     key={ticket.id}
                     sx={{ display: 'flex', gap: 3 }}

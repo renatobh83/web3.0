@@ -39,7 +39,7 @@ export const Canais = () => {
   const [selectedChatBots, setSelectedChatBots] = useState({})
   const data = useWhatsappStore(s => s.whatsApps)
   const loadWhatsApps = useWhatsappStore(s => s.loadWhatsApps)
-  const userProfile = decryptData(localStorage.getItem("profile")!);
+  const userProfile = decryptData("profile");
   const [whatsappSelecionado, setWhatsappSelecionado] = useState({})
   const [modalWhatsapp, setModalWhatsapp] = useState(false)
   const [modalQrCode, setModalQrCode] = useState(false)

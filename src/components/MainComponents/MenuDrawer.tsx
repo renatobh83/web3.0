@@ -107,7 +107,7 @@ export const MenuDrawer: React.FC = () => {
 
     const { decryptData } = useAuth()
 
-    const profile = decryptData(localStorage.getItem("profile")!);
+    const profile = decryptData("profile");
 
 
     const [miniState, setMiniState] = useState(true);

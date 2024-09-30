@@ -22,7 +22,7 @@ export const useMixinSocket = () => {
 
     const { decryptData } = useAuth()
 
-    const usuario = JSON.parse(decryptData(localStorage.getItem("usuario")!));
+    const usuario = JSON.parse(decryptData("usuario"));
 
     const userId = +localStorage.getItem('userId');
 

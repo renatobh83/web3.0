@@ -42,7 +42,7 @@ export const useSocketInitial = () => {
   const { setUsersApp } = useUsersAppStore()
   const { decryptData } = useAuth()
 
-  const usuario = JSON.parse(decryptData(localStorage.getItem('usuario')!))
+  const usuario = JSON.parse(decryptData('usuario'))
   const userId = +localStorage.getItem('userId')
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
