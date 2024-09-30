@@ -34,6 +34,8 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { ModalUsuario } from '../../pages/Usuarios/ModalUsuario'
 import { useUsuarioStore } from '../../store/usuarios'
 import { UpdateIsOnlineUsuario } from '../../services/user'
+import { RealizarLogout } from '../../services/login'
+import { useAuth } from '../../context/AuthContext'
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -79,6 +81,7 @@ const StyledMenu = styled((props: MenuProps) => (
 }))
 
 export const MenusNavbar = () => {
+  const { decryptData } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const notificacaoTicket = useAtendimentoTicketStore(s => s.notificacaoTicket)
@@ -86,7 +89,7 @@ export const MenusNavbar = () => {
   const { mode, setMode } = useColorScheme()
   const [status, setStatus] = useState(false)
   const [usuario, setUsuario] = useState(
-    JSON.parse(localStorage.getItem('usuario') || 'null')
+    JSON.parse(decryptData(localStorage.getItem("usuario")!))
   )
   const username = localStorage.getItem('username')
   const { themeMode, toggleThemeMode } = useApplicationStore()
@@ -176,14 +179,14 @@ export const MenusNavbar = () => {
   }
   const efetuarLogout = async () => {
     try {
-      // await RealizarLogout(usuario)
-      // localStorage.removeItem('token')
-      // localStorage.removeItem('username')
-      // localStorage.removeItem('profile')
-      // localStorage.removeItem('userId')
-      // localStorage.removeItem('queues')
-      // localStorage.removeItem('usuario')
-      // localStorage.removeItem('filtrosAtendimento')
+      await RealizarLogout(usuario)
+      localStorage.removeItem('token')
+      localStorage.removeItem('username')
+      localStorage.removeItem('profile')
+      localStorage.removeItem('userId')
+      localStorage.removeItem('queues')
+      localStorage.removeItem('usuario')
+      localStorage.removeItem('filtrosAtendimento')
 
       window.location.href = '/login'
     } catch (error) {

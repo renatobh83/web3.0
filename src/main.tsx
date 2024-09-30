@@ -6,7 +6,6 @@ import { App } from './App.tsx'
 import './index.css'
 
 import AppTheme from './Theme/AppTheme.tsx'
-import { Box } from '@mui/material'
 
 const Root = () => {
   return (
@@ -17,12 +16,12 @@ const Root = () => {
 }
 createRoot(document.getElementById('root')!).render(
   // <StrictMode>
-  <Suspense fallback={<Box>carregados..</Box>}>
-    <AuthProvider>
-      <Router>
-        <Root />
-      </Router>
-    </AuthProvider>
-  </Suspense>
+
+  <AuthProvider>
+    <Router>
+      <Root />
+    </Router>
+  </AuthProvider>
+
   //</StrictMode>
 )

@@ -9,9 +9,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import {
   ArrowDownwardSharp,
-  ContactEmergency,
   ContactPage,
-  EmojiEmotions,
   Home,
   Logout,
   Person,
@@ -21,16 +19,10 @@ import {
   Avatar,
   Badge,
   Button,
-  ButtonProps,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  Icon,
   Menu,
   MenuItem,
   MenuList,
-  MenuProps,
+  type MenuProps,
   styled,
   Switch,
   Tab,
@@ -46,7 +38,6 @@ import PersonIcon from '@mui/icons-material/Person'
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt'
 import { debounce } from 'lodash'
 import { format } from 'date-fns'
-import MoodBadIcon from '@mui/icons-material/MoodBad'
 import { ItemTicket } from './ItemTicket'
 import { SelectComponent } from '../../components/AtendimentoComponent/SelectComponent'
 import { ListarConfiguracoes } from '../../services/configuracoes'
@@ -72,6 +63,7 @@ import { ModalNovoTicket } from './ModalNovoTicket'
 import { ListarContatos } from '../../services/contatos'
 import { useContatosStore } from '../../store/contatos'
 import { Errors } from '../../utils/error'
+import { useAuth } from '../../context/AuthContext'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -154,7 +146,8 @@ export function Atendimento(props: Props) {
   const nav = useNavigate()
   const location = useLocation()
   const { window } = props
-  // useMixinSocket()
+  const { decryptData } = useAuth()
+
 
   const [openModalNovoTicket, setOpenModalNovoTicket] = useState(false)
 
@@ -171,7 +164,6 @@ export function Atendimento(props: Props) {
     useAtendimentoStore()
   const tickets = useAtendimentoTicketStore(s => s.tickets)
   const [hasFetched, setHasFetched] = useState(false) // Estado para controlar o fetch
-
   // const [mobileOpen, setMobileOpen] = React.useState(false);
   // const [isClosing, setIsClosing] = React.useState(false);
   const { isContactInfo } = useAtendimentoStore()
@@ -183,9 +175,9 @@ export function Atendimento(props: Props) {
   const [loading, setLoading] = useState(false)
   const [usuarios, setUsuarios] = useState([])
   const UserQueues = JSON.parse(localStorage.getItem('queues'))
-  const profile = localStorage.getItem('profile')
+  const profile = decryptData(localStorage.getItem("profile")!);
   const username = localStorage.getItem('username')
-  const usuario = JSON.parse(localStorage.getItem('usuario'))
+  const usuario = JSON.parse(decryptData(localStorage.getItem("usuario")!));
 
   const { socketDisconnect, socketTicketList } = useMixinSocket()
 

@@ -15,6 +15,8 @@ import Divider from "@mui/material/Divider";
 
 import AppNavbar from "./AppNavbar";
 import { MenuComponent } from "./MenuComponent";
+import { useApplicationStore } from "../../store/application";
+import { useAuth } from "../../context/AuthContext";
 
 
 
@@ -103,16 +105,14 @@ const Drawer = styled(MuiDrawer, {
 }));
 export const MenuDrawer: React.FC = () => {
 
-    const [usuario, setUsuario] = useState(
-        JSON.parse(localStorage.getItem("usuario") || "null"),
-    );
-    const profile = localStorage.getItem("profile") || null;
+    const { decryptData } = useAuth()
+
+    const profile = decryptData(localStorage.getItem("profile")!);
 
 
     const [miniState, setMiniState] = useState(true);
 
-    const username = localStorage.getItem("username");
-    const theme = useTheme();
+
     const [open, setOpen] = React.useState(false);
 
     const handleDrawerOpen = () => {
@@ -142,7 +142,7 @@ export const MenuDrawer: React.FC = () => {
             >
                 <DrawerHeader />
                 <Divider />
-                <MenuComponent userProfile={'admin'} state={open} />
+                <MenuComponent userProfile={profile} state={open} />
             </Drawer>
         </Box>
     );

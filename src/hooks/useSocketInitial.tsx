@@ -11,6 +11,7 @@ import { useContatosStore } from '../store/contatos'
 import { useWebSocketStore } from '../store/socket'
 import { useUsersAppStore } from '../store/usersApp'
 import { eventEmitter } from '../pages/Atendimento/ChatMenssage'
+import { useAuth } from '../context/AuthContext'
 // import { EventEmitter } from "events";
 
 // export const eventEmitter = new EventEmitter();
@@ -38,11 +39,12 @@ export const useSocketInitial = () => {
   const updateMessageStatus = useAtendimentoTicketStore(
     state => state.updateMessageStatus
   )
+  const { setUsersApp } = useUsersAppStore()
+  const { decryptData } = useAuth()
 
-  const usuario = JSON.parse(localStorage.getItem('usuario'))
+  const usuario = JSON.parse(decryptData(localStorage.getItem('usuario')!))
   const userId = +localStorage.getItem('userId')
 
-  const { setUsersApp } = useUsersAppStore()
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (!getWs()) {
@@ -284,7 +286,7 @@ export const useSocketInitial = () => {
               // updateTicket(newTickets)
               try {
                 updateMessages(data.payload)
-              } catch (e) {}
+              } catch (e) { }
             }, 400)
             setTimeout(() => {
               updateContact(newTickets)
@@ -292,7 +294,7 @@ export const useSocketInitial = () => {
             }, 600)
             try {
               eventEmitter.emit('scrollToBottomMessageChat')
-            } catch (error) {}
+            } catch (error) { }
           } catch (err) {
             console.log('error try', err)
           }

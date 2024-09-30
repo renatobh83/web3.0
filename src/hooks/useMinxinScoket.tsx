@@ -11,15 +11,20 @@ import { toast } from "sonner";
 import { eventEmitter } from "../pages/Atendimento/ChatMenssage";
 import { eventEmitter as eventNotification } from '../pages/Atendimento/index'
 import { useWebSocketStore } from "../store/socket";
+import { useAuth } from "../context/AuthContext";
 
 
 
 
-const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-const userId = +localStorage.getItem('userId');
 
 
 export const useMixinSocket = () => {
+
+    const { decryptData } = useAuth()
+
+    const usuario = JSON.parse(decryptData(localStorage.getItem("usuario")!));
+
+    const userId = +localStorage.getItem('userId');
 
     const ticketFocado = useAtendimentoTicketStore(state => state.ticketFocado)
     const setTicketFocado = useAtendimentoTicketStore(state => state.setTicketFocado)

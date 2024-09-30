@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { orderBy } from "lodash";
 import { parseISO } from "date-fns";
-
+import CryptoJS from "crypto-js";
 import { toast } from "sonner";
 
 import { ConsultarDadosTicket, LocalizarMensagens } from "../services/tickets";
@@ -38,7 +38,13 @@ interface AtendimentoTicketState {
   mensagens: any[];
   notificacaoTicket: number;
 }
-
+const decryptData = (encryptedData: string) => {
+  const bytes = CryptoJS.AES.decrypt(
+    encryptedData,
+    import.meta.env.VITE_APP_SECRET_KEY
+  );
+  return bytes.toString(CryptoJS.enc.Utf8);
+};
 interface AtendimentoTicketActions {
   setHasMore: (payload: boolean) => void;
   loadTickets: (payload: Ticket[]) => void;
@@ -126,7 +132,7 @@ const checkTicketFilter = (ticket: Ticket) => {
   };
   const filtros =
     JSON.parse(localStorage.getItem("filtrosAtendimento")) || filtroPadrao;
-  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const usuario = JSON.parse(decryptData(localStorage.getItem("usuario")!));
   const UserQueues = JSON.parse(localStorage.getItem("queues"));
   const filasCadastradas = JSON.parse(
     localStorage.getItem("filasCadastradas") || "[]"

@@ -23,7 +23,7 @@ export const MainLayout: React.FC = () => {
 
   const { loadWhatsApps, whatsApps } = useWhatsappStore()
 
-  const usuario = JSON.parse(localStorage.getItem('usuario'))
+  // const usuario = JSON.parse(localStorage.getItem('usuario'))
 
   useSocketInitial()
   // Nao sendo invocada

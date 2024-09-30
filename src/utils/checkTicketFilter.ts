@@ -1,3 +1,11 @@
+import CryptoJS from "crypto-js";
+const decryptData = (encryptedData: string) => {
+  const bytes = CryptoJS.AES.decrypt(
+    encryptedData,
+    import.meta.env.VITE_APP_SECRET_KEY
+  );
+  return bytes.toString(CryptoJS.enc.Utf8);
+};
 const checkTicketFilter = (ticket) => {
   const filtroPadrao = {
     searchParam: "",
@@ -31,12 +39,12 @@ const checkTicketFilter = (ticket) => {
   };
   const filtros =
     JSON.parse(localStorage.getItem("filtrosAtendimento")) || filtroPadrao;
-  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const usuario = JSON.parse(decryptData(localStorage.getItem("usuario")!));
   const UserQueues = JSON.parse(localStorage.getItem("queues"));
   const filasCadastradas = JSON.parse(
     localStorage.getItem("filasCadastradas") || "[]"
   );
-  const profile = localStorage.getItem("profile");
+  const profile = decryptData(localStorage.getItem("profile")!);
   const isAdminShowAll = profile === "admin" && filtros.showAll;
   const isQueuesTenantExists = filasCadastradas.length > 0;
 

@@ -31,13 +31,15 @@ import { ModalWhatsapp } from './ModalWhatsapp'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { ModalQrCode } from './ModalQrCode'
 import { eventEmitter } from '../../hooks/useSocketInitial'
+import { useAuth } from '../../context/AuthContext'
 
 export const Canais = () => {
+  const { decryptData } = useAuth()
   const { chatFlows, loadChatFlows } = useWhatsappStore()
   const [selectedChatBots, setSelectedChatBots] = useState({})
   const data = useWhatsappStore(s => s.whatsApps)
   const loadWhatsApps = useWhatsappStore(s => s.loadWhatsApps)
-  const userProfile = localStorage.getItem('profile')
+  const userProfile = decryptData(localStorage.getItem("profile")!);
   const [whatsappSelecionado, setWhatsappSelecionado] = useState({})
   const [modalWhatsapp, setModalWhatsapp] = useState(false)
   const [modalQrCode, setModalQrCode] = useState(false)
@@ -397,13 +399,13 @@ export const Canais = () => {
                           'PAIRING',
                           'TIMEOUT',
                         ].includes(item.status) && (
-                          <Button
-                            variant="outlined"
-                            onClick={() => handleDisconectWhatsSession(item.id)}
-                          >
-                            Desconectar
-                          </Button>
-                        )}
+                            <Button
+                              variant="outlined"
+                              onClick={() => handleDisconectWhatsSession(item.id)}
+                            >
+                              Desconectar
+                            </Button>
+                          )}
                       </Box>
                     </Box>
                   </CardContent>

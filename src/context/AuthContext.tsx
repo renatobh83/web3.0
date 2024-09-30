@@ -5,18 +5,21 @@ import {
     useEffect,
     type ReactNode,
 } from "react";
-
+import CryptoJS from 'crypto-js';
+const secretKey = import.meta.env.VITE_APP_SECRET_KEY
 // import { useWebSocket } from './WebSocketContext.js';
 import { toast } from "sonner";
 import { RealizarLogin } from "../services/login.js";
 import { useUserStore } from "../store/user.js";
 import { socketIO } from "../utils/socket.js";
 import { Errors } from "../utils/error.js";
+import { useApplicationStore } from "../store/application.js";
 
 // import { socketIO } from "../utils/socket.js";
 
 interface AuthContextType {
     isAuthenticated: boolean;
+    decryptData: (encryptedData: string) => void
     login: (form: any) => void;
     logout: () => void;
 
@@ -44,9 +47,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // const { socket } = useWebSocket()
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true); // Estado de carregamento
-
+    const setProfileUser = useApplicationStore(s => s.setProfileUser)
     const setUserState = useUserStore((s) => s.setUserState);
+    const encryptData = (data: string) => {
+        return CryptoJS.AES.encrypt(data, secretKey).toString();
+    }
 
+    const decryptData = (encryptedData: string) => {
+        const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
+        return bytes.toString(CryptoJS.enc.Utf8);
+    };
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
@@ -62,9 +72,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             localStorage.setItem("token", JSON.stringify(data.token));
             localStorage.setItem("username", data.username);
-            localStorage.setItem("profile", data.profile);
+            localStorage.setItem("profile", encryptData(data.profile));
             localStorage.setItem("userId", data.userId);
-            localStorage.setItem("usuario", JSON.stringify(data));
+            localStorage.setItem("usuario", encryptData(JSON.stringify(data)));
             localStorage.setItem("queues", JSON.stringify(data.queues));
             localStorage.setItem("queues", JSON.stringify(data.queues));
             localStorage.setItem(
@@ -93,7 +103,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             if (data.profile === "admin") {
                 setTimeout(() => {
                     window.location.href = "/";
-                }, 2000)
+                }, 1000)
 
                 // rota dash
             } else {
@@ -104,7 +114,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             Errors(error)
         }
 
-        localStorage.setItem('token', token);
         setIsAuthenticated(true);
     };
 
@@ -117,7 +126,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return <div>Loading...</div>; // Renderiza um estado de carregamento enquanto verifica o token
     }
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, decryptData }}>
             {children}
         </AuthContext.Provider>
     );
