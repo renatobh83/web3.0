@@ -72,12 +72,22 @@ export const ChatMensagem = ({ menssagens }) => {
     window.open(url, '_blank')
   }
 
-  const [openStyledMenu, setopenStyledMenu] = useState(false)
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [openStyledMenu, setOpenStyledMenu] = useState(false);
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null)
 
-  const oncloseSytedMenu = () => {
-    setopenStyledMenu(false)
-  }
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>, id: string) => {
+    console.log(event.currentTarget)
+    setAnchorEl(event.currentTarget); // Define a ancora do menu
+    setSelectedMessageId(id); // Armazena o ID da mensagem clicada
+    setOpenStyledMenu(true);
+  };
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+    setOpenStyledMenu(false);
+    setSelectedMessageId(null);
+  };
+
   const [anchorEls, setAnchorEls] = useState<Record<string, HTMLElement | null>>({});
   const [open, setOpen] = useState<Record<string, boolean>>({});
 
@@ -412,37 +422,51 @@ export const ChatMensagem = ({ menssagens }) => {
                                   )}
                                   {/* ATIVAR ENCAMINHAMENTO E RESPONDER */}
                                   {!mensagem.isDeleted && (
-
-                                    <IconButton
-                                      sx={{
-                                        display:
-                                          hoveredIndex === mensagem.id
-                                            ? 'block'
-                                            : 'none',
-                                        position: 'absolute',
-                                        zIndex: '99999',
-                                        top: 0,
-                                        left: mensagem.fromMe ? '-8px' : 'none',
-                                        right: mensagem.fromMe ? 'none' : '0',
-                                        padding: '0px', // Remove o espaçamento extra em torno do ícone
-                                        fontSize: '16px', // Ajusta o tamanho do ícone
-                                        color: '#000 !important', // Cor do ícone
-                                        backgroundColor:
-                                          'transparent !important', // Remove qualquer fundo indesejado
-                                        borderRadius: '50%', // Deixa o ícone circular
-                                        border: 'none',
-                                      }}
-                                      onClick={() => setopenStyledMenu(true)}
-                                    >
-                                      <ArrowDownward
+                                    <>
+                                      <IconButton
                                         sx={{
-                                          fontSize: '20px',
-                                          color: 'rgba(0, 0, 0, 0.45)',
+                                          display: hoveredIndex === mensagem.id ? 'block' : 'none', // Só exibe o botão quando hoveredIndex coincide com a mensagem
+                                          position: 'absolute',
+                                          zIndex: '99999',
+                                          top: 0,
+                                          left: mensagem.fromMe ? '-8px' : 'none',
+                                          right: mensagem.fromMe ? 'none' : '0',
+                                          padding: '0px', // Remove o espaçamento extra em torno do ícone
+                                          fontSize: '16px', // Ajusta o tamanho do ícone
+                                          color: '#000 !important', // Cor do ícone
+                                          backgroundColor:
+                                            'transparent !important', // Remove qualquer fundo indesejado
+                                          borderRadius: '50%', // Deixa o ícone circular
+                                          border: 'none',
                                         }}
-                                      />
-                                    </IconButton>
-
-
+                                        onClick={(event) => handleOpenMenu(event, mensagem.id)}
+                                      >
+                                        <ArrowDownward
+                                          sx={{
+                                            fontSize: '20px',
+                                            color: 'rgba(0, 0, 0, 0.45)',
+                                          }}
+                                        />
+                                      </IconButton>
+                                      {selectedMessageId === mensagem.id && anchorEl && (
+                                        <Menu
+                                          anchorEl={anchorEl} // Usando o ícone como âncora
+                                          open={openStyledMenu}
+                                          onClose={handleCloseMenu}
+                                          anchorOrigin={{
+                                            vertical: 'bottom',
+                                            horizontal: 'center',
+                                          }}
+                                          transformOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'center',
+                                          }}
+                                        >
+                                          <MenuItem>Opção 1</MenuItem>
+                                          <MenuItem>Opção 2</MenuItem>
+                                        </Menu>
+                                      )}
+                                    </>
                                   )}
                                   {/* AUDIO */}
                                   {mensagem.mediaType === 'audio' &&
@@ -732,13 +756,7 @@ export const ChatMensagem = ({ menssagens }) => {
               </span>
             </Box>
           </Box>
-        </Box>        <StyledMenu
-
-          anchorEl={anchorEl}
-          onClose={oncloseSytedMenu}
-          open={openStyledMenu}>
-          <MenuItem>as</MenuItem>
-        </StyledMenu>
+        </Box>
       </Box>
       <div id="inicioListaMensagensChat" />
     </>
