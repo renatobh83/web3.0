@@ -77,7 +77,6 @@ export const ChatMensagem = ({ menssagens }) => {
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null)
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLElement>, id: string) => {
-    console.log(event.currentTarget)
     setAnchorEl(event.currentTarget); // Define a ancora do menu
     setSelectedMessageId(id); // Armazena o ID da mensagem clicada
     setOpenStyledMenu(true);
@@ -92,7 +91,7 @@ export const ChatMensagem = ({ menssagens }) => {
   const [open, setOpen] = useState<Record<string, boolean>>({});
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>, mensagemId: string) => {
-
+    setSelectedMessageId(mensagemId)
     setAnchorEls((prev) => ({ ...prev, [mensagemId]: event.currentTarget }));
     setOpen((prev) => ({ ...prev, [mensagemId]: true }));
   }
@@ -100,6 +99,7 @@ export const ChatMensagem = ({ menssagens }) => {
   const handlePopoverClose = (mensagemId: string) => {
     setAnchorEls((prev) => ({ ...prev, [mensagemId]: null }));
     setOpen((prev) => ({ ...prev, [mensagemId]: false }));
+    setSelectedMessageId(null);
   };
 
   const [mensagensParaEncaminhar, setmensagensParaEncaminhar] = useState([])
@@ -324,82 +324,52 @@ export const ChatMensagem = ({ menssagens }) => {
 
                                   {/* Mostrar mensagens com agendamento */}
                                   {mensagem.scheduleDate && (
-                                    <Icon
-                                      style={{
-                                        width: '30px',
-                                        height: '30px',
-                                        position: 'absolute',
-                                        zIndex: 99999,
-                                        left: 0,
-                                        bottom: -2
-                                      }}
-                                      aria-owns={open[mensagem.id] ? 'mouse-over-popover' : undefined}
-                                      aria-haspopup="true"
-                                      onMouseEnter={(e) => handlePopoverOpen(e, mensagem.id)}
-                                      onMouseLeave={() => handlePopoverClose(mensagem.id)}
-                                      sx={{
-                                        color:
-                                          mensagem.scheduleDate &&
-                                            mensagem.status === 'pending'
-                                            ? 'green'
-                                            : !['pending', 'canceled'].includes(
-                                              mensagem.status
-                                            )
-                                              ? 'blue'
-                                              : '',
-                                      }}
-                                    >
-                                      <CalendarMonth />
-                                      <Popover
-                                        id="mouse-over-popover"
-                                        sx={{ pointerEvents: 'none' }}
-                                        open={!!open[mensagem.id]}
-                                        anchorEl={anchorEls[mensagem.id]}
-                                        anchorOrigin={{
-                                          vertical: 'bottom',
-                                          horizontal: 'right',
+                                    <>
+                                      <IconButton
+                                        sx={{
+                                          display: hoveredIndex === mensagem.id ? 'block' : 'none', // Só exibe o botão quando hoveredIndex coincide com a mensagem
+                                          position: 'absolute',
+                                          zIndex: '99999',
+                                          bottom: 0,
+                                          left: mensagem.fromMe ? '-8px' : 'none',
+                                          right: mensagem.fromMe ? 'none' : '0',
+                                          padding: '0px', // Remove o espaçamento extra em torno do ícone
+                                          fontSize: '16px', // Ajusta o tamanho do ícone
+                                          color: '#000 !important', // Cor do ícone
+                                          backgroundColor:
+                                            'transparent !important', // Remove qualquer fundo indesejado
+                                          borderRadius: '50%', // Deixa o ícone circular
+                                          border: 'none',
                                         }}
-                                        transformOrigin={{
-                                          vertical: 'top',
-                                          horizontal: 'left',
-                                        }}
-                                        onClose={() => handlePopoverClose(mensagem.id)}
-                                        disableRestoreFocus
-
+                                        onMouseEnter={(event) => handleOpenMenu(event, mensagem.id)}
+                                      // onMouseLeave={() => handlePopoverClose(mensagem.id)}
                                       >
-                                        <Box sx={{ p: 2 }}>
-                                          <Typography
-                                            sx={{ p: 1 }}
-                                            variant="subtitle2"
-                                          >
-                                            {' '}
-                                            Mensagem agendada
-                                          </Typography>
-                                          <Typography
-                                            sx={{ p: 1 }}
-                                            variant="body2"
-                                          >
-                                            {' '}
-                                            Criado em:{' '}
-                                            {formatarData(
-                                              mensagem.createdAt,
-                                              'dd/MM/yyyy HH:mm'
-                                            )}
-                                          </Typography>
-                                          <Typography
-                                            sx={{ p: 1 }}
-                                            variant="body2"
-                                          >
-                                            {' '}
-                                            Programado para:{' '}
-                                            {formatarData(
-                                              mensagem.scheduleDate,
-                                              'dd/MM/yyyy HH:mm'
-                                            )}
-                                          </Typography>
-                                        </Box>
-                                      </Popover>
-                                    </Icon>
+                                        <ArrowDownward
+                                          sx={{
+                                            fontSize: '20px',
+                                            color: 'rgba(0, 0, 0, 0.45)',
+                                          }}
+                                        />
+                                      </IconButton>
+                                      {selectedMessageId === mensagem.id && anchorEl && (
+                                        <Menu
+                                          anchorEl={anchorEl} // Usando o ícone como âncora
+                                          open={openStyledMenu}
+                                          onMouseLeave={() => handleCloseMenu()}
+                                          anchorOrigin={{
+                                            vertical: 'bottom',
+                                            horizontal: 'center',
+                                          }}
+                                          transformOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'center',
+                                          }}
+                                        >
+                                          <MenuItem>Opção 1</MenuItem>
+                                          <MenuItem>Opção 2</MenuItem>
+                                        </Menu>
+                                      )}
+                                    </>
                                   )}
                                   {mensagem.isDeleted && (
                                     <Typography variant="body2">
