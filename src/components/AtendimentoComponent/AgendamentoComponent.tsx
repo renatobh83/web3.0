@@ -1,17 +1,21 @@
 import { CalendarMonth, Close } from "@mui/icons-material";
 import { Box, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material"
 import { add } from "date-fns"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { MobileDateTimePicker } from "@mui/x-date-pickers/MobileDateTimePicker";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import 'dayjs/locale/pt-br'; // Importa a localização em português
+import utc from "dayjs/plugin/utc"; // Plugin para lidar com UTC
+import timezone from "dayjs/plugin/timezone"; // Plugin para lidar com fusos horários
 
 dayjs.locale('pt-br'); // Define a localidade para português
-export const AgendamentoComponent = () => {
+dayjs.extend(utc); // Extende dayjs com suporte para UTC
+dayjs.extend(timezone); // Extende dayjs com suporte para timezone
+export const AgendamentoComponent: React.FC<{ getScheduleDate: (date: string) => void }> = ({ getScheduleDate }) => {
     const schedule = {
         selected: { label: 'Agendamento customizado', value: 'custom', func: null },
         options: [
@@ -21,17 +25,19 @@ export const AgendamentoComponent = () => {
             { label: 'Próxima semana', value: 'prox_semana', func: () => add(new Date(), { weeks: 1 }) },
         ],
     }
+
     const [custom, setCustom] = useState(false)
     const [selectedValue, setSelectedValue] = useState(schedule.selected.value);
     const [resultData, setResultData] = useState('')
+    const [customDate, setCustomDate] = useState<Dayjs | null>(null)
+
 
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         const selectedOption = schedule.options.find(option => option.value === event.target.value);
-
         setSelectedValue(selectedOption?.value || '');
         if (selectedOption?.func) {
             const result = selectedOption.func(); // Executa a função associada
-
+            // setResultData(dayjs(result).tz("America/Sao_Paulo").format("DD/MM/YYYY HH:mm"))
             setResultData(result)
             setCustom(false)
         } else {
@@ -40,9 +46,23 @@ export const AgendamentoComponent = () => {
         }
     }
     const handleCustomDate = (newValue) => {
-        console.log(resultData)
-        console.log(newValue)
+        if (newValue) {
+            const localTime = newValue.tz("America/Sao_Paulo").format("DD/MM/YYYY HH:mm");
+            setResultData(newValue)
+        } else {
+            setResultData(''); // Limpa o resultado se não houver uma nova data
+        }
+        setCustomDate(newValue); // Atualiza a data customizada no estado
+
     }
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+        if (resultData) {
+            const dateUTC = dayjs(resultData).toISOString()
+            const adjustedDate = dayjs(dateUTC).tz("America/Sao_Paulo").format();
+            getScheduleDate(adjustedDate)
+        }
+    }, [resultData])
 
     return (
         <Box sx={{ mb: 2, gap: 2, display: 'flex', flexDirection: 'column' }}>
@@ -70,14 +90,10 @@ export const AgendamentoComponent = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
                         <MobileDateTimePicker sx={{ width: '100%', border: 'none' }}
                             value={dayjs(resultData.toString())}
-
-
+                            // value={(resultData.toString())}
                             onChange={handleCustomDate}
-
-
                             slotProps={{
                                 textField: {
-
                                     InputProps: {
                                         endAdornment: (
                                             <InputAdornment position="end">
@@ -96,7 +112,6 @@ export const AgendamentoComponent = () => {
                     </LocalizationProvider>
 
                 </Box>
-
             </FormControl >
         </Box >
     )

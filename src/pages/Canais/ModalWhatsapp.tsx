@@ -243,8 +243,8 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 				</Alert>
 			)}
 			<DialogActions>
-				<Button onClick={() => handleClose()}>Cancelar</Button>
-				<Button type="submit">Gravar</Button>
+				<Button onClick={() => handleClose()} variant="contained" color="error">Cancelar</Button>
+				<Button type="submit" variant="contained" color="success">Gravar</Button>
 			</DialogActions>
 		</Dialog>
 	);

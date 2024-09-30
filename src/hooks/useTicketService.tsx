@@ -22,7 +22,7 @@ export const useTicketService = () => {
     status: string
     ticket: Ticket
   } | null>(null)
-  const { AbrirChatMensagens } = useAtendimentoTicketStore()
+  const { AbrirChatMensagens, setHasMore, setTicketFocado } = useAtendimentoTicketStore()
   const { mobileOpen, setMobileOpen } = useAtendimentoStore()
   const goToChat = async (id: number) => {
     try {
@@ -47,7 +47,8 @@ export const useTicketService = () => {
           position: 'top-center',
         }
       )
-      AbrirChatMensagens(data.id).then(() => {
+      setHasMore(true)
+      AbrirChatMensagens(data).then(() => {
         goToChat(data.id)
       })
     } catch (error) {
@@ -89,8 +90,9 @@ export const useTicketService = () => {
           }
         )
         setDialogOpen(false)
+        // setTicketFocado({})
         // Exemplo de redirecionamento após encerrar atendimento
-        // if (status !== 'open') navigate('/chat-empty');
+        // if (status !== 'open') navigate('/atendimento');
       } catch (error) {
         if (error.status === 409)
           toast.message('Não possivel fazer a reabertura desse ticket', {

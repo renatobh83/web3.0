@@ -5,9 +5,11 @@ import {
   DialogActions,
   Button,
   TextField,
+  Box,
+  Toolbar,
 } from '@mui/material'
 import Grid from '@mui/material/Grid2'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { CriarContato, EditarContato } from '../../services/contatos'
 import { toast } from 'sonner'
@@ -35,8 +37,12 @@ export const ContatoModal: React.FC<{
     setValue,
     formState: { errors },
   } = useForm<Contato>()
+  const [isLoading, setLoading] = useState(false)
+
 
   const onSubimit = contato => {
+
+    setLoading(true)
     if (contact) {
       EditarContato(contact.id, contato)
         .then(() => {
@@ -47,6 +53,8 @@ export const ContatoModal: React.FC<{
         })
         .catch(err => {
           Errors(err)
+        }).finally(() => {
+          setLoading(false)
         })
     } else {
       CriarContato(contato)
@@ -58,8 +66,11 @@ export const ContatoModal: React.FC<{
         })
         .catch(err => {
           Errors(err)
+        }).finally(() => {
+          setLoading(false)
         })
     }
+
   }
 
   const formatPhoneNumber = (value: string) => {
@@ -113,8 +124,11 @@ export const ContatoModal: React.FC<{
       setValue('firstName', contact.name || '')
     }
   }, [contact])
+
+
   return (
     <Dialog open={open}>
+
       <DialogTitle>
         {contact ? 'Editar Contato' : 'Adicionar Contato'}
       </DialogTitle>
@@ -212,7 +226,7 @@ export const ContatoModal: React.FC<{
                   setValue('birthdayDate', formattedNumber) // Atualiza o valor do formulário com o número formatado
                 }}
                 error={!!errors.birthdayDate}
-                // helperText="A data de aniversário deverá ser informada no formato 01/01/1990."
+              // helperText="A data de aniversário deverá ser informada no formato 01/01/1990."
               />
             </Grid>
 
@@ -262,10 +276,10 @@ export const ContatoModal: React.FC<{
             </Grid>
           </Grid>
           <DialogActions>
-            <Button color="primary" onClick={() => close()}>
+            <Button variant='contained' color='error' onClick={() => close()} disabled={isLoading}>
               Cancelar
             </Button>
-            <Button type="submit" color="primary">
+            <Button type="submit" variant='contained' color='success' disabled={isLoading}>
               Confirmar
             </Button>
           </DialogActions>

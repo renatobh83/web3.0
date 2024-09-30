@@ -13,7 +13,6 @@ const service = axios.create({
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const handlerError = (err: any) => {
   const errorMsg = err?.response?.data?.error;
-
   let error = "Ocorreu um erro não identificado.";
   if (errorMsg) {
     if (backendErrors[errorMsg]) {
@@ -66,9 +65,9 @@ service.interceptors.response.use(
       localStorage.removeItem("userId");
       if (error.config.url.indexOf("logout") === -1) {
         handlerError(error);
-        // setTimeout(() => {
-        //   window.location.href = "/login";
-        // }, 2000);
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
       }
     } else if (error.response && error.response.status === 500) {
       handlerError(error);

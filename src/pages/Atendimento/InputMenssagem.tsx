@@ -87,7 +87,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
 }) => {
   const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
   const { iniciarAtendimento } = useTicketService()
-
+  const [ScheduleDate, setScheduleDate] = useState('')
   const [openPreviewImagem, setOpenPreviewImagem] = useState(false)
   const [isRecordingAudio, setIsRecordingAudio] = useState(false)
   const [loading, setIsloading] = useState(false)
@@ -162,6 +162,10 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   //  Enviar Arquivos Fim
 
   const [textChat, setTextChat] = useState('')
+
+
+
+
   const prepararMensagemTexto = () => {
     if (textChat.trim() === '') {
       toast.error('Mensagem Inexistente', {
@@ -187,7 +191,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
     //     throw new Error(error)
     //   }
     // }
-    let mensagem = textChat.trim()
+    const mensagem = textChat.trim()
     const username = localStorage.getItem('username')
     // if (username) {
     //   mensagem = `*${username}*:\n ${mensagem}`
@@ -197,14 +201,14 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
       fromMe: true,
       mediaUrl: '',
       body: mensagem,
-      //   scheduleDate: this.isScheduleDate ? this.scheduleDate : null,
+      scheduleDate: isScheduleDate ? ScheduleDate : null,
       //   quotedMsg: this.replyingMessage,
-      // idFront: uid()
+      idFront: uid(),
       id: uid(),
     }
-    // if (this.isScheduleDate) {
-    //   message.scheduleDate = this.scheduleDate
-    // }
+    if (isScheduleDate) {
+      message.scheduleDate = ScheduleDate
+    }
     return message
   }
   function prepararUploadMedia() {
@@ -218,9 +222,9 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
       formData.append('body', media.name)
       formData.append('idFront', uid())
       // formData.append('isSticker', this.sticker)
-      // if (this.isScheduleDate) {
-      //   formData.append('scheduleDate', this.scheduleDate)
-      // }
+      if (isScheduleDate) {
+        formData.append('scheduleDate', ScheduleDate)
+      }
       return formData
     })
     return formDatas
@@ -229,6 +233,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   const enviarMensagem = async () => {
     const ticketId = ticketFocado.id
     setIsloading(true)
+
     try {
       if (!cMostrarEnvioArquivo()) {
         const message = prepararMensagemTexto()
@@ -363,27 +368,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
     return null
   }
 
-  const schedule = {
-    selected: { label: 'Agendamento customizado', value: 'custom', func: null },
-    options: [
-      { label: 'Agendamento customizado', value: 'custom', func: null },
-      {
-        label: 'Em 30 minutos',
-        value: '30_mins',
-        func: () => add(new Date(), { minutes: 30 }),
-      },
-      {
-        label: 'Amanhã',
-        value: 'amanha',
-        func: () => add(new Date(), { days: 1 }),
-      },
-      {
-        label: 'Próxima semana',
-        value: 'prox_semana',
-        func: () => add(new Date(), { weeks: 1 }),
-      },
-    ],
-  }
+
   const { mobileOpen, setMobileOpen } = useAtendimentoStore()
   const navigate = useNavigate()
   const goToChat = async (id: string) => {
@@ -418,7 +403,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
             position: 'relative',
           }}
         >
-          {isScheduleDate && <AgendamentoComponent />}
+          {isScheduleDate && <AgendamentoComponent getScheduleDate={setScheduleDate} />}
           {!isRecordingAudio ? (
             <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
               <Tooltip title="Enviar arquivo">
@@ -501,7 +486,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
                   variant="standard"
                   fullWidth
                   value={textChat}
-                  disabled={cDisableActions()}
+                  disabled={cDisableActions() || loading}
                   onChange={e => setTextChat(e.target.value)}
                   onKeyDown={handleKeyDown} // Captura a tecla pressionada
                   ref={inputEnvioMensagem}

@@ -71,6 +71,7 @@ import { useMixinSocket } from '../../hooks/useMinxinScoket'
 import { ModalNovoTicket } from './ModalNovoTicket'
 import { ListarContatos } from '../../services/contatos'
 import { useContatosStore } from '../../store/contatos'
+import { Errors } from '../../utils/error'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -448,9 +449,8 @@ export function Atendimento(props: Props) {
       const { data } = await ListarUsuarios()
       setUsuarios(data.users)
     } catch (error) {
-      toast.error(`Problema ao carregar usuários, ${JSON.stringify(error)}`, {
-        position: 'top-center',
-      })
+      Errors(error)
+
     }
   }
   const listarFilas = useCallback(async () => {
@@ -508,6 +508,7 @@ export function Atendimento(props: Props) {
     const filteredTickets = tickets.filter(
       ticket => ticket.status === 'open' && !ticket.isGroup
     )
+
     const groupedTickets = filteredTickets.reduce((acc, ticket) => {
       const key = `${ticket.whatsappId}_${ticket.userId}_${ticket.status}_${ticket.contactId}`
       if (!acc[key] || acc[key].id > ticket.id) {
@@ -515,6 +516,7 @@ export function Atendimento(props: Props) {
       }
       return acc
     }, {})
+    console.log(groupedTickets)
     const groupedTicketIds = new Set(
       Object.values(groupedTickets).map(ticket => ticket.id)
     )

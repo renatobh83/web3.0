@@ -19,6 +19,8 @@ import {
 	DialogActions,
 	DialogContent,
 	DialogTitle,
+	FormControl,
+	Select,
 
 } from "@mui/material";
 import AirlineStopsIcon from '@mui/icons-material/AirlineStops';
@@ -37,7 +39,12 @@ import { useAtendimentoStore } from "../../store/atendimento";
 import { Ticket, useAtendimentoTicketStore } from "../../store/atendimentoTicket";
 import { ModalAgendamentoMensagem } from "./ModalAgendamentoMensagem";
 import { useTicketService } from "../../hooks/useTicketService";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { ListarUsuarios } from "../../services/user";
+import { ListarFilas } from "../../services/filas";
+import { toast } from "sonner";
+import { AtualizarTicket } from "../../services/tickets";
+import { Errors } from "../../utils/error";
 
 // biome-ignore lint/suspicious/noRedeclare: <explanation>
 interface AppBarProps extends MuiAppBarProps {
@@ -64,8 +71,24 @@ const AppBar = styled(MuiAppBar, {
 	],
 }));
 
+interface Queue {
+	id: number;
+	queue: string;
+}
+interface User {
+	id: number;
+	name: string;
+	queues: { id: number }[];
+}
+
+const title = {
+	open: 'Atendimento será iniciado, ok?',
+	pending: 'Retornar à fila?',
+	closed: 'Encerrar o atendimento?'
+}
 export const InfoCabecalhoMenssagens = () => {
 	const { atualizarStatusTicket, loading, dialogData } = useTicketService()
+	const [modalTransferirTicket, setModalTransferirTicket] = useState(false);
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [_, setDialogContent] = useState<{ status: string; ticket: Ticket } | null>(null);
 	const [confirmAction, setConfirmAction] = useState<(() => Promise<void>) | null>(null);
@@ -79,14 +102,43 @@ export const InfoCabecalhoMenssagens = () => {
 	} = useAtendimentoStore();
 	const ticketFocado = useAtendimentoTicketStore((s) => s.ticketFocado);
 	const setModalAgendamento = useAtendimentoStore(s => s.setModalAgendamento)
+	const setTicketFocado = useAtendimentoTicketStore((s) => s.setTicketFocado);
+	const [usuarios, setUsuarios] = useState<User[]>([]);
+	const [filas, setFilas] = useState<Queue[]>([]);
+	const [filaSelecionada, setFilaSelecionada] = useState<number | null>(null);
+	const [usuarioSelecionado, setUsuarioSelecionado] = useState<number | null>(null);
+	const userId = Number(localStorage.getItem('userId'));
+	const listarUsuarios = async () => {
+		try {
+			const { data } = await ListarUsuarios();
+			setUsuarios(data.users);
+
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	const listarFilas = async () => {
+		try {
+			const { data } = await ListarFilas();
+			setFilas(data);
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
 	const handleDrawerToggle = () => {
 		if (!isClosing) {
 			setMobileOpen(!mobileOpen);
 		}
 	};
-	const handleModalAgendamento = () => {
-		alert('Criar modal agenda')
-	}
+	useEffect(() => {
+		if (modalTransferirTicket) {
+			listarFilas();
+			listarUsuarios();
+		}
+	}, [modalTransferirTicket]);
+
 	const Value = (obj, prop) => {
 		try {
 			return obj[prop];
@@ -94,7 +146,37 @@ export const InfoCabecalhoMenssagens = () => {
 			return "";
 		}
 	};
+	const confirmarTransferenciaTicket = async () => {
 
+		// if (!filaSelecionada) return
+		if (usuarioSelecionado === ticketFocado.userId && ticketFocado.userId !== null) {
+			toast.error('Ticket já pertece ao usuário selecionado.')
+			return;
+		}
+		if (ticketFocado.userId === userId && userId === usuarioSelecionado) {
+			toast.error('Ticket já pertece ao seu usuário')
+			return
+		}
+		if (ticketFocado.queueId === filaSelecionada && ticketFocado.userId === usuarioSelecionado) {
+			toast.error('Ticket já pertece a esta fila e usuário')
+			return
+		}
+		try {
+
+			await AtualizarTicket(ticketFocado.id, {
+				userId: usuarioSelecionado,
+				queueId: filaSelecionada,
+				status: usuarioSelecionado == null ? 'pending' : 'open',
+				isTransference: 1,
+			});
+			toast.success('Ticket transferido.')
+			setModalTransferirTicket(false);
+			setTicketFocado({})
+
+		} catch (error) {
+			Errors(error)
+		}
+	};
 	const handleUpdateStatus = (ticket, status: 'open' | 'pending' | 'closed') => {
 		const { handleConfirm } = atualizarStatusTicket(ticket, status);
 
@@ -229,7 +311,7 @@ export const InfoCabecalhoMenssagens = () => {
 								)}
 								{ticketFocado.status !== "closed" && (
 									<Tooltip title="Transferir">
-										<Button>
+										<Button onClick={() => setModalTransferirTicket(true)}>
 											<AirlineStopsIcon />
 										</Button>
 									</Tooltip>
@@ -241,7 +323,7 @@ export const InfoCabecalhoMenssagens = () => {
 			</Toolbar>
 			{dialogOpen &&
 				<Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-					<DialogTitle>{dialogData?.status === 'closed' ? 'Encerrar o atendimento?' : 'Retornar a Pendente'}</DialogTitle>
+					<DialogTitle>{title[dialogData?.status]}</DialogTitle>
 					<DialogContent>
 						{loading ? (
 							<CircularProgress />
@@ -266,6 +348,60 @@ export const InfoCabecalhoMenssagens = () => {
 					</DialogActions>
 				</Dialog>
 			}
+			{modalTransferirTicket &&
+				<Dialog open={modalTransferirTicket} onClose={() => setModalTransferirTicket(false)}>
+					<DialogTitle>Transferir Ticket</DialogTitle>
+					<DialogContent>
+						<FormControl fullWidth margin="normal">
+							<Select
+								native
+								value={filaSelecionada || ''}
+								onChange={(e) => setFilaSelecionada(Number(e.target.value))}
+							>
+								<option value="" disabled>
+									Selecione a fila
+								</option>
+								{filas.map((fila) => (
+									<option key={fila.id} value={fila.id}>
+										{fila.queue}
+									</option>
+								))}
+							</Select>
+						</FormControl>
+
+						<FormControl fullWidth margin="normal">
+
+							<Select
+								sx={{ p: 1 }}
+								native
+								value={usuarioSelecionado || ''}
+								onChange={(e) => setUsuarioSelecionado(Number(e.target.value))}
+							// disabled={!filaSelecionada}
+							>
+								<option value="" >
+									Selecione o usuário
+								</option>
+								{usuarios
+									// .filter((user) =>
+									// 	user.queues.some((queue) => queue.id === filaSelecionada)
+									// )
+									.map((user) => (
+										<option key={user.id} value={user.id}>
+											{user.name}
+										</option>
+									))}
+							</Select>
+						</FormControl>
+					</DialogContent>
+					<DialogActions>
+						<Button onClick={() => setModalTransferirTicket(false)} color="secondary">
+							Cancelar
+						</Button>
+						<Button onClick={confirmarTransferenciaTicket} color="primary">
+							Transferir
+						</Button>
+					</DialogActions>
+				</Dialog>}
 		</AppBar>
 	);
 };
