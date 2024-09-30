@@ -125,8 +125,6 @@ export const MenusNavbar = () => {
     }
   }
   function abrirChatContato(ticket) {
-    console.log(!(ticket.status !== 'pending' &&
-      (ticket.id !== ticketFocado.id || location.pathname !== 'chat')))
     if (
       !(
         ticket.status !== 'pending' &&
@@ -134,7 +132,6 @@ export const MenusNavbar = () => {
       )
     )
       return
-
     setHasMore(true)
     AbrirChatMensagens(ticket)
     goToChat(ticket.id)
@@ -147,12 +144,6 @@ export const MenusNavbar = () => {
   const handleToggleColor = () => {
     toggleThemeMode() // Alterna o tema na store
   }
-  // const toggleColorMode = () => {
-  //     const newMode = mode === 'dark' ? 'light' : 'dark';
-  //     setMode(newMode);
-
-  //     localStorage.setItem('themeMode', newMode); // Save the selected mode to localStorage
-  // };
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
@@ -228,9 +219,9 @@ export const MenusNavbar = () => {
             )}
           </Button>
           <StyledMenu
-            id="demo-customized-menu"
+            id="customized-menu"
             MenuListProps={{
-              'aria-labelledby': 'demo-customized-button',
+              'aria-labelledby': 'customized-button',
             }}
             anchorEl={anchorEl}
             onClose={handleClose}

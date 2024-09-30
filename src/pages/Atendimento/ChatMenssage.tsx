@@ -1,4 +1,5 @@
 import {
+  alpha,
   Box,
   Button,
   CardMedia,
@@ -8,7 +9,11 @@ import {
   Divider,
   Icon,
   IconButton,
+  Menu,
+  MenuItem,
+  MenuProps,
   Popover,
+  styled,
   Typography,
   useColorScheme,
 } from '@mui/material'
@@ -40,6 +45,7 @@ import { EventEmitter } from 'events'
 export const eventEmitter = new EventEmitter()
 
 export const ChatMensagem = ({ menssagens }) => {
+
   const [modalImageUrl, setModalImageUrl] = useState<string | null>(null)
   const lastMessageRef = useRef<HTMLInputElement | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
@@ -66,12 +72,17 @@ export const ChatMensagem = ({ menssagens }) => {
     window.open(url, '_blank')
   }
 
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const [openStyledMenu, setopenStyledMenu] = useState(false)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+
+  const oncloseSytedMenu = () => {
+    setopenStyledMenu(false)
+  }
   const [anchorEls, setAnchorEls] = useState<Record<string, HTMLElement | null>>({});
   const [open, setOpen] = useState<Record<string, boolean>>({});
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>, mensagemId: string) => {
-    // setAnchorEl(event.currentTarget)
+
     setAnchorEls((prev) => ({ ...prev, [mensagemId]: event.currentTarget }));
     setOpen((prev) => ({ ...prev, [mensagemId]: true }));
   }
@@ -136,6 +147,7 @@ export const ChatMensagem = ({ menssagens }) => {
         ?.scrollIntoView({ behavior: 'smooth' })
     }, 200)
   }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     // Adiciona o listener ao montar o componente
     eventEmitter.on('scrollToBottomMessageChat', scrollToBottom)
@@ -308,8 +320,8 @@ export const ChatMensagem = ({ menssagens }) => {
                                         height: '30px',
                                         position: 'absolute',
                                         zIndex: 99999,
-                                        right: 0,
-                                        top: -1
+                                        left: 0,
+                                        bottom: -2
                                       }}
                                       aria-owns={open[mensagem.id] ? 'mouse-over-popover' : undefined}
                                       aria-haspopup="true"
@@ -400,6 +412,7 @@ export const ChatMensagem = ({ menssagens }) => {
                                   )}
                                   {/* ATIVAR ENCAMINHAMENTO E RESPONDER */}
                                   {!mensagem.isDeleted && (
+
                                     <IconButton
                                       sx={{
                                         display:
@@ -419,7 +432,7 @@ export const ChatMensagem = ({ menssagens }) => {
                                         borderRadius: '50%', // Deixa o ícone circular
                                         border: 'none',
                                       }}
-                                      onClick={() => alert('OpenMenu')}
+                                      onClick={() => setopenStyledMenu(true)}
                                     >
                                       <ArrowDownward
                                         sx={{
@@ -428,6 +441,8 @@ export const ChatMensagem = ({ menssagens }) => {
                                         }}
                                       />
                                     </IconButton>
+
+
                                   )}
                                   {/* AUDIO */}
                                   {mensagem.mediaType === 'audio' &&
@@ -717,9 +732,57 @@ export const ChatMensagem = ({ menssagens }) => {
               </span>
             </Box>
           </Box>
-        </Box>
+        </Box>        <StyledMenu
+
+          anchorEl={anchorEl}
+          onClose={oncloseSytedMenu}
+          open={openStyledMenu}>
+          <MenuItem>as</MenuItem>
+        </StyledMenu>
       </Box>
       <div id="inicioListaMensagensChat" />
     </>
   )
 }
+const StyledMenu = styled((props: MenuProps) => (
+  <Menu
+    elevation={0}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'right',
+    }}
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'right',
+    }}
+    {...props}
+  />
+))(({ theme }) => ({
+  '& .MuiPaper-root': {
+    borderRadius: 6,
+    marginTop: theme.spacing(1),
+    minWidth: 180,
+    color: 'rgb(55, 65, 81)',
+    boxShadow:
+      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+    '& .MuiMenu-list': {
+      padding: '4px 0',
+    },
+    '& .MuiMenuItem-root': {
+      '& .MuiSvgIcon-root': {
+        fontSize: 18,
+        color: theme.palette.text.secondary,
+        // marginRight: theme.spacing(1.5),
+      },
+      '&:active': {
+        backgroundColor: alpha(
+          theme.palette.primary.main,
+          theme.palette.action.selectedOpacity
+        ),
+      },
+    },
+    ...theme.applyStyles('dark', {
+      color: theme.palette.grey[300],
+    }),
+  },
+}))
