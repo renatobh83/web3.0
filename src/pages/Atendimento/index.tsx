@@ -64,6 +64,7 @@ import { ListarContatos } from '../../services/contatos'
 import { useContatosStore } from '../../store/contatos'
 import { Errors } from '../../utils/error'
 import { useAuth } from '../../context/AuthContext'
+import { AudioNotification } from '../../components/AtendimentoComponent/AudioNotification'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -1138,6 +1139,7 @@ export function Atendimento(props: Props) {
             {drawer}
           </Drawer>
         </Box>
+
         <Box
           component="main"
           sx={{

@@ -430,6 +430,7 @@ export const useAtendimentoTicketStore = create<
 
   updateMessages: (payload) =>
     set((state) => {
+      console.log("updateMessages", location.pathname);
       if (state.ticketFocado.id === payload.ticket.id) {
         const updatedMessages = [...state.mensagens];
         const messageIndex = updatedMessages.findIndex(
@@ -449,7 +450,6 @@ export const useAtendimentoTicketStore = create<
           payload.ticket.status !== "closed" &&
           payload.ack === 0
         ) {
-          console.log(payload);
           state.notificacaoTicket += 1;
         }
         return {};

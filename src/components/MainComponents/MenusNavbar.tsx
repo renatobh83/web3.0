@@ -38,6 +38,7 @@ import { RealizarLogout } from '../../services/login'
 import { useAuth } from '../../context/AuthContext'
 import { useAtendimentoStore } from '../../store/atendimento'
 import { Errors } from '../../utils/error'
+import { AudioNotification } from '../AtendimentoComponent/AudioNotification'
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -169,7 +170,6 @@ export const MenusNavbar = () => {
     if (usuario) {
       usuario.status = e.target.checked ? 'online' : 'offline'
     }
-    const isOnline = e.target.checked ? 'online' : 'offline'
     localStorage.setItem('usuario', encryptData(JSON.stringify(usuario)))
     setStatus(e.target.checked)
   }
@@ -207,7 +207,9 @@ export const MenusNavbar = () => {
       spacing={1}
       sx={{ justifyContent: 'center', alignItems: 'center' }}
     >
+      {/* <AudioNotification /> */}
       <Tooltip title="Notificações" arrow placement="left">
+
         <>
           <Button onClick={handleClick}>
             {+notificationsP.count + +notifications.count === 0 ? (
@@ -218,6 +220,7 @@ export const MenusNavbar = () => {
               </Badge>
             )}
           </Button>
+          {/* <AudioNotification /> */}
           <StyledMenu
             id="customized-menu"
             MenuListProps={{

@@ -42,6 +42,7 @@ import { InputMenssagem } from './InputMenssagem'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 
 import { EventEmitter } from 'events'
+import { AudioNotification } from '../../components/AtendimentoComponent/AudioNotification'
 export const eventEmitter = new EventEmitter()
 
 export const ChatMensagem = ({ menssagens }) => {
