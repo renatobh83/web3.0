@@ -57,16 +57,16 @@ export const ModalQrCode = ({
 
         <Box
           sx={{ textAlign: 'center' }}
-          // className={clsx('text-center my-6', {
-          //     'bg-white': theme.palette.mode === 'dark',
-          // })}
+        // className={clsx('text-center my-6', {
+        //     'bg-white': theme.palette.mode === 'dark',
+        // })}
         >
           {channel.qrcode ? (
             <QRCodeSVG value={channel.qrcode} size={300} level="H" />
           ) : (
             <p>Aguardando o Qr Code...</p>
           )}
-          {channel.wppPass && <p>Código de Pareamento: {channel.wppPass}</p>}
+          {channel.pairingCode && <p>Código de Pareamento: {channel.pairingCode}</p>}
         </Box>
         <Box sx={{ mt: 2 }}>
           <Typography>

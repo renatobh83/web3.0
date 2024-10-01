@@ -2,10 +2,12 @@ import {
 	Alert,
 	Box,
 	Button,
+	Checkbox,
 	Dialog,
 	DialogActions,
 	DialogContent,
 	DialogTitle,
+	FormControlLabel,
 	List,
 	ListItem,
 	MenuItem,
@@ -15,6 +17,7 @@ import FunctionsIcon from '@mui/icons-material/Functions';
 import { useWhatsappStore } from "../../store/whatsapp";
 import { useEffect, useState } from "react";
 import { CriarWhatsapp, ListarWhatsapps, UpdateWhatsapp } from "../../services/sessoesWhatsapp";
+
 
 
 
@@ -60,6 +63,8 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 		name: '',
 		wppUser: '',
 		wppPass: '',
+		pairingCodeEnabled: false,
+		pairingCode: '',
 		proxyUrl: null,
 		proxyUser: null,
 		proxyPass: null,
@@ -120,9 +125,21 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 		birthdayDateMessage: '',
 		transcribeAudioJson: {}
 	})
-
+	function formatPhoneNumber(phoneNumber: string) {
+		// Formata no padrão +DDI (DDD) 99999-9999
+		const formatted = phoneNumber.replace(
+			/^(\d{2})(\d{2})(\d{4,5})(\d{4}).*/,
+			'+$1 ($2) $3-$4'
+		)
+		const DDI = '55';  // Código do Brasil
+		return DDI + phoneNumber;
+	}
 	const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
+		if (whatsapp.wppUser) {
+			whatsapp.wppUser = formatPhoneNumber(whatsapp.wppUser)
+		}
+
 		if (item?.id) {
 			UpdateWhatsapp(item.id, whatsapp).then(async () => {
 				const { data } = await ListarWhatsapps()
@@ -153,7 +170,7 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 		const { name } = event.target;
 		setWhatsapp((prev) => ({
 			...prev,
-			[name]: event.target.value
+			[name]: name === 'pairingCodeEnabled' ? event.target.checked : event.target.value
 		}))
 	}
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -191,6 +208,31 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 						<MenuItem key={type.label} value={type.value}>{type.label}</MenuItem>
 					))}
 				</TextField>
+				{whatsapp.type === 'whatsapp' && (
+					<Box sx={{ mt: 1 }}>
+						<FormControlLabel control={
+							<Checkbox
+								name="pairingCodeEnabled"
+								value={whatsapp.pairingCodeEnabled}
+								onChange={e => handleChange(e)}
+								checked={whatsapp.pairingCodeEnabled}
+							/>} label="Codigo pareamento" />
+						{whatsapp.pairingCodeEnabled && (
+							<TextField
+								autoFocus
+								required
+								margin="dense"
+								id="wppUser"
+								name="wppUser"
+								label="Número Exato da Conta do WhatsApp DDD + Numero"
+								value={whatsapp.wppUser}
+								onChange={(e) => handleChange(e)}
+								fullWidth
+								variant="standard"
+							/>
+						)}
+					</Box>
+				)}
 				<TextField
 					autoFocus
 					required
@@ -224,6 +266,7 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 				</Box>
 			</DialogContent>
 			{whatsapp.type === 'whatsapp' && (
+
 				<Alert severity="success" variant="filled">
 					<List>
 						<ListItem>Serviço Não Oficial.</ListItem>
