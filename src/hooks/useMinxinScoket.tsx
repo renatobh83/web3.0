@@ -12,6 +12,8 @@ import { eventEmitter } from "../pages/Atendimento/ChatMenssage";
 import { eventEmitter as eventNotification } from '../pages/Atendimento/index'
 import { useWebSocketStore } from "../store/socket";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { Errors } from "../utils/error";
 
 
 
@@ -31,12 +33,11 @@ export const useMixinSocket = () => {
     const updateMessages = useAtendimentoTicketStore(state => state.updateMessages)
     const updateMessageStatus = useAtendimentoTicketStore(state => state.updateMessageStatus)
     const updateTicket = useAtendimentoTicketStore(state => state.updateTicket)
-    const { notifications, notificationsP } = useNotificationsStore()
     const updateContatos = useContatosStore(s => s.updateContact)
     const [loading, setLoading] = useState(false)
     const socketRef = useRef<Socket | null>(null);
 
-    const { ws, getWs, setWs } = useWebSocketStore()
+    const { getWs, setWs } = useWebSocketStore()
     const updateNotifications = useNotificationsStore(s => s.updateNotifications)
     const updateNotificationsP = useNotificationsStore(
         s => s.updateNotificationsP
@@ -47,11 +48,22 @@ export const useMixinSocket = () => {
         }, 200)
 
     };
+    const navigate = useNavigate()
+    const goToChat = async (id: number) => {
+        try {
+            const timestamp = new Date().getTime()
+            navigate(`/atendimento/${id}?t=${timestamp}`, {
+                replace: false,
+                state: { t: new Date().getTime() },
+            })
+        } catch (error) {
+            Errors(error)
+        }
+    }
 
-
+    const { AbrirChatMensagens } = useAtendimentoTicketStore()
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
-
         let socket: Socket<DefaultEventsMap, DefaultEventsMap> | null = null
         if (!getWs()) {
             socket = socketIO()
@@ -96,6 +108,7 @@ export const useMixinSocket = () => {
         });
     }, [socketRef]);
     // Método para escutar a lista de tickets
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     const socketTicketListNew = useCallback(() => {
         const socket = socketRef.current;
         socket?.on('connect', () => {
@@ -109,7 +122,6 @@ export const useMixinSocket = () => {
                         data.payload.ticket.id !== ticketFocado.id
                     ) {
                         if (checkTicketFilter(data.payload.ticket)) {
-
                             handlerNotifications(data.payload)
                         }
                     }
@@ -168,9 +180,15 @@ export const useMixinSocket = () => {
                     if (pass_noti) {
                         const message = new Notification('Novo cliente pendente', {
                             body: 'Cliente: ' + data.payload.contact.name,
-                            tag: 'simple-push-demo-notification'
+                            tag: 'simple-push-demo-notification',
+
                         })
-                        console.log(message)
+                        message.onclick = e => {
+                            e.preventDefault()
+                            window.focus()
+                            AbrirChatMensagens(data.payload)
+                            goToChat(data.payload.id)
+                        }
                     }
                 }
             })

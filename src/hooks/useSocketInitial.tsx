@@ -14,6 +14,8 @@ import { eventEmitter } from '../pages/Atendimento/ChatMenssage'
 import { useAuth } from '../context/AuthContext'
 import { DefaultEventsMap } from '@socket.io/component-emitter'
 import { Socket } from 'socket.io-client'
+import { useNavigate } from 'react-router-dom'
+import { Errors } from '../utils/error'
 // import { EventEmitter } from "events";
 
 // export const eventEmitter = new EventEmitter();
@@ -44,7 +46,20 @@ export const useSocketInitial = () => {
 
   const { setUsersApp } = useUsersAppStore()
   const { decryptData } = useAuth()
+  const navigate = useNavigate()
+  const goToChat = async (id: number) => {
+    try {
+      const timestamp = new Date().getTime()
+      navigate(`/atendimento/${id}?t=${timestamp}`, {
+        replace: false,
+        state: { t: new Date().getTime() },
+      })
+    } catch (error) {
+      Errors(error)
+    }
+  }
 
+  const { AbrirChatMensagens } = useAtendimentoTicketStore()
   const usuario = JSON.parse(decryptData('usuario'))
   const userId = +localStorage.getItem('userId')
   let socket: WebSocket | Socket<DefaultEventsMap, DefaultEventsMap> | null = null
@@ -166,7 +181,7 @@ export const useSocketInitial = () => {
               // date: new Date(),
             }
             const { data } = await ConsultarTickets(params)
-            console.log('Params1', data)
+
             updateNotifications(data)
 
             const orderTickets = tickets => {
@@ -255,10 +270,16 @@ export const useSocketInitial = () => {
           }
           if (!data.payload.ticket.userId && !data.payload.fromMe) {
 
-            new Notification('Novo cliente pendente', {
+            const message = new Notification('Novo cliente pendente', {
               body: 'Cliente: ' + data.payload.ticket.contact.name,
               tag: 'simple-push-demo-notification'
             })
+            message.onclick = e => {
+              e.preventDefault()
+              window.focus()
+              AbrirChatMensagens(data.payload.ticket)
+              goToChat(data.payload.ticket.id)
+            }
           }
 
           updateMessages(data.payload)
@@ -314,9 +335,9 @@ export const useSocketInitial = () => {
         }
       })
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
-        const verify = []
+        let verify = []
         if (data.type === 'notification:new') {
-          console.log('socket ON: notification:New')
+          console.log('socket ON: notification:New IN SOCKET INICIAl')
           const params = {
             searchParam: '',
             pageNumber: 1,
@@ -332,7 +353,7 @@ export const useSocketInitial = () => {
             const data_noti = await ConsultarTickets(params)
 
             updateNotificationsP(data_noti.data)
-            verify.push(data_noti)
+            verify = data_noti
           } catch (err) {
             toast.message('Algum problema', {
               description: `${err}`,
@@ -344,15 +365,22 @@ export const useSocketInitial = () => {
 
           // biome-ignore lint/complexity/noForEach: <explanation>
           verify?.data?.tickets.forEach(element => {
+            console.log(element.id, data.payload.id)
             pass_noti = element.id === data.payload.id ? true : pass_noti
           })
+
           if (pass_noti) {
             const message = new Notification('Novo cliente pendente', {
               // biome-ignore lint/style/useTemplate: <explanation>
               body: 'Cliente: ' + data.payload.contact.name,
               tag: 'simple-push-demo-notification',
             })
-            console.log(message)
+            message.onclick = e => {
+              e.preventDefault()
+              window.focus()
+              AbrirChatMensagens(data.payload)
+              goToChat(data.payload.id)
+            }
           }
         }
       })
