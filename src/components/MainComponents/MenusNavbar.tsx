@@ -126,6 +126,7 @@ export const MenusNavbar = () => {
     }
   }
   function abrirChatContato(ticket) {
+
     if (
       !(
         ticket.status !== 'pending' &&
@@ -236,7 +237,8 @@ export const MenusNavbar = () => {
               </MenuItem>
             ) : (
               <MenuList sx={{ display: 'flex', gap: 2 }}>
-                {+ notificationsP.count > 0 && (
+
+                {Number(notificationsP.count) > 0 && (
                   <MenuItem onClick={() => navigate('/atendimento')}>
                     <Typography>
                       {notificationsP.count} Clientes pendentes na fila{' '}
@@ -244,7 +246,7 @@ export const MenusNavbar = () => {
                   </MenuItem>
                 )}
 
-                {notifications.tickets.map(ticket => (
+                {notifications?.tickets?.map(ticket => (
                   <MenuItem
                     key={ticket.id}
                     sx={{ display: 'flex', gap: 3 }}

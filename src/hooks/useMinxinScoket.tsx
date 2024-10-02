@@ -31,7 +31,7 @@ export const useMixinSocket = () => {
     const updateMessages = useAtendimentoTicketStore(state => state.updateMessages)
     const updateMessageStatus = useAtendimentoTicketStore(state => state.updateMessageStatus)
     const updateTicket = useAtendimentoTicketStore(state => state.updateTicket)
-
+    const { notifications, notificationsP } = useNotificationsStore()
     const updateContatos = useContatosStore(s => s.updateContact)
     const [loading, setLoading] = useState(false)
     const socketRef = useRef<Socket | null>(null);
@@ -101,7 +101,7 @@ export const useMixinSocket = () => {
         socket?.on('connect', () => {
             socket.on(`${usuario.tenantId}:ticketList`, async data => {
                 if (data.type === 'chat:create') {
-
+                    console.log('socket ON: chat:create useMininxSocket')
                     scrollToBottom()
                     if (
                         !data.payload.read &&
@@ -131,6 +131,7 @@ export const useMixinSocket = () => {
             socket?.on(`${usuario.tenantId}:ticketList`, async data => {
                 let verify = []
                 if (data.type === 'notification:new') {
+                    console.log('socket ON: notification:New useMininxSocket')
                     // console.log(data)
                     // Atualiza notificações de mensagem
                     // var data_noti = []
@@ -148,7 +149,7 @@ export const useMixinSocket = () => {
                     }
                     try {
                         const data_noti = await ConsultarTickets(params)
-
+                        console.log(notifications)
                         updateNotificationsP(data_noti.data)
                         verify = data_noti
                     } catch (err) {
@@ -161,6 +162,7 @@ export const useMixinSocket = () => {
                     }
                     // Faz verificação para se certificar que notificação pertence a fila do usuário
                     let pass_noti = false
+                    console.log(verify)
                     verify.data.tickets.forEach((element) => { pass_noti = (element.id === data.payload.id ? true : pass_noti) })
                     // Exibe Notificação
                     if (pass_noti) {
@@ -168,6 +170,7 @@ export const useMixinSocket = () => {
                             body: 'Cliente: ' + data.payload.contact.name,
                             tag: 'simple-push-demo-notification'
                         })
+                        console.log(message)
                     }
                 }
             })

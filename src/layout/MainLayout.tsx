@@ -1,8 +1,6 @@
 import { Box, Stack } from '@mui/material'
 import { MenuDrawer } from '../components/MainComponents/MenuDrawer'
 import { useCallback, useEffect } from 'react'
-import { Header } from '../components/MainComponents/Header'
-
 import { Outlet } from 'react-router-dom'
 import { useNotificationsStore } from '../store/notifications'
 import { useWhatsappStore } from '../store/whatsapp'
@@ -10,21 +8,12 @@ import { toast } from 'sonner'
 import { ConsultarTickets } from '../services/tickets'
 import { ListarConfiguracoes } from '../services/configuracoes'
 import { ListarWhatsapps } from '../services/sessoesWhatsapp'
-
+import { useSocketInitial } from '../hooks/useSocketInitial'
 import { useAtendimentoTicketStore } from '../store/atendimentoTicket'
 
-import { socketIO } from '../utils/socket'
-import { useUsersAppStore } from '../store/usersApp'
-import { useSocketInitial } from '../hooks/useSocketInitial'
-
 export const MainLayout: React.FC = () => {
-  // const socket = socketIO()
-  const { updateNotifications, updateNotificationsP } = useNotificationsStore()
-
+  const { updateNotifications, updateNotificationsP, notifications, notificationsP } = useNotificationsStore()
   const { loadWhatsApps, whatsApps } = useWhatsappStore()
-
-  // const usuario = JSON.parse(localStorage.getItem('usuario'))
-
   useSocketInitial()
   // Nao sendo invocada
   // function cProblemaConexao() {
@@ -91,7 +80,12 @@ export const MainLayout: React.FC = () => {
       localStorage.setItem('configuracoes', JSON.stringify(data))
     }
   }, [])
+  const mensagens = useAtendimentoTicketStore(s => s.mensagens)
+  useEffect(() => {
+    console.log(notifications)
 
+  }, [mensagens])
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const consultarTickets = useCallback(async () => {
     const params = {
       searchParam: '',
@@ -107,6 +101,7 @@ export const MainLayout: React.FC = () => {
     }
     try {
       const { data } = await ConsultarTickets(params)
+
       updateNotifications(data)
       setTimeout(() => {
         updateNotifications(data)
@@ -132,7 +127,6 @@ export const MainLayout: React.FC = () => {
     }
     try {
       const { data } = await ConsultarTickets(params2)
-
       // this.$store.commit("UPDATE_NOTIFICATIONS_P", data);
       updateNotificationsP(data)
       setTimeout(() => {
@@ -146,25 +140,18 @@ export const MainLayout: React.FC = () => {
       })
       console.error(err)
     }
-  }, [updateNotificationsP, updateNotifications])
+  }, [])
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+
   useEffect(() => {
     const conectar = async () => {
       await listarWhatsapps()
       await listarConfiguracoes()
-
-      consultarTickets() // Descomente se necessário
+      consultarTickets()
     }
-
     conectar()
   }, [listarWhatsapps, listarConfiguracoes, consultarTickets])
 
-  // const [open, setOpen] = useState(false);
-
-  // const toggleDrawer = (newOpen) => () => {
-  //     setOpen(newOpen);
-  // };
   return (
     <Box sx={{ display: 'flex' }}>
       <MenuDrawer />

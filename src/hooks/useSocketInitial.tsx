@@ -12,12 +12,14 @@ import { useWebSocketStore } from '../store/socket'
 import { useUsersAppStore } from '../store/usersApp'
 import { eventEmitter } from '../pages/Atendimento/ChatMenssage'
 import { useAuth } from '../context/AuthContext'
+import { DefaultEventsMap } from '@socket.io/component-emitter'
+import { Socket } from 'socket.io-client'
 // import { EventEmitter } from "events";
 
 // export const eventEmitter = new EventEmitter();
 
 export const useSocketInitial = () => {
-  const { ws, setWs, getWs } = useWebSocketStore()
+  const { ws, setWs, getWs, resetWs } = useWebSocketStore()
 
   const wsRef = useRef<WebSocket | null>(null)
   const updateWhatsapps = useWhatsappStore(state => state.updateWhatsApps)
@@ -39,18 +41,20 @@ export const useSocketInitial = () => {
   const updateMessageStatus = useAtendimentoTicketStore(
     state => state.updateMessageStatus
   )
+
   const { setUsersApp } = useUsersAppStore()
   const { decryptData } = useAuth()
 
   const usuario = JSON.parse(decryptData('usuario'))
   const userId = +localStorage.getItem('userId')
-
+  let socket: WebSocket | Socket<DefaultEventsMap, DefaultEventsMap> | null = null
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (!getWs()) {
-      const socket = socketIO()
+      socket = socketIO()
+      console.log('Socket connect', location.pathname)
       setWs(socket)
-      wsRef.current = socket
+
       socket.emit(`${usuario.tenantId}:joinNotification`)
 
       socket.io.on(`${usuario.tenantId}:whatsapp`, data => {
@@ -147,7 +151,7 @@ export const useSocketInitial = () => {
 
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
         if (data.type === 'ticket:update') {
-          console.log('socket ON: TICKET:UPDATE')
+          console.log('socket ON: TICKET:UPDATE 1')
           try {
             const params = {
               searchParam: '',
@@ -162,6 +166,7 @@ export const useSocketInitial = () => {
               // date: new Date(),
             }
             const { data } = await ConsultarTickets(params)
+            console.log('Params1', data)
             updateNotifications(data)
 
             const orderTickets = tickets => {
@@ -192,7 +197,7 @@ export const useSocketInitial = () => {
           }
         }
         if (data.type === 'ticket:create') {
-          console.log('socket ON: TICKET:CREATE')
+          console.log('socket ON: TICKET:CREATE 1')
           try {
             const params = {
               searchParam: '',
@@ -207,7 +212,7 @@ export const useSocketInitial = () => {
               // date: new Date(),
             }
             const { data } = await ConsultarTickets(params)
-
+            console.log('Params1', data)
             updateNotifications(data)
             const orderTickets = tickets => {
               const newTickes = orderBy(
@@ -237,7 +242,7 @@ export const useSocketInitial = () => {
       })
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
         if (data.type === 'chat:create') {
-          console.log('socket ON: CHAT:CREATE')
+          console.log('socket ON: CHAT:CREATE 2', data)
           // if (data.payload.ticket.userId !== userId) return
           // if (data.payload.fromMe) return
           if (data.payload.ticket.userId === userId && !data.payload.fromMe) {
@@ -277,13 +282,13 @@ export const useSocketInitial = () => {
             }
 
             const newTickets = orderTickets(data.tickets)
-            // setTimeout(() => {
-            //     // this.$store.commit('LOAD_TICKETS', newTickets);
-            //     // loadTickets(newTickets)
-            // }, 200);
+            setTimeout(() => {
+              // this.$store.commit('LOAD_TICKETS', newTickets);
+              loadTickets(newTickets)
+            }, 200);
             setTimeout(() => {
               // this.$store.commit('UPDATE_TICKET', newTickets);
-              // updateTicket(newTickets)
+              updateTicket(newTickets)
               try {
                 updateMessages(data.payload)
               } catch (e) { }
@@ -302,7 +307,6 @@ export const useSocketInitial = () => {
       })
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
         const verify = []
-
         if (data.type === 'notification:new') {
           console.log('socket ON: notification:New')
           const params = {
@@ -409,10 +413,7 @@ export const useSocketInitial = () => {
       })
     }
     return () => {
-      if (wsRef.current) {
-        // wsRef.current.close();
-        console.log('Conexão WebSocket fechada')
-      }
+      console.log('Conexão WebSocket fechada')
     }
   }, [getWs, setWs])
 }

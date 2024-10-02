@@ -56,7 +56,7 @@ export const Chat = () => {
     }
   }, [])
 
-  useSocketInitial()
+
   const onLoadMore = async () => {
     if (loading) return
     // if (!hasMore || ticketFocado.id) {

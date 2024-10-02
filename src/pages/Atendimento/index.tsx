@@ -65,6 +65,7 @@ import { useContatosStore } from '../../store/contatos'
 import { Errors } from '../../utils/error'
 import { useAuth } from '../../context/AuthContext'
 import { AudioNotification } from '../../components/AtendimentoComponent/AudioNotification'
+import { useSocketInitial } from '../../hooks/useSocketInitial'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -1077,7 +1078,7 @@ export function Atendimento(props: Props) {
       </Box>
     </>
   )
-
+  useSocketInitial()
   // Remove this const when copying and pasting into your project.
   const container =
     window !== undefined ? () => window().document.body : undefined
