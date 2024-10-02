@@ -72,7 +72,7 @@ export const ChatMensagem = ({ menssagens }) => {
   const openLinkInNewPage = url => {
     window.open(url, '_blank')
   }
-
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openStyledMenu, setOpenStyledMenu] = useState(false);
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null)
@@ -83,10 +83,26 @@ export const ChatMensagem = ({ menssagens }) => {
     setOpenStyledMenu(true);
   };
   const handleCloseMenu = () => {
+    setHoveredIndex(null)
     setAnchorEl(null);
     setOpenStyledMenu(false);
     setSelectedMessageId(null);
   };
+
+  // valores para icone de agendamento
+  const [anchorElAgenda, setAnchorElAgenda] = useState(null)
+  const [messageAgendamento, setMessageAgendamento] = useState(null)
+  const handleMouseEnter = (event, id) => {
+    setAnchorElAgenda(event.currentTarget)
+    setMessageAgendamento(id)
+  }
+  const handleMouseLeave = () => {
+    setAnchorElAgenda(null); // Fecha o menu ao sair do ícone
+    setMessageAgendamento(null);
+  };
+
+  // fim dos valores para icone agendamento
+
 
   const [anchorEls, setAnchorEls] = useState<Record<string, HTMLElement | null>>({});
   const [open, setOpen] = useState<Record<string, boolean>>({});
@@ -170,7 +186,7 @@ export const ChatMensagem = ({ menssagens }) => {
     }
   }, [])
 
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+
   return (
     <>
       <Box
@@ -234,7 +250,7 @@ export const ChatMensagem = ({ menssagens }) => {
                       <Box id="inicioListaMensagensChat" />
                     )}
 
-                    <Box id={mensagem.id} />
+                    <Box id={mensagem.id} onMouseLeave={handleMouseLeave} />
                     <Box
                       sx={{
                         fontWeight: '500',
@@ -251,7 +267,9 @@ export const ChatMensagem = ({ menssagens }) => {
                           position: 'relative'
                         }}
                       >
-                        <Box>
+                        <Box
+                          id="aonde estou"
+                        >
                           <Box
                             sx={{
                               backgroundColor: mensagem.fromMe
@@ -261,6 +279,7 @@ export const ChatMensagem = ({ menssagens }) => {
                                   : '#e3f2fd',
                               color: mode === 'dark' ? '#000' : '#000',
                               minHeight: '48px',
+
                               padding: '12px 16px',
                               wordBreak: 'break-word',
                               position: 'relative',
@@ -277,15 +296,17 @@ export const ChatMensagem = ({ menssagens }) => {
                             <Box
                               id="text-content"
                               onMouseOver={() => setHoveredIndex(mensagem.id)}
-                              onMouseLeave={() => setHoveredIndex(null)}
+                              onMouseLeave={() => handleCloseMenu()}
                             >
                               <div>
                                 <Box
+
                                   sx={{
                                     minWidth: '100px',
                                     maxWidth: '350px',
                                     lineHeight: '1.2',
                                     wordBreak: 'break-word',
+
                                     // textAlign: mensagem.fromMe ? 'right' : 'left',
                                   }}
                                 >
@@ -326,9 +347,9 @@ export const ChatMensagem = ({ menssagens }) => {
                                   {/* Mostrar mensagens com agendamento */}
                                   {mensagem.scheduleDate && (
                                     <>
-                                      <IconButton
+                                      {/* <IconButton
                                         sx={{
-                                          display: hoveredIndex === mensagem.id ? 'block' : 'none', // Só exibe o botão quando hoveredIndex coincide com a mensagem
+                                          // Só exibe o botão quando hoveredIndex coincide com a mensagem
                                           position: 'absolute',
                                           zIndex: '99999',
                                           bottom: 0,
@@ -342,7 +363,8 @@ export const ChatMensagem = ({ menssagens }) => {
                                           borderRadius: '50%', // Deixa o ícone circular
                                           border: 'none',
                                         }}
-                                        onMouseEnter={(event) => handleOpenMenu(event, mensagem.id)}
+                                      // onMouseEnter={(event) => handleMouseEnter(event, mensagem.id)}
+                                      // onMouseEnter={(event) => handleOpenMenu(event, mensagem.id)}
                                       // onMouseLeave={() => handlePopoverClose(mensagem.id)}
                                       >
                                         <ArrowDownward
@@ -352,11 +374,12 @@ export const ChatMensagem = ({ menssagens }) => {
                                           }}
                                         />
                                       </IconButton>
-                                      {selectedMessageId === mensagem.id && anchorEl && (
+                                      {messageAgendamento === mensagem.id && anchorElAgenda && (
                                         <Menu
-                                          anchorEl={anchorEl} // Usando o ícone como âncora
-                                          open={openStyledMenu}
-                                          onMouseLeave={() => handleCloseMenu()}
+                                          anchorEl={anchorElAgenda} // Usando o ícone como âncora
+                                          open={Boolean(anchorElAgenda)}
+                                          onMouseLeave={handleMouseLeave}
+                                          onClose={handleMouseLeave}
                                           anchorOrigin={{
                                             vertical: 'bottom',
                                             horizontal: 'center',
@@ -369,7 +392,7 @@ export const ChatMensagem = ({ menssagens }) => {
                                           <MenuItem>Opção 1</MenuItem>
                                           <MenuItem>Opção 2</MenuItem>
                                         </Menu>
-                                      )}
+                                      )} */}
                                     </>
                                   )}
                                   {mensagem.isDeleted && (
@@ -419,22 +442,25 @@ export const ChatMensagem = ({ menssagens }) => {
                                           }}
                                         />
                                       </IconButton>
-                                      {selectedMessageId === mensagem.id && anchorEl && (
+                                      {selectedMessageId === mensagem.id && anchorEl && openStyledMenu && (
                                         <Menu
                                           anchorEl={anchorEl} // Usando o ícone como âncora
                                           open={openStyledMenu}
                                           onClose={handleCloseMenu}
+
                                           anchorOrigin={{
-                                            vertical: 'bottom',
-                                            horizontal: 'center',
-                                          }}
-                                          transformOrigin={{
                                             vertical: 'top',
-                                            horizontal: 'center',
+                                            horizontal: mensagem.fromMe ? -200 : 45,
                                           }}
+
                                         >
-                                          <MenuItem>Opção 1</MenuItem>
-                                          <MenuItem>Opção 2</MenuItem>
+                                          <MenuItem>Responder</MenuItem>
+                                          <MenuItem>Encaminhar</MenuItem>
+                                          <MenuItem>Marcar (encaminhar varias)</MenuItem>
+                                          {mensagem.fromMe && <MenuItem>Editar mensagem</MenuItem>}
+                                          <MenuItem>Reagir</MenuItem>
+                                          <MenuItem>Deletar</MenuItem>
+
                                         </Menu>
                                       )}
                                     </>
