@@ -12,7 +12,8 @@ import { useSocketInitial } from '../hooks/useSocketInitial'
 import { useAtendimentoTicketStore } from '../store/atendimentoTicket'
 
 export const MainLayout: React.FC = () => {
-  const { updateNotifications, updateNotificationsP, notifications, notificationsP } = useNotificationsStore()
+  const { updateNotifications, updateNotificationsP, reset } = useNotificationsStore()
+
   const { loadWhatsApps, whatsApps } = useWhatsappStore()
   useSocketInitial()
   // Nao sendo invocada
@@ -80,13 +81,12 @@ export const MainLayout: React.FC = () => {
       localStorage.setItem('configuracoes', JSON.stringify(data))
     }
   }, [])
-  const mensagens = useAtendimentoTicketStore(s => s.mensagens)
-  useEffect(() => {
-    console.log(notifications)
 
-  }, [mensagens])
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const consultarTickets = useCallback(async () => {
+    reset()
+    console.log('Consultar tickets', location.pathname)
     const params = {
       searchParam: '',
       pageNumber: 1,
@@ -101,12 +101,11 @@ export const MainLayout: React.FC = () => {
     }
     try {
       const { data } = await ConsultarTickets(params)
-
       updateNotifications(data)
       setTimeout(() => {
         updateNotifications(data)
       }, 500)
-      // this.$store.commit('SET_HAS_MORE', data.hasMore)
+
     } catch (err) {
       toast.error('Algum problema ao consultar tickets', {
         position: 'top-center',
@@ -127,13 +126,12 @@ export const MainLayout: React.FC = () => {
     }
     try {
       const { data } = await ConsultarTickets(params2)
-      // this.$store.commit("UPDATE_NOTIFICATIONS_P", data);
+
       updateNotificationsP(data)
       setTimeout(() => {
         updateNotificationsP(data)
       }, 500)
-      // this.$store.commit('SET_HAS_MORE', data.hasMore)
-      // console.log(this.notifications)
+
     } catch (err) {
       toast.error('Algum problema ao consultar tickets ', {
         position: 'top-center',

@@ -221,7 +221,6 @@ export const MenusNavbar = () => {
               </Badge>
             )}
           </Button>
-          {/* <AudioNotification /> */}
           <StyledMenu
             id="customized-menu"
             MenuListProps={{
@@ -238,7 +237,7 @@ export const MenusNavbar = () => {
             ) : (
               <MenuList sx={{ display: 'flex', gap: 2 }}>
 
-                {Number(notificationsP.count) > 0 && (
+                {+notificationsP.count > 0 && (
                   <MenuItem onClick={() => navigate('/atendimento')}>
                     <Typography>
                       {notificationsP.count} Clientes pendentes na fila{' '}
