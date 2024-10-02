@@ -149,7 +149,7 @@ export const useMixinSocket = () => {
                     }
                     try {
                         const data_noti = await ConsultarTickets(params)
-                        console.log(notifications)
+
                         updateNotificationsP(data_noti.data)
                         verify = data_noti
                     } catch (err) {
@@ -162,7 +162,7 @@ export const useMixinSocket = () => {
                     }
                     // Faz verificação para se certificar que notificação pertence a fila do usuário
                     let pass_noti = false
-                    console.log(verify)
+
                     verify.data.tickets.forEach((element) => { pass_noti = (element.id === data.payload.id ? true : pass_noti) })
                     // Exibe Notificação
                     if (pass_noti) {

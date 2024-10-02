@@ -253,6 +253,13 @@ export const useSocketInitial = () => {
               icon: data.payload.ticket.contact.profilePicUrl,
             })
           }
+          if (!data.payload.ticket.userId && !data.payload.fromMe) {
+
+            new Notification('Novo cliente pendente', {
+              body: 'Cliente: ' + data.payload.ticket.contact.name,
+              tag: 'simple-push-demo-notification'
+            })
+          }
 
           updateMessages(data.payload)
           const params = {
@@ -303,6 +310,7 @@ export const useSocketInitial = () => {
           } catch (err) {
             console.log('error try', err)
           }
+
         }
       })
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
