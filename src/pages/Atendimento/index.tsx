@@ -30,6 +30,10 @@ import {
   TextField,
   Tooltip,
   useColorScheme,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
 } from '@mui/material'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useCallback, useEffect, useState } from 'react'
@@ -296,19 +300,6 @@ export function Atendimento(props: Props) {
     setTabTickets(newValue)
   }
 
-  const handleChange = event => {
-    const { name, checked } = event.target
-    // Atualizar o estado específico do switch
-    setSwitchStates(prevStates => ({
-      ...prevStates,
-      [name]: checked, // Atualiza apenas o switch correspondente
-    }))
-    setPesquisaTickets({
-      ...pesquisaTickets,
-      [event.target.name]: event.target.checked,
-    })
-  }
-
   const statusTickets = useCallback(
     debounce((novoStatus: string) => {
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -335,6 +326,27 @@ export function Atendimento(props: Props) {
     }, 200),
     []
   )
+  const handleChange = event => {
+    const { name, checked } = event.target
+    // Atualizar o estado específico do switch
+    setSwitchStates(prevStates => ({
+      ...prevStates,
+      [name]: checked, // Atualiza apenas o switch correspondente
+    }))
+    if (checked) {
+      // biome-ignore lint/complexity/noForEach: <explanation>
+      const all = ['closed', 'open', 'pending']
+      setPesquisaTickets({
+        ...pesquisaTickets,
+        status: all,
+      })
+    }
+    setPesquisaTickets({
+      ...pesquisaTickets,
+      [name]: checked,
+    })
+  }
+
   const handleSearch = useCallback(
     debounce(async (term: string) => {
       setPesquisaTickets({
@@ -760,36 +772,47 @@ export function Atendimento(props: Props) {
                       cUserQueues={[]}
                       pesquisaTickets={pesquisaTickets}
                     />
-                    {/* <FormControl component="fieldset">
-                                            <FormGroup aria-label="position" >
-                                                <FormControlLabel
-                                                    value={pesquisaTickets.status.includes("open")}
-                                                    control={
-                                                        <Checkbox
-                                                            checked={pesquisaTickets.status.includes("open")}
-                                                            onChange={() => statusTickets("open")}
-                                                        />}
-                                                    label="Abertos"
-                                                    labelPlacement="end"
-                                                />
-                                                <FormControlLabel
-                                                    value={pesquisaTickets.status.includes("pending")}
-                                                    control={<Checkbox
-                                                        checked={pesquisaTickets.status.includes("pending")}
-                                                        onChange={() => statusTickets("pending")} />}
-                                                    label="Pendentes"
-                                                    labelPlacement="end"
-                                                />
-                                                <FormControlLabel
-                                                    value={pesquisaTickets.status.includes("closed")}
-                                                    control={<Checkbox
-                                                        checked={pesquisaTickets.status.includes("closed")}
-                                                        onChange={() => statusTickets("closed")} />}
-                                                    label="Resolvidos"
-                                                    labelPlacement="end"
-                                                />
-                                            </FormGroup>
-                                        </FormControl> */}
+                    <FormControl component="fieldset">
+                      <FormGroup aria-label="position">
+                        <FormControlLabel
+                          value={pesquisaTickets.status.includes('open')}
+                          control={
+                            <Checkbox
+                              checked={pesquisaTickets.status.includes('open')}
+                              onChange={() => statusTickets('open')}
+                            />
+                          }
+                          label="Abertos"
+                          labelPlacement="end"
+                        />
+                        <FormControlLabel
+                          value={pesquisaTickets.status.includes('pending')}
+                          control={
+                            <Checkbox
+                              checked={pesquisaTickets.status.includes(
+                                'pending'
+                              )}
+                              onChange={() => statusTickets('pending')}
+                            />
+                          }
+                          label="Pendentes"
+                          labelPlacement="end"
+                        />
+                        <FormControlLabel
+                          value={pesquisaTickets.status.includes('closed')}
+                          control={
+                            <Checkbox
+                              checked={pesquisaTickets.status.includes(
+                                'closed'
+                              )}
+                              onChange={() => statusTickets('closed')}
+                            />
+                          }
+                          label="Resolvidos"
+                          labelPlacement="end"
+                        />
+                      </FormGroup>
+                    </FormControl>
                     <Divider />
 
                     <div className="flex items-center ml-4">
