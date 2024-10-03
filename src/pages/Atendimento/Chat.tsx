@@ -22,6 +22,8 @@ export const Chat = () => {
   const { ticketFocado, setTicketFocado, hasMore } = useAtendimentoTicketStore()
   const [loading, setLoading] = useState(false)
   const [replyingMessage, setReplyingMessage] = useState(null)
+  const isEmpty = !replyingMessage || Object.keys(replyingMessage).length === 0
+
   const [cMessages, setCMessages] = useState([])
   const [params, setParams] = useState({
     ticketId: null,
@@ -92,9 +94,28 @@ export const Chat = () => {
       setScrollIcon(true)
     }
   }
+  const [inputHeight, setInputHeight] = useState(0)
+  const footerRef = useRef<HTMLDivElement>(null)
+  const onResize = (entries: ResizeObserverEntry[]) => {
+    const entry = entries[0]
+    setInputHeight(entry.contentRect.height)
+  }
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(onResize)
+
+    if (footerRef.current) {
+      resizeObserver.observe(footerRef.current)
+    }
+
+    return () => {
+      if (footerRef.current) {
+        resizeObserver.unobserve(footerRef.current)
+      }
+    }
+  }, [])
   function cStyleScroll() {
     const loading = 0 // Substitua essa lógica conforme necessário
-    const add = 80 + loading
+    const add = inputHeight + loading
 
     return {
       minHeight: `calc(100vh - ${62 + add}px)`,
@@ -103,6 +124,7 @@ export const Chat = () => {
       overflowY: 'auto',
       contain: 'strict',
       willChange: 'scroll-position',
+      backgroundCole: 'white',
     }
   }
   return (
@@ -144,7 +166,10 @@ export const Chat = () => {
           scrollableTarget="scrollarea_container"
         >
           <div style={cStyleScroll()}>
-            <ChatMensagem menssagens={cMessages} />
+            <ChatMensagem
+              menssagens={cMessages}
+              setReplyingMessage={setReplyingMessage}
+            />
           </div>
         </InfiniteScroll>
       )}
@@ -156,9 +181,11 @@ export const Chat = () => {
           right: 0,
           px: 1,
         }}
+        ref={footerRef}
         component={'footer'}
       >
         <Box id="Drop_area">
+          {!isEmpty && <Box sx={{ width: '100%' }}>Responder</Box>}
           <InputMenssagem />
         </Box>
       </Box>

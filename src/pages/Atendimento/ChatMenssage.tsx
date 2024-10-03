@@ -46,7 +46,15 @@ import { AudioNotification } from '../../components/AtendimentoComponent/AudioNo
 
 export const eventEmitterScrool = new EventEmitter()
 
-export const ChatMensagem = ({ menssagens }) => {
+interface ChatMensagemProps {
+  setReplyingMessage: (any) => void
+  menssagens: object
+}
+
+export const ChatMensagem = ({
+  menssagens,
+  setReplyingMessage,
+}: ChatMensagemProps) => {
   const [modalImageUrl, setModalImageUrl] = useState<string | null>(null)
   const lastMessageRef = useRef<HTMLInputElement | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
@@ -94,6 +102,7 @@ export const ChatMensagem = ({ menssagens }) => {
   // valores para icone de agendamento
   const [anchorElAgenda, setAnchorElAgenda] = useState(null)
   const [messageAgendamento, setMessageAgendamento] = useState(null)
+
   const handleMouseEnter = (event, id) => {
     setAnchorElAgenda(event.currentTarget)
     setMessageAgendamento(id)
@@ -458,7 +467,13 @@ export const ChatMensagem = ({ menssagens }) => {
                                         horizontal: mensagem.fromMe ? -200 : 45,
                                       }}
                                     >
-                                      <MenuItem>Responder</MenuItem>
+                                      <MenuItem
+                                        onClick={() =>
+                                          setReplyingMessage(mensagem)
+                                        }
+                                      >
+                                        Responder
+                                      </MenuItem>
                                       <MenuItem>Encaminhar</MenuItem>
                                       <MenuItem>
                                         Marcar (encaminhar varias)
