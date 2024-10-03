@@ -150,7 +150,6 @@ export function Atendimento(props: Props) {
   const { window } = props
   const { decryptData } = useAuth()
 
-
   const [openModalNovoTicket, setOpenModalNovoTicket] = useState(false)
 
   // Stores
@@ -177,10 +176,10 @@ export function Atendimento(props: Props) {
   const [loading, setLoading] = useState(false)
   const [usuarios, setUsuarios] = useState([])
   const UserQueues = JSON.parse(localStorage.getItem('queues'))
-  const profile = decryptData("profile");
+  const profile = decryptData('profile')
   const username = localStorage.getItem('username')
   const userid = localStorage.getItem('userId')
-  const usuario = JSON.parse(decryptData("usuario"));
+  const usuario = JSON.parse(decryptData('usuario'))
 
   const { socketDisconnect, socketTicketList } = useMixinSocket()
 
@@ -445,9 +444,27 @@ export function Atendimento(props: Props) {
       setUsuarios(data.users)
     } catch (error) {
       Errors(error)
-
     }
   }
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      document
+        .getElementById('inicioListaMensagensChat')
+        ?.scrollIntoView({ behavior: 'smooth' })
+    }, 200)
+  }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    console.log('evento scrool')
+    // Adiciona o listener ao montar o componente
+    eventEmitter.on('scrollToBottomMessageChat', scrollToBottom)
+    // Remove o listener ao desmontar o componente
+    scrollToBottom()
+
+    return () => {
+      eventEmitter.off('scrollToBottomMessageChat', scrollToBottom)
+    }
+  }, [])
   const listarFilas = useCallback(async () => {
     const { data } = await ListarFilas()
     setFilas(data)
@@ -500,14 +517,14 @@ export function Atendimento(props: Props) {
   }
 
   function openTickets(): Ticket[] {
-    const filteredTickets = tickets.filter(
-      ticket => {
-        if (profile === 'admin') {
-          return ticket.status === 'open' && !ticket.isGroup
-        }
-        return (ticket.status === 'open' && !ticket.isGroup && ticket.userId === +userid)
+    const filteredTickets = tickets.filter(ticket => {
+      if (profile === 'admin') {
+        return ticket.status === 'open' && !ticket.isGroup
       }
-    )
+      return (
+        ticket.status === 'open' && !ticket.isGroup && ticket.userId === +userid
+      )
+    })
     const groupedTickets = filteredTickets.reduce((acc, ticket) => {
       const key = `${ticket.whatsappId}_${ticket.userId}_${ticket.status}_${ticket.contactId}`
       if (!acc[key] || acc[key].id > ticket.id) {

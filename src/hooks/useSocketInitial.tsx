@@ -10,7 +10,7 @@ import { useAtendimentoTicketStore } from '../store/atendimentoTicket'
 import { useContatosStore } from '../store/contatos'
 import { useWebSocketStore } from '../store/socket'
 import { useUsersAppStore } from '../store/usersApp'
-import { eventEmitter } from '../pages/Atendimento/ChatMenssage'
+import { eventEmitterScrool } from '../pages/Atendimento/ChatMenssage'
 import { useAuth } from '../context/AuthContext'
 import { DefaultEventsMap } from '@socket.io/component-emitter'
 import { Socket } from 'socket.io-client'
@@ -62,7 +62,8 @@ export const useSocketInitial = () => {
   const { AbrirChatMensagens } = useAtendimentoTicketStore()
   const usuario = JSON.parse(decryptData('usuario'))
   const userId = +localStorage.getItem('userId')
-  let socket: WebSocket | Socket<DefaultEventsMap, DefaultEventsMap> | null = null
+  let socket: WebSocket | Socket<DefaultEventsMap, DefaultEventsMap> | null =
+    null
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (!getWs()) {
@@ -257,6 +258,7 @@ export const useSocketInitial = () => {
       })
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
         if (data.type === 'chat:create') {
+          eventEmitterScrool.emit('scrollToBottomMessageChat')
           console.log('socket ON: CHAT:CREATE 2', data)
           // if (data.payload.ticket.userId !== userId) return
           // if (data.payload.fromMe) return
@@ -269,10 +271,9 @@ export const useSocketInitial = () => {
             })
           }
           if (!data.payload.ticket.userId && !data.payload.fromMe) {
-
             const message = new Notification('Novo cliente pendente', {
               body: 'Cliente: ' + data.payload.ticket.contact.name,
-              tag: 'simple-push-demo-notification'
+              tag: 'simple-push-demo-notification',
             })
             message.onclick = e => {
               e.preventDefault()
@@ -313,25 +314,24 @@ export const useSocketInitial = () => {
             setTimeout(() => {
               // this.$store.commit('LOAD_TICKETS', newTickets);
               loadTickets(newTickets)
-            }, 200);
+            }, 200)
             setTimeout(() => {
               // this.$store.commit('UPDATE_TICKET', newTickets);
               updateTicket(newTickets)
               try {
                 updateMessages(data.payload)
-              } catch (e) { }
+              } catch (e) {}
             }, 400)
             setTimeout(() => {
               updateContact(newTickets)
               updateNotifications(data)
             }, 600)
             try {
-              eventEmitter.emit('scrollToBottomMessageChat')
-            } catch (error) { }
+              eventEmitterScrool.emit('scrollToBottomMessageChat')
+            } catch (error) {}
           } catch (err) {
             console.log('error try', err)
           }
-
         }
       })
       socket.on(`${usuario.tenantId}:ticketList`, async data => {

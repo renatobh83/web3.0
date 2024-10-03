@@ -56,7 +56,6 @@ export const Chat = () => {
     }
   }, [])
 
-
   const onLoadMore = async () => {
     if (loading) return
     // if (!hasMore || ticketFocado.id) {
@@ -93,14 +92,25 @@ export const Chat = () => {
       setScrollIcon(true)
     }
   }
+  function cStyleScroll() {
+    const loading = 0 // Substitua essa lógica conforme necessário
+    const add = 80 + loading
 
+    return {
+      minHeight: `calc(100vh - ${62 + add}px)`,
+      height: `calc(100vh - ${62 + add}px)`,
+      width: '100%',
+      overflowY: 'auto',
+      contain: 'strict',
+      willChange: 'scroll-position',
+    }
+  }
   return (
     <Box
       id="scrollInfinit"
       sx={{
         paddingTop: '61px',
         paddingBottom: '73px',
-
         overflowY: 'auto',
       }}
     >
@@ -133,7 +143,9 @@ export const Chat = () => {
           loader={<></>}
           scrollableTarget="scrollarea_container"
         >
-          <ChatMensagem menssagens={cMessages} />
+          <div style={cStyleScroll()}>
+            <ChatMensagem menssagens={cMessages} />
+          </div>
         </InfiniteScroll>
       )}
       <Box
