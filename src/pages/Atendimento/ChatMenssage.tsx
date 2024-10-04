@@ -253,18 +253,18 @@ export const ChatMensagem = ({
               {index === 0 ||
                 (formatarData(mensagem.createdAt) !==
                   formatarData(menssagens[index - 1].createdAt) && (
-                  <Divider
-                    key={`hr - ${
-                      // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                      index
-                    }`}
-                  >
-                    <Chip
-                      label={formatarData(mensagem.createdAt)}
-                      size="small"
-                    />
-                  </Divider>
-                ))}
+                    <Divider
+                      key={`hr - ${
+                        // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                        index
+                        }`}
+                    >
+                      <Chip
+                        label={formatarData(mensagem.createdAt)}
+                        size="small"
+                      />
+                    </Divider>
+                  ))}
               {menssagens.length && index === menssagens.length - 1 && (
                 <Box id="inicioListaMensagensChat" />
               )}
@@ -459,6 +459,7 @@ export const ChatMensagem = ({
                                   anchorEl &&
                                   openStyledMenu && (
                                     <Menu
+                                      sx={{ zIndex: 2000 }}
                                       anchorEl={anchorEl} // Usando o ícone como âncora
                                       open={openStyledMenu}
                                       onClose={handleCloseMenu}
@@ -468,8 +469,7 @@ export const ChatMensagem = ({
                                       }}
                                     >
                                       <MenuItem
-                                        onClick={() =>
-                                          setReplyingMessage(mensagem)
+                                        onClick={() => { setReplyingMessage(mensagem); handleCloseMenu() }
                                         }
                                       >
                                         Responder
@@ -507,9 +507,9 @@ export const ChatMensagem = ({
                             {['vcard', 'contactMessage'].includes(
                               mensagem.mediaType
                             ) && (
-                              // Criar Componento VCARD
-                              <Button>Download</Button>
-                            )}
+                                // Criar Componento VCARD
+                                <Button>Download</Button>
+                              )}
 
                             {mensagem.mediaType === 'sticker' && (
                               <CardMedia
@@ -574,21 +574,21 @@ export const ChatMensagem = ({
                             {/* video */}
                             {(mensagem.mediaType === 'video' ||
                               mensagem.mediaType === 'videoMessage') && (
-                              // biome-ignore lint/a11y/useMediaCaption: <explanation>
-                              <video
-                                controls
-                                src={mensagem.mediaUrl}
-                                style={{
-                                  objectFit: 'cover',
-                                  width: 330,
-                                  height: 150,
-                                  borderTopLeftRadius: 8,
-                                  borderTopRightRadius: 8,
-                                  borderBottomLeftRadius: 8,
-                                  borderBottomRightRadius: 8,
-                                }}
-                              />
-                            )}
+                                // biome-ignore lint/a11y/useMediaCaption: <explanation>
+                                <video
+                                  controls
+                                  src={mensagem.mediaUrl}
+                                  style={{
+                                    objectFit: 'cover',
+                                    width: 330,
+                                    height: 150,
+                                    borderTopLeftRadius: 8,
+                                    borderTopRightRadius: 8,
+                                    borderBottomLeftRadius: 8,
+                                    borderBottomRightRadius: 8,
+                                  }}
+                                />
+                              )}
                             {mensagem.mediaType === 'interactive' && (
                               <Box
                                 dangerouslySetInnerHTML={{
@@ -676,41 +676,58 @@ export const ChatMensagem = ({
                               'templates',
                               'transcription',
                             ].includes(mensagem.mediaType) && (
-                              <>
-                                {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
-                                <Box
-                                  //  dangerouslySetInnerHTML={{ __html: formatarMensagemWhatsapp(DOMPurify.sanitize(mensagem.body)) }}
-                                  sx={{
-                                    mt: '2px',
-                                    minWidth: '100px',
-                                    minHeight: '48px',
-                                    position: 'relative',
-                                    padding: ' 12px 0 8px 0',
-                                    borderRadius: '16px',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: 2,
-                                  }}
-                                >
-                                  <Box sx={{ wordWrap: 'break-word' }}>
-                                    {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
-                                    <span
-                                      dangerouslySetInnerHTML={{
-                                        __html: formatarMensagemWhatsapp(
-                                          DOMPurify.sanitize(mensagem.body)
-                                        ),
-                                      }}
-                                    />
-                                  </Box>
-                                  {mensagem.fromMe ? (
-                                    <Box
-                                      sx={{
-                                        display: 'flex',
-                                        justifyContent: 'flex-end',
-                                        alignItems: 'center',
-                                        mt: '4px',
-                                      }}
-                                    >
+                                <>
+                                  {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
+                                  <Box
+                                    //  dangerouslySetInnerHTML={{ __html: formatarMensagemWhatsapp(DOMPurify.sanitize(mensagem.body)) }}
+                                    sx={{
+                                      mt: '2px',
+                                      minWidth: '100px',
+                                      minHeight: '48px',
+                                      position: 'relative',
+                                      padding: ' 12px 0 8px 0',
+                                      borderRadius: '16px',
+                                      display: 'flex',
+                                      flexDirection: 'column',
+                                      gap: 2,
+                                    }}
+                                  >
+                                    <Box sx={{ wordWrap: 'break-word' }}>
+                                      {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
+                                      <span
+                                        dangerouslySetInnerHTML={{
+                                          __html: formatarMensagemWhatsapp(
+                                            DOMPurify.sanitize(mensagem.body)
+                                          ),
+                                        }}
+                                      />
+                                    </Box>
+                                    {mensagem.fromMe ? (
+                                      <Box
+                                        sx={{
+                                          display: 'flex',
+                                          justifyContent: 'flex-end',
+                                          alignItems: 'center',
+                                          mt: '4px',
+                                        }}
+                                      >
+                                        <Typography
+                                          variant="caption"
+                                          sx={{
+                                            fontSize: '12px',
+                                            color: 'rgba(0, 0, 0, 0.45)',
+                                          }}
+                                        >
+                                          {dataInWords(mensagem.createdAt)}
+                                        </Typography>
+                                        <DoneAll
+                                          sx={{
+                                            fontSize: '16px',
+                                            color: 'rgba(0, 0, 0, 0.45)',
+                                          }}
+                                        />
+                                      </Box>
+                                    ) : (
                                       <Typography
                                         variant="caption"
                                         sx={{
@@ -720,27 +737,10 @@ export const ChatMensagem = ({
                                       >
                                         {dataInWords(mensagem.createdAt)}
                                       </Typography>
-                                      <DoneAll
-                                        sx={{
-                                          fontSize: '16px',
-                                          color: 'rgba(0, 0, 0, 0.45)',
-                                        }}
-                                      />
-                                    </Box>
-                                  ) : (
-                                    <Typography
-                                      variant="caption"
-                                      sx={{
-                                        fontSize: '12px',
-                                        color: 'rgba(0, 0, 0, 0.45)',
-                                      }}
-                                    >
-                                      {dataInWords(mensagem.createdAt)}
-                                    </Typography>
-                                  )}
-                                </Box>
-                              </>
-                            )}
+                                    )}
+                                  </Box>
+                                </>
+                              )}
                           </Box>
                         </div>
                       </Box>

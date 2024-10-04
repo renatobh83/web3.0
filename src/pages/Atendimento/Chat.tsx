@@ -1,4 +1,4 @@
-import { Box, Fade, Toolbar, Typography } from '@mui/material'
+import { Box, Button, Fade, Toolbar, Typography } from '@mui/material'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 import { useEffect, useRef, useState } from 'react'
@@ -8,6 +8,7 @@ import { useSocketInitial } from '../../hooks/useSocketInitial'
 import { ModalAgendamentoMensagem } from './ModalAgendamentoMensagem'
 import { useAtendimentoStore } from '../../store/atendimento'
 import { InputMenssagem } from './InputMenssagem'
+import { Close } from '@mui/icons-material'
 
 export type OutletContextType = {
   drawerWidth: number
@@ -185,7 +186,37 @@ export const Chat = () => {
         component={'footer'}
       >
         <Box id="Drop_area" sx={{ p: 0 }}>
-          {!isEmpty && <Box sx={{ width: '100%' }}>Responder</Box>}
+          {!isEmpty && <Box sx={{
+            maxHeight: '140px',
+            py: 2,
+            width: '100% !important',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexWrap: 'wrap'
+          }}>
+            <Box
+
+              sx={{
+                width: '460px',
+                minWidth: '460px',
+                maxWidth: '460px',
+                maxHeight: '110px',
+                borderRadius: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'nowrap',
+                pb: { sm: '8px' },
+                padding: '8px 16px',
+                backgroundColor: 'background.paper',
+                border: '1px solid black'
+              }}
+            >
+              <Typography>{replyingMessage.body}</Typography>
+              <Button size='small' variant='outlined' onClick={() => setReplyingMessage(null)}><Close sx={{ fontSize: '18px' }} /></Button>
+            </Box>
+          </Box>}
           <InputMenssagem />
         </Box>
       </Box>
