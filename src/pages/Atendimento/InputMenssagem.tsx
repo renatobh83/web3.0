@@ -401,16 +401,21 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   return (
     <>
       {ticketFocado.status !== 'pending' ? (
-        <Box
-          id="input"
-          sx={{
-            pb: 2,
-            position: 'relative',
-          }}
-        >
+        <
+
+          >
           {isScheduleDate && <AgendamentoComponent getScheduleDate={setScheduleDate} />}
           {!isRecordingAudio ? (
-            <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
+            <Box sx={{
+              alignItems: 'center',
+              display: 'flex',
+              justifyContent: 'flex-start',
+              mx: '4px',
+              paddingTop: 2,
+              paddingBottom: 2,
+              flexWrap: 'wrap',
+              gap: 1
+            }}>
               <Tooltip title="Enviar arquivo">
                 <>
                   {/* <input
@@ -421,7 +426,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
                     /> */}
                   <IconButton
                     disabled={cDisableActions()}
-                    sx={{ borderRadius: '50%' }}
+                    sx={{ borderRadius: '50%', mx: '4px', }}
                     size="small"
                     onClick={handleButtonClick}
                     disableRipple
@@ -443,7 +448,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
                 <>
                   <IconButton
                     disabled={cDisableActions()}
-                    sx={{ borderRadius: '50%' }}
+                    sx={{ borderRadius: '50%', mx: '4px', }}
                     size="small"
                     onClick={handleClick}
                     disableRipple
@@ -461,7 +466,16 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
               </Tooltip>
 
               {cMostrarEnvioArquivo() ? (
-                <Box sx={{ display: 'flex', width: '100%' }}>
+                <Box sx={{
+                  minWidth: '0',
+                  maxWidth: '100%',
+                  width: '200px !important',
+                  mx: '4px',
+                  flexGrow: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexWrap: 'nowrap'
+                }}>
                   {arquivos.map((file, index) => (
                     // biome-ignore lint/a11y/noLabelWithoutControl: <explanation>
                     <label
@@ -495,7 +509,16 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
                   onChange={e => setTextChat(e.target.value)}
                   onKeyDown={handleKeyDown} // Captura a tecla pressionada
                   ref={inputEnvioMensagem}
-                  sx={{ maxHeight: '30vh', flexFlow: 1 }}
+                  sx={{
+                    minWidth: '0',
+                    maxWidth: '100%',
+                    width: '200px !important',
+                    mx: '4px',
+                    flexGrow: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexWrap: 'nowrap'
+                  }}
                   onPaste={handlePaste}
                 />
               )}
@@ -530,7 +553,16 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
             </Box>
           ) : (
             <Box
-              sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+              sx={{
+                minWidth: '0',
+                maxWidth: '100%',
+                width: '200px !important',
+                mx: '4px',
+                flexGrow: 1,
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'nowrap'
+              }}
               id="audio "
             >
               <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
@@ -577,7 +609,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
               </DialogActions>
             </Dialog>
           )}
-        </Box>
+        </>
       ) : (
         <Box
           sx={{

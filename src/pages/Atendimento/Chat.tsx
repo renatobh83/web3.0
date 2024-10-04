@@ -179,12 +179,12 @@ export const Chat = () => {
           bottom: 0,
           left: { sm: 0, md: 380, xs: 0 },
           right: 0,
-          px: 1,
+          zIndex: '2000',
         }}
         ref={footerRef}
         component={'footer'}
       >
-        <Box id="Drop_area">
+        <Box id="Drop_area" sx={{ p: 0 }}>
           {!isEmpty && <Box sx={{ width: '100%' }}>Responder</Box>}
           <InputMenssagem />
         </Box>

@@ -137,7 +137,7 @@ const checkTicketFilter = (ticket: Ticket) => {
   const filasCadastradas = JSON.parse(
     localStorage.getItem("filasCadastradas") || "[]"
   );
-  const profile = localStorage.getItem("profile");
+  const profile = decryptData(localStorage.getItem("profile"));
   const isAdminShowAll = profile === "admin" && filtros.showAll;
   const isQueuesTenantExists = filasCadastradas.length > 0;
 
@@ -290,8 +290,10 @@ export const useAtendimentoTicketStore = create<
       // biome-ignore lint/complexity/noForEach: <explanation>
       newTickets.forEach((ticket) => {
         const ticketIndex = state.tickets.findIndex((t) => t.id === ticket.id);
+
         if (ticketIndex !== -1) {
           state.tickets[ticketIndex] = ticket;
+
           if (ticket.unreadMessages > 0) {
             state.tickets.unshift(state.tickets.splice(ticketIndex, 1)[0]);
           }
@@ -301,6 +303,7 @@ export const useAtendimentoTicketStore = create<
           }
         }
       });
+
       return { tickets: state.tickets };
     }),
 

@@ -168,6 +168,7 @@ export function Atendimento(props: Props) {
   const { drawerWidth, mobileOpen, setMobileOpen, isClosing, setIsClosing } =
     useAtendimentoStore()
   const tickets = useAtendimentoTicketStore(s => s.tickets)
+
   const [hasFetched, setHasFetched] = useState(false) // Estado para controlar o fetch
   // const [mobileOpen, setMobileOpen] = React.useState(false);
   // const [isClosing, setIsClosing] = React.useState(false);
