@@ -394,7 +394,6 @@ export const Canais = () => {
                       <Divider orientation="vertical" />
                       <Box>
                         {[
-                          'OPENING',
                           'CONNECTED',
                           'PAIRING',
                           'TIMEOUT',
