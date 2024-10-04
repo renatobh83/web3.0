@@ -272,9 +272,9 @@ export const Contatos: React.FC<{
           placeholder="Localize"
           value={filter}
           onChange={e => setFilter(e.target.value)}
-          // InputProps={{
-          //   startAdornment: <SearchIcon />,
-          // }}
+        // InputProps={{
+        //   startAdornment: <SearchIcon />,
+        // }}
         />
         <Box sx={{ gap: 2, display: 'flex' }}>
           <Button

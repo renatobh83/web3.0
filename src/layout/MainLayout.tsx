@@ -10,6 +10,7 @@ import { ListarConfiguracoes } from '../services/configuracoes'
 import { ListarWhatsapps } from '../services/sessoesWhatsapp'
 import { useSocketInitial } from '../hooks/useSocketInitial'
 import { useAtendimentoTicketStore } from '../store/atendimentoTicket'
+import { Header } from '../components/MainComponents/Header'
 
 export const MainLayout: React.FC = () => {
   const { updateNotifications, updateNotificationsP, reset } = useNotificationsStore()
