@@ -548,10 +548,10 @@ export const ChatMensagem = ({
                               {/* AUDIO */}
                               {mensagem.mediaType === 'audio' &&
                                 mensagem.mediaUrl && (
-                                  <Box sx={{ width: 330, height: '100%' }}>
+                                  <Box  >
                                     {/* biome-ignore lint/a11y/useMediaCaption: <explanation> */}
                                     <audio
-                                      style={{ width: '100%' }}
+
                                       controls
                                       controlsList="download playbackrate volume"
                                     >

@@ -91,9 +91,8 @@ export const MenusNavbar = () => {
   const { notifications, notificationsP } = useNotificationsStore()
   const { mode, setMode } = useColorScheme()
   const [status, setStatus] = useState(false)
-  const [usuario, setUsuario] = useState(
-    JSON.parse(decryptData("usuario"))
-  )
+  const usuario = JSON.parse(decryptData("usuario"))
+
   const username = localStorage.getItem('username')
   const { themeMode, toggleThemeMode } = useApplicationStore()
   const AbrirChatMensagens = useAtendimentoTicketStore(
@@ -102,7 +101,7 @@ export const MenusNavbar = () => {
   const setHasMore = useAtendimentoTicketStore(s => s.setHasMore)
   const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+
   const { setUsuarioSelecionado, toggleModalUsuario, modalUsuario } =
     useUsuarioStore()
 
@@ -192,9 +191,9 @@ export const MenusNavbar = () => {
       })
     }
   }
-  useEffect(() => {
-    console.log('notificacaoTicket Update', notificacaoTicket)
-  }, [notificacaoTicket])
+  // useEffect(() => {
+  //   console.log('notificacaoTicket Update', notifications, notificationsP)
+  // }, [notificacaoTicket])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
 
@@ -216,7 +215,7 @@ export const MenusNavbar = () => {
             {+notificationsP.count + +notifications.count === 0 ? (
               <NotificationsNoneIcon />
             ) : (
-              <Badge badgeContent={notificacaoTicket} color="primary">
+              <Badge badgeContent={+notifications.count + +notificationsP.count} color="primary">
                 <NotificationsIcon />
               </Badge>
             )}

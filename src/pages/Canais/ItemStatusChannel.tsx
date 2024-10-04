@@ -96,12 +96,13 @@ export const ItemStatusChannel = ({ item }: ItemStatusChannelProps) => (
 						<Typography sx={{ wordWrap: "break-word", flexGrow: 1 }}>
 							Conexão estabelecida:
 						</Typography>
+						{item.number && <span>{item.number}</span>}
 					</Box>
 				)}
 				{item.status === "CONNECTED" && item.type === "whatsapp" && (
 					<Box sx={{ flexGrow: 1 }}>
 						<Typography sx={{ wordWrap: "break-word", flexGrow: 1 }}>
-							Conexão estabelecida:
+							{item.phone.pushname || item.phone.name || item.phone.phone}
 						</Typography>
 					</Box>
 				)}

@@ -219,8 +219,8 @@ export const Chat = () => {
 
               sx={{
                 width: '460px',
-                minWidth: '460px',
-                maxWidth: '460px',
+                // minWidth: '460px',
+                // maxWidth: '460px',
                 maxHeight: '110px',
                 borderRadius: '10px',
                 display: 'flex',

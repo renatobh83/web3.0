@@ -7,6 +7,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemButton,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import {
@@ -14,7 +15,7 @@ import {
   type Ticket,
 } from '../../store/atendimentoTicket'
 
-import { CheckCircle, WhatsApp } from '@mui/icons-material'
+import { CheckCircle, PlayArrow, WhatsApp } from '@mui/icons-material'
 import { formatDistance, parseJSON } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useEffect, useState } from 'react'
@@ -52,7 +53,7 @@ export const ItemTicket = ({
   const [timeLabel, setTimeLabel] = useState<string>(() =>
     dataInWords(ticket.lastMessageAt, ticket.updatedAt)
   )
-
+  const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
   const AbrirChatMensagens = useAtendimentoTicketStore(
     s => s.AbrirChatMensagens
   )
@@ -67,13 +68,6 @@ export const ItemTicket = ({
     return () => clearInterval(interval)
   }, [ticket.lastMessageAt, ticket.updatedAt])
 
-  //   useEffect(() => {
-  //     // useAtendimentoTicketStore.setState({
-  //     //     redirectToChat: (ticketId: string) => {
-  //     //         navigate(`/atendimento/${ticketId}`);
-  //     //     },
-  //     // });
-  //   }, [])
   const { mobileOpen, setMobileOpen } = useAtendimentoStore()
   const goToChat = async (id: string) => {
     try {
@@ -88,6 +82,8 @@ export const ItemTicket = ({
     }
   }
   const abrirChatContato = async ticket => {
+    if (!(ticket.status !== 'pending' && (ticket.id !== ticketFocado.id || location.pathname !== 'chat'))) return
+    if (ticket.id === ticketFocado.id) return
     AbrirChatMensagens(ticket)
     goToChat(ticket.id)
   }
@@ -124,15 +120,32 @@ export const ItemTicket = ({
         {/* Imagem de perfil */}
         <ListItemAvatar>
           {ticket.status === 'pending' ? (
-            <Button onClick={() => iniciarAtendimento(ticket)}>
-              <Avatar sx={{ width: 50, height: 50 }}>
+            <Tooltip title='Iniciar atendimento' arrow>
+              <Button
+                onClick={() => iniciarAtendimento(ticket)}
+                variant='outlined'
+                size='small'
+                sx={{
+                  padding: '0px', // Remove o espaçamento extra em torno do ícone
+                  fontSize: '16px', // Ajusta o tamanho do ícone
+                  color: '#000 !important', // Cor do ícone
+                  backgroundColor: 'transparent !important', // Remove qualquer fundo indesejado
+                  borderRadius: '50%', // Deixa o ícone circular
+                  border: 'none',
+
+                }}
+              >
+                <Avatar >
+                  <PlayArrow />
+                </Avatar>
                 <Badge
                   badgeContent={ticket.unreadMessages}
                   color="secondary"
-                  sx={{ mr: 1 }}
+                // sx={{ mr: 1 }}
                 />
-              </Avatar>
-            </Button>
+
+              </Button>
+            </Tooltip>
           ) : (
             <Avatar
               alt={ticket.name || ticket.contact.name}
@@ -158,7 +171,7 @@ export const ItemTicket = ({
             display="flex"
             justifyContent="space-between"
             alignItems="center"
-            // sx={{ width: '100%' }}
+          // sx={{ width: '100%' }}
           >
             <Typography
               // fontWeight="bold"/

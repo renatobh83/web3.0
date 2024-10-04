@@ -168,8 +168,6 @@ export function Atendimento(props: Props) {
   const { drawerWidth, mobileOpen, setMobileOpen, isClosing, setIsClosing } =
     useAtendimentoStore()
   const tickets = useAtendimentoTicketStore(s => s.tickets)
-
-  const [hasFetched, setHasFetched] = useState(false) // Estado para controlar o fetch
   // const [mobileOpen, setMobileOpen] = React.useState(false);
   // const [isClosing, setIsClosing] = React.useState(false);
   const { isContactInfo } = useAtendimentoStore()
@@ -179,8 +177,8 @@ export function Atendimento(props: Props) {
   const [etiquetas, setEtiquetas] = useState([])
   const [anchorElFiltro, setAnchorElFiltro] = useState<null | HTMLElement>(null)
   const [loading, setLoading] = useState(false)
-  const [usuarios, setUsuarios] = useState([])
-  const UserQueues = JSON.parse(localStorage.getItem('queues'))
+  // const [usuarios, setUsuarios] = useState([])
+  // const UserQueues = JSON.parse(localStorage.getItem('queues'))
   const profile = decryptData('profile')
   const username = localStorage.getItem('username')
   const userid = localStorage.getItem('userId')
@@ -202,27 +200,27 @@ export function Atendimento(props: Props) {
   })
   const openNav = Boolean(anchorElNav)
   const openFiltro = Boolean(anchorElFiltro)
-
+  const { AbrirChatMensagens } = useAtendimentoTicketStore()
   const { themeMode, toggleThemeMode } = useApplicationStore()
   const { mode, setMode } = useColorScheme()
 
-  const dispararEvento = (data: any) => {
-    eventEmitter.emit('handlerNotifications', data)
-  }
+  // const dispararEvento = (data: any) => {
+  //   eventEmitter.emit('handlerNotifications', data)
+  // }
 
-  const cRouteContatos = () => {
-    return location.pathname !== 'chat'
-  }
-  const cFiltroSelecionado = () => {
-    const { queuesIds, showAll, withUnreadMessages, isNotAssignedUser } =
-      pesquisaTickets
-    return !!(
-      queuesIds?.length ||
-      showAll ||
-      withUnreadMessages ||
-      isNotAssignedUser
-    )
-  }
+  // const cRouteContatos = () => {
+  //   return location.pathname !== 'chat'
+  // }
+  // const cFiltroSelecionado = () => {
+  //   const { queuesIds, showAll, withUnreadMessages, isNotAssignedUser } =
+  //     pesquisaTickets
+  //   return !!(
+  //     queuesIds?.length ||
+  //     showAll ||
+  //     withUnreadMessages ||
+  //     isNotAssignedUser
+  //   )
+  // }
   // TODO - falta implementar funcao
   // async downloadPDF() {
   //     const doc = new jsPDF();
@@ -254,9 +252,9 @@ export function Atendimento(props: Props) {
   //       console.error('Erro ao baixar as mensagens:', error);
   //     }
   //   }
-  const cIsExtraInfo = () => {
-    return ticketFocado?.contact?.extraInfo?.length > 0
-  }
+  // const cIsExtraInfo = () => {
+  //   return ticketFocado?.contact?.extraInfo?.length > 0
+  // }
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -276,11 +274,11 @@ export function Atendimento(props: Props) {
     setIsClosing(false)
   }
 
-  const handleDrawerToggle = () => {
-    if (!isClosing) {
-      setMobileOpen(!mobileOpen)
-    }
-  }
+  // const handleDrawerToggle = () => {
+  //   if (!isClosing) {
+  //     setMobileOpen(!mobileOpen)
+  //   }
+  // }
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null)
@@ -306,10 +304,8 @@ export function Atendimento(props: Props) {
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       setPesquisaTickets((prevPesquisaTickets: { status: any }) => {
         const { status } = prevPesquisaTickets
-
         // Criar uma cópia do array de status atual
         let statusAtualizado: string[]
-
         if (status.includes(novoStatus)) {
           // Remover o status se ele já estiver no array
           statusAtualizado = status.filter((s: string) => s !== novoStatus)
@@ -317,7 +313,6 @@ export function Atendimento(props: Props) {
           // Adicionar o status se ele não estiver no array
           statusAtualizado = [...status, novoStatus]
         }
-
         // Retornar o novo estado com o status atualizado
         return {
           ...prevPesquisaTickets, // Manter os outros campos do objeto
@@ -334,14 +329,6 @@ export function Atendimento(props: Props) {
       ...prevStates,
       [name]: checked, // Atualiza apenas o switch correspondente
     }))
-    if (checked) {
-      // biome-ignore lint/complexity/noForEach: <explanation>
-      const all = ['closed', 'open', 'pending']
-      setPesquisaTickets({
-        ...pesquisaTickets,
-        status: all,
-      })
-    }
     setPesquisaTickets({
       ...pesquisaTickets,
       [name]: checked,
@@ -350,21 +337,35 @@ export function Atendimento(props: Props) {
 
   const handleSearch = useCallback(
     debounce(async (term: string) => {
+
       setPesquisaTickets({
         ...pesquisaTickets,
         searchParam: term,
       })
-    }, 700),
+    }, 400),
     []
   ) // 10000ms = 10s
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
+
     handleSearch(value) // Chama a função debounced
   }
   const handleOpenModalUsuario = usuario => {
     setUsuarioSelecionado(usuario)
     toggleModalUsuario()
+  }
+
+  const goToChat = async (id: number) => {
+    try {
+      const timestamp = new Date().getTime()
+      nav(`/atendimento/${id}?t=${timestamp}`, {
+        replace: false,
+        state: { t: new Date().getTime() },
+      })
+    } catch (error) {
+      Errors(error)
+    }
   }
   function handlerNotifications(data) {
     const options = {
@@ -386,9 +387,9 @@ export function Atendimento(props: Props) {
     notification.onclick = e => {
       e.preventDefault()
 
-      // this.$store.dispatch('AbrirChatMensagens', data.ticket)
-      // this.$router.push({ name: 'atendimento' })
-      // history.push(`/tickets/${ticket.id}`);
+      AbrirChatMensagens(data.payload)
+      goToChat(data.payload.id)
+
     }
 
     // this.$nextTick(() => {
@@ -436,29 +437,29 @@ export function Atendimento(props: Props) {
     setLoading(false)
   }, [pesquisaTickets, resetTickets])
 
-  const onLoadMore = async () => {
-    if (tickets.length === 0 || !hasMore || loading) {
-      return
-    }
-    try {
-      setLoading(true)
-      pesquisaTickets.pageNumber++
-      await consultaTickets()
-      setLoading(false)
-    } catch (error) {
-      setLoading(false)
-    }
-  }
+  // const onLoadMore = async () => {
+  //   if (tickets.length === 0 || !hasMore || loading) {
+  //     return
+  //   }
+  //   try {
+  //     setLoading(true)
+  //     pesquisaTickets.pageNumber++
+  //     await consultaTickets()
+  //     setLoading(false)
+  //   } catch (error) {
+  //     setLoading(false)
+  //   }
+  // }
   const [filas, setFilas] = useState([])
 
-  async function listarUsuarios() {
-    try {
-      const { data } = await ListarUsuarios()
-      setUsuarios(data.users)
-    } catch (error) {
-      Errors(error)
-    }
-  }
+  // async function listarUsuarios() {
+  //   try {
+  //     const { data } = await ListarUsuarios()
+  //     setUsuarios(data.users)
+  //   } catch (error) {
+  //     Errors(error)
+  //   }
+  // }
   const scrollToBottom = () => {
     setTimeout(() => {
       document
@@ -468,12 +469,10 @@ export function Atendimento(props: Props) {
   }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    console.log('evento scrool')
     // Adiciona o listener ao montar o componente
     eventEmitter.on('scrollToBottomMessageChat', scrollToBottom)
     // Remove o listener ao desmontar o componente
     scrollToBottom()
-
     return () => {
       eventEmitter.off('scrollToBottomMessageChat', scrollToBottom)
     }
@@ -522,6 +521,7 @@ export function Atendimento(props: Props) {
     const remainingTickets = filteredTickets.filter(
       ticket => !groupedTicketIds.has(ticket.id)
     )
+
     // remainingTickets.forEach(ticket => {
     //     AtualizarStatusTicketNull(ticket.id, 'closed', ticket.userId);
     //     console.log(`Ticket duplo ${ticket.id} tratado.`);
@@ -562,13 +562,13 @@ export function Atendimento(props: Props) {
   function closedTickets(): Ticket[] {
     return tickets.filter(
       ticket => ticket.status === 'closed' && !ticket.isGroup
-    )
+    ).slice(0, 5)
     // return this.tickets.filter(ticket => ticket.status === 'closed' && !ticket.isGroup).slice(0, this.batchSize);
   }
   function closedGroupTickets(): Ticket[] {
     return tickets.filter(
       ticket => ticket.status === 'closed' && ticket.isGroup
-    )
+    ).slice(0, 5)
     // return this.tickets.filter(ticket => ticket.status === 'closed' && ticket.isGroup).slice(0, this.batchSize);
   }
   function openGroupTickets(): Ticket[] {
@@ -627,7 +627,7 @@ export function Atendimento(props: Props) {
   useEffect(() => {
     listarFilas()
     listarWhatsapps()
-    listarUsuarios()
+    // listarUsuarios()
     listarConfiguracoes()
     listarEtiquetas()
     resetTickets()
@@ -653,20 +653,18 @@ export function Atendimento(props: Props) {
     loadContacts(data.contacts)
   }, [])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (!contatos.length) listaContatos()
+    if (!contatos.length)
+      listaContatos()
   }, [])
   const handleClick = () => {
     if (mobileOpen) {
       // Lógica para quando estiver dentro de um modal
       setOpenModalNovoTicket(true)
-      // Executa a função para o modal
     } else {
-      // Lógica para quando estiver no desktop
-
       nav('/atendimento/chat-contatos')
       return
-      // Executa a função para o desktop
     }
   }
 
