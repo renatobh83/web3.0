@@ -118,12 +118,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 JSON.stringify(pesquisaTicketsFiltroPadrao),
             );
 
-            if (data?.configs?.filtrosAtendimento) {
-                localStorage.setItem(
-                    "filtrosAtendimento",
-                    JSON.stringify(data.configs.filtrosAtendimento),
-                );
-            }
+            // if (data?.configs?.filtrosAtendimento) {
+            //     localStorage.setItem(
+            //         "filtrosAtendimento",
+            //         JSON.stringify(data.configs.filtrosAtendimento),
+            //     );
+            // }
             setUserState(data);
 
             // IMPLEMENTAR SOCKET
