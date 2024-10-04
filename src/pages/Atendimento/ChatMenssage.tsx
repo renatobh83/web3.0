@@ -288,7 +288,15 @@ export const ChatMensagem = ({
                       </Divider>
                     ))}
                 {menssagens.length && index === menssagens.length - 1 && (
-                  <Box id="" >-----</Box>
+                  <Box id="" > <Divider
+                    key={`hr - ${
+                      // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                      index}`}
+                  >
+                    <Chip
+                      label={formatarData(mensagem.createdAt)}
+                      size="small" />
+                  </Divider></Box>
                 )}
 
                 <Box id={mensagem.id} onMouseLeave={handleMouseLeave} />

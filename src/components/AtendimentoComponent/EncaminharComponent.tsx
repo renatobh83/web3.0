@@ -3,6 +3,7 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconBut
 import { useState } from "react"
 import { ChatMensagem } from "../../pages/Atendimento/ChatMenssage"
 import { PesquisaContato } from "./PesquisaContato"
+import { EncaminharMensagem } from "../../services/tickets"
 
 interface EncaminharComponentProps {
     menssagemParaEncaminhar: any
@@ -22,7 +23,8 @@ export const EncaminharComponent = ({ menssagemParaEncaminhar, open, setClose, r
     }
     const handleConfirmarEncaminhamentoMensagem = () => {
         if (!contatoSeleciondo?.id) return
-
+        EncaminharMensagem(menssagemParaEncaminhar, contatoSeleciondo)
+            .then(data => console.log(data))
     }
     return (
         <Dialog open={open} fullWidth maxWidth='sm'>
