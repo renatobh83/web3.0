@@ -4,12 +4,14 @@ import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 import { useEffect, useRef, useState } from 'react'
 import { ChatMensagem } from './ChatMenssage'
 import { useMixinSocket } from '../../hooks/useMinxinScoket'
-import { useSocketInitial } from '../../hooks/useSocketInitial'
+
 import { ModalAgendamentoMensagem } from './ModalAgendamentoMensagem'
 import { useAtendimentoStore } from '../../store/atendimento'
 import { InputMenssagem } from './InputMenssagem'
 import { Close } from '@mui/icons-material'
 import { formatarMensagemWhatsapp } from '../../utils/helpers'
+
+import { EncaminharComponent } from '../../components/AtendimentoComponent/EncaminharComponent'
 
 export type OutletContextType = {
   drawerWidth: number
@@ -83,9 +85,18 @@ export const Chat = () => {
       setLoading(false)
     }
   }
+  const [OpenModalEnc, setOpenModalEnc] = useState(false)
   const [scrollIcon, setScrollIcon] = useState(false)
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
+  const [mensagensParaEncaminhar, setMensagensParaEncaminhar] = useState([])
+  const resetMensagenParaEncaminhar = () => {
 
+    setMensagensParaEncaminhar([])
+  }
+  const getMensagensParaEncaminhar = (msg) => {
+
+    setMensagensParaEncaminhar([msg])
+  }
   const onScroll = (e: any) => {
     if (
       e.target.scrollTop + e.target.clientHeight >=
@@ -97,6 +108,7 @@ export const Chat = () => {
     }
   }
   const [inputHeight, setInputHeight] = useState(0)
+
   const footerRef = useRef<HTMLDivElement>(null)
   const onResize = (entries: ResizeObserverEntry[]) => {
     const entry = entries[0]
@@ -116,6 +128,10 @@ export const Chat = () => {
       }
     }
   }, [])
+  const openModalEcanminhar = () => {
+
+    setOpenModalEnc(true)
+  }
   function cStyleScroll() {
     const loading = 0 // Substitua essa lógica conforme necessário
     const add = inputHeight + loading
@@ -172,6 +188,8 @@ export const Chat = () => {
             <ChatMensagem
               menssagens={cMessages}
               setReplyingMessage={setReplyingMessage}
+              getMensagenParaEncaminhar={getMensagensParaEncaminhar}
+              openModalEcanminhar={openModalEcanminhar}
             />
           </div>
         </InfiniteScroll>
@@ -230,6 +248,12 @@ export const Chat = () => {
         </Box>
       </Box>
       {modalAgendamento && <ModalAgendamentoMensagem />}
+      <EncaminharComponent
+        open={OpenModalEnc}
+        setClose={setOpenModalEnc}
+        menssagemParaEncaminhar={mensagensParaEncaminhar}
+        resetMensagenParaEncaminhar={resetMensagenParaEncaminhar}
+      />
     </Box>
     // <Box >
     // <InfoCabecalhoMenssagens drawerWidth={drawerWidth} handleDrawerToggle={handleDrawerToggle} />

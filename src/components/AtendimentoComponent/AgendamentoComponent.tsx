@@ -47,7 +47,7 @@ export const AgendamentoComponent: React.FC<{ getScheduleDate: (date: string) =>
     }
     const handleCustomDate = (newValue) => {
         if (newValue) {
-            const localTime = newValue.tz("America/Sao_Paulo").format("DD/MM/YYYY HH:mm");
+
             setResultData(newValue)
         } else {
             setResultData(''); // Limpa o resultado se não houver uma nova data

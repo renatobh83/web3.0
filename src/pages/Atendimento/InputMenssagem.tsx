@@ -75,7 +75,7 @@ import { Errors } from '../../utils/error'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 import { AgendamentoComponent } from '../../components/AtendimentoComponent/AgendamentoComponent'
 import { useTicketService } from '../../hooks/useTicketService'
-import { add } from 'lodash'
+
 import { useAtendimentoStore } from '../../store/atendimento'
 import { useNavigate } from 'react-router-dom'
 interface InputMenssagemProps {
@@ -253,7 +253,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
       }
       setTextChat('') // Limpa o campo após enviar a mensagem
       setArquivos([])
-      setReplyingMessage(null)
+      // setReplyingMessage(null)
       if (modalAgendamento)
         setModalAgendamento()
     } catch (err) {
@@ -374,8 +374,6 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
         }
       }
     }
-
-    console.log('Nenhuma imagem colada.')
     return null
   }
 

@@ -7,11 +7,10 @@ import {
   Chip,
   Dialog,
   Divider,
-  Icon,
   IconButton,
   Menu,
   MenuItem,
-  MenuProps,
+  type MenuProps,
   Popover,
   styled,
   Typography,
@@ -21,10 +20,8 @@ import {
 import { formatarData, formatarMensagemWhatsapp } from '../../utils/helpers'
 import {
   ArrowDownward,
-  ArrowLeft,
   CalendarMonth,
   DoneAll,
-  TipsAndUpdates,
 } from '@mui/icons-material'
 import {
   dataInWords,
@@ -38,30 +35,59 @@ import DOMPurify from 'dompurify'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { MensagemRespondida } from './MensagemRespondida'
-import { InputMenssagem } from './InputMenssagem'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 
 import { EventEmitter } from 'events'
-import { AudioNotification } from '../../components/AtendimentoComponent/AudioNotification'
 
 export const eventEmitterScrool = new EventEmitter()
 
 interface ChatMensagemProps {
-  setReplyingMessage: (any) => void
-  menssagens: object
+  setReplyingMessage?: (any) => void
+  menssagens: object,
+  getMensagenParaEncaminhar?: (menssagen: any) => void
+  openModalEcanminhar?: () => void
 }
 
 export const ChatMensagem = ({
   menssagens,
   setReplyingMessage,
+  getMensagenParaEncaminhar,
+  openModalEcanminhar
 }: ChatMensagemProps) => {
+
+
   const [modalImageUrl, setModalImageUrl] = useState<string | null>(null)
   const lastMessageRef = useRef<HTMLInputElement | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const { mode } = useColorScheme()
-  const ativarMultiEncaminhamento = false
+  const [ativarMultiEncaminhamento, setAtivarMultiEncaminhamento] = useState(false)
   const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
   const [isShowOptions, setIsShowOptions] = useState(false)
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [openStyledMenu, setOpenStyledMenu] = useState(false)
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
+    null
+  )
+  // valores para icone de agendamento
+  const [anchorElAgenda, setAnchorElAgenda] = useState(null)
+  const [messageAgendamento, setMessageAgendamento] = useState(null)
+
+
+  const [anchorEls, setAnchorEls] = useState<
+    Record<string, HTMLElement | null>
+  >({})
+  const [open, setOpen] = useState<Record<string, boolean>>({})
+
+  const [mensagensParaEncaminhar, setmensagensParaEncaminhar] = useState([])
+  const [checkboxStates, setCheckboxStates] = useState<{
+    [key: string]: boolean
+  }>({})
+
+
+  const handleOpenModal = () => {
+    openModalEcanminhar()
+  }
   const isGroupLabel = mensagem => {
     try {
       return ticketFocado.isGroup ? mensagem.contact.name : ''
@@ -80,12 +106,7 @@ export const ChatMensagem = ({
   const openLinkInNewPage = url => {
     window.open(url, '_blank')
   }
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const [openStyledMenu, setOpenStyledMenu] = useState(false)
-  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
-    null
-  )
+
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLElement>, id: string) => {
     setAnchorEl(event.currentTarget) // Define a ancora do menu
@@ -99,9 +120,7 @@ export const ChatMensagem = ({
     setSelectedMessageId(null)
   }
 
-  // valores para icone de agendamento
-  const [anchorElAgenda, setAnchorElAgenda] = useState(null)
-  const [messageAgendamento, setMessageAgendamento] = useState(null)
+
 
   const handleMouseEnter = (event, id) => {
     setAnchorElAgenda(event.currentTarget)
@@ -112,12 +131,7 @@ export const ChatMensagem = ({
     setMessageAgendamento(null)
   }
 
-  // fim dos valores para icone agendamento
 
-  const [anchorEls, setAnchorEls] = useState<
-    Record<string, HTMLElement | null>
-  >({})
-  const [open, setOpen] = useState<Record<string, boolean>>({})
 
   const handlePopoverOpen = (
     event: React.MouseEvent<HTMLElement>,
@@ -136,8 +150,6 @@ export const ChatMensagem = ({
         [mensagemId]: true, // Define o popover como aberto para o id correto
       }));
     }
-
-    console.log(anchorEl);
   }
 
   const handlePopoverClose = (mensagemId: string) => {
@@ -146,13 +158,10 @@ export const ChatMensagem = ({
     setMessageAgendamento(null)
   }
 
-  const [mensagensParaEncaminhar, setmensagensParaEncaminhar] = useState([])
-  const [checkboxStates, setCheckboxStates] = useState<{
-    [key: string]: boolean
-  }>({})
+
 
   // Função para gerenciar a seleção de mensagens
-  const handleEerificarEncaminharMensagem = mensagem => {
+  const handleVerificarEncaminharMensagem = mensagem => {
     setmensagensParaEncaminhar(prev => {
       const index = prev.findIndex(m => m.id === mensagem.id)
 
@@ -160,6 +169,7 @@ export const ChatMensagem = ({
       if (index === -1) {
         if (prev.length < 10) {
           const newMessages = [...prev, mensagem]
+
           return newMessages // Adiciona a nova mensagem
         }
         toast.error('Permitido no máximo 10 mensagens.', {
@@ -170,6 +180,7 @@ export const ChatMensagem = ({
 
       // Se a mensagem já estiver na lista, remove ela
       const updatedMessages = prev.filter(m => m.id !== mensagem.id)
+
       return updatedMessages
     })
   }
@@ -189,7 +200,7 @@ export const ChatMensagem = ({
 
       // Atualiza o estado do checkbox e chama a função de verificação de mensagens
       const newCheckboxStates = { ...prev, [mensagem.id]: !currentState }
-      handleEerificarEncaminharMensagem(mensagem)
+      handleVerificarEncaminharMensagem(mensagem)
       return newCheckboxStates
     })
   }
@@ -277,7 +288,7 @@ export const ChatMensagem = ({
                       </Divider>
                     ))}
                 {menssagens.length && index === menssagens.length - 1 && (
-                  <Box id="inicioListaMensagensChat" />
+                  <Box id="" >-----</Box>
                 )}
 
                 <Box id={mensagem.id} onMouseLeave={handleMouseLeave} />
@@ -408,7 +419,7 @@ export const ChatMensagem = ({
                                       onClose={() => handlePopoverClose(mensagem.id)}
                                       disableRestoreFocus
                                     >
-                                      {console.log(anchorEls)}
+
                                       <Box sx={{ p: 2 }}>
                                         <Typography
                                           sx={{ p: 1 }}
@@ -504,8 +515,17 @@ export const ChatMensagem = ({
                                         >
                                           Responder
                                         </MenuItem>
-                                        <MenuItem>Encaminhar</MenuItem>
-                                        <MenuItem>
+                                        <MenuItem onClick={() => {
+                                          handleOpenModal();
+                                          getMensagenParaEncaminhar(mensagem)
+                                          handleCloseMenu()
+                                        }}>
+
+                                          Encaminhar</MenuItem>
+                                        <MenuItem onClick={() => {
+                                          setAtivarMultiEncaminhamento(true);
+                                          handleCloseMenu()
+                                        }}>
                                           Marcar (encaminhar varias)
                                         </MenuItem>
                                         {mensagem.fromMe && (
