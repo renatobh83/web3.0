@@ -9,6 +9,7 @@ import { ModalAgendamentoMensagem } from './ModalAgendamentoMensagem'
 import { useAtendimentoStore } from '../../store/atendimento'
 import { InputMenssagem } from './InputMenssagem'
 import { Close } from '@mui/icons-material'
+import { formatarMensagemWhatsapp } from '../../utils/helpers'
 
 export type OutletContextType = {
   drawerWidth: number
@@ -101,6 +102,7 @@ export const Chat = () => {
     const entry = entries[0]
     setInputHeight(entry.contentRect.height)
   }
+
   useEffect(() => {
     const resizeObserver = new ResizeObserver(onResize)
 
@@ -213,11 +215,18 @@ export const Chat = () => {
                 border: '1px solid black'
               }}
             >
-              <Typography>{replyingMessage.body}</Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                {!replyingMessage.fromMe &&
+                  <Typography variant='caption' color='gray'>
+                    {replyingMessage.contact && replyingMessage.contact.name}
+                  </Typography>
+                }
+                <Typography>{formatarMensagemWhatsapp(replyingMessage.body)}</Typography>
+              </Box>
               <Button size='small' variant='outlined' onClick={() => setReplyingMessage(null)}><Close sx={{ fontSize: '18px' }} /></Button>
             </Box>
           </Box>}
-          <InputMenssagem />
+          <InputMenssagem replyingMessage={replyingMessage} setReplyingMessage={setReplyingMessage} />
         </Box>
       </Box>
       {modalAgendamento && <ModalAgendamentoMensagem />}

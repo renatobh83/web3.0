@@ -22,7 +22,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { RecordingTimer } from './RecordingTimer'
 import { toast } from 'sonner'
 
@@ -80,10 +80,15 @@ import { useAtendimentoStore } from '../../store/atendimento'
 import { useNavigate } from 'react-router-dom'
 interface InputMenssagemProps {
   isScheduleDate?: boolean
+  setReplyingMessage?: (value: any) => void
+  replyingMessage?: any
+
 }
 
 export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   isScheduleDate,
+  replyingMessage,
+  setReplyingMessage
 }) => {
   const { iniciarAtendimento } = useTicketService()
   const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
@@ -166,8 +171,6 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   const [textChat, setTextChat] = useState('')
 
 
-
-
   const prepararMensagemTexto = () => {
     if (textChat.trim() === '') {
       toast.error('Mensagem Inexistente', {
@@ -198,19 +201,21 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
     // if (username) {
     //   mensagem = `*${username}*:\n ${mensagem}`
     // }
+
     const message = {
       read: 1,
       fromMe: true,
       mediaUrl: '',
       body: mensagem,
       scheduleDate: isScheduleDate ? ScheduleDate : null,
-      //   quotedMsg: this.replyingMessage,
+      quotedMsg: replyingMessage,
       idFront: uid(),
       id: uid(),
     }
     if (isScheduleDate) {
       message.scheduleDate = ScheduleDate
     }
+
     return message
   }
   function prepararUploadMedia() {
@@ -248,6 +253,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
       }
       setTextChat('') // Limpa o campo após enviar a mensagem
       setArquivos([])
+      setReplyingMessage(null)
       if (modalAgendamento)
         setModalAgendamento()
     } catch (err) {
