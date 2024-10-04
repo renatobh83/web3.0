@@ -129,7 +129,12 @@ function TabPanel(props: TabPanelProps) {
       hidden={value !== index}
       id={`vertical-tabpanel-${index}`}
       aria-labelledby={`vertical-tab-${index}`}
-      style={{ height: 'calc(100% - 180px)', overflow: 'auto' }}
+      style={{
+        height: 'calc(100% - 180px)',
+        overflow: 'auto',
+        maxWidth: 370,
+        width: '100%',
+      }}
       {...other}
     >
       {value === index && <div style={{ overflow: 'auto' }}> {children}</div>}
@@ -337,7 +342,6 @@ export function Atendimento(props: Props) {
 
   const handleSearch = useCallback(
     debounce(async (term: string) => {
-
       setPesquisaTickets({
         ...pesquisaTickets,
         searchParam: term,
@@ -389,7 +393,6 @@ export function Atendimento(props: Props) {
 
       AbrirChatMensagens(data.payload)
       goToChat(data.payload.id)
-
     }
 
     // this.$nextTick(() => {
@@ -560,15 +563,15 @@ export function Atendimento(props: Props) {
     return Object.values(groupedTickets)
   }
   function closedTickets(): Ticket[] {
-    return tickets.filter(
-      ticket => ticket.status === 'closed' && !ticket.isGroup
-    ).slice(0, 5)
+    return tickets
+      .filter(ticket => ticket.status === 'closed' && !ticket.isGroup)
+      .slice(0, 5)
     // return this.tickets.filter(ticket => ticket.status === 'closed' && !ticket.isGroup).slice(0, this.batchSize);
   }
   function closedGroupTickets(): Ticket[] {
-    return tickets.filter(
-      ticket => ticket.status === 'closed' && ticket.isGroup
-    ).slice(0, 5)
+    return tickets
+      .filter(ticket => ticket.status === 'closed' && ticket.isGroup)
+      .slice(0, 5)
     // return this.tickets.filter(ticket => ticket.status === 'closed' && ticket.isGroup).slice(0, this.batchSize);
   }
   function openGroupTickets(): Ticket[] {
@@ -655,8 +658,7 @@ export function Atendimento(props: Props) {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (!contatos.length)
-      listaContatos()
+    if (!contatos.length) listaContatos()
   }, [])
   const handleClick = () => {
     if (mobileOpen) {
@@ -992,7 +994,7 @@ export function Atendimento(props: Props) {
       <TabPanel value={tabTickets} index={0}>
         <List
           sx={{
-            width: '100%',
+            // width: '100%',
             gap: 1,
           }}
         >

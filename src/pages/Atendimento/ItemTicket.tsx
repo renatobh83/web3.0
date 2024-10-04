@@ -82,7 +82,13 @@ export const ItemTicket = ({
     }
   }
   const abrirChatContato = async ticket => {
-    if (!(ticket.status !== 'pending' && (ticket.id !== ticketFocado.id || location.pathname !== 'chat'))) return
+    if (
+      !(
+        ticket.status !== 'pending' &&
+        (ticket.id !== ticketFocado.id || location.pathname !== 'chat')
+      )
+    )
+      return
     if (ticket.id === ticketFocado.id) return
     AbrirChatMensagens(ticket)
     goToChat(ticket.id)
@@ -120,11 +126,11 @@ export const ItemTicket = ({
         {/* Imagem de perfil */}
         <ListItemAvatar>
           {ticket.status === 'pending' ? (
-            <Tooltip title='Iniciar atendimento' arrow>
+            <Tooltip title="Iniciar atendimento" arrow>
               <Button
                 onClick={() => iniciarAtendimento(ticket)}
-                variant='outlined'
-                size='small'
+                variant="outlined"
+                size="small"
                 sx={{
                   padding: '0px', // Remove o espaçamento extra em torno do ícone
                   fontSize: '16px', // Ajusta o tamanho do ícone
@@ -132,18 +138,16 @@ export const ItemTicket = ({
                   backgroundColor: 'transparent !important', // Remove qualquer fundo indesejado
                   borderRadius: '50%', // Deixa o ícone circular
                   border: 'none',
-
                 }}
               >
-                <Avatar >
+                <Avatar>
                   <PlayArrow />
                 </Avatar>
                 <Badge
                   badgeContent={ticket.unreadMessages}
                   color="secondary"
-                // sx={{ mr: 1 }}
+                  // sx={{ mr: 1 }}
                 />
-
               </Button>
             </Tooltip>
           ) : (
@@ -171,7 +175,7 @@ export const ItemTicket = ({
             display="flex"
             justifyContent="space-between"
             alignItems="center"
-          // sx={{ width: '100%' }}
+            // sx={{ width: '100%' }}
           >
             <Typography
               // fontWeight="bold"/
@@ -198,7 +202,7 @@ export const ItemTicket = ({
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
-              maxWidth: '100%',
+              maxWidth: '70%',
             }}
           >
             {ticket.lastMessage}
