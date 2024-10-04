@@ -67,23 +67,23 @@ export const Chat = () => {
     // if (!hasMore || ticketFocado.id) {
     //     return
     // }
-    const nextPageNumber = params.pageNumber + 1
-    try {
-      setLoading(true)
-      const params = {
-        ticketId: ticketFocado.id,
-        pageNumber: nextPageNumber,
-      }
-      await LocalizarMensagensTicket(params)
-      // Atualiza os params com a nova página após o carregamento
-      setParams(prevParams => ({
-        ...prevParams,
-        pageNumber: nextPageNumber, // Atualiza para a nova página
-      }))
-      setLoading(false)
-    } catch (error) {
-      setLoading(false)
-    }
+    // const nextPageNumber = params.pageNumber + 1
+    // try {
+    //   setLoading(true)
+    //   const params = {
+    //     ticketId: ticketFocado.id,
+    //     pageNumber: nextPageNumber,
+    //   }
+    //   await LocalizarMensagensTicket(params)
+    //   // Atualiza os params com a nova página após o carregamento
+    //   setParams(prevParams => ({
+    //     ...prevParams,
+    //     pageNumber: nextPageNumber, // Atualiza para a nova página
+    //   }))
+    //   setLoading(false)
+    // } catch (error) {
+    //   setLoading(false)
+    // }
   }
   const [OpenModalEnc, setOpenModalEnc] = useState(false)
   const [scrollIcon, setScrollIcon] = useState(false)
