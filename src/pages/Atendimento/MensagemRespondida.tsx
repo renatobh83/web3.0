@@ -3,225 +3,112 @@ import { Avatar, Box, Button, CardMedia, IconButton, List, ListItem, ListItemBut
 import DOMPurify from "dompurify"
 import { formatarData, formatarMensagemRespostaBotaoWhatsapp, formatarBotaoWhatsapp, formatarMensagemDeLista, formatarNotas, formatarTemplates, formatarMensagemWhatsapp, dataInWords } from "./mixinCommon"
 import PlayForWorkIcon from '@mui/icons-material/PlayForWork'
+import { useAtendimentoTicketStore } from "../../store/atendimentoTicket"
+
 export const MensagemRespondida = ({ mensagem }) => {
     const { mode } = useColorScheme()
+    const { ticketFocado } = useAtendimentoTicketStore()
+    const isGroupLabel = (mensagem) => {
+        try {
+            return ticketFocado.isGroup ? mensagem.contact.name : ''
+        } catch (error) {
+            return ''
+        }
+    }
     return (
-        <Box sx={{
-            p: 0,
-            display: 'flex',
-            justifyContent: 'center'
-        }}>
-            <Box
-                id="chat-message-resp"
-                key={mensagem.id}
-                sx={{
-                    mb: 1,
-                    width: '100%',
-                    minWidth: '100px',
-                    maxWidth: '350px',
-                    ml: mensagem.fromMe ? 'auto' : 0,
-                    mr: !mensagem.fromMe ? 'auto' : 0,
-                    textAlign: mensagem.fromMe ? 'right' : 'left',
+        <Box id="textContentItem">
+            <Box sx={{
+                position: 'relative',
+                display: 'flex',
+                flexWrap: 'nowrap',
+                minHeight: '32px',
+                maxHeight: '150px',
+                mt: 2,
+                mb: 1
+            }}>
+                <Box
+                    sx={{
+                        minWidth: '100px',
+                        maxWidth: '350px'
+                    }}>
+                    <Box id='mensssagemRespondida'
+                        sx={{
 
-                }}
-            >
-
-                {mensagem.mediaType === 'audio' && mensagem.mediaUrl && (
-                    <Box>
-                        {/* biome-ignore lint/a11y/useMediaCaption: <explanation> */}
-                        <audio
-                            controls
-                            controlsList="nodownload noplaybackrate volume novolume"
-                        >
-                            <source src={mensagem.mediaUrl} type="audio/ogg" />
-                        </audio>
-                    </Box>
-                )}
-
-                {['vcard', 'contactMessage'].includes(mensagem.mediaType) && (
-                    // Criar Componento VCARD
-                    <Button>Download</Button>
-                )}
-
-                {mensagem.mediaType === 'video' ||
-                    (mensagem.mediaType === 'videoMessage' && (
-                        // biome-ignore lint/a11y/useMediaCaption: <explanation>
-                        <video
-                            controls
-                            src={mensagem.mediaUrl}
-                            style={{
-                                objectFit: 'cover',
-                                width: 330,
-                                height: 15,
-                                borderTopLeftRadius: 8,
-                                borderTopRightRadius: 8,
-                                borderBottomLeftRadius: 8,
-                                borderBottomRightRadius: 8,
+                            borderRadius: '10px',
+                            minHeight: '48px',
+                            p: 1,
+                            position: 'relative',
+                            borderLeft: mensagem.fromMe ? '5px solid #a5d6a7' : '5px solid #2196f3'
+                        }}>
+                        <Box
+                            sx={{
+                                wordBreak: 'break-word',
+                                width: '100%',
+                                mx: '0 !important',
                             }}
-                        />
-                    ))}
-                {mensagem.mediaType === 'interactive' && (
-                    <Box
-                        dangerouslySetInnerHTML={{
-                            __html: formatarMensagemRespostaBotaoWhatsapp(
-                                DOMPurify.sanitize(mensagem.body)
-                            ),
-                        }}
-                    />
-                )}
-                {mensagem.mediaType === 'button' && (
-                    <Box
-                        dangerouslySetInnerHTML={{
-                            __html: formatarBotaoWhatsapp(
-                                DOMPurify.sanitize(mensagem.body)
-                            ),
-                        }}
-                    />
-                )}
-                {mensagem.mediaType === 'list' && (
-                    <Box
-                        dangerouslySetInnerHTML={{
-                            __html: formatarMensagemDeLista(
-                                DOMPurify.sanitize(mensagem.body)
-                            ),
-                        }}
-                    />
-                )}
-                {mensagem.mediaType === 'notes' && (
-                    <Box
-                        dangerouslySetInnerHTML={{
-                            __html: formatarNotas(DOMPurify.sanitize(mensagem.body)),
-                        }}
-                    />
-                )}
-                {mensagem.mediaType === 'templates' && (
-                    <Box
-                        dangerouslySetInnerHTML={{
-                            __html: formatarTemplates(DOMPurify.sanitize(mensagem.body)),
-                        }}
-                    />
-                )}
-                {![
-                    'audio',
-                    'vcard',
-                    'contactMessage',
-                    'locationMessage',
-                    'image',
-                    'imageMessage',
-                    'video',
-                    'videoMessage',
-                    'sticker',
-                    'location',
-                    'interactive',
-                    'button',
-                    'list',
-                    'button_reply',
-                    'sticker',
-                    'notes',
-                    'transcription',
-                ].includes(mensagem.mediaType) &&
-                    mensagem.mediaUrl && <Box sx={{ mt: '20px' }}>Criar Iframe</Box>}
+                        >
 
-                {['image', 'video', 'imageMessage', 'videoMessage'].includes(
-                    mensagem.mediaType
-                ) &&
-                    mensagem.mediaUrl && (
-                        <Box sx={{ mt: '20px' }}>
-                            {/* <CardMedia
-                                onClick={() => {
-                                    setModalImageUrl(mensagem.mediaUrl || null)
-                                    setModalOpen(true)
-                                }}
-                                component="img"
-                                height="194"
-                                image={mensagem.mediaUrl}
-                                alt="Paella dish"
-                            /> */}
-                        </Box>
-                    )}
-                {![
-                    'vcard',
-                    'contactMessage',
-                    'application',
-                    'audio',
-                    'button',
-                    'list',
-                    'location',
-                    'locationMessage',
-                    'interactive',
-                    'button_reply',
-                    'sticker',
-                    'notes',
-                    'image',
-                    'templates',
-                    'transcription',
-                ].includes(mensagem.mediaType) && (
-                        <>
-                            {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
-                            <Box
-                                //  dangerouslySetInnerHTML={{ __html: formatarMensagemWhatsapp(DOMPurify.sanitize(mensagem.body)) }}
-                                sx={{
-                                    mt: '2px',
-                                    maxWidth: '100%',
-                                    minHeight: '60px',
-                                    position: 'relative',
-                                    padding: '12px 16px',
-                                    display: 'inline-block',
-                                }}
-                            >
-
-
+                            {mensagem.isDeleted && (
+                                <Typography>Mensagem apagada em {formatarData(mensagem.updatedAt, 'dd/MM/yyyy')}.</Typography>
+                            )}
+                            {isGroupLabel(mensagem) && (
+                                <Box>{isGroupLabel(mensagem)}
+                                </Box>
+                            )}
+                            {!isGroupLabel(mensagem) && !mensagem.fromMe && (
+                                <Typography variant="caption"> {mensagem.contact && mensagem.contact.name}</Typography>
+                            )}
+                            {mensagem.mediaType === 'audio' && (
                                 <Box sx={{
-                                    wordWrap: 'break-word',
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    maxWidth: "100%",
-                                    display: "-webkit-box",
-                                    WebkitBoxOrient: "vertical",
-                                    WebkitLineClamp: 2, // Limita o texto a 3 linhas
-
+                                    width: '200px',
                                 }}>
-                                    {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
-                                    <span
-                                        dangerouslySetInnerHTML={{
-                                            __html: formatarMensagemWhatsapp(
-                                                DOMPurify.sanitize(mensagem.body)
-                                            ),
+                                    {/* biome-ignore lint/a11y/useMediaCaption: <explanation> */}
+                                    <audio
+                                        style={{ maxWidth: 200 }} controls
+                                        controlsList="download playbackrate volume">
+                                        <source
+                                            src={mensagem.mediaUrl}
+                                            type="audio/ogg"
+                                        />
+                                    </audio>
+                                </Box>
+                            )}
+                            {mensagem.mediaType === 'image' && (
+                                <CardMedia
+                                    sx={{ overflow: 'hidden' }}
+                                    component="img"
+                                    height="60px"
+                                    width="130px"
+
+                                    image={mensagem.mediaUrl} />
+                            )}
+                            {mensagem.mediaType === 'video' && (
+                                <Box>
+                                    {/* biome-ignore lint/a11y/useMediaCaption: <explanation> */}
+                                    <video
+                                        controls
+                                        src={mensagem.mediaUrl}
+                                        style={{
+                                            // objectFit: 'cover',
+                                            width: 130,
+                                            height: 60,
+                                            borderTopLeftRadius: 8,
+                                            borderTopRightRadius: 8,
+                                            borderBottomLeftRadius: 8,
+                                            borderBottomRightRadius: 8,
                                         }}
                                     />
                                 </Box>
-                                {mensagem.fromMe ? (
-                                    <Box
-                                        sx={{
-                                            display: 'flex',
-                                            justifyContent: 'flex-end',
-                                            alignItems: 'center',
-                                            mt: '4px',
-                                        }}
-                                    >
-                                        <Typography
-                                            variant="caption"
-                                            sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.45)' }}
-                                        >
-                                            {dataInWords(mensagem.createdAt)}
-                                        </Typography>
-                                        <DoneAll
-                                            sx={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.45)' }}
-                                        />
-                                    </Box>
-                                ) : (
-                                    <Typography
-                                        variant="caption"
-                                        sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.45)' }}
-                                    >
-                                        {dataInWords(mensagem.createdAt)}
-                                    </Typography>
-                                )}
-                            </Box>
-                        </>
-                    )}
+                            )}
+                            {!['vcard', 'contactMessage', 'application', 'audio', 'image', 'video'].includes(mensagem.mediaType) && (
+                                <Typography>
+                                    {formatarMensagemWhatsapp(mensagem.body)}
+                                </Typography>
+                            )}
+                        </Box>
+                    </Box>
+                </Box>
             </Box>
-
         </Box>
     )
 }
