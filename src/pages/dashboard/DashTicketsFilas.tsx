@@ -1,24 +1,38 @@
-import { Button, Divider, Drawer, Toolbar, Typography } from '@mui/material'
+import {
+  Button,
+  CircularProgress,
+  Divider,
+  Drawer,
+  Skeleton,
+  Switch,
+  Toolbar,
+  Typography,
+} from '@mui/material'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
+
 import Box from '@mui/material/Box'
 import { useState } from 'react'
 import DatePickerValue from '../../components/AtendimentoComponent/DatePicker'
 
-import { format, sub } from 'date-fns'
-import dayjs, { Dayjs } from 'dayjs'
+import dayjs, { type Dayjs } from 'dayjs'
 import { ConsultarTicketsQueuesService } from '../../services/estatistica'
+import { useAuth } from '../../context/AuthContext'
+import { toast } from 'sonner'
+dayjs.extend(isSameOrAfter)
 
 export const DashTicketsFilas = () => {
+  const { decryptData } = useAuth()
   const [drawerFiltro, setDrawerFiltro] = useState(false)
-
+  const profile = decryptData('profile')
   const [pesquisaTickets, setPesquisaTickets] = useState<{
-    showAll: boolean
+    showAll: boolean | null
     dateStart: string | null
     dateEnd: string | null
     queuesIds: []
   }>({
-    showAll: true,
-    dateStart: null,
-    dateEnd: null,
+    showAll: false,
+    dateStart: dayjs(new Date()).toString(),
+    dateEnd: dayjs(new Date()).toString(),
     queuesIds: [],
   })
   // Funções para atualizar dateStart e dateEnd
@@ -35,23 +49,75 @@ export const DashTicketsFilas = () => {
       dateEnd: newDate ? newDate.format('YYYY-MM-DD') : null,
     }))
   }
+  const [switchStates, setSwitchStates] = useState(() => {
+    const savedStates = JSON.parse(localStorage.getItem('filtrosAtendimento'))
+    return {
+      showAll: savedStates.showAll,
+      isNotAssignedUser: savedStates.isNotAssignedUser,
+      withUnreadMessages: savedStates.withUnreadMessages,
+    }
+  })
+
   const handleCloseDrawer = () => {
     setDrawerFiltro(false)
     setPesquisaTickets({
-      showAll: true,
-      dateStart: null,
-      dateEnd: null,
+      showAll: false,
+      dateStart: dayjs(new Date()).toString(),
+      dateEnd: dayjs(new Date()).toString(),
       queuesIds: [],
     })
+    toast.info('Filtros restados', {
+      position: 'top-center',
+    })
+  }
+  const isDateRangeValid = () => {
+    const { dateStart, dateEnd } = pesquisaTickets
+
+    if (dateStart && dateEnd) {
+      // Converte as strings para objetos dayjs para comparar as datas
+      const start = dayjs(dateStart)
+      const end = dayjs(dateEnd)
+
+      // Verifica se dateEnd é maior ou igual a dateStart
+      return end.isSameOrAfter(start)
+    }
+    return true // Se uma das datas for nula, não faz sentido validar, então retorna true
   }
   const consultarTickets = () => {
-    console.log(pesquisaTickets)
-    ConsultarTicketsQueuesService(pesquisaTickets)
-      .then(res => {
-        console.log(res.data)
+    if (
+      pesquisaTickets.dateEnd &&
+      pesquisaTickets.dateEnd &&
+      isDateRangeValid()
+    ) {
+      setIsloading(true)
+      ConsultarTicketsQueuesService(pesquisaTickets)
+        .then(res => {
+          console.log(res.data)
+        })
+        .catch(error => {})
+        .finally(() => {
+          setIsloading(false)
+          setDrawerFiltro(false)
+        })
+    } else {
+      toast.info('Verifique os parametros da pesquisa', {
+        position: 'top-center',
       })
-      .catch(error => {})
+    }
   }
+  const handleChange = event => {
+    const { name, checked } = event.target
+    // Atualizar o estado específico do switch
+    setSwitchStates(prevStates => ({
+      ...prevStates,
+      [name]: checked, // Atualiza apenas o switch correspondente
+    }))
+    setPesquisaTickets({
+      ...pesquisaTickets,
+      [name]: checked,
+    })
+  }
+  const [isLoading, setIsloading] = useState(false)
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2 }}>
       <Box
@@ -104,14 +170,37 @@ export const DashTicketsFilas = () => {
             />
           </Box>
           <Divider />
-          <Button
-            variant="contained"
-            color="info"
-            size="medium"
-            onClick={() => consultarTickets()}
-          >
-            Atualizar
-          </Button>
+          {profile === 'admin' && (
+            <>
+              <div
+                className={`flex items-center ml-4 ${switchStates.showAll ? 'mb-4' : ''}`}
+              >
+                <Switch
+                  name="showAll"
+                  checked={switchStates.showAll}
+                  onChange={handleChange}
+                  color="primary"
+                />
+                {/* biome-ignore lint/a11y/noLabelWithoutControl: <explanation> */}
+                <label className="ml-2 text-sm text-gray-700">
+                  Visualizar Todos
+                </label>
+              </div>
+              {pesquisaTickets.showAll && <Divider />}
+            </>
+          )}
+          {isLoading ? (
+            <CircularProgress />
+          ) : (
+            <Button
+              variant="contained"
+              color="info"
+              size="medium"
+              onClick={() => consultarTickets()}
+            >
+              Atualizar
+            </Button>
+          )}
         </Box>
       </Drawer>
     </Box>
