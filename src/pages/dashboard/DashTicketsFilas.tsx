@@ -125,6 +125,7 @@ export const DashTicketsFilas = () => {
       setIsloading(true)
       ConsultarTicketsQueuesService(pesquisaTickets)
         .then(res => {
+          console.log(res)
           setTickets(res.data)
         })
         .catch(error => {})
@@ -143,7 +144,6 @@ export const DashTicketsFilas = () => {
     return [groupBy(tickets, field)]
   }
   const handleChange = event => {
-    console.log(cTicketsUser())
     const { name, checked } = event.target
     // Atualizar o estado específico do switch
     setSwitchStates(prevStates => ({
@@ -201,10 +201,23 @@ export const DashTicketsFilas = () => {
       const end = start + items
       setsArray.push(cTicketsUser().slice(start, end)) // Divide `cTicketsUser` em subconjuntos
     }
-
     return setsArray[0] // Retorna o primeiro conjunto (como no exemplo Vue.js)
   }
-  console.log(Object.entries(sets()))
+  Object.values(cTicketsUser()).map(item => {
+    if (Object.entries(item)[0] === null) {
+      console.log('pendente')
+    }
+  })
+  const definirNomeUsuario = item => {
+    // this.verifyIsActionSocket(item)
+    return item?.user?.name || 'Pendente'
+  }
+  Object.entries(sets()).map(([key, tickets]) => {
+    Object.entries(tickets).map(([k, t]) => {
+      console.log(definirNomeUsuario(t[0]))
+      t.map(a => console.log(a))
+    })
+  })
   const [isLoading, setIsloading] = useState(false)
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2 }}>
@@ -236,10 +249,37 @@ export const DashTicketsFilas = () => {
           willChange: 'scroll-position',
         }}
       >
+        {Object.entries(sets()).map(([key, tickets]) => (
+          <Box
+            key={key}
+            sx={{
+              display: 'flex',
+              p: 2,
+              height: 800,
+            }}
+          >
+            {Object.entries(tickets).map(([k, t]) => (
+              <Box
+                key={k}
+                sx={{
+                  display: 'flex',
+                  width: '50%',
+                  flexDirection: 'column',
+                }}
+              >
+                <span>{definirNomeUsuario(t[0])}</span>
+                {t.map(ticket => (
+                  <p key={ticket.protocol}>{ticket.status}</p>
+                ))}
+              </Box>
+            ))}
+          </Box>
+        ))}
         {/* {Object.entries(sets()).map(([key, items], setIndex) => (
           <Box
             key={setIndex}
             sx={{
+
               height: 800,
             }}
           >
