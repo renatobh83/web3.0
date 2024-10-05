@@ -1,4 +1,4 @@
-import { Button, Drawer, Toolbar, Typography } from '@mui/material'
+import { Button, Divider, Drawer, Toolbar, Typography } from '@mui/material'
 import Box from '@mui/material/Box'
 import { useState } from 'react'
 import DatePickerValue from '../../components/AtendimentoComponent/DatePicker'
@@ -48,7 +48,7 @@ export const DashTicketsFilas = () => {
     console.log(pesquisaTickets)
     ConsultarTicketsQueuesService(pesquisaTickets)
       .then(res => {
-        console.log(res)
+        console.log(res.data)
       })
       .catch(error => {})
   }
@@ -103,6 +103,7 @@ export const DashTicketsFilas = () => {
               setValue={handleDateEndChange}
             />
           </Box>
+          <Divider />
           <Button
             variant="contained"
             color="info"
