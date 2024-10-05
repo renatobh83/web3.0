@@ -1,9 +1,8 @@
-import * as React from 'react'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
-import { Dayjs } from 'dayjs'
+import type { Dayjs } from 'dayjs'
 
 interface BasicDateTimePickerProps {
   label: string
@@ -17,7 +16,7 @@ export default function BasicDateTimePicker({
   setValue,
 }: BasicDateTimePickerProps) {
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
       <DemoContainer components={['DateTimePicker']}>
         <DateTimePicker
           label={label}
