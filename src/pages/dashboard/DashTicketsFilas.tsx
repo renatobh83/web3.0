@@ -1,27 +1,52 @@
 import {
   Button,
+  Checkbox,
   CircularProgress,
   Divider,
   Drawer,
+  FormControlLabel,
+  FormGroup,
+  List,
+  ListItem,
+  Radio,
+  RadioGroup,
   Skeleton,
   Switch,
   Toolbar,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
-
+import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined'
 import Box from '@mui/material/Box'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import DatePickerValue from '../../components/AtendimentoComponent/DatePicker'
 
 import dayjs, { type Dayjs } from 'dayjs'
 import { ConsultarTicketsQueuesService } from '../../services/estatistica'
 import { useAuth } from '../../context/AuthContext'
 import { toast } from 'sonner'
+import { CheckBox } from '@mui/icons-material'
+import { ItemTicket } from '../Atendimento/ItemTicket'
+import { ItemTicketPainel } from '../Atendimento/ItemTicketPainel'
+import { groupBy } from 'lodash'
 dayjs.extend(isSameOrAfter)
 
+const optionsVisao = [
+  { label: 'Por Usuário', value: 'U' },
+  { label: 'Por Usuário (Sintético)', value: 'US' },
+  { label: 'Por Filas', value: 'F' },
+  { label: 'Por Filas (Sintético)', value: 'FS' },
+]
 export const DashTicketsFilas = () => {
   const { decryptData } = useAuth()
+  const [tickets, setTickets] = useState([])
+  // const [sets, setSets] = useState([])
+  const [selectedOption, setSelectedOption] = useState<string>(
+    optionsVisao[0].value
+  )
+  const [visao, setVisao] = useState('U')
   const [drawerFiltro, setDrawerFiltro] = useState(false)
   const profile = decryptData('profile')
   const [pesquisaTickets, setPesquisaTickets] = useState<{
@@ -31,10 +56,13 @@ export const DashTicketsFilas = () => {
     queuesIds: []
   }>({
     showAll: false,
-    dateStart: dayjs(new Date()).toString(),
-    dateEnd: dayjs(new Date()).toString(),
+    dateStart: dayjs(new Date()).format('YYYY-MM-DD'),
+    dateEnd: dayjs(new Date()).format('YYYY-MM-DD'),
     queuesIds: [],
   })
+  const handleChangeChebox = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedOption(event.target.value) // Atualiza o state com a opção selecionada
+  }
   // Funções para atualizar dateStart e dateEnd
   const handleDateStartChange = (newDate: Dayjs | null) => {
     setPesquisaTickets(prevState => ({
@@ -60,16 +88,21 @@ export const DashTicketsFilas = () => {
 
   const handleCloseDrawer = () => {
     setDrawerFiltro(false)
-    setPesquisaTickets({
-      showAll: false,
-      dateStart: dayjs(new Date()).toString(),
-      dateEnd: dayjs(new Date()).toString(),
-      queuesIds: [],
-    })
-    toast.info('Filtros restados', {
-      position: 'top-center',
-    })
+    // setPesquisaTickets({
+    //   showAll: false,
+    //   dateStart: null,
+    //   dateEnd: null,
+    //   queuesIds: [],
+    // })
+    // toast.info('Filtros restados', {
+    //   position: 'top-center',
+    //   duration: 2000,
+    // })
   }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    consultarTickets()
+  }, [])
   const isDateRangeValid = () => {
     const { dateStart, dateEnd } = pesquisaTickets
 
@@ -92,7 +125,7 @@ export const DashTicketsFilas = () => {
       setIsloading(true)
       ConsultarTicketsQueuesService(pesquisaTickets)
         .then(res => {
-          console.log(res.data)
+          setTickets(res.data)
         })
         .catch(error => {})
         .finally(() => {
@@ -105,7 +138,12 @@ export const DashTicketsFilas = () => {
       })
     }
   }
+  const cTicketsUser = () => {
+    const field = visao === 'U' || visao === 'US' ? 'userId' : 'queueId'
+    return [groupBy(tickets, field)]
+  }
   const handleChange = event => {
+    console.log(cTicketsUser())
     const { name, checked } = event.target
     // Atualizar o estado específico do switch
     setSwitchStates(prevStates => ({
@@ -117,6 +155,56 @@ export const DashTicketsFilas = () => {
       [name]: checked,
     })
   }
+  const sizes = {
+    xl: 4,
+    lg: 3,
+    md: 2,
+    sm: 1,
+    xs: 1,
+  }
+  const itemsPerSet = (sizes: { [key: string]: number }) => {
+    const theme = useTheme()
+    // Verifica os diferentes tamanhos de tela usando useMediaQuery
+    const isXl = useMediaQuery(theme.breakpoints.up('xl'))
+    const isLg = useMediaQuery(theme.breakpoints.up('lg'))
+    const isMd = useMediaQuery(theme.breakpoints.up('md'))
+    const isSm = useMediaQuery(theme.breakpoints.up('sm'))
+    const isXs = useMediaQuery(theme.breakpoints.up('xs'))
+
+    // Array para verificar os tamanhos de tela
+    const screenSizes = [
+      { size: 'xl', matches: isXl },
+      { size: 'lg', matches: isLg },
+      { size: 'md', matches: isMd },
+      { size: 'sm', matches: isSm },
+      { size: 'xs', matches: isXs },
+    ]
+
+    // Itera sobre os tamanhos de tela e retorna o valor correspondente
+    for (const { size, matches } of screenSizes) {
+      if (matches && sizes[size]) {
+        return sizes[size]
+      }
+    }
+    // Retorno padrão se nenhuma condição for atendida
+    return 1
+  }
+
+  const sets = () => {
+    const items = itemsPerSet(sizes) // Obtém o número de itens por set com base no tamanho da tela
+
+    const limit = Math.ceil(cTicketsUser().length / items) // Define o limite de sets
+    const setsArray = []
+
+    for (let index = 0; index < limit; index++) {
+      const start = index * items
+      const end = start + items
+      setsArray.push(cTicketsUser().slice(start, end)) // Divide `cTicketsUser` em subconjuntos
+    }
+
+    return setsArray[0] // Retorna o primeiro conjunto (como no exemplo Vue.js)
+  }
+  console.log(Object.entries(sets()))
   const [isLoading, setIsloading] = useState(false)
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2 }}>
@@ -130,9 +218,39 @@ export const DashTicketsFilas = () => {
       >
         <Typography variant="h3">Painel Atendimentos</Typography>
         <Box>
-          <Button onClick={() => setDrawerFiltro(true)}>Filtros</Button>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => setDrawerFiltro(true)}
+            startIcon={<FilterAltOutlinedIcon />}
+          >
+            Filtros
+          </Button>
         </Box>
         <Box>action</Box>
+      </Box>
+      <Box
+        sx={{
+          height: '85vh',
+          overflow: 'auto',
+          willChange: 'scroll-position',
+        }}
+      >
+        {/* {Object.entries(sets()).map(([key, items], setIndex) => (
+          <Box
+            key={setIndex}
+            sx={{
+              height: 800,
+            }}
+          >
+            {items?.map((item, index) => (
+                <Box key={index} sx={{ padding: 2 }}>
+                  <p>Protocol: {item.protocol}</p>
+                  <p>Ticket: {item.ticket}</p>
+                </Box>
+              ))}
+          </Box>
+        ))} */}
       </Box>
       <Drawer
         anchor="right"
@@ -152,7 +270,7 @@ export const DashTicketsFilas = () => {
           }}
         >
           <Box>
-            <Typography variant="subtitle1">Filtros</Typography>
+            <Typography variant="h6">Filtros</Typography>
 
             <DatePickerValue
               value={
@@ -169,11 +287,17 @@ export const DashTicketsFilas = () => {
               setValue={handleDateEndChange}
             />
           </Box>
-          <Divider />
+          <Divider sx={{ bgcolor: 'background.paper', width: '100%' }} />
           {profile === 'admin' && (
             <>
-              <div
-                className={`flex items-center ml-4 ${switchStates.showAll ? 'mb-4' : ''}`}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  ml: 2,
+                  mb: 2,
+                }}
+                // className={`flex items-center ml-4 ${switchStates.showAll ? 'mb-4' : ''}`}
               >
                 <Switch
                   name="showAll"
@@ -185,10 +309,28 @@ export const DashTicketsFilas = () => {
                 <label className="ml-2 text-sm text-gray-700">
                   Visualizar Todos
                 </label>
-              </div>
-              {pesquisaTickets.showAll && <Divider />}
+              </Box>
+              {/* {pesquisaTickets.showAll && <Divider />} */}
+              <Divider sx={{ bgcolor: 'background.paper', width: '100%' }} />
             </>
           )}
+          <Typography variant="h5">Tipo de visualização</Typography>
+          <List sx={{ fontSize: 18 }}>
+            <RadioGroup
+              name="visao"
+              value={selectedOption} // O valor do grupo de rádios é controlado pelo state
+              onChange={handleChangeChebox} // Atualiza o state ao selecionar uma opção
+            >
+              {optionsVisao.map(option => (
+                <FormControlLabel
+                  key={option.value}
+                  value={option.value}
+                  control={<Radio />} // Componente Radio
+                  label={option.label} // Label da opção
+                />
+              ))}
+            </RadioGroup>
+          </List>
           {isLoading ? (
             <CircularProgress />
           ) : (
