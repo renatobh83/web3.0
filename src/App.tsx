@@ -9,6 +9,7 @@ import { Canais } from './pages/Canais'
 import { Contatos } from './pages/Contatos'
 import { Dashboard } from './pages/dashboard'
 import { DashTicketsFilas } from './pages/dashboard/DashTicketsFilas'
+import { Usuarios } from './pages/Usuarios'
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth()
@@ -29,6 +30,7 @@ const AppRoutes = () => {
                 path="/painel-atendimentos"
                 element={<DashTicketsFilas />}
               />
+              <Route path="/usuarios" element={<Usuarios />} />
               {/* <Route path="/usuarios" element={<Usuarios />} />
               <Route path="/contatos" element={<Contatos isChatContact={false} />} />
               <Route path="/sessoes" element={<IndexSessoesWhatsapp />} /> */}

@@ -1,16 +1,35 @@
 import { Close, Visibility, VisibilityOff, X } from "@mui/icons-material"
-import { Box, Button, ButtonBase, Card, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormGroup, FormLabel, IconButton, Input, InputAdornment, InputLabel, OutlinedInput, TextField, Typography } from "@mui/material"
+import { Box, Button, ButtonBase, Card, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormGroup, FormLabel, IconButton, Input, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select, TextField, Typography } from "@mui/material"
 import { useEffect, useState } from "react"
 import { useUsuarioStore } from "../../store/usuarios"
 import { CriarUsuario, UpdateUsuarios } from "../../services/user"
 
+export interface Usuario {
+    id: string | undefined;
+    name?: string | null;
+    email?: string;
+    password?: string;
+    profile: string | null;
+    tenantId?: string | null;
+    queues?: any;
+    userId?: string;
+}
 
-export const ModalUsuario: React.FC = () => {
+
+const optionsProfile = [
+    { value: "user", label: "Usuário" },
+    { value: "super", label: "Supervisor" },
+    { value: "admin", label: "Administrador" },
+];
+
+export const ModalUsuario: React.FC<{
+    isProfile?: boolean;
+}> = ({ isProfile = false }) => {
     const { modalUsuario, toggleModalUsuario, usuarioSelecionado, setUsuarioSelecionado } = useUsuarioStore()
 
     const [usuario, setUsuario] = useState({
         username: '',
-        name:'',
+        name: '',
         email: ''
     })
     const [emailError, setEmailError] = useState(false);
@@ -54,7 +73,7 @@ export const ModalUsuario: React.FC = () => {
     };
 
     useEffect(() => {
-
+        console.log(usuarioSelecionado)
         if (usuarioSelecionado?.id) {
             setUsuario({ ...usuarioSelecionado })
         }
@@ -129,7 +148,7 @@ export const ModalUsuario: React.FC = () => {
                             color={passwordError ? 'error' : 'primary'}
                             id="password"
                             name="password"
-                        
+
                             onChange={(e) => setUsuario((prev) => ({
                                 ...prev,
                                 password: e.target.value
@@ -152,21 +171,21 @@ export const ModalUsuario: React.FC = () => {
                         />
                     </FormControl>
                     <FormControl fullWidth sx={{ m: 1 }} variant="standard">
-                        <TextField
-                            id="select-perfil"
-                            select
+                        <Select
                             label="Perfil"
-                            name="Perfil"
-                            slotProps={{
-                                select: {
-                                    native: true,
-                                },
-                            }}
-                            helperText="Selecione o perfil"
-                            variant="standard"
+                            // {...register("profile", { required: "Perfil é obrigatório" })}
+                            // error={!!errors.profile}
+                            value={isProfile ? usuarioSelecionado?.profile : undefined}
+                            fullWidth
+                            disabled={isProfile}
+                            variant="outlined"
                         >
-                                PErgi
-                        </TextField>
+                            {optionsProfile.map((option) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </MenuItem>
+                            ))}
+                        </Select>
                     </FormControl>
                     <DialogActions>
                         <Button sx={{
