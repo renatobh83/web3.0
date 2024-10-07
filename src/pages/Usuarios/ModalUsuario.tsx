@@ -22,9 +22,7 @@ const optionsProfile = [
     { value: "admin", label: "Administrador" },
 ];
 
-export const ModalUsuario: React.FC<{
-    isProfile?: boolean;
-}> = ({ isProfile = false }) => {
+export const ModalUsuario: React.FC = () => {
     const { modalUsuario, toggleModalUsuario, usuarioSelecionado, setUsuarioSelecionado } = useUsuarioStore()
 
     const [usuario, setUsuario] = useState({
@@ -73,7 +71,7 @@ export const ModalUsuario: React.FC<{
     };
 
     useEffect(() => {
-        console.log(usuarioSelecionado)
+
         if (usuarioSelecionado?.id) {
             setUsuario({ ...usuarioSelecionado })
         }
@@ -173,11 +171,9 @@ export const ModalUsuario: React.FC<{
                     <FormControl fullWidth sx={{ m: 1 }} variant="standard">
                         <Select
                             label="Perfil"
-                            // {...register("profile", { required: "Perfil é obrigatório" })}
-                            // error={!!errors.profile}
-                            value={isProfile ? usuarioSelecionado?.profile : undefined}
+                            value={usuarioSelecionado?.id ? usuarioSelecionado?.profile : ''}
                             fullWidth
-                            disabled={isProfile}
+                            disabled={!!usuarioSelecionado?.id}
                             variant="outlined"
                         >
                             {optionsProfile.map((option) => (
