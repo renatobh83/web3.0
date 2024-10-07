@@ -405,9 +405,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   return (
     <>
       {ticketFocado.status !== 'pending' ? (
-        <
-
-          >
+        <>
           {isScheduleDate && <AgendamentoComponent getScheduleDate={setScheduleDate} />}
           {!isRecordingAudio ? (
             <Box sx={{

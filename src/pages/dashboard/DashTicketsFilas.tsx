@@ -1,5 +1,7 @@
 import {
+  Avatar,
   Button,
+  Card,
   Checkbox,
   CircularProgress,
   Divider,
@@ -11,12 +13,14 @@ import {
   Radio,
   RadioGroup,
   Skeleton,
+  Stack,
   Switch,
   Toolbar,
   Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
+import Grid from '@mui/material/Grid2'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined'
 import Box from '@mui/material/Box'
@@ -31,6 +35,8 @@ import { CheckBox } from '@mui/icons-material'
 import { ItemTicket } from '../Atendimento/ItemTicket'
 import { ItemTicketPainel } from '../Atendimento/ItemTicketPainel'
 import { groupBy } from 'lodash'
+import { format, sub } from 'date-fns'
+import { red } from '@mui/material/colors'
 dayjs.extend(isSameOrAfter)
 
 const optionsVisao = [
@@ -56,7 +62,7 @@ export const DashTicketsFilas = () => {
     queuesIds: []
   }>({
     showAll: false,
-    dateStart: dayjs(new Date()).format('YYYY-MM-DD'),
+    dateStart: format(sub(new Date(), { days: 30 }), 'yyyy-MM-dd'),
     dateEnd: dayjs(new Date()).format('YYYY-MM-DD'),
     queuesIds: [],
   })
@@ -125,10 +131,9 @@ export const DashTicketsFilas = () => {
       setIsloading(true)
       ConsultarTicketsQueuesService(pesquisaTickets)
         .then(res => {
-          console.log(res)
           setTickets(res.data)
         })
-        .catch(error => {})
+        .catch(error => { })
         .finally(() => {
           setIsloading(false)
           setDrawerFiltro(false)
@@ -139,6 +144,14 @@ export const DashTicketsFilas = () => {
       })
     }
   }
+  // const tickets = [
+  //   { id: 1, userId: 1 },
+  //   { id: 2, userId: 1 },
+  //   { id: 3, userId: 4 },
+  //   { id: 3, userId: 2 },
+  //   { id: 3, userId: 3 },
+  //   { id: 3, userId: 3 },
+  // ];
   const cTicketsUser = () => {
     const field = visao === 'U' || visao === 'US' ? 'userId' : 'queueId'
     return [groupBy(tickets, field)]
@@ -155,142 +168,134 @@ export const DashTicketsFilas = () => {
       [name]: checked,
     })
   }
-  const sizes = {
-    xl: 4,
-    lg: 3,
-    md: 2,
-    sm: 1,
-    xs: 1,
-  }
-  const itemsPerSet = (sizes: { [key: string]: number }) => {
-    const theme = useTheme()
-    // Verifica os diferentes tamanhos de tela usando useMediaQuery
-    const isXl = useMediaQuery(theme.breakpoints.up('xl'))
-    const isLg = useMediaQuery(theme.breakpoints.up('lg'))
-    const isMd = useMediaQuery(theme.breakpoints.up('md'))
-    const isSm = useMediaQuery(theme.breakpoints.up('sm'))
-    const isXs = useMediaQuery(theme.breakpoints.up('xs'))
+  // const sizes = {
+  //   xl: 4,
+  //   lg: 3,
+  //   md: 2,
+  //   sm: 1,
+  //   xs: 1,
+  // }
+  // const itemsPerSet = (sizes: { [key: string]: number }) => {
+  //   const theme = useTheme()
+  //   // Verifica os diferentes tamanhos de tela usando useMediaQuery
+  //   const isXl = useMediaQuery(theme.breakpoints.up('xl'))
+  //   const isLg = useMediaQuery(theme.breakpoints.up('lg'))
+  //   const isMd = useMediaQuery(theme.breakpoints.up('md'))
+  //   const isSm = useMediaQuery(theme.breakpoints.up('sm'))
+  //   const isXs = useMediaQuery(theme.breakpoints.up('xs'))
 
-    // Array para verificar os tamanhos de tela
-    const screenSizes = [
-      { size: 'xl', matches: isXl },
-      { size: 'lg', matches: isLg },
-      { size: 'md', matches: isMd },
-      { size: 'sm', matches: isSm },
-      { size: 'xs', matches: isXs },
-    ]
+  //   // Array para verificar os tamanhos de tela
+  //   const screenSizes = [
+  //     { size: 'xl', matches: isXl },
+  //     { size: 'lg', matches: isLg },
+  //     { size: 'md', matches: isMd },
+  //     { size: 'sm', matches: isSm },
+  //     { size: 'xs', matches: isXs },
+  //   ]
 
-    // Itera sobre os tamanhos de tela e retorna o valor correspondente
-    for (const { size, matches } of screenSizes) {
-      if (matches && sizes[size]) {
-        return sizes[size]
-      }
-    }
-    // Retorno padrão se nenhuma condição for atendida
-    return 1
-  }
+  //   // Itera sobre os tamanhos de tela e retorna o valor correspondente
+  //   for (const { size, matches } of screenSizes) {
+  //     if (matches && sizes[size]) {
+  //       return sizes[size]
+  //     }
+  //   }
+  //   // Retorno padrão se nenhuma condição for atendida
+  //   return 1
+  // }
 
-  const sets = () => {
-    const items = itemsPerSet(sizes) // Obtém o número de itens por set com base no tamanho da tela
+  // const sets = () => {
+  //   const items = itemsPerSet(sizes) // Obtém o número de itens por set com base no tamanho da tela
+  //   const limit = Math.ceil(cTicketsUser().length / items) // Define o limite de sets
 
-    const limit = Math.ceil(cTicketsUser().length / items) // Define o limite de sets
-    const setsArray = []
+  //   const setsArray = []
 
-    for (let index = 0; index < limit; index++) {
-      const start = index * items
-      const end = start + items
-      setsArray.push(cTicketsUser().slice(start, end)) // Divide `cTicketsUser` em subconjuntos
-    }
-    return setsArray[0] // Retorna o primeiro conjunto (como no exemplo Vue.js)
-  }
-  Object.values(cTicketsUser()).map(item => {
-    if (Object.entries(item)[0] === null) {
-      console.log('pendente')
-    }
-  })
+  //   for (let index = 0; index < limit; index++) {
+  //     const start = index * items
+  //     const end = start + items
+  //     setsArray.push(cTicketsUser().slice(start, end)) // Divide `cTicketsUser` em subconjuntos
+  //   }
+  //   return setsArray[0] // Retorna o primeiro conjunto (como no exemplo Vue.js)
+  // }
+
   const definirNomeUsuario = item => {
     // this.verifyIsActionSocket(item)
     return item?.user?.name || 'Pendente'
   }
-  Object.entries(sets()).map(([key, tickets]) => {
-    Object.entries(tickets).map(([k, t]) => {
-      console.log(definirNomeUsuario(t[0]))
-      t.map(a => console.log(a))
-    })
-  })
+
   const [isLoading, setIsloading] = useState(false)
+
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2 }}>
       <Box
         sx={{
           display: 'flex',
+
           alignItems: 'center',
+          flexWrap: 'wrap',
           justifyContent: 'space-between',
           px: 3,
         }}
       >
-        <Typography variant="h3">Painel Atendimentos</Typography>
-        <Box>
+        <Typography variant='h6'>Painel Atendimentos</Typography>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => setDrawerFiltro(true)}
+          startIcon={<FilterAltOutlinedIcon />}
+        >
+          Filtros
+        </Button>
+        <Box >
           <Button
-            variant="contained"
-            size="large"
-            onClick={() => setDrawerFiltro(true)}
-            startIcon={<FilterAltOutlinedIcon />}
+            variant="outlined"
+            size="small"
+
           >
-            Filtros
+            Action
           </Button>
         </Box>
-        <Box>action</Box>
       </Box>
       <Box
         sx={{
           height: '85vh',
           overflow: 'auto',
           willChange: 'scroll-position',
+          mt: 2
         }}
       >
-        {Object.entries(sets()).map(([key, tickets]) => (
-          <Box
-            key={key}
-            sx={{
-              display: 'flex',
-              p: 2,
-              height: 800,
-            }}
+        {Object.entries(cTicketsUser()).map(([key, tickets]) => (
+          <Grid key={key} container
+            spacing={2}
+            columns={12}
+            sx={{ mb: theme => theme.spacing(2) }}
           >
             {Object.entries(tickets).map(([k, t]) => (
-              <Box
-                key={k}
-                sx={{
-                  display: 'flex',
-                  width: '50%',
-                  flexDirection: 'column',
-                }}
-              >
-                <span>{definirNomeUsuario(t[0])}</span>
-                {t.map(ticket => (
-                  <p key={ticket.protocol}>{ticket.status}</p>
-                ))}
-              </Box>
-            ))}
-          </Box>
-        ))}
-        {/* {Object.entries(sets()).map(([key, items], setIndex) => (
-          <Box
-            key={setIndex}
-            sx={{
+              <Grid size={{ xs: 12, sm: 6, lg: 4 }}
+                sx={{ maxWidth: '100%', minWidth: 0, lineHeight: '1.5', }}
+                key={k}>
+                <Card sx={{ borderRadius: '0 !important', p: '0 !important', }} >
+                  <Stack direction={'row'} alignItems={'center'} gap={2} sx={{ px: 2, py: 1, }}>
+                    <Avatar />
+                    <Box sx={{ flexDirection: 'column', display: 'flex', }}>
+                      <Typography variant='overline' >{definirNomeUsuario(t[0])}</Typography>
+                      <Typography variant='caption'> Atendimentos: {t.length}</Typography>
+                    </Box>
+                  </Stack>
+                  <Divider />
+                  <Box sx={{ height: 320, overflow: 'auto', backgroundColor: 'background.paper' }}>
+                    {t.map(ticket => (
+                      <Box key={ticket.protocol} sx={{ px: 2, py: 1 }} >
+                        <ItemTicketPainel ticket={ticket} />
+                      </Box>
+                    ))}
+                  </Box>
+                </Card>
 
-              height: 800,
-            }}
-          >
-            {items?.map((item, index) => (
-                <Box key={index} sx={{ padding: 2 }}>
-                  <p>Protocol: {item.protocol}</p>
-                  <p>Ticket: {item.ticket}</p>
-                </Box>
-              ))}
-          </Box>
-        ))} */}
+
+              </Grid>
+            ))}
+          </Grid>
+        ))}
       </Box>
       <Drawer
         anchor="right"
@@ -337,7 +342,7 @@ export const DashTicketsFilas = () => {
                   ml: 2,
                   mb: 2,
                 }}
-                // className={`flex items-center ml-4 ${switchStates.showAll ? 'mb-4' : ''}`}
+              // className={`flex items-center ml-4 ${switchStates.showAll ? 'mb-4' : ''}`}
               >
                 <Switch
                   name="showAll"
@@ -385,6 +390,6 @@ export const DashTicketsFilas = () => {
           )}
         </Box>
       </Drawer>
-    </Box>
+    </Box >
   )
 }

@@ -75,7 +75,7 @@ export const Dashboard: React.FC = () => {
             </Button>
           </Stack>
         </Stack>
-        <DashTicketsFilas />
+
       </Box>
     </>
   )
