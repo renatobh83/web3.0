@@ -50,9 +50,10 @@ export const Filas = () => {
     }
     const listarFilas = useCallback(async () => {
         const { data } = await ListarFilas()
-        console.log(data)
+
         setFilas(data)
     }, [])
+
     const handleDeleteFila = (fila: any) => {
         toast.info(
             `Atenção!! Deseja realmente deletar a fila "${fila.queue}"?`,

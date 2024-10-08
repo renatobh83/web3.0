@@ -180,10 +180,18 @@ const checkTicketFilter = (ticket: Ticket) => {
 
   // Se o ticket não possuir fila definida, checar o filtro
   // permite visualizar tickets sem filas definidas é falso.
-  // if (isQueuesTenantExists && !ticket.queueId && !filtros.includeNotQueueDefined) {
-  //   console.log('filtros.includeNotQueueDefined', ticket.queueId, !filtros.includeNotQueueDefined)
-  //   return false
-  // }
+  if (
+    isQueuesTenantExists &&
+    !ticket.queueId &&
+    !filtros.includeNotQueueDefined
+  ) {
+    console.log(
+      "filtros.includeNotQueueDefined",
+      ticket.queueId,
+      !filtros.includeNotQueueDefined
+    );
+    return false;
+  }
 
   let isValid = true;
 

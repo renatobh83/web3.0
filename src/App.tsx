@@ -11,6 +11,7 @@ import { Dashboard } from './pages/dashboard'
 import { DashTicketsFilas } from './pages/dashboard/DashTicketsFilas'
 import { Usuarios } from './pages/Usuarios'
 import { Filas } from './pages/filas'
+import { MensagensRapidas } from './pages/mensagensRapidas'
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth()
@@ -33,6 +34,9 @@ const AppRoutes = () => {
               />
               <Route path="/usuarios" element={<Usuarios />} />
               <Route path="/filas" element={<Filas />} />
+              <Route path="/mensagens-rapidas" element={<MensagensRapidas />} />
+
+
               {/* <Route path="/usuarios" element={<Usuarios />} />
               <Route path="/contatos" element={<Contatos isChatContact={false} />} />
               <Route path="/sessoes" element={<IndexSessoesWhatsapp />} /> */}
