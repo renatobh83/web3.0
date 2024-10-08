@@ -3,8 +3,11 @@ import { Select, MenuItem, InputLabel, FormControl, type SelectChangeEvent, Outl
     from '@mui/material';
 
 interface SelectComponentProps {
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     filterFilas: (arg0: any) => void,
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     pesquisaTickets: any,
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     cUserQueues: any[]
 }
 
@@ -29,13 +32,10 @@ export const SelectComponent = ({ cUserQueues, pesquisaTickets, filterFilas }: S
             target: { value },
         } = event;
         setFilasSelecionada(
-            // On autofill we get a stringified value.
             typeof value === 'string' ? value.split(',') : value,
         );
         const newQueues = { ...pesquisaTickets, queuesIds: value }
-        // localStorage.setItem(:'filtrosAtendimento', JSON.stringify(newQueues));
         filterFilas(newQueues)
-
     };
     return (
         <FormControl fullWidth variant="outlined" disabled={pesquisaTickets.showAll}>

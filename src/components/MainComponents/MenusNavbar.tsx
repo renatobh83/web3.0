@@ -326,16 +326,6 @@ export const MenusNavbar = () => {
         mode={mode}
         toggleColorMode={handleToggleColor}
       />
-      {/* <Select
-                value={mode}
-                onChange={(event) =>
-                    setMode(event.target.value as 'system' | 'light' | 'dark')
-                }
-            >
-                <MenuItem value="system">System</MenuItem>
-                <MenuItem value="light">Light</MenuItem>
-                <MenuItem value="dark">Dark</MenuItem>
-            </Select> */}
       {modalUsuario && <ModalUsuario />}
     </Stack>
   )
