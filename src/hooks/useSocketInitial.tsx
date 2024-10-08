@@ -16,6 +16,7 @@ import { DefaultEventsMap } from '@socket.io/component-emitter'
 import { Socket } from 'socket.io-client'
 import { useNavigate } from 'react-router-dom'
 import { Errors } from '../utils/error'
+import { useUsuarioStore } from '../store/usuarios'
 // import { EventEmitter } from "events";
 
 // export const eventEmitter = new EventEmitter();
@@ -60,6 +61,7 @@ export const useSocketInitial = () => {
   }
 
   const { AbrirChatMensagens } = useAtendimentoTicketStore()
+  const { editarUsuario, insertNewUser, toggleModalUsuario, deletarUsuario } = useUsuarioStore()
   const usuario = JSON.parse(decryptData('usuario'))
   const userId = +localStorage.getItem('userId')
   let socket: WebSocket | Socket<DefaultEventsMap, DefaultEventsMap> | null =
@@ -95,6 +97,22 @@ export const useSocketInitial = () => {
         if (data.action === 'delete') {
           deleteWhatsApp(data.whatsappId)
         }
+      })
+      socket.on(`${usuario.tenantId}:user`, data => {
+        console.log(data)
+        if (data.action === 'update') {
+          editarUsuario(data.user)
+          toggleModalUsuario()
+        }
+        if (data.action === 'create') {
+          insertNewUser(data.user)
+          toggleModalUsuario()
+        }
+        if (data.action === 'delete') {
+
+          deletarUsuario(Number(data.userId))
+        }
+
       })
       socket.on(`${usuario.tenantId}:whatsappSession`, data => {
         console.log('socket ON: UPDATE_SESSION')
@@ -320,7 +338,7 @@ export const useSocketInitial = () => {
               updateTicket(newTickets)
               try {
                 updateMessages(data.payload)
-              } catch (e) {}
+              } catch (e) { }
             }, 400)
             setTimeout(() => {
               updateContact(newTickets)
@@ -328,7 +346,7 @@ export const useSocketInitial = () => {
             }, 600)
             try {
               eventEmitterScrool.emit('scrollToBottomMessageChat')
-            } catch (error) {}
+            } catch (error) { }
           } catch (err) {
             console.log('error try', err)
           }

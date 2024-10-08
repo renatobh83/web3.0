@@ -5,7 +5,7 @@ import { useUsuarioStore } from "../../store/usuarios"
 import { CriarUsuario, UpdateUsuarios } from "../../services/user"
 
 export interface Usuario {
-    id: string | undefined;
+    id?: string | undefined;
     name?: string | null;
     email?: string;
     password?: string;
@@ -28,7 +28,8 @@ export const ModalUsuario: React.FC = () => {
     const [usuario, setUsuario] = useState({
         username: '',
         name: '',
-        email: ''
+        email: '',
+        profile: ''
     })
     const [emailError, setEmailError] = useState(false);
     const [emailErrorMessage, setEmailErrorMessage] = useState('');
@@ -71,7 +72,6 @@ export const ModalUsuario: React.FC = () => {
     };
 
     useEffect(() => {
-
         if (usuarioSelecionado?.id) {
             setUsuario({ ...usuarioSelecionado })
         }
@@ -88,21 +88,21 @@ export const ModalUsuario: React.FC = () => {
     }, [usuarioSelecionado])
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
         if (validateInputs()) {
             if (usuario?.id) {
                 const {
                     email, id, name, tenantId, password, profile
                 } = usuario
-                const params = { email, id, name, tenantId, password, profile }
-                // const { data } = await UpdateUsuarios(usuario.id, params)
+                const params = { email, id, name, password, profile }
+                await UpdateUsuarios(usuario.id, params)
             } else {
-                // const { data } = await CriarUsuario(usuario)
+                await CriarUsuario(usuario)
             }
             setUsuarioSelecionado(null)
         }
 
     };
+
     return (
         <Dialog open={modalUsuario} fullWidth maxWidth='sm' >
             <DialogContent >
@@ -168,21 +168,26 @@ export const ModalUsuario: React.FC = () => {
                             }
                         />
                     </FormControl>
-                    <FormControl fullWidth sx={{ m: 1 }} variant="standard">
-                        <Select
-                            label="Perfil"
-                            value={usuarioSelecionado?.id ? usuarioSelecionado?.profile : ''}
-                            fullWidth
-                            disabled={!!usuarioSelecionado?.id}
-                            variant="outlined"
-                        >
-                            {optionsProfile.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    {!usuarioSelecionado?.token && (
+                        <FormControl fullWidth sx={{ m: 1 }} variant="standard">
+                            <Select
+                                label="Perfil"
+                                value={usuario.profile}
+                                fullWidth
+                                variant="outlined"
+                                onChange={(e) => setUsuario((prev) => ({
+                                    ...prev,
+                                    profile: e.target.value
+                                }))}
+                            >
+                                {optionsProfile.map((option) => (
+                                    <MenuItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    )}
                     <DialogActions>
                         <Button sx={{
                             fontWeight: 'bold',

@@ -33,6 +33,7 @@ const CustomTableContainer = styled(Table)(({ theme }) => ({
   padding: theme.spacing(2),
   width: '100%',
   borderRadius: theme.shape.borderRadius,
+  backgroundColor: theme.palette.background.paper,
   boxShadow: theme.shadows[3],
   '& .MuiTableCell-root': {
     padding: theme.spacing(1),
@@ -306,7 +307,7 @@ export const Contatos: React.FC<{
       </Box>
       <CustomTableContainer
         // component={'table'}
-        sx={{ mt: '4px', bgcolor: 'background.paper' }}
+        sx={{ mt: '4px' }}
         id={`tabela-contatos-${isChatContact ? 'atendimento' : ''}`}
       >
         <TableHead>

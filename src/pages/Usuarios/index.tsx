@@ -1,4 +1,4 @@
-import { Edit } from "@mui/icons-material"
+import { Close, Edit, QueueSharp } from "@mui/icons-material"
 import { Box, Button, IconButton, styled, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Tooltip, Typography } from "@mui/material"
 import { useUsuarioStore } from "../../store/usuarios";
 import { useCallback, useEffect, useState } from "react";
@@ -8,11 +8,17 @@ import { toast } from "sonner";
 import { ModalUsuario, type Usuario } from "./ModalUsuario";
 
 
+const optionsProfile = [
+    { value: "user", label: "Usuário" },
+    { value: "super", label: "Supervisor" },
+    { value: "admin", label: "Administrador" },
+];
 
 const CustomTableContainer = styled(Table)(({ theme }) => ({
     // Customize styles with Tailwind CSS classes
     padding: theme.spacing(2),
     width: '100%',
+    backgroundColor: theme.palette.background.paper,
     borderRadius: theme.shape.borderRadius,
     boxShadow: theme.shadows[3],
     '& .MuiTableCell-root': {
@@ -61,6 +67,7 @@ export const Usuarios: React.FC = () => {
     const listarUsuarios = useCallback(async () => {
         setLoading(true);
         const { data } = await ListarUsuarios(params);
+
         loadUsuarios(data.users);
         setParams((prev) => {
             return {
@@ -92,7 +99,7 @@ export const Usuarios: React.FC = () => {
         toast.info(
             `Atenção!! Deseja realmente deletar o usuario "${usuario.name}"?`,
             {
-                position: "top-right",
+                position: "top-center",
                 cancel: {
                     label: "Cancel",
                     onClick: () => console.log("Cancel!"),
@@ -102,9 +109,9 @@ export const Usuarios: React.FC = () => {
                     onClick: () => {
                         DeleteUsuario(usuario.id).then(() => {
                             toast.success("Usuario apagado", {
-                                position: "top-right",
+                                position: "top-center",
                             });
-                            listarUsuarios();
+                            listarUsuarios()
                         });
                     },
                 },
@@ -114,13 +121,13 @@ export const Usuarios: React.FC = () => {
 
     return (
         <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h6">Contatos</Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', }}>
+                <Typography variant="h6">Usuarios</Typography>
                 <TextField
                     label="Localize"
                     variant="standard"
                     size="small"
-                    sx={{ width: '320px' }}
+                    sx={{ width: { xs: '200px', sm: '320px' } }}
                     value={filter}
                     onChange={handleFilterChange}
                 />
@@ -135,55 +142,57 @@ export const Usuarios: React.FC = () => {
                     Adicionar
                 </Button>
             </Box>
-            <CustomTableContainer sx={{ mt: 2 }}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Nome</TableCell>
-                            <TableCell>Ações</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {filteredUsuarios
-                            .slice(
-                                pagination.page * pagination.rowsPerPage,
-                                pagination.page * pagination.rowsPerPage +
-                                pagination.rowsPerPage,
-                            )
-                            .map((usuario) => (
-                                <TableRow key={usuario.id}>
-                                    <TableCell>{usuario.id}</TableCell>
-                                    <TableCell>{usuario.name}</TableCell>
-                                    <TableCell>
-                                        <div className="flex space-x-2 justify-center">
-                                            <Tooltip title="Gestão de Filas do usuário">
-                                                <IconButton
-                                                    onClick={() => gerirFilasUsuario(usuario)}
-                                                >
-                                                    {/* <Rows4Icon /> */}
-                                                </IconButton>
-                                            </Tooltip>
-                                            <Tooltip title="Editar usuário">
-                                                <IconButton
-                                                    onClick={() => handlEditarUsuario(usuario)}
-                                                >
-                                                    <Edit />
-                                                </IconButton>
-                                            </Tooltip>
-                                            <Tooltip title="Apagar usuário">
-                                                <IconButton
-                                                    onClick={() => handleDeleteUsuario(usuario)}
-                                                >
-                                                    {/* <CircleX color="red" /> */}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                    </TableBody>
-                </Table>
+            <CustomTableContainer sx={{ mt: 2, }}>
+
+                <TableHead>
+                    <TableRow >
+                        <TableCell>ID</TableCell>
+                        <TableCell>Nome</TableCell>
+                        <TableCell>Perfil</TableCell>
+                        <TableCell sx={{ textAlign: 'center' }}>Ações</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {filteredUsuarios
+                        .slice(
+                            pagination.page * pagination.rowsPerPage,
+                            pagination.page * pagination.rowsPerPage +
+                            pagination.rowsPerPage,
+                        )
+                        .map((usuario) => (
+                            <TableRow key={usuario.id}>
+                                <TableCell>{usuario.id}</TableCell>
+                                <TableCell>{usuario.name}</TableCell>
+                                <TableCell>{usuario.profile}</TableCell>
+                                <TableCell>
+                                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }} className="flex space-x-2 justify-center">
+                                        <Tooltip title="Gestão de Filas do usuário">
+                                            <IconButton
+                                                onClick={() => gerirFilasUsuario(usuario)}
+                                            >
+                                                <QueueSharp />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Editar usuário">
+                                            <IconButton
+                                                onClick={() => handlEditarUsuario(usuario)}
+                                            >
+                                                <Edit />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Apagar usuário">
+                                            <IconButton
+                                                onClick={() => handleDeleteUsuario(usuario)}
+                                            >
+                                                <Close />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Box>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                </TableBody>
+
             </CustomTableContainer>
             <TablePagination
                 component="div"

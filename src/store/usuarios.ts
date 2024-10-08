@@ -2,13 +2,13 @@ import { create } from "zustand";
 
 interface Usuario {
   userId?: string;
-  username: string;
-  tenantId: string;
+  username?: string;
+  tenantId?: string | null;
   email: string;
   profile: string;
-  queues?: any;
+  queues?: [];
   name?: string;
-  id?: string;
+  id?: number;
 }
 
 interface UsuarioStore {
@@ -20,10 +20,11 @@ interface UsuarioStore {
   setUsuarioSelecionado: (usuario: Usuario) => void;
   criarUsuario: (usuario: Usuario) => void;
   editarUsuario: (usuario: Usuario) => void;
-  deletarUsuario: (usuario: Usuario) => void;
+  deletarUsuario: (userId: number) => void;
   toggleModalUsuario: () => void;
   toggleModalFilaUsuario: () => void;
   loadUsuarios: (usuarios: []) => void;
+  insertNewUser: (usuario: Usuario) => void;
 }
 
 export const useUsuarioStore = create<UsuarioStore>((set) => ({
@@ -32,7 +33,10 @@ export const useUsuarioStore = create<UsuarioStore>((set) => ({
   modalUsuario: false,
   modalFilaUsuario: false,
   loadUsuarios: (usuarios) => set({ usuarios: usuarios }),
-
+  insertNewUser: (user: Usuario) =>
+    set((state) => ({
+      usuarios: [...state.usuarios, user],
+    })),
   setUsuarioSelecionado: (usuario) => set({ usuarioSelecionado: usuario }),
 
   criarUsuario: (usuario) =>
@@ -51,10 +55,11 @@ export const useUsuarioStore = create<UsuarioStore>((set) => ({
       }
       return { usuarios: newUsuarios };
     }),
-  deletarUsuario: (usuario) =>
+  deletarUsuario: (userId) => {
     set((state) => ({
-      usuarios: state.usuarios.filter((u) => u.userId !== usuario.userId),
-    })),
+      usuarios: state.usuarios.filter((u) => Number(u.userId) !== userId),
+    }));
+  },
   toggleModalUsuario: () =>
     set((state) => {
       const newState = !state.modalUsuario;
