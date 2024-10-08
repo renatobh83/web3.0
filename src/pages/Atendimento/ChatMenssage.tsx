@@ -525,13 +525,13 @@ export const ChatMensagem = ({
                                         </MenuItem>
                                         <MenuItem onClick={() => {
                                           handleOpenModal();
-                                          getMensagenParaEncaminhar(mensagem)
+                                          getMensagenParaEncaminhar(mensagem);
                                           handleCloseMenu()
                                         }}>
 
                                           Encaminhar</MenuItem>
                                         <MenuItem onClick={() => {
-                                          setAtivarMultiEncaminhamento(true);
+                                          setAtivarMultiEncaminhamento(!ativarMultiEncaminhamento);
                                           handleCloseMenu()
                                         }}>
                                           Marcar (encaminhar varias)

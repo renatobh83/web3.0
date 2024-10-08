@@ -70,6 +70,7 @@ import { Errors } from '../../utils/error'
 import { useAuth } from '../../context/AuthContext'
 import { AudioNotification } from '../../components/AtendimentoComponent/AudioNotification'
 import { useSocketInitial } from '../../hooks/useSocketInitial'
+import { ListarMensagensRapidas } from '../../services/mensagensRapidas'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -165,7 +166,6 @@ export function Atendimento(props: Props) {
   const resetTickets = useAtendimentoTicketStore(s => s.resetTickets)
   const setHasMore = useAtendimentoTicketStore(s => s.setHasMore)
   const loadTickets = useAtendimentoTicketStore(s => s.loadTickets)
-  const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
   const setTicketFocado = useAtendimentoTicketStore(s => s.setTicketFocado)
   const { loadWhatsApps, whatsApps } = useWhatsappStore()
   const { setUsuarioSelecionado, toggleModalUsuario, modalUsuario } =
@@ -177,6 +177,7 @@ export function Atendimento(props: Props) {
   // const [isClosing, setIsClosing] = React.useState(false);
   const { isContactInfo } = useAtendimentoStore()
   const [tabTickets, setTabTickets] = useState(0)
+  const [mensagensRapidas, setMensagensRapidas] = useState([])
   const [tabTicketsStatus, setTabTicketsStatus] = useState('pending')
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
   const [etiquetas, setEtiquetas] = useState([])
@@ -654,15 +655,25 @@ export function Atendimento(props: Props) {
     setOpenModalNovoTicket(false)
   }
   const { contatos, loadContacts } = useContatosStore()
+
   const listaContatos = useCallback(async () => {
     const { data } = await ListarContatos()
     loadContacts(data.contacts)
   }, [])
-
+  const listarMensagensRapidas = useCallback(async () => {
+    const { data } = await ListarMensagensRapidas()
+    setMensagensRapidas(data)
+  }, [])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (!contatos.length) listaContatos()
-  }, [])
+    if (!mensagensRapidas.length) listarMensagensRapidas()
+
+  }, [mensagensRapidas, contatos])
+
+
+
+
   const handleClick = () => {
     if (mobileOpen) {
       // Lógica para quando estiver dentro de um modal
@@ -1202,7 +1213,7 @@ export function Atendimento(props: Props) {
         >
           {/* <Outlet context={{ drawerWidth, handleDrawerToggle }} /> */}
 
-          <Outlet />
+          <Outlet context={{ mensagensRapidas }} />
         </Box>
 
         {modalUsuario && <ModalUsuario />}

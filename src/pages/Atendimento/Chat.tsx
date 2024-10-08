@@ -12,6 +12,7 @@ import { Close } from '@mui/icons-material'
 import { formatarMensagemWhatsapp } from '../../utils/helpers'
 
 import { EncaminharComponent } from '../../components/AtendimentoComponent/EncaminharComponent'
+import { useOutletContext } from 'react-router-dom'
 
 export type OutletContextType = {
   drawerWidth: number
@@ -19,6 +20,8 @@ export type OutletContextType = {
 }
 
 export const Chat = () => {
+  const { mensagensRapidas } = useOutletContext()
+
   const { socketTicket, socketTicketList } = useMixinSocket()
   // const { drawerWidth, handleDrawerToggle } = useOutletContext<OutletContextType>();
   const { mensagens, LocalizarMensagensTicket } = useAtendimentoTicketStore()
@@ -213,7 +216,8 @@ export const Chat = () => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            flexWrap: 'wrap'
+            flexWrap: 'wrap',
+            position: 'relative'
           }}>
             <Box
 
@@ -244,7 +248,7 @@ export const Chat = () => {
               <Button size='small' variant='outlined' onClick={() => setReplyingMessage(null)}><Close sx={{ fontSize: '18px' }} /></Button>
             </Box>
           </Box>}
-          <InputMenssagem replyingMessage={replyingMessage} setReplyingMessage={setReplyingMessage} />
+          <InputMenssagem replyingMessage={replyingMessage} setReplyingMessage={setReplyingMessage} mensagensRapidas={mensagensRapidas} />
         </Box>
       </Box>
       {modalAgendamento && <ModalAgendamentoMensagem />}
