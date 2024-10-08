@@ -65,13 +65,19 @@ export const ItemTicketPainel = ({ ticket }) => {
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mr: 1 }}>
             <Typography variant='caption'> #{ticket.id}</Typography>
-            <Chip label={ticket.status}
-
-            />
+            <Typography variant='caption'>{obterNomeFila(ticket.queueId)}</Typography>
+            <Chip label={ticket.status} />
           </Box>
         </Box>
         {/* </Box> */}
       </Box>
     </Card>
   )
+}
+
+
+const obterNomeFila = (ticket: Ticket) => {
+  const filas = JSON.parse(localStorage.getItem('filasCadastradas'))
+  const fila = filas?.find(f => f.id === ticket)
+  return fila ? fila.queue : ''
 }

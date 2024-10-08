@@ -187,6 +187,11 @@ export const InfoCabecalhoMenssagens = () => {
 		setConfirmAction(() => handleConfirm); // Armazena a ação de confirmação
 
 	};
+	const handleCloseModalTransferir = () => {
+		setModalTransferirTicket(false)
+		setFilaSelecionada(null)
+		setUsuarioSelecionado(null)
+	}
 	return (
 		<AppBar
 			open={isContactInfo}
@@ -351,7 +356,8 @@ export const InfoCabecalhoMenssagens = () => {
 				</Dialog>
 			}
 			{modalTransferirTicket &&
-				<Dialog open={modalTransferirTicket} onClose={() => setModalTransferirTicket(false)} fullWidth maxWidth='sm'>
+				<Dialog open={modalTransferirTicket}
+					onClose={() => setModalTransferirTicket(false)} fullWidth maxWidth='sm'>
 					<DialogTitle>Transferir Ticket</DialogTitle>
 					<DialogContent>
 						<FormControl fullWidth margin="dense">
@@ -395,7 +401,9 @@ export const InfoCabecalhoMenssagens = () => {
 						</FormControl>
 					</DialogContent>
 					<DialogActions>
-						<Button onClick={() => setModalTransferirTicket(false)} color="secondary" variant="contained" size="small">
+						<Button
+							onClick={() => handleCloseModalTransferir()}
+							color="secondary" variant="contained" size="small">
 							Cancelar
 						</Button>
 						<Button onClick={confirmarTransferenciaTicket} color="success" variant="contained" size="small">

@@ -303,6 +303,9 @@ export function Atendimento(props: Props) {
   const handleChangeTabs = (_event: any, newValue: number) => {
     setTabTickets(newValue)
   }
+  const filterFilas = (NewPesquisaTickets) => {
+    setPesquisaTickets(NewPesquisaTickets)
+  }
 
   const statusTickets = useCallback(
     debounce((novoStatus: string) => {
@@ -352,7 +355,6 @@ export function Atendimento(props: Props) {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
-
     handleSearch(value) // Chama a função debounced
   }
   const handleOpenModalUsuario = usuario => {
@@ -480,6 +482,7 @@ export function Atendimento(props: Props) {
       eventEmitter.off('scrollToBottomMessageChat', scrollToBottom)
     }
   }, [])
+
   const listarFilas = useCallback(async () => {
     const { data } = await ListarFilas()
     setFilas(data)
@@ -770,8 +773,9 @@ export function Atendimento(props: Props) {
                   >
                     <Divider />
                     <SelectComponent
-                      cUserQueues={[]}
+                      cUserQueues={filas}
                       pesquisaTickets={pesquisaTickets}
+                      filterFilas={filterFilas}
                     />
                     <FormControl component="fieldset">
                       <FormGroup aria-label="position">
@@ -840,6 +844,8 @@ export function Atendimento(props: Props) {
                         Somente Tickets não atribuidos (sem usuário definido)
                       </label>
                     </div>
+                    <Button variant="contained" onClick={handleCloseFiltro}
+                      color="info">Fechar</Button>
                   </Box>
                 )}
                 {!pesquisaTickets.showAll && <Divider />}

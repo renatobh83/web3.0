@@ -1,32 +1,67 @@
-import { useCallback } from 'react';
-import { Select, MenuItem, Chip, InputLabel, FormControl } from '@mui/material';
-import { debounce } from 'lodash';
+import { useState } from 'react';
+import { Select, MenuItem, InputLabel, FormControl, type SelectChangeEvent, OutlinedInput, Checkbox, ListItemText }
+    from '@mui/material';
 
-export const SelectComponent = ({ cUserQueues, pesquisaTickets }) => {
-    // Define o debounce para a função de filtro
+interface SelectComponentProps {
+    filterFilas: (arg0: any) => void,
+    pesquisaTickets: any,
+    cUserQueues: any[]
+}
 
 
-    const debouncedBuscarTicketFiltro = useCallback(
-        debounce(() => {
-            // Função a ser chamada quando o valor do select muda
-            // Adapte conforme a necessidade
-            console.log('BuscarTicketFiltro chamado');
-        }, 700),
-        []
-    );
+export const SelectComponent = ({ cUserQueues, pesquisaTickets, filterFilas }: SelectComponentProps) => {
+    const [filasSelecionada, setFilasSelecionada] = useState<string[]>([]);
 
-    const handleChange = (event) => {
-        const { value } = event.target;
-        // Atualiza o estado com as opções selecionadas
-        const newQueues = { ...pesquisaTickets, queuesIds: value }
-        localStorage.setItem('filtrosAtendimento', JSON.stringify(newQueues));
-        debouncedBuscarTicketFiltro();
+    const ITEM_HEIGHT = 48;
+    const ITEM_PADDING_TOP = 8;
+    const MenuProps = {
+        PaperProps: {
+            style: {
+                maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+                width: 250,
+            },
+        },
     };
 
+
+    const handleChange = (event: SelectChangeEvent<typeof filasSelecionada>) => {
+        const {
+            target: { value },
+        } = event;
+        setFilasSelecionada(
+            // On autofill we get a stringified value.
+            typeof value === 'string' ? value.split(',') : value,
+        );
+        const newQueues = { ...pesquisaTickets, queuesIds: value }
+        // localStorage.setItem(:'filtrosAtendimento', JSON.stringify(newQueues));
+        filterFilas(newQueues)
+
+    };
     return (
         <FormControl fullWidth variant="outlined" disabled={pesquisaTickets.showAll}>
             <InputLabel id="select-label">Filas</InputLabel>
             <Select
+                labelId="demo-multiple-checkbox-label"
+                id="demo-multiple-checkbox"
+                multiple
+                value={filasSelecionada}
+                onChange={handleChange}
+                input={<OutlinedInput label="Tag" />}
+                renderValue={(selected) =>
+                    selected
+                        .map((id) => cUserQueues.find((fila) => fila.id === id)?.queue)
+                        .join(', ')
+                }
+                MenuProps={MenuProps}
+            >
+                {cUserQueues.map((fila) => (
+                    <MenuItem key={fila.id} value={fila.id}>
+                        <Checkbox checked={filasSelecionada.includes(fila.id)} />
+                        <ListItemText primary={fila.queue} />
+                    </MenuItem>
+                ))}
+            </Select>
+            {/* <Select
                 labelId="select-label"
                 multiple
                 value={pesquisaTickets.queuesIds}
@@ -59,7 +94,7 @@ export const SelectComponent = ({ cUserQueues, pesquisaTickets }) => {
                         {queue.queue}
                     </MenuItem>
                 ))}
-            </Select>
+            </Select> */}
         </FormControl>
     );
 };

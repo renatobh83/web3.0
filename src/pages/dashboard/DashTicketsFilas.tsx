@@ -61,7 +61,8 @@ export const DashTicketsFilas = () => {
     dateEnd: string | null
     queuesIds: []
   }>({
-    showAll: false,
+    // biome-ignore lint/complexity/noUselessTernary: <explanation>
+    showAll: profile === "admin" ? true : false,
     dateStart: format(sub(new Date(), { days: 30 }), 'yyyy-MM-dd'),
     dateEnd: dayjs(new Date()).format('YYYY-MM-DD'),
     queuesIds: [],
