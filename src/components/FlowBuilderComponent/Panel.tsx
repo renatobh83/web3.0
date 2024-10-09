@@ -14,6 +14,7 @@ import { ConnectionLine } from "./edges/ConnectionLine";
 import { Add, LtePlusMobiledataTwoTone, PlusOne, SaveRounded } from "@mui/icons-material";
 import { Configuracoes } from "./nodes/Configuracoes";
 import useChatFlowStore from "../../store/chatFlow";
+import { UpdateChatFlow } from "../../services/chatflow";
 
 
 const INITIAL_NODES: Node[] = [];
@@ -35,7 +36,7 @@ export const PanelChatFlow = () => {
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (flow) {
-            console.log(flow)
+
             setNodes(flow.nodeList)
         }
     }, [flow])
@@ -73,7 +74,13 @@ export const PanelChatFlow = () => {
     );
 
     const onSavePanel = () => {
-        console.log(nodes, edges)
+        const data = {
+            ...flow,
+            nodeList: nodes,
+            lineList: edges
+        }
+        console.log(data)
+        // UpdateChatFlow(data).then(data => console.log(data))
     }
     const [selectedNode, setSelectedNode] = useState<Node | undefined>()
 
