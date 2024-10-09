@@ -7,18 +7,9 @@ import { Check, Close, Delete, Edit } from "@mui/icons-material";
 import { red } from "@mui/material/colors";
 import { toast } from "sonner";
 import { update } from "lodash";
+import { CustomTableContainer } from "../../components/MaterialUi/CustomTable";
 
-const CustomTableContainer = styled(Table)(({ theme }) => ({
-    // Customize styles with Tailwind CSS classes
-    padding: theme.spacing(2),
-    width: '100%',
-    backgroundColor: theme.palette.background.paper,
 
-    boxShadow: theme.shadows[3],
-    '& .MuiTableCell-root': {
-        padding: theme.spacing(1),
-    },
-}))
 
 export const Filas = () => {
     const [open, setOpen] = useState(false)
@@ -92,7 +83,6 @@ export const Filas = () => {
                 </Button>
             </Box>
             <CustomTableContainer sx={{ mt: 2 }}>
-
                 <TableHead>
                     <TableRow >
                         <TableCell>#</TableCell>

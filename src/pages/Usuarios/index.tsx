@@ -6,6 +6,7 @@ import { DeleteUsuario, ListarUsuarios } from "../../services/user";
 import { ListarFilas } from "../../services/filas";
 import { toast } from "sonner";
 import { ModalUsuario, type Usuario } from "./ModalUsuario";
+import { CustomTableContainer } from "../../components/MaterialUi/CustomTable";
 
 
 const optionsProfile = [
@@ -14,17 +15,7 @@ const optionsProfile = [
     { value: "admin", label: "Administrador" },
 ];
 
-const CustomTableContainer = styled(Table)(({ theme }) => ({
-    // Customize styles with Tailwind CSS classes
-    padding: theme.spacing(2),
-    width: '100%',
-    backgroundColor: theme.palette.background.paper,
-    borderRadius: theme.shape.borderRadius,
-    boxShadow: theme.shadows[3],
-    '& .MuiTableCell-root': {
-        padding: theme.spacing(1),
-    },
-}))
+
 
 export const Usuarios: React.FC = () => {
     const {
@@ -143,7 +134,6 @@ export const Usuarios: React.FC = () => {
                 </Button>
             </Box>
             <CustomTableContainer sx={{ mt: 2, }}>
-
                 <TableHead>
                     <TableRow >
                         <TableCell>ID</TableCell>
