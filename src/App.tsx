@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { useAuth } from './context/AuthContext'
 import { MainLayout } from './layout/MainLayout'
@@ -12,9 +12,12 @@ import { DashTicketsFilas } from './pages/dashboard/DashTicketsFilas'
 import { Usuarios } from './pages/Usuarios'
 import { Filas } from './pages/filas'
 import { MensagensRapidas } from './pages/mensagensRapidas'
+import { ChatFlow } from './pages/chatFlow/Index'
+import { ListaChatFlow } from './pages/chatFlow/ListaChatFlow'
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth()
+
 
   return (
     <>
@@ -35,12 +38,12 @@ const AppRoutes = () => {
               <Route path="/usuarios" element={<Usuarios />} />
               <Route path="/filas" element={<Filas />} />
               <Route path="/mensagens-rapidas" element={<MensagensRapidas />} />
-
-
-              {/* <Route path="/usuarios" element={<Usuarios />} />
-              <Route path="/contatos" element={<Contatos isChatContact={false} />} />
-              <Route path="/sessoes" element={<IndexSessoesWhatsapp />} /> */}
               <Route path="/sessoes" element={<Canais />} />
+              <Route path='/chat-flow' element={<ChatFlow />} >
+                <Route index element={<ListaChatFlow />} />
+              </Route>
+
+
             </Route>
             <Route path="/atendimento" element={<Atendimento />}>
               <Route path=":ticketId" element={<Chat />} />

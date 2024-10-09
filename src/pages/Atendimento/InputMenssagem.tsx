@@ -250,12 +250,12 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
       if (!cMostrarEnvioArquivo()) {
         const message = prepararMensagemTexto()
 
-        // await EnviarMensagemTexto(ticketId, message)
+        await EnviarMensagemTexto(ticketId, message)
       } else {
         const formDatas = prepararUploadMedia()
 
         for (const formData of formDatas) {
-          // await EnviarMensagemTexto(ticketId, formData)
+          await EnviarMensagemTexto(ticketId, formData)
         }
       }
       setTextChat('') // Limpa o campo após enviar a mensagem
@@ -283,7 +283,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
     }
     if (event.key === 'Tab' && mensagemSelecionada) {
       event.preventDefault();
-      console.log(mensagemSelecionada)
+
       setTextChat(mensagemSelecionada.message);
       setVisualizarMensagensRapidas(false);
     }
