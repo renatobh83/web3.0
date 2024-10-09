@@ -8,10 +8,10 @@ export const ChatFlow: React.FC = () => {
     const userProfile = decryptData('profile')
 
     return (
-        <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2 }}>
+        <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2, pb: 0 }}>
             {userProfile === "admin" &&
-                // <Outlet />
-                <PanelChatFlow />
+                <Outlet />
+                // <PanelChatFlow />
             }
         </Box>
     )

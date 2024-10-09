@@ -1,26 +1,42 @@
-import { Close } from "@mui/icons-material"
-import { Box, Button, Typography } from "@mui/material"
-import { NodeProps, Handle, Position, useReactFlow } from "@xyflow/react"
+import { Box, Typography } from "@mui/material"
+import { type NodeProps, Handle, Position, useReactFlow } from "@xyflow/react"
+import { useEffect } from "react"
 
 export const Square = (props: NodeProps) => {
     const { setNodes, getEdges, setEdges } = useReactFlow()
 
 
-    function onRemoveNode() {
-        const connectionEdes = getEdges()
-        const filteredData = connectionEdes.filter(
-            item => item.source !== props.id && item.target !== props.id
-        );
-        setNodes(prev => prev.filter(node => node.id !== props.id))
-        setEdges(filteredData)
-    }
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            const key = e.key.toLowerCase()
+            switch (true) {
+                case key === 'delete': {
+                    setNodes(prevNodes => prevNodes.filter(node => {
+                        if (node.selected) {
+                            const connectionEdges = getEdges()
+                            const filteredData = connectionEdges.filter(
+                                item => item.source !== node.id && item.target !== node.id
+                            )
+                            setEdges(filteredData)
+                        }
+                        return !node.selected
+                    }))
+                    break
+                }
+                default:
+                    break
+            }
+        }
+        document.addEventListener('keydown', handleKeyDown)
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [])
     return (
-        <Box sx={{ backgroundColor: '#fff', width: 150, p: '10px', border: '1px solid black', borderRadius: '3px', textAlign: 'center' }}
+        <Box sx={{ backgroundColor: 'background.paper', width: 150, p: '10px', border: '1px solid black', borderRadius: '3px', textAlign: 'center' }}
         >
-            {/* <Button size="small" variant="text" onClick={onRemoveNode}
-                sx={{ minHeight: 0, minWidth: 0, padding: 0 }}>
-                <Close sx={{ fontSize: '8px' }} />
-            </Button> */}
             <Typography sx={{ fontSize: '12px' }}>{props.data.label}</Typography>
             <Handle id="right" position={Position.Right} type="source" style={{ right: -4, width: 6, height: 6, opacity: 0.5 }} />
             <Handle id="left" position={Position.Left} type="source" style={{ left: -4, width: 6, height: 6, opacity: 0.5 }} />

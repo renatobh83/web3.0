@@ -161,7 +161,7 @@ export const MainLayout: React.FC = () => {
           sx={{
             alignItems: 'center',
             mx: 3,
-            pb: 10,
+            // pb: 10,
             mt: 8,
           }}
         >

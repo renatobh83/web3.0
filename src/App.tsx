@@ -14,6 +14,7 @@ import { Filas } from './pages/filas'
 import { MensagensRapidas } from './pages/mensagensRapidas'
 import { ChatFlow } from './pages/chatFlow/Index'
 import { ListaChatFlow } from './pages/chatFlow/ListaChatFlow'
+import { PanelChatFlow } from './components/FlowBuilderComponent/Panel'
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth()
@@ -41,6 +42,7 @@ const AppRoutes = () => {
               <Route path="/sessoes" element={<Canais />} />
               <Route path='/chat-flow' element={<ChatFlow />} >
                 <Route index element={<ListaChatFlow />} />
+                <Route path='builder' element={<PanelChatFlow />} />
               </Route>
 
 

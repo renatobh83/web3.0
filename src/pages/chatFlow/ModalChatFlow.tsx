@@ -3,6 +3,7 @@ import { Dialog, DialogContent, Typography, Box, FormControl, FormLabel, Input, 
 import { useCallback, useEffect, useState } from "react"
 import { AlterarFila, CriarFila, ListarFilas } from "../../services/filas";
 import { CriarChatFlow, UpdateChatFlow } from "../../services/chatflow";
+import { getDefaultFlow } from "../../components/FlowBuilderComponent/InitialChatFlow";
 
 interface ModalChatFlowProps {
     open: boolean,
@@ -45,7 +46,10 @@ export const ModalChatFlow = ({ open, closeModal, flowSelecionado, updateFlow }:
                 updateFlow(data)
                 closeModal()
             } else {
-                const { data } = await CriarChatFlow(chatFlow)
+
+                const flow = { ...getDefaultFlow(), ...chatFlow, id: null }
+
+                const { data } = await CriarChatFlow(flow)
                 updateFlow(data)
                 closeModal()
             }

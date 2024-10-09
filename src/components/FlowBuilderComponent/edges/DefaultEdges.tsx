@@ -1,4 +1,4 @@
-import { BaseEdge, getSmoothStepPath, MarkerType, type EdgeProps } from "@xyflow/react"
+import { BaseEdge, getSmoothStepPath, type EdgeProps } from "@xyflow/react"
 
 export const DefaultEdge = ({
     sourceX,
@@ -7,7 +7,6 @@ export const DefaultEdge = ({
     targetX,
     targetY,
     targetPosition,
-
 }: EdgeProps) => {
     const [edgePath] = getSmoothStepPath({
         sourceX,
@@ -20,6 +19,6 @@ export const DefaultEdge = ({
     })
 
     return (
-        <BaseEdge path={edgePath} style={{ strokeWidth: 2 }} />
+        <BaseEdge path={edgePath} />
     )
 }
