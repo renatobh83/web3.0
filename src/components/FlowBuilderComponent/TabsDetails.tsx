@@ -15,7 +15,19 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const handleChangeTabs = (newValue: any) => {
         setTabSelected(newValue)
-
+    }
+    const handleNodeAtualizacaoCondicao = (novasCondicoes) => {
+        if (node) {
+            const dataNew = {
+                ...node.data,
+                conditions: novasCondicoes
+            }
+            const nodeAtt = {
+                ...node,
+                data: dataNew
+            }
+            atualizarNode(nodeAtt)
+        }
     }
     function addCondiction() {
         node?.data.conditions.push({
@@ -26,46 +38,22 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
         setConditionsNode(node => node + 1)
     }
     function removeCondition(arr, id) {
-        let newArr = [...arr];
-        newArr = newArr.filter(condition => condition.id !== id)
-
-        if (node) {
-            // atualizarNode((nodes) => {
-            //     nodes.map((n) => {
-            //         if (n.id === node.id) {
-            //             const updatedConditions = n.data.conditions.filter(
-            //                 (condition) => condition.id !== id
-            //             );
-            //             return {
-            //                 ...node,
-            //                 data: {
-            //                     ...node.data,
-            //                     conditions: updatedConditions,
-            //                 },
-            //             };
-            //         }
-            //         return node;
-            //     })
-            // })
-            // node.data = {
-            //     ...node.data,
-            //     conditions: newArr
-            // }
-            // console.log(node.data)
-
-        }
-        console.log(node)
-        setConditions(newArr)
-        setConditionsNode(newArr.length)
+        const newConditions = arr.filter(condition => condition.id !== id)
+        handleNodeAtualizacaoCondicao(newConditions)
+        setConditions(newConditions)
+        setConditionsNode(newConditions.length)
     }
-    useEffect(() => {
-        setConditionsNode(node?.data?.conditions.length || 0)
-    }, [])
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
-        if (node)
-            setConditions(node.data.conditions)
+        if (node) {
+            if (node.data.conditions) {
+                setConditions(node.data.conditions)
+                setConditionsNode(node.data.conditions.length)
+            } else {
+                setConditions([])
+            }
+        }
     }, [node?.id])
     const TabsSelect = (
         <Tabs
@@ -91,6 +79,7 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
             const newArr = [...arr];
             newArr.splice(to, 0, newArr.splice(from, 1)[0]); // Move o item
             setConditions(newArr); // Atualiza o estado com a nova ordem
+            handleNodeAtualizacaoCondicao(newArr)
             if (node) {
                 // Atualiza os dados no node (se necessário)
                 node.data = {
@@ -165,17 +154,17 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
                                     <Chip label={idx + 1} />
                                     <Box component={'span'} sx={{ flexGrow: '1' }} />
                                     <Button size="small" variant='outlined' sx={{ minWidth: 10, mr: 1 }}
-                                        onClick={() => changePosition(node?.data.conditions, idx, idx - 1)}
+                                        onClick={() => changePosition(conditions, idx, idx - 1)}
                                     >
                                         <North sx={{ fontWeight: '500', width: 20, color: 'green' }} />
                                     </Button>
                                     <Button size="small" variant='outlined' sx={{ minWidth: 10, mr: 1 }}
-                                        onClick={() => changePosition(node?.data.conditions, idx, idx + 1)}
+                                        onClick={() => changePosition(conditions, idx, idx + 1)}
                                     >
                                         <South sx={{ fontWeight: '500', width: 20, }} />
                                     </Button>
                                     <Button size="small" variant='outlined' sx={{ minWidth: 10, mr: 1 }}
-                                        onClick={() => removeCondition(node?.data.conditions, condition.id)}
+                                        onClick={() => removeCondition(conditions, condition.id)}
                                     >
                                         <Close sx={{ fontWeight: '500', width: 20, color: 'red' }} />
                                     </Button>

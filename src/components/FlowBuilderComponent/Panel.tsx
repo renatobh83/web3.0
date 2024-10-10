@@ -156,7 +156,8 @@ export const PanelChatFlow = () => {
         }
     }
     const handleAtualizarNode = (node: Node[]) => {
-        setNodes(node)
+        console.log('Atualizar node', node)
+        setNodes(nodes => [...nodes, node])
     }
     useEffect(() => {
         if (selectedNode) {
