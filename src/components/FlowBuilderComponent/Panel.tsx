@@ -1,4 +1,4 @@
-import { Box, Button, Divider } from "@mui/material"
+import { Box, Button, Divider, FormControl, TextField, Typography } from "@mui/material"
 import {
     ReactFlow, Background, Controls, addEdge,
     useEdgesState, reconnectEdge, useNodesState,
@@ -7,7 +7,7 @@ import {
     useReactFlow
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Square } from "./nodes/Square";
 import { DefaultEdge } from "./edges/DefaultEdges";
 import { ConnectionLine } from "./edges/ConnectionLine";
@@ -17,6 +17,8 @@ import useChatFlowStore from "../../store/chatFlow";
 import { UpdateChatFlow } from "../../services/chatflow";
 import { Start } from "./nodes/Start";
 import { BoasVindas } from "./nodes/BoasVindas";
+import { TabsDetails } from "./TabsDetails";
+import { Navigate, useNavigate } from "react-router-dom";
 
 
 const INITIAL_NODES: Node[] = [];
@@ -34,6 +36,11 @@ const NODE_TYPES = {
 export const PanelChatFlow = () => {
 
     const { flow: chatFlow } = useChatFlowStore()
+
+    if (!chatFlow.id) {
+        return <Navigate to="/chat-flow" />
+
+    }
     const [nodes, setNodes, onNodesChange] = useNodesState(INITIAL_NODES);
     const [edges, setEdges, onEdgesChange] = useEdgesState(INITIAL_EDGES);
 
@@ -105,8 +112,8 @@ export const PanelChatFlow = () => {
             ...chatFlow,
             flow
         }
-
-        UpdateChatFlow(data).then(data => console.log(data))
+        console.log(flow)
+        UpdateChatFlow(data).then(data => console.log(data));
     }
     const [selectedNode, setSelectedNode] = useState<Node | undefined>()
 
@@ -122,6 +129,7 @@ export const PanelChatFlow = () => {
     }, [edges])
 
     const [valueX, setValuex] = useState(0)
+
     function addSquareNode() {
         setNodes(nodes => [...nodes, {
             id: crypto.randomUUID(),
@@ -131,13 +139,30 @@ export const PanelChatFlow = () => {
                 y: 150
             },
             data: {
-                total: 10,
-                label: 'data'
+                label: "Nova etapa",
+                interactions: [],
+                conditions: [],
+                actions: [],
+
             }
         }])
         setValuex(v => v + 10)
     }
-
+    const [labelNode, setLabelNode] = useState('');
+    const handleLabelData = (newLabel) => {
+        if (selectedNode) {
+            selectedNode.data.label = newLabel
+            setLabelNode(newLabel)
+        }
+    }
+    const handleAtualizarNode = (node: Node[]) => {
+        setNodes(node)
+    }
+    useEffect(() => {
+        if (selectedNode) {
+            setLabelNode(selectedNode?.data.label || '');
+        }
+    }, [selectedNode]);
     return (
         <Box sx={{ width: '100%', height: 'calc(100vh - 80px)', display: { sm: 'none', xs: 'none', md: 'flex' } }}>
             <Box sx={{ width: '100%', height: '100%', maxWidth: 'calc(100% - 380px)' }}>
@@ -148,11 +173,10 @@ export const PanelChatFlow = () => {
                     edgeTypes={EDGE_TYPES}
                     defaultEdgeOptions={{ type: 'default' }}
                     connectionLineComponent={ConnectionLine}
-                    // connectionMode={ConnectionMode.Loose}
+
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     snapToGrid
-
                     onReconnect={onReconnect}
                     onReconnectStart={onReconnectStart}
                     onReconnectEnd={onReconnectEnd}
@@ -189,7 +213,6 @@ export const PanelChatFlow = () => {
                         <Button onClick={onSavePanel}
                             variant="contained"
                             color="success"
-                        // sx={{ width: 0, height: 0, padding: 0, }}
                         >
                             <SaveRounded sx={{ mr: 1 }} />
                             Salvar
@@ -204,8 +227,24 @@ export const PanelChatFlow = () => {
 
                         ><Add />Nova Etapa</Button>
                     </Box>
-                    <Box sx={{ flexGrow: 1, borderRadius: '0.4rem', border: '1px solid', height: '92%' }}>
-                        {selectedNode?.id}
+                    <Box sx={{ flexGrow: 1, borderRadius: '0.4rem', border: '1px solid #ccdd', height: '92%', }}>
+                        <Box sx={{ height: '32px', pl: '12px', backgroundColor: '#f1f3f4', color: '#000' }}>
+                            <Typography variant="subtitle2" sx={{ lineHeight: '32px' }}> Configuração do fluxo </Typography>
+                            <Divider />
+                            <FormControl sx={{ width: '100%' }}>
+                                <TextField
+                                    sx={{ padding: 1 }}
+                                    fullWidth
+                                    name="label"
+                                    variant="filled" label='Nome'
+                                    value={selectedNode ? labelNode : ''}
+                                    onChange={(e) => {
+                                        handleLabelData(e.target.value)
+                                    }}
+                                    focused />
+                            </FormControl>
+                            {selectedNode && <TabsDetails node={selectedNode} atualizarNode={handleAtualizarNode} />}
+                        </Box>
                     </Box>
                 </Box>
             </Box>
