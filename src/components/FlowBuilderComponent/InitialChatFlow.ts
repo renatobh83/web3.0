@@ -1,9 +1,8 @@
 const data = {
   nodeList: [
     {
-      id: "configuracoes",
+      id: "configurations",
       type: "configuracao",
-
       position: { x: 340, y: 100 },
       deletable: false, // custom property to mark it as non-deletable
       draggable: false, // Não pode ser movido
@@ -42,8 +41,36 @@ const data = {
         },
       },
     },
+    {
+      id: "start",
+      data: {},
+      type: "start",
+      position: { x: 90, y: 135 },
+      deletable: false, // custom property to mark it as non-deletable
+      draggable: false, // Não pode ser movido
+    },
+    {
+      id: "nodeC",
+      type: "boasVindas",
+      position: { x: 225, y: 210 },
+      deletable: false, // custom property to mark it as non-deletable
+      draggable: false, // Não pode ser movido
+      data: {
+        label: "Boas vindas!",
+        interactions: [],
+        conditions: [],
+        actions: [],
+      },
+    },
   ],
-  lineList: [],
+  lineList: [
+    {
+      type: "default",
+      source: "start",
+      target: "nodeC",
+      id: "xy-edge__start-nodeCleft",
+    },
+  ],
 };
 
 export function getDefaultFlow() {

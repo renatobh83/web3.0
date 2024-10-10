@@ -40,7 +40,7 @@ export const ModalChatFlow = ({ open, closeModal, flowSelecionado, updateFlow }:
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (validateInputs()) {
-            console.log(chatFlow)
+
             if (flowSelecionado?.id) {
                 const { data } = await UpdateChatFlow(chatFlow)
                 updateFlow(data)

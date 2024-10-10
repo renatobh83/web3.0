@@ -39,7 +39,7 @@ export const Square = (props: NodeProps) => {
         >
             <Typography sx={{ fontSize: '12px' }}>{props.data.label}</Typography>
             <Handle id="right" position={Position.Right} type="source" style={{ right: -4, width: 6, height: 6, opacity: 0.5 }} />
-            <Handle id="left" position={Position.Left} type="source" style={{ left: -4, width: 6, height: 6, opacity: 0.5 }} />
+            <Handle id="left" position={Position.Left} type="target" style={{ left: -4, width: 6, height: 6, opacity: 0.5 }} />
         </Box>
     )
 }

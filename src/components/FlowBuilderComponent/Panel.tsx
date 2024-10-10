@@ -15,6 +15,8 @@ import { Add, LtePlusMobiledataTwoTone, PlusOne, SaveRounded } from "@mui/icons-
 import { Configuracoes } from "./nodes/Configuracoes";
 import useChatFlowStore from "../../store/chatFlow";
 import { UpdateChatFlow } from "../../services/chatflow";
+import { Start } from "./nodes/Start";
+import { BoasVindas } from "./nodes/BoasVindas";
 
 
 const INITIAL_NODES: Node[] = [];
@@ -25,33 +27,43 @@ const EDGE_TYPES = {
 }
 const NODE_TYPES = {
     square: Square,
-    configuracao: Configuracoes
+    configuracao: Configuracoes,
+    start: Start,
+    boasVindas: BoasVindas
 }
 export const PanelChatFlow = () => {
 
-    const { flow } = useChatFlowStore()
+    const { flow: chatFlow } = useChatFlowStore()
     const [nodes, setNodes, onNodesChange] = useNodesState(INITIAL_NODES);
     const [edges, setEdges, onEdgesChange] = useEdgesState(INITIAL_EDGES);
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
-        if (flow) {
+        if (chatFlow) {
 
-            setNodes(flow.nodeList)
+            setNodes(chatFlow.flow.nodeList)
+            setEdges(chatFlow.flow.lineList)
         }
-    }, [flow])
+    }, [chatFlow])
 
     const edgeReconnectSuccessful = useRef(false);
 
 
 
-    const onReconnectStart = useCallback(() => {
-        console.log('onReconnectStart')
+    const onReconnectStart = useCallback((_: MouseEvent | TouchEvent, edge: Edge) => {
+
         edgeReconnectSuccessful.current = false;
     }, []);
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-    const onReconnect = useCallback((oldEdge: any, newConnection: Connection) => {
+    const onReconnect = useCallback((oldEdge: Edge, newConnection: Connection) => {
+        const nodeA = "start";
+        const nodeB = "nodeC";
+        if (
+            (oldEdge.source === nodeA && oldEdge.target === nodeB)
+        ) {
+            return;
+        }
         edgeReconnectSuccessful.current = true;
 
         setEdges((els) => reconnectEdge(oldEdge, newConnection, els));
@@ -59,6 +71,14 @@ export const PanelChatFlow = () => {
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     const onReconnectEnd = useCallback((_: MouseEvent | TouchEvent, edge: Edge) => {
+        const nodeA = "start";
+        const nodeB = "nodeC";
+
+        if (
+            (edge.source === nodeA && edge.target === nodeB)
+        ) {
+            return;
+        }
 
         if (!edgeReconnectSuccessful.current) {
             setEdges((eds) => eds.filter((e) => e.id !== edge.id));
@@ -69,18 +89,24 @@ export const PanelChatFlow = () => {
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     const onConnect = useCallback(
-        (params: Connection) => setEdges((eds) => addEdge(params, eds)),
+        (params: Connection) => {
+
+            setEdges((eds) => addEdge(params, eds))
+        },
         [],
     );
 
     const onSavePanel = () => {
-        const data = {
-            ...flow,
+        const flow = {
             nodeList: nodes,
             lineList: edges
         }
-        console.log(data)
-        // UpdateChatFlow(data).then(data => console.log(data))
+        const data = {
+            ...chatFlow,
+            flow
+        }
+
+        UpdateChatFlow(data).then(data => console.log(data))
     }
     const [selectedNode, setSelectedNode] = useState<Node | undefined>()
 
@@ -94,6 +120,7 @@ export const PanelChatFlow = () => {
     useEffect(() => {
         setSelectedNode(undefined)
     }, [edges])
+
     const [valueX, setValuex] = useState(0)
     function addSquareNode() {
         setNodes(nodes => [...nodes, {
@@ -121,10 +148,11 @@ export const PanelChatFlow = () => {
                     edgeTypes={EDGE_TYPES}
                     defaultEdgeOptions={{ type: 'default' }}
                     connectionLineComponent={ConnectionLine}
-                    connectionMode={ConnectionMode.Loose}
+                    // connectionMode={ConnectionMode.Loose}
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     snapToGrid
+
                     onReconnect={onReconnect}
                     onReconnectStart={onReconnectStart}
                     onReconnectEnd={onReconnectEnd}
@@ -145,7 +173,7 @@ export const PanelChatFlow = () => {
                         }}
                     >
 
-                        {flow.name}
+                        {chatFlow.name}
                     </Panel>
                     <Background
                         gap={12}

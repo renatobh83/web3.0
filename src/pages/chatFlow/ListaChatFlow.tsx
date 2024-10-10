@@ -59,7 +59,7 @@ export const ListaChatFlow: React.FC = () => {
     const nav = useNavigate()
     const handleOpenFlow = (ChatFlow: any) => {
         setFlowData({
-            flow: ChatFlow.flow,
+            flow: ChatFlow,
             usuarios,
             filas
         })
