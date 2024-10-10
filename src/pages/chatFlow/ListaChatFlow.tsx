@@ -34,9 +34,7 @@ export const ListaChatFlow: React.FC = () => {
     };
     const listaChatFlow = useCallback(async () => {
         const { data } = await ListarChatFlow()
-        console.log(data)
         setChatFlows(data.chatFlow)
-
     }, [])
     const [filas, setFilas] = useState([])
     const [usuarios, setUsuarios] = useState([])

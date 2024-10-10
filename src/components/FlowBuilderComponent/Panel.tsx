@@ -103,7 +103,7 @@ export const PanelChatFlow = () => {
         [],
     );
 
-    const onSavePanel = () => {
+    const onSavePanel = async () => {
         const flow = {
             nodeList: nodes,
             lineList: edges
@@ -112,8 +112,8 @@ export const PanelChatFlow = () => {
             ...chatFlow,
             flow
         }
-        console.log(flow)
-        UpdateChatFlow(data).then(data => console.log(data));
+
+        await UpdateChatFlow(data);
     }
     const [selectedNode, setSelectedNode] = useState<Node | undefined>()
 
@@ -156,11 +156,9 @@ export const PanelChatFlow = () => {
         }
     }
     const handleAtualizarNode = (newData: Node) => {
-        console.log(newData)
         setNodes((nds) =>
             nds.map((node) => (node.id === newData.id ? { ...newData } : node))
         );
-        // setNodes(nodes => [...nodes, node])
     }
     useEffect(() => {
         if (selectedNode) {
