@@ -9,7 +9,7 @@ const optionsSe = [
     { label: 'Respostas', value: 'R' }
 ]
 
-export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, atualizarNode: (arg0: Node[]) => void }) => {
+export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, atualizarNode: (arg0: Node) => void }) => {
     const nodeType = node?.type
     const [tabSelected, setTabSelected] = useState(0)
     const [, setConditionsNode] = useState(0)

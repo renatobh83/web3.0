@@ -155,9 +155,12 @@ export const PanelChatFlow = () => {
             setLabelNode(newLabel)
         }
     }
-    const handleAtualizarNode = (node: Node[]) => {
-        console.log('Atualizar node', node)
-        setNodes(nodes => [...nodes, node])
+    const handleAtualizarNode = (newData: Node) => {
+        console.log(newData)
+        setNodes((nds) =>
+            nds.map((node) => (node.id === newData.id ? { ...newData } : node))
+        );
+        // setNodes(nodes => [...nodes, node])
     }
     useEffect(() => {
         if (selectedNode) {
