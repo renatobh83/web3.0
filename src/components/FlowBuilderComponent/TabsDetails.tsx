@@ -1,10 +1,13 @@
-import { Box, Button, ButtonGroup, Chip, Divider, Tab, Tabs } from "@mui/material";
+import { Box, Button, ButtonGroup, Chip, Divider, FormControl, FormControlLabel, InputLabel, MenuItem, OutlinedInput, Radio, RadioGroup, Select, SelectChangeEvent, Tab, Tabs, TextField, Typography } from "@mui/material";
 import { useReactFlow, type Node } from "@xyflow/react";
 import { a11yProps, TabPanel } from "../MaterialUi/TablePanel";
 import { useEffect, useState } from "react";
 import { ArrowDropDown, Close, North, PreviewRounded, South } from "@mui/icons-material";
 
-
+const optionsSe = [
+    { label: 'Qualquer resposta', value: 'US' },
+    { label: 'Respostas', value: 'R' }
+]
 
 export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, atualizarNode: (arg0: Node[]) => void }) => {
     const nodeType = node?.type
@@ -44,6 +47,27 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
         setConditionsNode(newConditions.length)
     }
 
+    const [optionSelect, setOptionSelect] = useState<string>('')
+    const handleSelectChange = (event: SelectChangeEvent<typeof optionSelect>) => {
+        const {
+            target: { value },
+        } = event;
+        setOptionSelect(value);
+    }
+    const [inputValue, setInputValue] = useState('');
+    const [chips, setChips] = useState<string[]>([]);
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter' && inputValue.trim() !== '') {
+            event.preventDefault();
+            setChips([...chips, inputValue.trim()]);
+            setInputValue('');
+        }
+    };
+
+    const handleDelete = (chipToDelete: string) => {
+        setChips(chips.filter((chip) => chip !== chipToDelete));
+    };
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (node) {
@@ -170,8 +194,56 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
                                     </Button>
 
                                 </Box>
-                                <Box>{condition.id}</Box>
-                                <Box>3</Box>
+                                <FormControl fullWidth sx={{ padding: 1, mt: 1 / 2 }}>
+                                    <InputLabel id="condicaoSe">Se</InputLabel>
+                                    <Select
+                                        id="select_se"
+                                        onChange={handleSelectChange}
+                                        input={<OutlinedInput label="se" />}
+                                    >
+                                        {optionsSe.map(opt => (
+                                            <MenuItem
+                                                key={opt.label}
+                                                value={opt.value} >
+                                                {opt.label}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                    {optionSelect === "R" &&
+                                        <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', }}>
+                                            {chips.map((chip, index) => (
+                                                <Chip
+                                                    key={index}
+                                                    label={chip}
+                                                    onDelete={() => handleDelete(chip)}
+                                                    sx={{ margin: '4px' }}
+                                                />
+                                            ))}
+                                            <TextField
+                                                variant="outlined"
+                                                value={inputValue}
+                                                onChange={(e) => setInputValue(e.target.value)}
+                                                onKeyDown={handleKeyDown}
+                                                placeholder="Digite e pressione Enter"
+                                                sx={{ width: '100%', margin: '4px' }}
+                                            />
+                                        </Box>}
+                                </FormControl>
+                                <Divider />
+                                <Box sx={{ padding: 1 }}>
+                                    <Typography variant="subtitle1" sx={{ px: 1 }}>Rotear para:</Typography>
+                                    <RadioGroup
+                                        row
+                                        aria-labelledby="demo-row-radio-buttons-group-label"
+                                        name="row-radio-buttons-group"
+                                    >
+                                        <FormControlLabel value="etapa" control={<Radio size="small" />} label="Etapa" />
+                                        <FormControlLabel value="fila" control={<Radio size="small" />} label="Fila" />
+                                        <FormControlLabel value="usuario" control={<Radio size="small" />} label="Usúario" />
+                                        <FormControlLabel value="encerar" control={<Radio size="small" />} label="Encerar" />
+
+                                    </RadioGroup>
+                                </Box>
                             </Box>
                         ))}
 

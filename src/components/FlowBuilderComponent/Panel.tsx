@@ -166,7 +166,7 @@ export const PanelChatFlow = () => {
     }, [selectedNode]);
     return (
         <Box sx={{ width: '100%', height: 'calc(100vh - 80px)', display: { sm: 'none', xs: 'none', md: 'flex' } }}>
-            <Box sx={{ width: '100%', height: '100%', maxWidth: 'calc(100% - 380px)' }}>
+            <Box sx={{ width: '100%', height: '100%', maxWidth: 'calc(100% - 390px)' }}>
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
