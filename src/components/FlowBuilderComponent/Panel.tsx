@@ -132,7 +132,7 @@ export const PanelChatFlow = () => {
     const [valueX, setValuex] = useState(0)
 
     function addSquareNode() {
-        setNodes(nodes => [...nodes, {
+        const newNode = {
             id: crypto.randomUUID(),
             type: 'square',
             position: {
@@ -146,8 +146,10 @@ export const PanelChatFlow = () => {
                 actions: [],
 
             }
-        }])
-        setNodesStore(nodes)
+        }
+
+        setNodes(nodes => [...nodes, newNode])
+        setNodesStore([...nodes, newNode])
         setValuex(v => v + 10)
     }
     const [labelNode, setLabelNode] = useState('');
@@ -161,6 +163,7 @@ export const PanelChatFlow = () => {
         setNodes((nds) =>
             nds.map((node) => (node.id === newData.id ? { ...newData } : node))
         );
+
     }
     useEffect(() => {
         if (selectedNode) {

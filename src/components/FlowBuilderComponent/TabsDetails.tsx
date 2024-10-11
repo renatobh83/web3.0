@@ -15,7 +15,7 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
 
 
 
-    const { filas, usuarios, getEdgesByNodeId, getLabelByTarget } = useChatFlowStore()
+    const { filas, usuarios, getEdgesByNodeId, getLabelByTarget, nodes } = useChatFlowStore()
     const nodeType = node?.type
     const [tabSelected, setTabSelected] = useState(0)
     const [conditionState, setConditionState] = useState<{
@@ -218,7 +218,7 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
                 })
                 return
             }
-            // console.log(asSource)
+
             // setConditionState(prevState => ({
             //     ...prevState,
             //     [id]: {
@@ -227,7 +227,7 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
             //     },
             // }));
         }
-        console.log(getLabelByTarget(asSource[0].target), asSource)
+        asSource.map(a => console.log(getLabelByTarget(a.target), a.target, nodes))
     };
 
     return (

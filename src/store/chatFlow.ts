@@ -61,7 +61,6 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
     // Se a edge foi encontrada, procura o node associado ao targetId
     if (targetEdge) {
       const targetNode = get().nodes.find((node) => node.id === targetId);
-      console.log(targetNode);
 
       // Retorna a label do node se ela existir
       return targetNode?.data?.label;
