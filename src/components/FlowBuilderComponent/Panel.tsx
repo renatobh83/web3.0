@@ -112,7 +112,7 @@ export const PanelChatFlow = () => {
             ...chatFlow,
             flow
         }
-        // console.log(data)
+        console.log(data)
         await UpdateChatFlow(data);
     }
     const [selectedNode, setSelectedNode] = useState<Node | undefined>()

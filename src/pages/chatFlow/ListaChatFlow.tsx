@@ -56,6 +56,7 @@ export const ListaChatFlow: React.FC = () => {
     }, [])
     const { setFlowData } = useChatFlowStore()
     const nav = useNavigate()
+
     const handleOpenFlow = (ChatFlow: any) => {
         setFlowData({
             flow: ChatFlow,
@@ -145,8 +146,11 @@ export const ListaChatFlow: React.FC = () => {
                 </TableBody>
             </CustomTableContainer>
 
-
-            {open && <ModalChatFlow open={open} closeModal={closeModal} flowSelecionado={flowSelecionado} updateFlow={handleFlowCreateOrUpdate} />}
+            {open && <ModalChatFlow
+                open={open}
+                closeModal={closeModal}
+                flowSelecionado={flowSelecionado}
+                updateFlow={handleFlowCreateOrUpdate} />}
         </Box>
     )
 }

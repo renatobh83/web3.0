@@ -3,6 +3,7 @@ import { useReactFlow, type Node } from "@xyflow/react";
 import { a11yProps, TabPanel } from "../MaterialUi/TablePanel";
 import { useEffect, useState } from "react";
 import { ArrowDropDown, Close, North, PreviewRounded, South } from "@mui/icons-material";
+import useChatFlowStore from "../../store/chatFlow";
 
 const optionsSe = [
     { label: 'Qualquer resposta', value: 'US' },
@@ -11,7 +12,7 @@ const optionsSe = [
 
 export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, atualizarNode: (arg0: Node) => void }) => {
 
-
+    const { filas, usuarios } = useChatFlowStore()
     const nodeType = node?.type
     const [tabSelected, setTabSelected] = useState(0)
     const [conditionState, setConditionState] = useState<{
@@ -24,6 +25,7 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (node) {
+
             const initialState = {} as { [key: string]: { selectedOption: string; chips: string[]; inputValue: string } };
             if (node.data.conditions) {
                 // biome-ignore lint/complexity/noForEach: <explanation>
@@ -74,13 +76,11 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
         }
     }
     function addCondiction() {
-        console.log('new')
         setConditions(prev => [...prev, {
             type: '',
             condition: [],
             id: crypto.randomUUID()
         }])
-        // node?.data.conditions.push()
 
     }
     function removeCondition(arr, id) {
@@ -120,6 +120,7 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
             }));
         }
     };
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         const updatedConditions = conditions.map(c => {
             if (conditionState[c.id]) {
@@ -157,48 +158,7 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
 
         handleNodeAtualizacaoCondicao(updatedConditions);
     }, [conditionState]);
-    // useEffect(() => {
-    //     console.log('Useffet updatedConditions', conditionState)
-    //     const updatedConditions = conditions.map(c => {
-    //         if (conditionState[c.id]) {
-    //             // Lógica para o tipo "US"
-    //             if (conditionState[c.id].selectedOption === "US") {
-    //                 return {
-    //                     ...c,
-    //                     type: "US", // Atualiza o type
-    //                     action: 1,
-    //                     queueId: 2,
-    //                     nextStepId: null,
-    //                     userIdDestination: null,
-    //                     closeTicket: null,
-    //                     condition: []
 
-    //                 };
-    //             }
-
-    //             // Lógica para o tipo "R"
-    //             if (conditionState[c.id].selectedOption === "R") {
-    //                 return {
-    //                     ...c,
-    //                     type: "R",
-    //                     action: 1,
-    //                     queueId: 2,
-    //                     nextStepId: null,
-    //                     userIdDestination: null,
-    //                     closeTicket: null,
-    //                     condition: [
-    //                         ...c.condition,
-    //                         ...(conditionState[c.id].chips || []) // Garante que chips seja um array
-    //                     ], // Adiciona os chips ao array de conditions, se existir
-    //                 };
-    //             }
-    //         }
-
-    //         return c; // Retorna a condição original se não houver alteração no estado
-    //     });
-
-    //     handleNodeAtualizacaoCondicao(updatedConditions)
-    // }, [conditionState])
 
     // Função para deletar um chip
     const handleDelete = (id: string, chipToDelete: string) => {
@@ -244,6 +204,9 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
         }
     }
 
+    const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(event.target.value);
+    };
 
     return (
         <>
@@ -374,15 +337,14 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
                                     <Typography variant="subtitle1" sx={{ px: 1 }}>Rotear para:</Typography>
                                     <RadioGroup
                                         row
+                                        onChange={handleRadioChange}
                                         aria-labelledby="demo-row-radio-buttons-group-label"
                                         name="row-radio-buttons-group"
                                         sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center' }}
                                     >
-
                                         <FormControlLabel value="fila" control={<Radio size="small" />} label="Fila" />
                                         <FormControlLabel value="usuario" control={<Radio size="small" />} label="Usúario" />
                                         <FormControlLabel value="encerar" control={<Radio size="small" />} label="Encerar" />
-
                                     </RadioGroup>
                                 </Box>
                             </Box>
