@@ -12,7 +12,9 @@ const optionsSe = [
 
 export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, atualizarNode: (arg0: Node) => void }) => {
 
-    const { filas, usuarios } = useChatFlowStore()
+
+
+    const { filas, usuarios, getEdgesByNodeId } = useChatFlowStore()
     const nodeType = node?.type
     const [tabSelected, setTabSelected] = useState(0)
     const [conditionState, setConditionState] = useState<{
@@ -25,7 +27,8 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (node) {
-
+            const { asSource, asTarget } = getEdgesByNodeId(node.id)
+            console.log(asSource)
             const initialState = {} as { [key: string]: { selectedOption: string; chips: string[]; inputValue: string } };
             if (node.data.conditions) {
                 // biome-ignore lint/complexity/noForEach: <explanation>
@@ -120,6 +123,7 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
             }));
         }
     };
+
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         const updatedConditions = conditions.map(c => {
@@ -129,11 +133,9 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
                     return {
                         ...c,
                         type: "US",
-                        action: 1,
-                        queueId: 2,
+                        action: 0,
                         nextStepId: null,
                         userIdDestination: null,
-                        closeTicket: null,
                         condition: []
                     };
                 }

@@ -43,13 +43,14 @@ export const PanelChatFlow = () => {
     }
     const [nodes, setNodes, onNodesChange] = useNodesState(INITIAL_NODES);
     const [edges, setEdges, onEdgesChange] = useEdgesState(INITIAL_EDGES);
-
+    const { setEdgesStore } = useChatFlowStore()
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (chatFlow) {
 
             setNodes(chatFlow.flow.nodeList)
             setEdges(chatFlow.flow.lineList)
+            setEdgesStore(chatFlow.flow.lineList)
         }
     }, [chatFlow])
 
@@ -97,7 +98,6 @@ export const PanelChatFlow = () => {
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     const onConnect = useCallback(
         (params: Connection) => {
-
             setEdges((eds) => addEdge(params, eds))
         },
         [],
@@ -126,6 +126,7 @@ export const PanelChatFlow = () => {
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         setSelectedNode(undefined)
+        setEdgesStore(edges)
     }, [edges])
 
     const [valueX, setValuex] = useState(0)

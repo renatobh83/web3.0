@@ -20,6 +20,7 @@ export const ListaChatFlow: React.FC = () => {
         setOpen(false)
         setFlowSelecionado({})
     }
+
     const handleFlowCreateOrUpdate = (novoFlow: any) => {
 
         if (flowSelecionado?.id) {
