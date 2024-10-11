@@ -2,7 +2,7 @@ import { Box, Typography, Button, TableCell, TableHead, TableRow, TableBody, Ico
 import { useCallback, useEffect, useState } from "react"
 import { ModalChatFlow } from "./ModalChatFlow"
 import { CustomTableContainer } from "../../components/MaterialUi/CustomTable"
-import { ListarChatFlow } from "../../services/chatflow"
+import { DeletarChatFlow, ListarChatFlow } from "../../services/chatflow"
 import { Check, Close, Delete, Edit } from "@mui/icons-material"
 import { red } from "@mui/material/colors"
 import LanIcon from '@mui/icons-material/Lan';
@@ -10,6 +10,7 @@ import useChatFlowStore from "../../store/chatFlow"
 import { ListarFilas } from "../../services/filas"
 import { ListarUsuarios } from "../../services/user"
 import { useNavigate } from "react-router-dom"
+import { toast } from "sonner"
 
 export const ListaChatFlow: React.FC = () => {
     const [open, setOpen] = useState(false)
@@ -63,6 +64,28 @@ export const ListaChatFlow: React.FC = () => {
         })
         nav("builder")
     }
+    const handleDeleteFlow = (chatFlow: any) => {
+        toast.info(
+            `Atenção!! Deseja realmente deletar o chatFlow "${chatFlow.name}"?`,
+            {
+                position: "top-center",
+                cancel: {
+                    label: "Cancel",
+                    onClick: () => console.log("Cancel!"),
+                },
+                action: {
+                    label: "Confirma",
+                    onClick: () => {
+                        DeletarChatFlow(chatFlow).then(() => {
+                            let NewchatFlows = [...chatFlows]
+                            NewchatFlows = NewchatFlows.filter(f => f.id !== chatFlow.id)
+                            setChatFlows(NewchatFlows)
+                        })
+                    },
+                },
+            },
+        );
+    };
     return (
         <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', }}>
@@ -110,7 +133,7 @@ export const ListaChatFlow: React.FC = () => {
                                     </Tooltip>
                                     <Tooltip title="Apagar Flow">
                                         <IconButton
-                                        // onClick={() => handleDeleteFila(fila)}
+                                            onClick={() => handleDeleteFlow(chatFlow)}
                                         >
                                             <Delete sx={{ color: red[400] }} />
                                         </IconButton>

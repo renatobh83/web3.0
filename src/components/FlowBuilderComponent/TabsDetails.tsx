@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Chip, Divider, FormControl, FormControlLabel, InputLabel, MenuItem, OutlinedInput, Radio, RadioGroup, Select, SelectChangeEvent, Tab, Tabs, TextField, Typography } from "@mui/material";
+import { Box, Button, ButtonGroup, Chip, Divider, FormControl, FormControlLabel, InputLabel, MenuItem, OutlinedInput, Radio, RadioGroup, Select, SelectChangeEvent, Tab, Tabs, TextField, Typography, useStepContext } from "@mui/material";
 import { useReactFlow, type Node } from "@xyflow/react";
 import { a11yProps, TabPanel } from "../MaterialUi/TablePanel";
 import { useEffect, useState } from "react";
@@ -10,15 +10,56 @@ const optionsSe = [
 ]
 
 export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, atualizarNode: (arg0: Node) => void }) => {
+
+
     const nodeType = node?.type
     const [tabSelected, setTabSelected] = useState(0)
-    const [, setConditionsNode] = useState(0)
+    const [conditionState, setConditionState] = useState<{
+        [key: string]: { selectedOption: string; chips: string[]; inputValue: string }
+    }>({});
+
     const [conditions, setConditions] = useState([]);
+
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+        if (node) {
+            const initialState = {} as { [key: string]: { selectedOption: string; chips: string[]; inputValue: string } };
+            if (node.data.conditions) {
+                // biome-ignore lint/complexity/noForEach: <explanation>
+                node.data.conditions.forEach(condition => {
+                    // Verifica se condition.condition é um array e inicializa chips corretamente
+                    if (!initialState[condition.id]) {
+                        if (condition.type === "R") {
+                            initialState[condition.id] = {
+                                selectedOption: condition.type,
+                                chips: Array.isArray(condition.condition) ? condition.condition : [condition.condition], // Certifica que chips seja um array
+                                inputValue: ''
+                            };
+                        } else {
+                            initialState[condition.id] = {
+                                selectedOption: condition.type,
+                                chips: [],
+                                inputValue: ''
+                            };
+                        }
+                    }
+                });
+                setConditions(node.data.conditions);
+                setConditionState(initialState);
+            } else {
+                setConditions([]);
+            }
+        }
+    }, [node?.id]);
+
 
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const handleChangeTabs = (newValue: any) => {
         setTabSelected(newValue)
     }
+
+
     const handleNodeAtualizacaoCondicao = (novasCondicoes) => {
         if (node) {
             const dataNew = {
@@ -33,59 +74,148 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
         }
     }
     function addCondiction() {
-        node?.data.conditions.push({
+        console.log('new')
+        setConditions(prev => [...prev, {
             type: '',
             condition: [],
             id: crypto.randomUUID()
-        })
-        setConditionsNode(node => node + 1)
+        }])
+        // node?.data.conditions.push()
+
     }
     function removeCondition(arr, id) {
         const newConditions = arr.filter(condition => condition.id !== id)
         handleNodeAtualizacaoCondicao(newConditions)
         setConditions(newConditions)
-        setConditionsNode(newConditions.length)
+
     }
 
-    const [optionSelect, setOptionSelect] = useState<string>('')
-    const handleSelectChange = (event: SelectChangeEvent<typeof optionSelect>) => {
-        const {
-            target: { value },
-        } = event;
-        setOptionSelect(value);
-    }
-    const [inputValue, setInputValue] = useState('');
-    const [chips, setChips] = useState<string[]>([]);
-
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter' && inputValue.trim() !== '') {
-            event.preventDefault();
-            setChips([...chips, inputValue.trim()]);
-            setInputValue('');
-        }
-    };
-
-    const handleDelete = (chipToDelete: string) => {
-        setChips(chips.filter((chip) => chip !== chipToDelete));
-    };
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
-        if (node) {
-            if (node.data.conditions) {
-                setConditions(node.data.conditions)
-                setConditionsNode(node.data.conditions.length)
-            } else {
-                setConditions([])
-            }
+
+        handleNodeAtualizacaoCondicao(conditions)
+    }, [conditions])
+
+    // Função para capturar mudanças no Select e enviar o id
+    const handleSelectChange = (id: string, event: React.ChangeEvent<{ value: unknown }>) => {
+        const selectedValue = event.target.value as string;
+        setConditionState(prevState => ({
+            ...prevState,
+            [id]: {
+                ...prevState[id],
+                selectedOption: selectedValue,
+            },
+        }));
+    };
+    // Função para lidar com a inserção de chips
+    const handleKeyDown = (id: string, event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter' && (conditionState[id]?.inputValue?.trim() !== "")) {
+            setConditionState(prevState => ({
+                ...prevState,
+                [id]: {
+                    ...prevState[id] || { chips: [], inputValue: '' }, // Garante que tenha uma estrutura inicial
+                    chips: [...(prevState[id]?.chips || []), conditionState[id].inputValue.trim()], // Adiciona o chip
+                    inputValue: "",  // Limpa o campo de input após adicionar o chip
+                },
+            }));
         }
-    }, [node?.id])
+    };
+    useEffect(() => {
+        const updatedConditions = conditions.map(c => {
+            if (conditionState[c.id]) {
+                // Lógica para o tipo "US"
+                if (conditionState[c.id].selectedOption === "US") {
+                    return {
+                        ...c,
+                        type: "US",
+                        action: 1,
+                        queueId: 2,
+                        nextStepId: null,
+                        userIdDestination: null,
+                        closeTicket: null,
+                        condition: []
+                    };
+                }
+
+                // Lógica para o tipo "R"
+                if (conditionState[c.id].selectedOption === "R") {
+                    return {
+                        ...c,
+                        type: "R",
+                        action: 1,
+                        queueId: 2,
+                        nextStepId: null,
+                        userIdDestination: null,
+                        closeTicket: null,
+                        condition: conditionState[c.id].chips // Substitui diretamente pelos chips do estado atual
+                    };
+                }
+            }
+
+            return c; // Retorna a condição original se não houver alteração no estado
+        });
+
+        handleNodeAtualizacaoCondicao(updatedConditions);
+    }, [conditionState]);
+    // useEffect(() => {
+    //     console.log('Useffet updatedConditions', conditionState)
+    //     const updatedConditions = conditions.map(c => {
+    //         if (conditionState[c.id]) {
+    //             // Lógica para o tipo "US"
+    //             if (conditionState[c.id].selectedOption === "US") {
+    //                 return {
+    //                     ...c,
+    //                     type: "US", // Atualiza o type
+    //                     action: 1,
+    //                     queueId: 2,
+    //                     nextStepId: null,
+    //                     userIdDestination: null,
+    //                     closeTicket: null,
+    //                     condition: []
+
+    //                 };
+    //             }
+
+    //             // Lógica para o tipo "R"
+    //             if (conditionState[c.id].selectedOption === "R") {
+    //                 return {
+    //                     ...c,
+    //                     type: "R",
+    //                     action: 1,
+    //                     queueId: 2,
+    //                     nextStepId: null,
+    //                     userIdDestination: null,
+    //                     closeTicket: null,
+    //                     condition: [
+    //                         ...c.condition,
+    //                         ...(conditionState[c.id].chips || []) // Garante que chips seja um array
+    //                     ], // Adiciona os chips ao array de conditions, se existir
+    //                 };
+    //             }
+    //         }
+
+    //         return c; // Retorna a condição original se não houver alteração no estado
+    //     });
+
+    //     handleNodeAtualizacaoCondicao(updatedConditions)
+    // }, [conditionState])
+
+    // Função para deletar um chip
+    const handleDelete = (id: string, chipToDelete: string) => {
+        setConditionState(prevState => ({
+            ...prevState,
+            [id]: {
+                ...prevState[id],
+                chips: prevState[id].chips.filter(chip => chip !== chipToDelete),
+            },
+        }));
+    };
     const TabsSelect = (
         <Tabs
             sx={{ mt: 2, minHeight: 60 }}
             variant="fullWidth"
             value={tabSelected}
             onChange={(_event, newValue) => handleChangeTabs(newValue)}
-
         >
             <Tab
                 label={"interacoes"}
@@ -154,6 +284,7 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
                         width: '100%'
                     }}>
                         {conditions.map((condition, idx) => (
+
                             <Box id={condition.id} key={condition.id}
                                 sx={{
                                     backgroundColor: '#f1f3f4',
@@ -195,10 +326,11 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
 
                                 </Box>
                                 <FormControl fullWidth sx={{ padding: 1, mt: 1 / 2 }}>
-                                    <InputLabel id="condicaoSe">Se</InputLabel>
+                                    <InputLabel id={`condicaoSe-${condition.id}`}>Se</InputLabel>
                                     <Select
-                                        id="select_se"
-                                        onChange={handleSelectChange}
+                                        id={`select_se-${condition.id}`}
+                                        value={conditionState[condition.id]?.selectedOption || ""}
+                                        onChange={(e) => handleSelectChange(condition.id, e)}
                                         input={<OutlinedInput label="se" />}
                                     >
                                         {optionsSe.map(opt => (
@@ -209,21 +341,29 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
                                             </MenuItem>
                                         ))}
                                     </Select>
-                                    {optionSelect === "R" &&
+                                    {conditionState[condition.id]?.selectedOption === "R" &&
                                         <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', }}>
-                                            {chips.map((chip, index) => (
+                                            {conditionState[condition.id].chips?.map((chip, index) => (
                                                 <Chip
                                                     key={index}
                                                     label={chip}
-                                                    onDelete={() => handleDelete(chip)}
+                                                    onDelete={() => handleDelete(condition.id, chip)}
                                                     sx={{ margin: '4px' }}
                                                 />
                                             ))}
                                             <TextField
                                                 variant="outlined"
-                                                value={inputValue}
-                                                onChange={(e) => setInputValue(e.target.value)}
-                                                onKeyDown={handleKeyDown}
+                                                value={conditionState[condition.id]?.inputValue || ''}
+                                                onChange={(e) =>
+                                                    setConditionState(prevState => ({
+                                                        ...prevState,
+                                                        [condition.id]: {
+                                                            ...prevState[condition.id] || { chips: [], inputValue: '' }, // Garante que tenha uma estrutura inicial
+                                                            inputValue: e.target.value,
+                                                        },
+                                                    }))
+                                                }
+                                                onKeyDown={(e) => handleKeyDown(condition.id, e)}
                                                 placeholder="Digite e pressione Enter"
                                                 sx={{ width: '100%', margin: '4px' }}
                                             />
@@ -236,8 +376,9 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
                                         row
                                         aria-labelledby="demo-row-radio-buttons-group-label"
                                         name="row-radio-buttons-group"
+                                        sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center' }}
                                     >
-                                        <FormControlLabel value="etapa" control={<Radio size="small" />} label="Etapa" />
+
                                         <FormControlLabel value="fila" control={<Radio size="small" />} label="Fila" />
                                         <FormControlLabel value="usuario" control={<Radio size="small" />} label="Usúario" />
                                         <FormControlLabel value="encerar" control={<Radio size="small" />} label="Encerar" />
@@ -245,6 +386,7 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
                                     </RadioGroup>
                                 </Box>
                             </Box>
+
                         ))}
 
                     </Box>

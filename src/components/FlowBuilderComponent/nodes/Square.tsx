@@ -12,7 +12,7 @@ export const Square = (props: NodeProps) => {
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            const key = e.key.toLowerCase()
+            const key = e?.key.toLowerCase()
             switch (true) {
                 case key === 'delete': {
                     setNodes(prevNodes => prevNodes.filter(node => {

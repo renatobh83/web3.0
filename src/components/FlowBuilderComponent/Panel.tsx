@@ -112,7 +112,7 @@ export const PanelChatFlow = () => {
             ...chatFlow,
             flow
         }
-
+        // console.log(data)
         await UpdateChatFlow(data);
     }
     const [selectedNode, setSelectedNode] = useState<Node | undefined>()
@@ -245,7 +245,10 @@ export const PanelChatFlow = () => {
                                     }}
                                     focused />
                             </FormControl>
-                            {selectedNode && <TabsDetails node={selectedNode} atualizarNode={handleAtualizarNode} />}
+                            {selectedNode &&
+                                <TabsDetails
+                                    node={selectedNode}
+                                    atualizarNode={handleAtualizarNode} />}
                         </Box>
                     </Box>
                 </Box>

@@ -1,48 +1,47 @@
-import request from './request'
+import request from "./request";
 
-export function CriarChatFlow (data) {
+export function CriarChatFlow(data) {
   return request({
-    url: '/chat-flow',
-    method: 'post',
-    data
-  })
+    url: "/chat-flow",
+    method: "post",
+    data,
+  });
 }
 
-export function DuplicarChatFlow (data) {
+export function DuplicarChatFlow(data) {
   return request({
-    url: '/chat-flow-duplicate',
-    method: 'post',
-    data
-  })
+    url: "/chat-flow-duplicate",
+    method: "post",
+    data,
+  });
 }
 
-export function ListarChatFlow () {
+export function ListarChatFlow() {
   return request({
-    url: '/chat-flow',
-    method: 'get',
- 
-  })
+    url: "/chat-flow",
+    method: "get",
+  });
 }
 
-export function UpdateChatFlow (data) {
+export function UpdateChatFlow(data) {
   return request({
     url: `/chat-flow/${data.id}`,
-    method: 'put',
-    data
-  })
+    method: "put",
+    data,
+  });
 }
 
-export function ImportarJsonChatFlow (data) {
+export function ImportarJsonChatFlow(data) {
   return request({
     url: `/chat-flow-import/${data.id}`,
-    method: 'put',
-    data
-  })
+    method: "put",
+    data,
+  });
 }
 
-export function DeletarChatFlow (data) {
+export function DeletarChatFlow(data) {
   return request({
     url: `/chat-flow/${data.id}`,
-    method: 'delete'
-  })
+    method: "delete",
+  });
 }
