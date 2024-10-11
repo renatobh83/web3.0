@@ -43,12 +43,12 @@ export const PanelChatFlow = () => {
     }
     const [nodes, setNodes, onNodesChange] = useNodesState(INITIAL_NODES);
     const [edges, setEdges, onEdgesChange] = useEdgesState(INITIAL_EDGES);
-    const { setEdgesStore } = useChatFlowStore()
+    const { setEdgesStore, setNodesStore } = useChatFlowStore()
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (chatFlow) {
-
             setNodes(chatFlow.flow.nodeList)
+            setNodesStore(chatFlow.flow.nodeList)
             setEdges(chatFlow.flow.lineList)
             setEdgesStore(chatFlow.flow.lineList)
         }
@@ -147,6 +147,7 @@ export const PanelChatFlow = () => {
 
             }
         }])
+        setNodesStore(nodes)
         setValuex(v => v + 10)
     }
     const [labelNode, setLabelNode] = useState('');

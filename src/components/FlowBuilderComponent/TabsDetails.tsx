@@ -4,6 +4,7 @@ import { a11yProps, TabPanel } from "../MaterialUi/TablePanel";
 import { useEffect, useState } from "react";
 import { ArrowDropDown, Close, North, PreviewRounded, South } from "@mui/icons-material";
 import useChatFlowStore from "../../store/chatFlow";
+import { toast } from "sonner";
 
 const optionsSe = [
     { label: 'Qualquer resposta', value: 'US' },
@@ -14,21 +15,24 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
 
 
 
-    const { filas, usuarios, getEdgesByNodeId } = useChatFlowStore()
+    const { filas, usuarios, getEdgesByNodeId, getLabelByTarget } = useChatFlowStore()
     const nodeType = node?.type
     const [tabSelected, setTabSelected] = useState(0)
     const [conditionState, setConditionState] = useState<{
-        [key: string]: { selectedOption: string; chips: string[]; inputValue: string }
+        [key: string]: {
+            selectedOption: string; chips: string[]; inputValue: string, queueId: number, nextStepId: string,
+            closeTicket: string, userIdDestination: number
+        }
     }>({});
 
     const [conditions, setConditions] = useState([]);
 
-
+    const { asSource, asTarget } = getEdgesByNodeId(node.id)
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (node) {
-            const { asSource, asTarget } = getEdgesByNodeId(node.id)
-            console.log(asSource)
+
+
             const initialState = {} as { [key: string]: { selectedOption: string; chips: string[]; inputValue: string } };
             if (node.data.conditions) {
                 // biome-ignore lint/complexity/noForEach: <explanation>
@@ -206,8 +210,24 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
         }
     }
 
-    const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target.value);
+    const handleRadioChange = (id: string, event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.value === "etapa") {
+            if (!asSource.length) {
+                toast.error('Nenhuma etapa selecionada', {
+                    position: 'top-center'
+                })
+                return
+            }
+            // console.log(asSource)
+            // setConditionState(prevState => ({
+            //     ...prevState,
+            //     [id]: {
+            //         ...prevState[id],
+            //         nextStepId: 'selectedValue',
+            //     },
+            // }));
+        }
+        console.log(getLabelByTarget(asSource[0].target), asSource)
     };
 
     return (
@@ -339,15 +359,23 @@ export const TabsDetails = ({ node, atualizarNode }: { node: Node | undefined, a
                                     <Typography variant="subtitle1" sx={{ px: 1 }}>Rotear para:</Typography>
                                     <RadioGroup
                                         row
-                                        onChange={handleRadioChange}
+                                        onChange={(e) => handleRadioChange(condition.id, e)}
                                         aria-labelledby="demo-row-radio-buttons-group-label"
                                         name="row-radio-buttons-group"
                                         sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center' }}
                                     >
+                                        <FormControlLabel value="etapa" control={<Radio size="small" />} label="Etapa" />
                                         <FormControlLabel value="fila" control={<Radio size="small" />} label="Fila" />
                                         <FormControlLabel value="usuario" control={<Radio size="small" />} label="Usúario" />
                                         <FormControlLabel value="encerar" control={<Radio size="small" />} label="Encerar" />
                                     </RadioGroup>
+                                    <FormControl fullWidth sx={{ padding: 1, mt: 1 / 2 }}>
+                                        <Select>
+                                            {asSource.map(source => (
+                                                <MenuItem key={source.id}>{getLabelByTarget(source.target)}</MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
                                 </Box>
                             </Box>
 
