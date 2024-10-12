@@ -46,6 +46,11 @@ export const TabsDetails = ({
     useChatFlowStore()
   const nodeType = node?.type
   const [tabSelected, setTabSelected] = useState(0)
+  const [actions, setActions] = useState<{
+    [key: string]: {
+      action: number
+    }
+  }>({})
   const [optionsEtapas, setOptionsEtapas] = useState([])
   const [optionsFilas, setOptionsFilas] = useState([])
   const [optionsUsuarios, setOptionsUsuarios] = useState([])
@@ -160,19 +165,82 @@ export const TabsDetails = ({
   }
   //   const salvarPainelDebounced = useCallback(debounce(onSavePanel, 1000), [])
   function addCondiction() {
+    const newIndex = conditions.length
+    const id = crypto.randomUUID()
     setConditions(prev => [
       ...prev,
       {
         type: '',
         condition: [],
-        id: crypto.randomUUID(),
+        id,
       },
     ])
+    setActions(prev => ({
+      ...prev,
+      [id]: { action: newIndex }, // Adiciona a ação com o índice correspondente
+    }))
   }
   function removeCondition(arr, id) {
+    // Filtra as condições para remover a que possui o id correspondente
     const newConditions = arr.filter(condition => condition.id !== id)
+
+    // Atualiza as condições
     handleNodeAtualizacaoCondicao(newConditions)
     setConditions(newConditions)
+
+    // // Reindexa as ações
+    // setActions(prev => {
+    //   // Cria um novo objeto de ações reindexado
+    //   const newActions = {}
+
+    //   // Reindexa as ações de acordo com as novas condições
+    //   newConditions.forEach((condition, index) => {
+    //     newActions[index] = { action: index } // Define a ação como o novo índice
+    //   })
+
+    //   return newActions
+    // })
+    // setActions(prev => {
+    //   const newActions = { ...prev }
+    //   delete newActions[id] // Remove a ação correspondente ao id da condição removida
+
+    //   // Reindexa as ações para as condições restantes, se necessário
+    //   newConditions.forEach(condition => {
+    //     if (!newActions[condition.id]) {
+    //       newActions[condition.id] = { action: Object.keys(newActions).length } // Define a ação como o novo índice
+    //     }
+    //   })
+
+    //   return newActions
+    // })
+    // setActions(prev => {
+    //   const newActions = { ...prev }
+    //   delete newActions[id] // Remove a ação que corresponde ao id da condição removida
+
+    //   // Reindexa as ações restantes
+    //   let index = 0 // Para reindexar as ações de 0 até N
+    //   newConditions.forEach(condition => {
+    //     // Se a ação não estiver presente, a reindexação é feita aqui
+    //     if (!newActions[condition.id]) {
+    //       newActions[condition.id] = { action: index++ } // Define a nova ação com o índice atual
+    //     }
+    //   })
+
+    //   return newActions // Retorna as ações reindexadas
+    // })
+    setActions(prev => {
+      const newActions = { ...prev }
+      delete newActions[id] // Remove a ação que corresponde ao id da condição removida
+
+      // Reindexa as ações restantes
+      let index = 0 // Para reindexar as ações de 0 até N
+      newConditions.forEach(condition => {
+        // Se a ação não estiver presente, a reindexação é feita aqui
+        newActions[condition.id] = { action: index++ } // Define a nova ação com o índice atual
+      })
+
+      return newActions // Retorna as ações reindexadas
+    })
   }
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -228,6 +296,7 @@ export const TabsDetails = ({
             ...c,
             type: 'US',
             condition: [],
+            action: actions[c.id]?.action,
             nextStepId: conditionState[c.id].nextStepId,
             userIdDestination: conditionState[c.id].userIdDestination,
             queueId: conditionState[c.id].queueId,
@@ -239,6 +308,7 @@ export const TabsDetails = ({
           return {
             ...c,
             type: 'R',
+            action: actions[c.id]?.action,
             nextStepId: conditionState[c.id].nextStepId,
             userIdDestination: conditionState[c.id].userIdDestination,
             queueId: conditionState[c.id].queueId,
@@ -423,6 +493,7 @@ export const TabsDetails = ({
                   border: '1px solid rgba(0, 0, 0, 0.12)',
                 }}
               >
+                {}
                 <Box
                   sx={{
                     width: '100%',
