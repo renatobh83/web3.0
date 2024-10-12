@@ -281,6 +281,8 @@ export const PanelChatFlow = () => {
           <Box
             sx={{
               flexGrow: 1,
+              maxWidth: '400px',
+              minWidth: '400px',
               borderRadius: '0.4rem',
               border: '1px solid #ccdd',
               height: '92%',

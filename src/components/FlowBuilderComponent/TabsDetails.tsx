@@ -32,6 +32,7 @@ import {
 } from '@mui/icons-material'
 import useChatFlowStore from '../../store/chatFlow'
 import { toast } from 'sonner'
+import { TabConfiguracao } from './TabConfiguracao'
 
 const optionsSe = [
   { label: 'Qualquer resposta', value: 'US' },
@@ -234,6 +235,7 @@ export const TabsDetails = ({
 
       // Reindexa as ações restantes
       let index = 0 // Para reindexar as ações de 0 até N
+      // biome-ignore lint/complexity/noForEach: <explanation>
       newConditions.forEach(condition => {
         // Se a ação não estiver presente, a reindexação é feita aqui
         newActions[condition.id] = { action: index++ } // Define a nova ação com o índice atual
@@ -426,261 +428,281 @@ export const TabsDetails = ({
       setOptionsUsuarios(usuarios) // Aqui você carrega os usuários
     }
   }
-
+  // { TabsSelect }
   return (
     <>
-      {TabsSelect}
-      <TabPanel value={tabSelected} index={0}>
-        <Box sx={{ mt: 1 }}>
-          <ButtonGroup
-            size="small"
-            variant="outlined"
-            aria-label="Basic button group"
-            sx={{
-              flexWrap: 'wrap',
-              display: 'flex',
-              justifyContent: 'center',
-              px: '1px',
-            }}
-          >
-            <Button>One</Button>
-            <Button>Two</Button>
-            <Button>Three</Button>
-            <Button>Three</Button>
-            <Button>Three</Button>
-            <Button>Three</Button>
-          </ButtonGroup>
-        </Box>
-      </TabPanel>
-      <TabPanel value={tabSelected} index={1}>
-        <Box sx={{ mt: 1 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', pr: '4px' }}>
-            <Button size="small" variant="outlined" onClick={addCondiction}>
-              Add
-            </Button>
-          </Box>
-        </Box>
-
-        <Box
-          sx={{
-            height: 'calc(100vh - 435px)',
-            my: 2,
-            transition: 'background-color 0.3s ease-in-out',
-            overflow: 'auto',
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-          }}
-        >
-          <Box
-            id="content"
-            sx={{
-              height: 'auto',
-              width: '100%',
-            }}
-          >
-            {conditions.map((condition, idx) => (
-              <Box
-                id={condition.id}
-                key={condition.id}
+      {nodeType !== 'configuracao' ? (
+        <>
+          {TabsSelect}
+          <TabPanel value={tabSelected} index={0}>
+            <Box sx={{ mt: 1 }}>
+              <ButtonGroup
+                size="small"
+                variant="outlined"
+                aria-label="Basic button group"
                 sx={{
-                  backgroundColor: '#f1f3f4',
-                  minHeight: '250px',
-                  transition: 'box-shadow 0.3s ease-in-out',
-                  my: 1,
-                  borderRadius: '0.4rem',
-                  width: '100%',
-                  border: '1px solid rgba(0, 0, 0, 0.12)',
+                  flexWrap: 'wrap',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  px: '1px',
                 }}
               >
-                {}
-                <Box
-                  sx={{
-                    width: '100%',
-                    padding: 1 / 2,
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    textAlign: 'left',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    transition: 'background-color 0.3s ease-in-out',
-                  }}
-                >
-                  <Chip label={idx + 1} />
-                  <Box component={'span'} sx={{ flexGrow: '1' }} />
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    sx={{ minWidth: 10, mr: 1 }}
-                    onClick={() => changePosition(conditions, idx, idx - 1)}
+                <Button>One</Button>
+                <Button>Two</Button>
+                <Button>Three</Button>
+                <Button>Three</Button>
+                <Button>Three</Button>
+                <Button>Three</Button>
+              </ButtonGroup>
+            </Box>
+          </TabPanel>
+          <TabPanel value={tabSelected} index={1}>
+            <Box sx={{ mt: 1 }}>
+              <Box
+                sx={{ display: 'flex', justifyContent: 'flex-end', pr: '4px' }}
+              >
+                <Button size="small" variant="outlined" onClick={addCondiction}>
+                  Add
+                </Button>
+              </Box>
+            </Box>
+
+            <Box
+              sx={{
+                height: 'calc(100vh - 435px)',
+                my: 2,
+                transition: 'background-color 0.3s ease-in-out',
+                overflow: 'auto',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+              }}
+            >
+              <Box
+                id="content"
+                sx={{
+                  height: 'auto',
+                  width: '100%',
+                }}
+              >
+                {conditions.map((condition, idx) => (
+                  <Box
+                    id={condition.id}
+                    key={condition.id}
+                    sx={{
+                      backgroundColor: '#f1f3f4',
+                      minHeight: '250px',
+                      transition: 'box-shadow 0.3s ease-in-out',
+                      my: 1,
+                      borderRadius: '0.4rem',
+                      width: '100%',
+                      border: '1px solid rgba(0, 0, 0, 0.12)',
+                    }}
                   >
-                    <North
-                      sx={{ fontWeight: '500', width: 20, color: 'green' }}
-                    />
-                  </Button>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    sx={{ minWidth: 10, mr: 1 }}
-                    onClick={() => changePosition(conditions, idx, idx + 1)}
-                  >
-                    <South sx={{ fontWeight: '500', width: 20 }} />
-                  </Button>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    sx={{ minWidth: 10, mr: 1 }}
-                    onClick={() => removeCondition(conditions, condition.id)}
-                  >
-                    <Close
-                      sx={{ fontWeight: '500', width: 20, color: 'red' }}
-                    />
-                  </Button>
-                </Box>
-                <FormControl fullWidth sx={{ padding: 1, mt: 1 / 2 }}>
-                  <InputLabel id={`condicaoSe-${condition.id}`}>Se</InputLabel>
-                  <Select
-                    id={`select_se-${condition.id}`}
-                    value={conditionState[condition.id]?.selectedOption || ''}
-                    onChange={e => handleSelectChange(condition.id, e)}
-                    input={<OutlinedInput label="se" />}
-                  >
-                    {optionsSe.map(opt => (
-                      <MenuItem key={opt.label} value={opt.value}>
-                        {opt.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {conditionState[condition.id]?.selectedOption === 'R' && (
+                    {}
                     <Box
                       sx={{
+                        width: '100%',
+                        padding: 1 / 2,
                         display: 'flex',
-                        alignItems: 'center',
                         flexWrap: 'wrap',
-                      }}
-                    >
-                      {conditionState[condition.id].chips?.map(
-                        (chip, index) => (
-                          <Chip
-                            key={index}
-                            label={chip}
-                            onDelete={() => handleDelete(condition.id, chip)}
-                            sx={{ margin: '4px' }}
-                          />
-                        )
-                      )}
-                      <TextField
-                        variant="outlined"
-                        value={conditionState[condition.id]?.inputValue || ''}
-                        onChange={e =>
-                          setConditionState(prevState => ({
-                            ...prevState,
-                            [condition.id]: {
-                              ...(prevState[condition.id] || {
-                                chips: [],
-                                inputValue: '',
-                              }), // Garante que tenha uma estrutura inicial
-                              inputValue: e.target.value,
-                            },
-                          }))
-                        }
-                        onKeyDown={e => handleKeyDown(condition.id, e)}
-                        placeholder="Digite e pressione Enter"
-                        sx={{ width: '100%', margin: '4px' }}
-                      />
-                    </Box>
-                  )}
-                </FormControl>
-                <Divider />
-                <Box sx={{ padding: 1 }}>
-                  <Typography variant="subtitle1" sx={{ px: 1 }}>
-                    Rotear para:
-                  </Typography>
-                  <FormControl>
-                    <RadioGroup
-                      row
-                      name={condition.id}
-                      value={radioChoice[condition.id] || ''}
-                      id={`radio-${condition.id}`}
-                      onChange={e => handleRadioChange(condition.id, e)}
-                      aria-labelledby="demo-row-radio-buttons-group-label"
-                      sx={{
+                        textAlign: 'left',
                         alignItems: 'center',
-                        display: 'flex',
-                        justifyContent: 'center',
+                        justifyContent: 'space-between',
+                        transition: 'background-color 0.3s ease-in-out',
                       }}
                     >
-                      <FormControlLabel
-                        value="etapa"
-                        disabled={!asSource.length}
-                        control={<Radio size="small" />}
-                        label="Etapa"
-                      />
-                      <FormControlLabel
-                        value="fila"
-                        control={<Radio size="small" />}
-                        label="Fila"
-                      />
-                      <FormControlLabel
-                        value="usuario"
-                        control={<Radio size="small" />}
-                        label="Usúario"
-                      />
-                      <FormControlLabel
-                        value="encerar"
-                        control={<Radio size="small" />}
-                        label="Encerar"
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                  <FormControl fullWidth sx={{ padding: 1, mt: 1 / 2 }}>
-                    <Select
-                      id={`select_route-${condition.id}`}
-                      value={selectOption[condition.id] || ''} // Valor carregado do estado
-                      onChange={e => handleChangeSelectOptions(condition.id, e)}
-                    >
-                      {/* Exibir as opções com base na escolha do radio */}
-                      {radioChoice[condition.id] === 'etapa' &&
-                        optionsEtapas.map(source => (
-                          <MenuItem
-                            key={source.id}
-                            value={source.target || source.id}
-                          >
-                            {source.name ||
-                              source.queue ||
-                              getLabelByTarget(source.target)}
+                      <Chip label={idx + 1} />
+                      <Box component={'span'} sx={{ flexGrow: '1' }} />
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        sx={{ minWidth: 10, mr: 1 }}
+                        onClick={() => changePosition(conditions, idx, idx - 1)}
+                      >
+                        <North
+                          sx={{ fontWeight: '500', width: 20, color: 'green' }}
+                        />
+                      </Button>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        sx={{ minWidth: 10, mr: 1 }}
+                        onClick={() => changePosition(conditions, idx, idx + 1)}
+                      >
+                        <South sx={{ fontWeight: '500', width: 20 }} />
+                      </Button>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        sx={{ minWidth: 10, mr: 1 }}
+                        onClick={() =>
+                          removeCondition(conditions, condition.id)
+                        }
+                      >
+                        <Close
+                          sx={{ fontWeight: '500', width: 20, color: 'red' }}
+                        />
+                      </Button>
+                    </Box>
+                    <FormControl fullWidth sx={{ padding: 1, mt: 1 / 2 }}>
+                      <InputLabel id={`condicaoSe-${condition.id}`}>
+                        Se
+                      </InputLabel>
+                      <Select
+                        id={`select_se-${condition.id}`}
+                        value={
+                          conditionState[condition.id]?.selectedOption || ''
+                        }
+                        onChange={e => handleSelectChange(condition.id, e)}
+                        input={<OutlinedInput label="se" />}
+                      >
+                        {optionsSe.map(opt => (
+                          <MenuItem key={opt.label} value={opt.value}>
+                            {opt.label}
                           </MenuItem>
                         ))}
-                      {radioChoice[condition.id] === 'fila' &&
-                        optionsFilas.map(source => (
-                          <MenuItem
-                            key={source.id}
-                            value={source.target || source.id}
-                          >
-                            {source.name ||
-                              source.queue ||
-                              getLabelByTarget(source.target)}
-                          </MenuItem>
-                        ))}
-                      {radioChoice[condition.id] === 'usuario' &&
-                        optionsUsuarios.map(source => (
-                          <MenuItem
-                            key={source.id}
-                            value={source.target || source.id}
-                          >
-                            {source.name ||
-                              source.queue ||
-                              getLabelByTarget(source.target)}
-                          </MenuItem>
-                        ))}
-                    </Select>
-                  </FormControl>
-                </Box>
+                      </Select>
+                      {conditionState[condition.id]?.selectedOption === 'R' && (
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            flexWrap: 'wrap',
+                          }}
+                        >
+                          {conditionState[condition.id].chips?.map(
+                            (chip, index) => (
+                              <Chip
+                                key={index}
+                                label={chip}
+                                onDelete={() =>
+                                  handleDelete(condition.id, chip)
+                                }
+                                sx={{ margin: '4px' }}
+                              />
+                            )
+                          )}
+                          <TextField
+                            variant="outlined"
+                            value={
+                              conditionState[condition.id]?.inputValue || ''
+                            }
+                            onChange={e =>
+                              setConditionState(prevState => ({
+                                ...prevState,
+                                [condition.id]: {
+                                  ...(prevState[condition.id] || {
+                                    chips: [],
+                                    inputValue: '',
+                                  }), // Garante que tenha uma estrutura inicial
+                                  inputValue: e.target.value,
+                                },
+                              }))
+                            }
+                            onKeyDown={e => handleKeyDown(condition.id, e)}
+                            placeholder="Digite e pressione Enter"
+                            sx={{ width: '100%', margin: '4px' }}
+                          />
+                        </Box>
+                      )}
+                    </FormControl>
+                    <Divider />
+                    <Box sx={{ padding: 1 }}>
+                      <Typography variant="subtitle1" sx={{ px: 1 }}>
+                        Rotear para:
+                      </Typography>
+                      <FormControl>
+                        <RadioGroup
+                          row
+                          name={condition.id}
+                          value={radioChoice[condition.id] || ''}
+                          id={`radio-${condition.id}`}
+                          onChange={e => handleRadioChange(condition.id, e)}
+                          aria-labelledby="demo-row-radio-buttons-group-label"
+                          sx={{
+                            alignItems: 'center',
+                            display: 'flex',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <FormControlLabel
+                            value="etapa"
+                            disabled={!asSource.length}
+                            control={<Radio size="small" />}
+                            label="Etapa"
+                          />
+                          <FormControlLabel
+                            value="fila"
+                            control={<Radio size="small" />}
+                            label="Fila"
+                          />
+                          <FormControlLabel
+                            value="usuario"
+                            control={<Radio size="small" />}
+                            label="Usúario"
+                          />
+                          <FormControlLabel
+                            value="encerar"
+                            control={<Radio size="small" />}
+                            label="Encerar"
+                          />
+                        </RadioGroup>
+                      </FormControl>
+                      <FormControl fullWidth sx={{ padding: 1, mt: 1 / 2 }}>
+                        <Select
+                          id={`select_route-${condition.id}`}
+                          value={selectOption[condition.id] || ''} // Valor carregado do estado
+                          onChange={e =>
+                            handleChangeSelectOptions(condition.id, e)
+                          }
+                        >
+                          {/* Exibir as opções com base na escolha do radio */}
+                          {radioChoice[condition.id] === 'etapa' &&
+                            optionsEtapas.map(source => (
+                              <MenuItem
+                                key={source.id}
+                                value={source.target || source.id}
+                              >
+                                {source.name ||
+                                  source.queue ||
+                                  getLabelByTarget(source.target)}
+                              </MenuItem>
+                            ))}
+                          {radioChoice[condition.id] === 'fila' &&
+                            optionsFilas.map(source => (
+                              <MenuItem
+                                key={source.id}
+                                value={source.target || source.id}
+                              >
+                                {source.name ||
+                                  source.queue ||
+                                  getLabelByTarget(source.target)}
+                              </MenuItem>
+                            ))}
+                          {radioChoice[condition.id] === 'usuario' &&
+                            optionsUsuarios.map(source => (
+                              <MenuItem
+                                key={source.id}
+                                value={source.target || source.id}
+                              >
+                                {source.name ||
+                                  source.queue ||
+                                  getLabelByTarget(source.target)}
+                              </MenuItem>
+                            ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </Box>
+                ))}
               </Box>
-            ))}
-          </Box>
-        </Box>
-      </TabPanel>
+            </Box>
+          </TabPanel>
+        </>
+      ) : (
+        <TabConfiguracao node={node} />
+      )}
     </>
   )
 }
