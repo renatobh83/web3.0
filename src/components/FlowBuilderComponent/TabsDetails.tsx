@@ -90,7 +90,6 @@ export const TabsDetails = ({
       if (node.data.conditions) {
         // biome-ignore lint/complexity/noForEach: <explanation>
         node.data.conditions.forEach(condition => {
-          console.log(condition)
           // Verifica se condition.condition é um array e inicializa chips corretamente
           if (!initialState[condition.id]) {
             if (condition.type === 'R') {
@@ -166,6 +165,7 @@ export const TabsDetails = ({
   //   const salvarPainelDebounced = useCallback(debounce(onSavePanel, 1000), [])
   function addCondiction() {
     const newIndex = conditions.length
+    console.log(newIndex)
     const id = crypto.randomUUID()
     setConditions(prev => [
       ...prev,

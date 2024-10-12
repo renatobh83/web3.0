@@ -79,7 +79,6 @@ import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 import { AgendamentoComponent } from '../../components/AtendimentoComponent/AgendamentoComponent'
 import { useTicketService } from '../../hooks/useTicketService'
 
-
 import { useAtendimentoStore } from '../../store/atendimento'
 import { useNavigate } from 'react-router-dom'
 interface InputMenssagemProps {
@@ -93,12 +92,12 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   isScheduleDate,
   replyingMessage,
   setReplyingMessage,
-  mensagensRapidas
+  mensagensRapidas,
 }) => {
   const { iniciarAtendimento } = useTicketService()
   const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
   const { setModalAgendamento, modalAgendamento } = useAtendimentoStore()
-  const [mensagemSelecionada, setMensagemSelecionada] = useState(null);
+  const [mensagemSelecionada, setMensagemSelecionada] = useState(null)
   const [ScheduleDate, setScheduleDate] = useState('')
   const [openPreviewImagem, setOpenPreviewImagem] = useState(false)
   const [isRecordingAudio, setIsRecordingAudio] = useState(false)
@@ -175,7 +174,6 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
 
   const [textChat, setTextChat] = useState('')
 
-
   const prepararMensagemTexto = () => {
     if (textChat.trim() === '') {
       toast.error('Mensagem Inexistente', {
@@ -186,20 +184,20 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
     if (textChat.trim()?.startsWith('/')) {
       let search = textChat.trim().toLowerCase()
       search = search.replace('/', '')
-      const mensagemRapida = mensagensRapidas.find(
+      const mensagemRapida = mensagensRapidas?.find(
         m => m.key.toLowerCase() === search
       )
       if (mensagemRapida?.message) {
         setTextChat(mensagemRapida.message)
       } else {
         const error =
-          mensagensRapidas.length > 1
+          mensagensRapidas?.length > 1
             ? 'Várias mensagens rápidas encontradas ou nenhuma mensagem encontrada. Selecione uma ou digite uma chave única da mensagem.'
             : '/ indica que você deseja enviar uma mensagem rápida, mas nenhuma foi localizada. Cadastre ou apague a / e digite sua mensagem.'
 
         toast.error(error, {
-          position: "top-center",
-        });
+          position: 'top-center',
+        })
       }
     }
     const mensagem = textChat.trim()
@@ -261,14 +259,12 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
       setTextChat('') // Limpa o campo após enviar a mensagem
       setArquivos([])
       // setReplyingMessage(null)
-      if (modalAgendamento)
-        setModalAgendamento()
+      if (modalAgendamento) setModalAgendamento()
     } catch (err) {
       console.log(err)
       Errors(err)
     } finally {
       setIsloading(false)
-
     }
   }
 
@@ -282,10 +278,10 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
       event.preventDefault() // Impede o comportamento padrão do Enter
     }
     if (event.key === 'Tab' && mensagemSelecionada) {
-      event.preventDefault();
+      event.preventDefault()
 
-      setTextChat(mensagemSelecionada.message);
-      setVisualizarMensagensRapidas(false);
+      setTextChat(mensagemSelecionada.message)
+      setVisualizarMensagensRapidas(false)
     }
   }
   async function handleCancelRecordingAudio() {
@@ -389,32 +385,32 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
     return null
   }
 
-  const [visualizarMensagensRapidas, setVisualizarMensagensRapidas] = useState(false);
+  const [visualizarMensagensRapidas, setVisualizarMensagensRapidas] =
+    useState(false)
   // Função para exibir o menu ao digitar "/"
   useEffect(() => {
     if (textChat.startsWith('/')) {
-      setVisualizarMensagensRapidas(true);
+      setVisualizarMensagensRapidas(true)
     } else {
-      setVisualizarMensagensRapidas(false);
+      setVisualizarMensagensRapidas(false)
     }
-  }, [textChat]);
-
+  }, [textChat])
 
   const handleMessageClick = (resposta: any) => {
-    setTextChat(resposta.message);
-    setVisualizarMensagensRapidas(false);
+    setTextChat(resposta.message)
+    setVisualizarMensagensRapidas(false)
   }
   // Filtrar mensagens que contenham o texto após "/"
-  const mensagensFiltradas = mensagensRapidas.filter((resposta) =>
+  const mensagensFiltradas = mensagensRapidas?.filter(resposta =>
     textChat.length > 1 ? resposta.key.includes(textChat.substring(1)) : true
-  );
+  )
   useEffect(() => {
-    if (mensagensFiltradas.length > 0) {
-      setMensagemSelecionada(mensagensFiltradas[0]); // Seleciona a primeira mensagem
+    if (mensagensFiltradas?.length > 0) {
+      setMensagemSelecionada(mensagensFiltradas[0]) // Seleciona a primeira mensagem
     } else {
-      setMensagemSelecionada(null);
+      setMensagemSelecionada(null)
     }
-  }, [mensagensFiltradas]);
+  }, [mensagensFiltradas])
   const { mobileOpen, setMobileOpen } = useAtendimentoStore()
   const navigate = useNavigate()
   const goToChat = async (id: string) => {
@@ -443,18 +439,22 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
     <>
       {ticketFocado.status !== 'pending' ? (
         <>
-          {isScheduleDate && <AgendamentoComponent getScheduleDate={setScheduleDate} />}
+          {isScheduleDate && (
+            <AgendamentoComponent getScheduleDate={setScheduleDate} />
+          )}
           {!isRecordingAudio ? (
-            <Box sx={{
-              alignItems: 'center',
-              display: 'flex',
-              justifyContent: 'flex-start',
-              mx: '4px',
-              paddingTop: 2,
-              paddingBottom: 2,
-              flexWrap: 'wrap',
-              gap: 1
-            }}>
+            <Box
+              sx={{
+                alignItems: 'center',
+                display: 'flex',
+                justifyContent: 'flex-start',
+                mx: '4px',
+                paddingTop: 2,
+                paddingBottom: 2,
+                flexWrap: 'wrap',
+                gap: 1,
+              }}
+            >
               <Tooltip title="Enviar arquivo">
                 <>
                   {/* <input
@@ -465,7 +465,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
                     /> */}
                   <IconButton
                     disabled={cDisableActions()}
-                    sx={{ borderRadius: '50%', mx: '4px', }}
+                    sx={{ borderRadius: '50%', mx: '4px' }}
                     size="small"
                     onClick={handleButtonClick}
                     disableRipple
@@ -487,7 +487,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
                 <>
                   <IconButton
                     disabled={cDisableActions()}
-                    sx={{ borderRadius: '50%', mx: '4px', }}
+                    sx={{ borderRadius: '50%', mx: '4px' }}
                     size="small"
                     onClick={handleClick}
                     disableRipple
@@ -505,16 +505,18 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
               </Tooltip>
 
               {cMostrarEnvioArquivo() ? (
-                <Box sx={{
-                  minWidth: '0',
-                  maxWidth: '100%',
-                  width: '200px !important',
-                  mx: '4px',
-                  flexGrow: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  flexWrap: 'nowrap'
-                }}>
+                <Box
+                  sx={{
+                    minWidth: '0',
+                    maxWidth: '100%',
+                    width: '200px !important',
+                    mx: '4px',
+                    flexGrow: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexWrap: 'nowrap',
+                  }}
+                >
                   {arquivos.map((file, index) => (
                     // biome-ignore lint/a11y/noLabelWithoutControl: <explanation>
                     <label
@@ -540,63 +542,76 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
                 </Box>
               ) : (
                 <>
-                  {visualizarMensagensRapidas && mensagensFiltradas.length > 0 && (
-                    <Box
-                      sx={{ backgroundColor: 'background.paper' }}
-                      style={{
-                        position: 'absolute',
-                        bottom: '100%', // Coloca o menu acima do input
-                        left: '0',
-                        width: '100%',
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                        zIndex: 1000,
-                        maxHeight: '200px',
-                        overflowY: 'auto',
-                        borderRadius: '4px',
-                      }}
-                    >
-                      <ul style={{ padding: '0', margin: '0', listStyleType: 'none' }}>
-                        {mensagensFiltradas.map((resposta) => (
-                          // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-                          <li
-                            key={resposta.key}
-                            onClick={() => handleMessageClick(resposta)}
-                            style={{
-                              padding: '10px',
-                              borderBottom: '1px solid #eee',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            <strong>{resposta.key}</strong>: {resposta.message}
-                            <br />
-                            Arquivo: {resposta.media ? resposta.media : 'Sem mídia'}
-                            <br />
-                            Voz: {resposta.voice === 'enabled' ? 'Sim' : 'Não'}
-                          </li>
-                        ))}
-                      </ul>
-                    </Box>
-                  )}
+                  {visualizarMensagensRapidas &&
+                    mensagensFiltradas?.length > 0 && (
+                      <Box
+                        sx={{ backgroundColor: 'background.paper' }}
+                        style={{
+                          position: 'absolute',
+                          bottom: '100%', // Coloca o menu acima do input
+                          left: '0',
+                          width: '100%',
+                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                          zIndex: 1000,
+                          maxHeight: '200px',
+                          overflowY: 'auto',
+                          borderRadius: '4px',
+                        }}
+                      >
+                        <ul
+                          style={{
+                            padding: '0',
+                            margin: '0',
+                            listStyleType: 'none',
+                          }}
+                        >
+                          {mensagensFiltradas.map(resposta => (
+                            // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+                            <li
+                              key={resposta.key}
+                              onClick={() => handleMessageClick(resposta)}
+                              style={{
+                                padding: '10px',
+                                borderBottom: '1px solid #eee',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              <strong>{resposta.key}</strong>:{' '}
+                              {resposta.message}
+                              <br />
+                              Arquivo:{' '}
+                              {resposta.media ? resposta.media : 'Sem mídia'}
+                              <br />
+                              Voz:{' '}
+                              {resposta.voice === 'enabled' ? 'Sim' : 'Não'}
+                            </li>
+                          ))}
+                        </ul>
+                      </Box>
+                    )}
 
-                  {visualizarMensagensRapidas && mensagensFiltradas.length === 0 && (
-                    <Box
-                      sx={{ backgroundColor: 'background.paper' }}
-                      style={{
-                        position: 'absolute',
-                        bottom: '100%',
-                        left: '0',
-                        width: '100%',
+                  {visualizarMensagensRapidas &&
+                    mensagensFiltradas?.length === 0 && (
+                      <Box
+                        sx={{ backgroundColor: 'background.paper' }}
+                        style={{
+                          position: 'absolute',
+                          bottom: '100%',
+                          left: '0',
+                          width: '100%',
 
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                        zIndex: 1000,
-                        maxHeight: '200px',
-                        overflowY: 'auto',
-                        borderRadius: '4px',
-                      }}
-                    >
-                      <div style={{ padding: '10px' }}>Nenhuma mensagem encontrada</div>
-                    </Box>
-                  )}
+                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                          zIndex: 1000,
+                          maxHeight: '200px',
+                          overflowY: 'auto',
+                          borderRadius: '4px',
+                        }}
+                      >
+                        <div style={{ padding: '10px' }}>
+                          Nenhuma mensagem encontrada
+                        </div>
+                      </Box>
+                    )}
                   <TextField
                     label="Digite sua mensagem"
                     variant="standard"
@@ -614,11 +629,10 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
                       flexGrow: 1,
                       display: 'flex',
                       alignItems: 'center',
-                      flexWrap: 'nowrap'
+                      flexWrap: 'nowrap',
                     }}
                     onPaste={handlePaste}
                   />
-
                 </>
               )}
               {textChat && (
@@ -660,7 +674,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
                 flexGrow: 1,
                 display: 'flex',
                 alignItems: 'center',
-                flexWrap: 'nowrap'
+                flexWrap: 'nowrap',
               }}
               id="audio "
             >

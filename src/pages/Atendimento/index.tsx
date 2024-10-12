@@ -304,7 +304,7 @@ export function Atendimento(props: Props) {
   const handleChangeTabs = (_event: any, newValue: number) => {
     setTabTickets(newValue)
   }
-  const filterFilas = (NewPesquisaTickets) => {
+  const filterFilas = NewPesquisaTickets => {
     setPesquisaTickets(NewPesquisaTickets)
   }
 
@@ -668,11 +668,8 @@ export function Atendimento(props: Props) {
   useEffect(() => {
     if (!contatos.length) listaContatos()
     if (!mensagensRapidas.length) listarMensagensRapidas()
-
-  }, [mensagensRapidas, contatos])
-
-
-
+    console.log(contatos)
+  }, [])
 
   const handleClick = () => {
     if (mobileOpen) {
@@ -855,8 +852,13 @@ export function Atendimento(props: Props) {
                         Somente Tickets não atribuidos (sem usuário definido)
                       </label>
                     </div>
-                    <Button variant="contained" onClick={handleCloseFiltro}
-                      color="info">Fechar</Button>
+                    <Button
+                      variant="contained"
+                      onClick={handleCloseFiltro}
+                      color="info"
+                    >
+                      Fechar
+                    </Button>
                   </Box>
                 )}
                 {!pesquisaTickets.showAll && <Divider />}
