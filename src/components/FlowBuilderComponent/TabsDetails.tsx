@@ -2,6 +2,8 @@ import {
   Box,
   Button,
   ButtonGroup,
+  Card,
+  CardContent,
   Chip,
   Divider,
   FormControl,
@@ -431,7 +433,37 @@ export const TabsDetails = ({
   // { TabsSelect }
   return (
     <>
-      {nodeType !== 'configuracao' ? (
+      {nodeType === 'configuracao' ? (
+        <TabConfiguracao node={node} />
+      ) : nodeType === 'start' ? (
+        <Box
+          sx={{
+            height: 'calc(100vh - 300px)',
+            mx: 1,
+            transition: 'background-color 0.3s ease-in-out',
+            overflow: 'auto',
+            display: 'flex',
+            flexWrap: 'wrap',
+
+            justifyContent: 'center',
+          }}
+        >
+          <Card sx={{ width: '100%' }}>
+            <CardContent>
+              <Typography gutterBottom variant="h6" component="span">
+                Etapa representa o contato inicial.
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                - Caso seja o primeiro contato do cliente, o sistema salvará
+                automaticamente na agenda as informações do cliente. - O Bot irá
+                interagir nos atendimentos iniciados pelos clientes. - O Bot irá
+                parar de interagir caso o atendimento seja assumido por um
+                usuário.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+      ) : (
         <>
           {TabsSelect}
           <TabPanel value={tabSelected} index={0}>
@@ -698,10 +730,9 @@ export const TabsDetails = ({
                 ))}
               </Box>
             </Box>
+            {node?.type}
           </TabPanel>
         </>
-      ) : (
-        <TabConfiguracao node={node} />
       )}
     </>
   )

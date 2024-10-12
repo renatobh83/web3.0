@@ -15,6 +15,7 @@ import {
 import type { Node } from '@xyflow/react'
 import useChatFlowStore from '../../store/chatFlow'
 import { useEffect, useState } from 'react'
+import { RadioComponentCard } from './RadioComponentCard'
 interface TabConfiguracaoProps {
   node: Node | undefined
 }
@@ -35,7 +36,10 @@ export const TabConfiguracao = ({ node }: TabConfiguracaoProps) => {
   const [optionsFilas, setOptionsFilas] = useState([])
   const [selectOption, setSelectOption] = useState({})
   const [optionsUsuarios, setOptionsUsuarios] = useState([])
+
   const [radioChoiceAusencia, setRadioChoiceAusencia] = useState({})
+  const [radioChoicebot, setRadioChoicebot] = useState({})
+
   const [messageWelcomeMessage, setMessagewelcomeMessage] = useState('')
   const [feedback, setFeeedback] = useState('')
   const [messageKeyword, setMessageKeyword] = useState('')
@@ -56,24 +60,6 @@ export const TabConfiguracao = ({ node }: TabConfiguracaoProps) => {
     setFeeedback(notOptionsSelectMessage.message || '')
     setMessageKeyword(keyword.message || '')
     setSemResposta(notResponseMessage)
-    if (notResponseMessage.type === 1) {
-      // setOptionsFilas(filas)
-      handleRadioChange(node.id, '1')
-      console.log(semResposta)
-      setSelectOption(prevState => ({
-        ...prevState,
-        [node.id]: notResponseMessage.destiny, // Garantir que só o select do ID correto é atualizado
-      }))
-    } else if (notResponseMessage.type === 2) {
-      // setOptionsUsuarios(usuarios)
-      handleRadioChange(node.id, '2')
-      setSelectOption(prevState => ({
-        ...prevState,
-        [node.id]: notResponseMessage.destiny, // Garantir que só o select do ID correto é atualizado
-      }))
-    } else if (notResponseMessage.type === 3) {
-      handleRadioChange(node.id, '3')
-    }
   }, [])
 
   const handleSemResposta = (item: string, value: string) => {
@@ -98,57 +84,6 @@ export const TabConfiguracao = ({ node }: TabConfiguracaoProps) => {
     keyword.message = value
   }
 
-  const handleRadioChange = (id: string, event: string) => {
-    const newRadioValue = event
-    setRadioChoiceAusencia(prevState => ({
-      ...prevState,
-      [id]: newRadioValue, // Atualizar apenas o radioChoiceAusencia do ID correto
-    }))
-
-    // Limpar o select quando o radio é alterado
-    setSelectOption(prevState => ({
-      ...prevState,
-      [id]: '', // Resetar o valor do select para o ID correspondente
-    }))
-
-    if (newRadioValue === '1') {
-      setOptionsFilas(filas) // Aqui você carrega as filas
-    } else if (newRadioValue === '2') {
-      setOptionsUsuarios(usuarios) // Aqui você carrega os usuários
-    } else if (newRadioValue === '3') {
-      setSemResposta(prev => ({
-        ...prev,
-        type: 3,
-        destiny: null,
-      }))
-      notResponseMessage.type = 3
-    }
-  }
-  const handleChangeSelectOptions = (id, e) => {
-    const selectedValue = e.target.value
-
-    setSelectOption(prevState => ({
-      ...prevState,
-      [id]: selectedValue, // Garantir que só o select do ID correto é atualizado
-    }))
-    if (radioChoiceAusencia[id] === '1') {
-      setSemResposta(prev => ({
-        ...prev,
-        type: 1,
-        destiny: selectedValue,
-      }))
-      notResponseMessage.type = 1
-      notResponseMessage.destiny = selectedValue
-    } else if (radioChoiceAusencia[id] === '2') {
-      setSemResposta(prev => ({
-        ...prev,
-        type: 2,
-        destiny: selectedValue,
-      }))
-      notResponseMessage.type = 2
-      notResponseMessage.destiny = selectedValue
-    }
-  }
   return (
     <Box
       sx={{
@@ -198,7 +133,10 @@ export const TabConfiguracao = ({ node }: TabConfiguracaoProps) => {
             </FormControl>
           </CardContent>
         </Card>
-        <Card sx={{ width: '100%', height: '280px' }}>
+        <Card
+          sx={{ width: '100%', height: '280px' }}
+          id="notOptionsSelectMessage"
+        >
           <CardContent>
             <Typography gutterBottom variant="h6" component="span">
               Se nenhuma resposta esperada for enviada
@@ -213,7 +151,6 @@ export const TabConfiguracao = ({ node }: TabConfiguracaoProps) => {
               <TextField
                 value={feedback}
                 onChange={e => handleFeedbackMessage(e.target.value)}
-                id="notOptionsSelectMessage"
                 label={
                   <Typography variant="subtitle1">
                     Mensagem de feedback:
@@ -226,7 +163,7 @@ export const TabConfiguracao = ({ node }: TabConfiguracaoProps) => {
             </FormControl>
           </CardContent>
         </Card>
-        <Card sx={{ width: '100%', height: '280px' }}>
+        <Card sx={{ width: '100%', height: '280px' }} id="keyword">
           <CardContent>
             <Typography gutterBottom variant="h6" component="span">
               Palavra chave para iniciar o fluxo
@@ -268,62 +205,7 @@ export const TabConfiguracao = ({ node }: TabConfiguracaoProps) => {
               value={semResposta.time}
               onChange={e => handleSemResposta('time', e.target.value)}
             />
-            <FormControl>
-              <RadioGroup
-                row
-                value={radioChoiceAusencia[node.id] || ''}
-                onChange={e => handleRadioChange(node.id, e.target.value)}
-                sx={{
-                  alignItems: 'center',
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
-              >
-                <FormControlLabel
-                  value="1"
-                  control={<Radio size="small" />}
-                  label="Fila"
-                />
-                <FormControlLabel
-                  value="2"
-                  control={<Radio size="small" />}
-                  label="Usúario"
-                />
-                <FormControlLabel
-                  value="3"
-                  control={<Radio size="small" />}
-                  label="Encerar"
-                />
-              </RadioGroup>
-              {radioChoiceAusencia[node.id] !== '3' && (
-                <Select
-                  id={`select_route-${node.id}`}
-                  value={selectOption[node.id] || ''} // Valor carregado do estado
-                  onChange={e => handleChangeSelectOptions(node.id, e)}
-                >
-                  {/* Exibir as opções com base na escolha do radio */}
-
-                  {radioChoiceAusencia[node.id] === '1' &&
-                    optionsFilas.map(source => (
-                      <MenuItem
-                        key={source.id}
-                        value={source.target || source.id}
-                      >
-                        {source.queue}
-                      </MenuItem>
-                    ))}
-                  {radioChoiceAusencia[node.id] === '2' &&
-                    optionsUsuarios.map(source => (
-                      <MenuItem
-                        key={source.id}
-                        value={source.target || source.id}
-                      >
-                        {source.name}
-                      </MenuItem>
-                    ))}
-                </Select>
-              )}
-            </FormControl>
+            <RadioComponentCard arg0={notResponseMessage} />
           </CardContent>
         </Card>
         <Card sx={{ width: '100%', height: '270px' }} id="notResponseMessage">
@@ -348,6 +230,61 @@ export const TabConfiguracao = ({ node }: TabConfiguracaoProps) => {
                 variant="standard"
               />
             </FormControl>
+          </CardContent>
+        </Card>
+        <Card sx={{ width: '100%', height: '280px' }} id="maxRetryBotMessage">
+          <CardContent>
+            <Typography gutterBottom variant="h6" component="span">
+              Máximo de Tentativas do Bot
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              Uma vez excedido o número máximo de retentativas de
+              pergunta/resposta, caso o cliente não envie uma respota válida, o
+              bot irá realizar o encaminhamento para a Fila/Usuário
+              configurados.
+            </Typography>
+          </CardContent>
+          <CardContent sx={{ mt: 3, display: 'flex', flexDirection: 'column' }}>
+            <TextField
+              value={maxRetryBotMessage.number}
+              onChange={e => handleSemResposta('time', e.target.value)}
+            />
+            <RadioComponentCard arg0={maxRetryBotMessage} />
+          </CardContent>
+        </Card>
+        <Card sx={{ width: '100%', height: '280px' }} id="firstInteraction">
+          <CardContent>
+            <Typography gutterBottom variant="h6" component="span">
+              Direcionamento na primeira interação
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              Essa interação será acionada na primeira interação com o cliente,
+              e o cliente será encaminhado para a Fila/Usuário configurados.
+            </Typography>
+          </CardContent>
+          <CardContent sx={{ mt: 3, display: 'flex', flexDirection: 'column' }}>
+            <RadioComponentCard arg0={firstInteraction} />
+          </CardContent>
+        </Card>
+        <Card sx={{ width: '100%', height: '280px' }} id="outOpenHours">
+          <CardContent>
+            <Typography gutterBottom variant="h6" component="span">
+              Se estiver fora do horário de atendimento
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              Essa interação será acionada caso o cliente envie uma mensagem
+              fora do horário de atendimento, e o cliente será encaminhado para
+              a Fila/Usuário configurados.
+            </Typography>
+          </CardContent>
+          <CardContent
+            sx={{
+              mt: 3,
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <RadioComponentCard arg0={outOpenHours} />
           </CardContent>
         </Card>
       </Box>
