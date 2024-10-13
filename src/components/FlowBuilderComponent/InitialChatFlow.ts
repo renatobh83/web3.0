@@ -62,19 +62,6 @@ const data = {
         actions: [],
       },
     },
-    {
-      id: 'n',
-      type: 'square',
-      position: { x: 0, y: 0 },
-      // deletable: false, // custom property to mark it as non-deletable
-      // draggable: false, // Não pode ser movido
-      data: {
-        label: 'Boas vindas!',
-        interactions: [],
-        conditions: [],
-        actions: [],
-      },
-    },
   ],
   lineList: [
     {

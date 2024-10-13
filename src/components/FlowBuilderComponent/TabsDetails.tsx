@@ -130,7 +130,7 @@ export const TabsDetails = ({
           } else if (condition.nextStepId) {
             initialRadioChoice[condition.id] = 'etapa'
             initialSelectOption[condition.id] = condition.nextStepId
-            setOptionsEtapas(asSource)
+            // setOptionsEtapas(asSource)
           } else {
             initialRadioChoice[condition.id] = '' // Se nenhum estiver selecionado
             initialSelectOption[condition.id] = '' // Valor padrão

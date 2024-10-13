@@ -19,13 +19,11 @@ interface Node {
 interface EdgeStore {
   edges: Edge[]
   nodes: Node[]
+  setNodes: (nodes: Node[]) => void
   setEdges: (edges: Edge[]) => void
-  setNodes: (newNodes: Node[]) => void
   getEdgesByNodeId: (nodeId: string) => { asSource: Edge[]; asTarget: Edge[] }
   getLabelByTarget: (targetId: string) => string | undefined
-  addEdge: (edge: Edge) => void
-  reconnectEdge: (oldEdge: Edge, newEdge: Edge) => void
-  removeEdge: (edgeId: string) => void
+
   addInteracaoToNode: (
     nodeId: string,
     interaction: { id: string; type: string }
@@ -53,7 +51,8 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
   filas: [],
   edges: [],
   nodes: [],
-
+  setNodes: (nodes: Node[]) => set({ nodes }),
+  setEdges: (edges: Edge[]) => set({ edges }),
   updateNode: updatedNode =>
     set(state => ({
       nodes: state.nodes.map(node =>
@@ -61,21 +60,6 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
       ),
     })),
 
-  addEdge: newEdge => set(state => ({ edges: [...state.edges, newEdge] })),
-
-  reconnectEdge: (oldEdge, newConnection) =>
-    set(state => ({
-      edges: state.edges.map(edge => {
-        if (edge.id === oldEdge.id) {
-          return { ...edge, ...newConnection }
-        }
-        return edge
-      }),
-    })),
-  removeEdge: edgeId =>
-    set(state => ({
-      edges: state.edges.filter(edge => edge.id !== edgeId),
-    })),
   addInteracaoToNode: (nodeId, interaction) =>
     set(state => ({
       nodes: state.nodes.map(node =>
@@ -91,22 +75,15 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
       ),
     })),
 
-  // Função para setar as edges no estado
-  setEdges: (edges: Edge[]) => set({ edges }),
-  setNodes: (newNodes: Node[]) =>
-    set(state => {
-      if (Array.isArray(newNodes)) {
-        return { nodes: newNodes }
-      } else {
-        console.error('setNodes foi chamado com um valor não válido:', newNodes)
-        return { nodes: state.nodes } // Manter o estado anterior se o novo valor não for um array
-      }
-    }),
   // Função para buscar edges filtradas por nodeId
   getEdgesByNodeId: (nodeId: string) => {
     const edges = get().edges
 
-    // Filtrando as edges onde o nodeId é source ou target
+    if (!Array.isArray(edges)) {
+      console.error('edges não é um array', edges)
+      return { asSource: [], asTarget: [] } // Retorne arrays vazios
+    }
+
     const asSource = edges.filter(edge => edge.source === nodeId)
     const asTarget = edges.filter(edge => edge.target === nodeId)
 
