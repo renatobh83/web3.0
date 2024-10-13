@@ -61,7 +61,8 @@ export const PanelChatFlow = () => {
   }
 
   // Zustate Store
-  const { nodes, edges, setNodes, setEdges } = useChatFlowStore()
+  const { nodes, edges, setNodes, setEdges, removeEdge, reconnectEdge } =
+    useChatFlowStore()
   const [selectedNode, setSelectedNode] = useState<Node | undefined>()
   // Hooks do React Flow para controle local de nodes e edges
   const [localEdges, setLocalEdges, onEdgesChange] = useEdgesState(edges)
@@ -139,9 +140,10 @@ export const PanelChatFlow = () => {
     }
     const data = {
       ...chatFlow,
+
       flow,
     }
-    console.log(localNodes, localEdges)
+    console.log(flow, data)
     // await UpdateChatFlow(data)
   }
   const onReconnectStart = useCallback(
@@ -154,19 +156,16 @@ export const PanelChatFlow = () => {
 
   const onReconnect = useCallback(
     (oldEdge: Edge, newConnection: Connection) => {
-      edgeReconnectSuccessful.current = true
       const nodeA = 'start'
       const nodeB = 'nodeC'
       if (oldEdge.source === nodeA && oldEdge.target === nodeB) {
         return
       }
-      // Atualiza o estado global de edges com a nova conexão
-      const updatedEdges = reconnectEdge(oldEdge, newConnection, edges)
-      console.log(updatedEdges)
-      setEdges(updatedEdges)
-      // setEdges(els => reconnectEdge(oldEdge, newConnection, els))
+
+      edgeReconnectSuccessful.current = true
+      reconnectEdge(oldEdge, newConnection)
     },
-    [setEdges]
+    [reconnectEdge]
   )
 
   const onReconnectEnd = useCallback(
@@ -179,12 +178,13 @@ export const PanelChatFlow = () => {
       }
       if (!edgeReconnectSuccessful.current) {
         // Se a reconexão não foi bem-sucedida, remove a aresta
-        const newEdges = edges.filter(e => e.id !== edge.id)
-        setEdges(newEdges)
+        // const newEdges = edges.filter(e => e.id !== edge.id)
+        // setEdges(newEdges)
+        removeEdge(edge.id)
       }
       edgeReconnectSuccessful.current = true
     },
-    [setEdges]
+    [removeEdge]
   )
   // const onReconnectStart = useCallback(
   //   (_: MouseEvent | TouchEvent, edge: Edge) => {

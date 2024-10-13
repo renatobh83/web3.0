@@ -23,7 +23,8 @@ interface EdgeStore {
   setEdges: (edges: Edge[]) => void
   getEdgesByNodeId: (nodeId: string) => { asSource: Edge[]; asTarget: Edge[] }
   getLabelByTarget: (targetId: string) => string | undefined
-
+  reconnectEdge: (oldEdge: Edge, newEdge: Edge) => void
+  removeEdge: (edgeId: string) => void
   addInteracaoToNode: (
     nodeId: string,
     interaction: { id: string; type: string }
@@ -112,7 +113,19 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
       edges: payload.flow.flow.lineList,
     })
   },
-
+  reconnectEdge: (oldEdge, newConnection) =>
+    set(state => ({
+      edges: state.edges.map(edge => {
+        if (edge.id === oldEdge.id) {
+          return { ...edge, ...newConnection }
+        }
+        return edge
+      }),
+    })),
+  removeEdge: edgeId =>
+    set(state => ({
+      edges: state.edges.filter(edge => edge.id !== edgeId),
+    })),
   resetFlowData: () =>
     set({
       flow: {},
