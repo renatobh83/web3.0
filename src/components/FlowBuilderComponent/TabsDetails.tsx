@@ -35,6 +35,7 @@ import {
 import useChatFlowStore from '../../store/chatFlow'
 import { toast } from 'sonner'
 import { TabConfiguracao } from './TabConfiguracao'
+import { Interacoes } from './FlowInteracoes'
 
 const optionsSe = [
   { label: 'Qualquer resposta', value: 'US' },
@@ -168,7 +169,6 @@ export const TabsDetails = ({
   //   const salvarPainelDebounced = useCallback(debounce(onSavePanel, 1000), [])
   function addCondiction() {
     const newIndex = conditions.length
-    console.log(newIndex)
     const id = crypto.randomUUID()
     setConditions(prev => [
       ...prev,
@@ -410,7 +410,7 @@ export const TabsDetails = ({
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const newRadioValue = event.target.value
-
+    console.log(newRadioValue)
     setRadioChoice(prevState => ({
       ...prevState,
       [id]: newRadioValue, // Atualizar apenas o radioChoice do ID correto
@@ -428,9 +428,10 @@ export const TabsDetails = ({
       setOptionsFilas(filas) // Aqui você carrega as filas
     } else if (newRadioValue === 'usuario') {
       setOptionsUsuarios(usuarios) // Aqui você carrega os usuários
+    } else if (newRadioValue === 'encerar') {
     }
   }
-  // { TabsSelect }
+
   return (
     <>
       {nodeType === 'configuracao' ? (
@@ -444,7 +445,6 @@ export const TabsDetails = ({
             overflow: 'auto',
             display: 'flex',
             flexWrap: 'wrap',
-
             justifyContent: 'center',
           }}
         >
@@ -467,26 +467,7 @@ export const TabsDetails = ({
         <>
           {TabsSelect}
           <TabPanel value={tabSelected} index={0}>
-            <Box sx={{ mt: 1 }}>
-              <ButtonGroup
-                size="small"
-                variant="outlined"
-                aria-label="Basic button group"
-                sx={{
-                  flexWrap: 'wrap',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  px: '1px',
-                }}
-              >
-                <Button>One</Button>
-                <Button>Two</Button>
-                <Button>Three</Button>
-                <Button>Three</Button>
-                <Button>Three</Button>
-                <Button>Three</Button>
-              </ButtonGroup>
-            </Box>
+            <Interacoes node={node} />
           </TabPanel>
           <TabPanel value={tabSelected} index={1}>
             <Box sx={{ mt: 1 }}>
@@ -531,7 +512,6 @@ export const TabsDetails = ({
                       border: '1px solid rgba(0, 0, 0, 0.12)',
                     }}
                   >
-                    {}
                     <Box
                       sx={{
                         width: '100%',
@@ -730,7 +710,6 @@ export const TabsDetails = ({
                 ))}
               </Box>
             </Box>
-            {node?.type}
           </TabPanel>
         </>
       )}

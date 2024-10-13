@@ -55,21 +55,28 @@ const NODE_TYPES = {
   boasVindas: BoasVindas,
 }
 export const PanelChatFlow = () => {
-  const { flow: chatFlow } = useChatFlowStore()
+  const {
+    flow: chatFlow,
+    nodes: nodesFromStore,
+    edges: edgesFromStore,
+    setEdgesStore,
+    setNodesStore,
+  } = useChatFlowStore()
 
   if (!chatFlow.id) {
     return <Navigate to="/chat-flow" />
   }
   const [nodes, setNodes, onNodesChange] = useNodesState(INITIAL_NODES)
   const [edges, setEdges, onEdgesChange] = useEdgesState(INITIAL_EDGES)
-  const { setEdgesStore, setNodesStore } = useChatFlowStore()
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+
   useEffect(() => {
     if (chatFlow) {
       setNodes(chatFlow.flow.nodeList)
-      setNodesStore(chatFlow.flow.nodeList)
+      setNodesStore(nodes)
       setEdges(chatFlow.flow.lineList)
-      setEdgesStore(chatFlow.flow.lineList)
+      setEdgesStore(edges)
     }
   }, [chatFlow])
 
@@ -186,6 +193,7 @@ export const PanelChatFlow = () => {
 
   //   atualizar label dos nodes
   const [labelNode, setLabelNode] = useState('')
+
   const handleLabelData = newLabel => {
     if (selectedNode) {
       selectedNode.data.label = newLabel
