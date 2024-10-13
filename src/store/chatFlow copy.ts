@@ -19,8 +19,8 @@ interface Node {
 interface EdgeStore {
   edges: Edge[]
   nodes: Node[]
-  setEdges: (edges: Edge[]) => void
-  setNodes: (newNodes: Node[]) => void
+  setEdgesStore: (edges: Edge[]) => void
+  setNodesStore: (nodes: Node[]) => void
   getEdgesByNodeId: (nodeId: string) => { asSource: Edge[]; asTarget: Edge[] }
   getLabelByTarget: (targetId: string) => string | undefined
   addEdge: (edge: Edge) => void
@@ -40,13 +40,10 @@ interface FlowState {
     flow: Record<string, any>
     usuarios: any[]
     filas: any[]
-    nodes: Node[]
-    edges: Edge[]
   }) => void
   resetFlowData: () => void
 }
 interface CombinedState extends FlowState, EdgeStore {}
-
 const useChatFlowStore = create<CombinedState>((set, get) => ({
   flow: {},
   usuarios: [],
@@ -60,9 +57,7 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
         node.id === updatedNode.id ? updatedNode : node
       ),
     })),
-
   addEdge: newEdge => set(state => ({ edges: [...state.edges, newEdge] })),
-
   reconnectEdge: (oldEdge, newConnection) =>
     set(state => ({
       edges: state.edges.map(edge => {
@@ -90,18 +85,9 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
           : node
       ),
     })),
-
   // Função para setar as edges no estado
-  setEdges: (edges: Edge[]) => set({ edges }),
-  setNodes: (newNodes: Node[]) =>
-    set(state => {
-      if (Array.isArray(newNodes)) {
-        return { nodes: newNodes }
-      } else {
-        console.error('setNodes foi chamado com um valor não válido:', newNodes)
-        return { nodes: state.nodes } // Manter o estado anterior se o novo valor não for um array
-      }
-    }),
+  setEdgesStore: (edges: Edge[]) => set({ edges }),
+  setNodesStore: nodes => set({ nodes }),
   // Função para buscar edges filtradas por nodeId
   getEdgesByNodeId: (nodeId: string) => {
     const edges = get().edges
@@ -126,15 +112,12 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
     // Retorna undefined se não encontrar
     return undefined
   },
-  setFlowData: payload => {
+  setFlowData: payload =>
     set({
       flow: payload.flow,
       usuarios: payload.usuarios,
       filas: payload.filas,
-      nodes: payload.flow.flow.nodeList,
-      edges: payload.flow.flow.lineList,
-    })
-  },
+    }),
 
   resetFlowData: () =>
     set({
