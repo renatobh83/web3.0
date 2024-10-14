@@ -73,8 +73,8 @@ export const TabsDetails = ({
   const [radioChoice, setRadioChoice] = useState({})
   const [conditionState, setConditionState] = useState<{
     [key: string]: {
-      selectedOption: string
-      chips: string[]
+      type: string
+      condition: string[]
       inputValue: string
       queueId: number
       nextStepId: string
@@ -93,8 +93,8 @@ export const TabsDetails = ({
       const initialSelectOption = {}
       const initialState = {} as {
         [key: string]: {
-          selectedOption: string
-          chips: string[]
+          type: string
+          condition: string[]
           inputValue: string
           userIdDestination: string
           queueId: number
@@ -104,14 +104,14 @@ export const TabsDetails = ({
       if (node.data.conditions) {
         // biome-ignore lint/complexity/noForEach: <explanation>
         node.data.conditions.forEach(condition => {
-          // Verifica se condition.condition é um array e inicializa chips corretamente
+          // Verifica se condition.condition é um array e inicializa condition corretamente
           if (!initialState[condition.id]) {
             if (condition.type === 'R') {
               initialState[condition.id] = {
-                selectedOption: condition.type,
-                chips: Array.isArray(condition.condition)
+                type: condition.type,
+                condition: Array.isArray(condition.condition)
                   ? condition.condition
-                  : [condition.condition], // Certifica que chips seja um array
+                  : [condition.condition], // Certifica que condition seja um array
                 inputValue: '',
                 queueId: condition.queueId,
                 userIdDestination: condition.userIdDestination,
@@ -119,8 +119,8 @@ export const TabsDetails = ({
               }
             } else {
               initialState[condition.id] = {
-                selectedOption: condition.type,
-                chips: [],
+                type: condition.type,
+                condition: [],
                 inputValue: '',
                 queueId: condition.queueId,
                 userIdDestination: condition.userIdDestination,
@@ -162,26 +162,8 @@ export const TabsDetails = ({
     setTabSelected(newValue)
   }
 
-  const handleNodeAtualizacaoCondicao = (novasCondicoes: any[]) => {
-    if (node) {
-      const dataNew = {
-        ...node.data,
-        conditions: novasCondicoes,
-      }
-      const nodeAtt = {
-        ...node,
-        data: dataNew,
-      }
-      if (!isEmptyObject(radioChoice)) {
-        // updateNode(nodeAtt)
-        console.log(conditionState)
-        console.log(novasCondicoes, conditions)
-        // addConditionToNode(node.id, novasCondicoes)
-      }
-      // atualizarNode(nodeAtt)
-    }
-  }
-  //   const salvarPainelDebounced = useCallback(debounce(onSavePanel, 1000), [])
+  const handleNodeAtualizacaoCondicao = (novasCondicoes: any[]) => { }
+
   function addCondiction() {
     const newIndex = conditions.length
     const id = crypto.randomUUID()
@@ -198,56 +180,14 @@ export const TabsDetails = ({
   function removeCondition(arr, id) {
     // Filtra as condições para remover a que possui o id correspondente
     const newConditions = arr.filter(condition => condition.id !== id)
-    // Atualiza as condições
-    // handleNodeAtualizacaoCondicao(newConditions)
     setConditions(newConditions)
-    // // Reindexa as ações
-    // setActions(prev => {
-    //   // Cria um novo objeto de ações reindexado
-    //   const newActions = {}
-
-    //   // Reindexa as ações de acordo com as novas condições
-    //   newConditions.forEach((condition, index) => {
-    //     newActions[index] = { action: index } // Define a ação como o novo índice
-    //   })
-
-    //   return newActions
-    // })
-    // setActions(prev => {
-    //   const newActions = { ...prev }
-    //   delete newActions[id] // Remove a ação correspondente ao id da condição removida
-
-    //   // Reindexa as ações para as condições restantes, se necessário
-    //   newConditions.forEach(condition => {
-    //     if (!newActions[condition.id]) {
-    //       newActions[condition.id] = { action: Object.keys(newActions).length } // Define a ação como o novo índice
-    //     }
-    //   })
-
-    //   return newActions
-    // })
-    // setActions(prev => {
-    //   const newActions = { ...prev }
-    //   delete newActions[id] // Remove a ação que corresponde ao id da condição removida
-
-    //   // Reindexa as ações restantes
-    //   let index = 0 // Para reindexar as ações de 0 até N
-    //   newConditions.forEach(condition => {
-    //     // Se a ação não estiver presente, a reindexação é feita aqui
-    //     if (!newActions[condition.id]) {
-    //       newActions[condition.id] = { action: index++ } // Define a nova ação com o índice atual
-    //     }
-    //   })
-
-    //   return newActions // Retorna as ações reindexadas
-    // })
-
   }
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (conditions.length >= 1) {
-      handleNodeAtualizacaoCondicao(conditions)
+      console.log(conditions)
+      // addConditionToNode(node?.id, conditions)
     }
   }, [conditions])
 
@@ -261,7 +201,7 @@ export const TabsDetails = ({
       ...prevState,
       [id]: {
         ...prevState[id],
-        selectedOption: selectedValue,
+        type: selectedValue,
       },
     }))
   }
@@ -271,20 +211,20 @@ export const TabsDetails = ({
     setConditionState(prevState => ({
       ...prevState,
       [id]: {
-        ...(prevState[id] || { chips: [], inputValue: '' }),
+        ...(prevState[id] || { condition: [], inputValue: '' }),
         inputValue: value,
       },
     }));
   }, 1500); // 500ms de debounce
-  // Função para lidar com a inserção de chips
+  // Função para lidar com a inserção de condition
   const handleKeyDown = (id, event) => {
     if (event.key === 'Enter' && tempValue[id]?.trim() !== '') {
       setConditionState(prevState => ({
         ...prevState,
         [id]: {
-          ...(prevState[id] || { chips: [], inputValue: '' }),
-          chips: [
-            ...(prevState[id]?.chips || []),
+          ...(prevState[id] || { condition: [], inputValue: '' }),
+          condition: [
+            ...(prevState[id]?.condition || []),
             tempValue[id].trim(), // Usa o valor temporário ao pressionar "Enter"
           ],
           inputValue: '', // Limpa o campo após adicionar o chip
@@ -297,66 +237,33 @@ export const TabsDetails = ({
       }));
     }
   };
-  // const handleKeyDown = (
-  //   id: string,
-  //   event: React.KeyboardEvent<HTMLInputElement>
-  // ) => {
-  //   if (
-  //     event.key === 'Enter' &&
-  //     conditionState[id]?.inputValue?.trim() !== ''
-  //   ) {
-  //     setConditionState(prevState => ({
-  //       ...prevState,
-  //       [id]: {
-  //         ...(prevState[id] || { chips: [], inputValue: '' }), // Garante que tenha uma estrutura inicial
-  //         chips: [
-  //           ...(prevState[id]?.chips || []),
-  //           conditionState[id].inputValue.trim(),
-  //         ], // Adiciona o chip
-  //         inputValue: '', // Limpa o campo de input após adicionar o chip
-  //       },
-  //     }))
-  //   }
-  // }
 
+  const matchingIdsObj = () => {
+    const radioIds = Object.keys(radioChoice);
+    // Verifica se algum ID de radioChoice existe em conditionState
+    const matchingIds = radioIds.filter(id => conditionState.hasOwnProperty(id));
+    // Exibe os IDs correspondentes e os estados correspondentes, se houver
+    if (matchingIds.length > 0) {
+      return true
+    }
+    return false
+  }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (!isEmptyObject(conditionState)) {
-      const updatedConditions = conditions.map(c => {
-        if (conditionState[c.id]) {
-          // Lógica para o tipo "US"
-
-          if (conditionState[c.id].selectedOption === 'US') {
+      if (matchingIdsObj()) {
+        const condicoes = conditions.map(condition => {
+          if (conditionState.hasOwnProperty(condition.id)) {
             return {
-              ...c,
-              type: 'US',
-              condition: [],
-              nextStepId: conditionState[c.id].nextStepId,
-              userIdDestination: conditionState[c.id].userIdDestination,
-              queueId: conditionState[c.id].queueId,
+              ...condition,
+              ...conditionState[condition.id]
             }
           }
-
-          // Lógica para o tipo "R"
-          if (conditionState[c.id].selectedOption === 'R') {
-            return {
-              ...c,
-              type: 'R',
-              nextStepId: conditionState[c.id].nextStepId,
-              userIdDestination: conditionState[c.id].userIdDestination,
-              queueId: conditionState[c.id].queueId,
-              condition: conditionState[c.id].chips, // Substitui diretamente pelos chips do estado atual
-            }
-          }
-        }
-
-        return c // Retorna a condição original se não houver alteração no estado
-      })
-
-
-
-
-      console.log(conditionState)
+          return condition
+        })
+        console.log(condicoes)
+        setConditions(condicoes)
+      }
       // handleNodeAtualizacaoCondicao(updatedConditions)
     }
   }, [conditionState])
@@ -367,7 +274,7 @@ export const TabsDetails = ({
       ...prevState,
       [id]: {
         ...prevState[id],
-        chips: prevState[id].chips.filter(chip => chip !== chipToDelete),
+        condition: prevState[id].condition.filter(chip => chip !== chipToDelete),
       },
     }))
   }
@@ -405,7 +312,7 @@ export const TabsDetails = ({
       [id]: selectedValue, // Garantir que só o select do ID correto é atualizado
     }))
 
-    if (radioChoice[id] === 'etapa') {
+    if (radioChoice[id] === '0') {
       setConditionState(prevState => ({
         ...prevState,
         [id]: {
@@ -416,7 +323,7 @@ export const TabsDetails = ({
           queueId: null,
         },
       }))
-    } else if (radioChoice[id] === 'fila') {
+    } else if (radioChoice[id] === '1') {
       setConditionState(prevState => ({
         ...prevState,
         [id]: {
@@ -427,7 +334,7 @@ export const TabsDetails = ({
           nextStepId: null,
         },
       }))
-    } else if (radioChoice[id] === 'usuario') {
+    } else if (radioChoice[id] === '2') {
       setConditionState(prevState => ({
         ...prevState,
         [id]: {
@@ -457,13 +364,13 @@ export const TabsDetails = ({
       [id]: '', // Resetar o valor do select para o ID correspondente
     }))
 
-    if (newRadioValue === 'etapa') {
+    if (newRadioValue === '0') {
       setOptionsEtapas(asSource) // Aqui você carrega as etapas
-    } else if (newRadioValue === 'fila') {
+    } else if (newRadioValue === '1') {
       setOptionsFilas(filas) // Aqui você carrega as filas
-    } else if (newRadioValue === 'usuario') {
+    } else if (newRadioValue === '2') {
       setOptionsUsuarios(usuarios) // Aqui você carrega os usuários
-    } else if (newRadioValue === 'encerar') {
+    } else if (newRadioValue === '3') {
       setConditionState((prev) => ({
         ...prev,
         [id]: {
@@ -616,7 +523,7 @@ export const TabsDetails = ({
                       <Select
                         id={`select_se-${condition.id}`}
                         value={
-                          conditionState[condition.id]?.selectedOption || ''
+                          conditionState[condition.id]?.type || ''
                         }
                         onChange={e => handleSelectChange(condition.id, e)}
                         input={<OutlinedInput label="se" />}
@@ -627,7 +534,7 @@ export const TabsDetails = ({
                           </MenuItem>
                         ))}
                       </Select>
-                      {conditionState[condition.id]?.selectedOption === 'R' && (
+                      {conditionState[condition.id]?.type === 'R' && (
                         <Box
                           sx={{
                             display: 'flex',
@@ -635,7 +542,7 @@ export const TabsDetails = ({
                             flexWrap: 'wrap',
                           }}
                         >
-                          {conditionState[condition.id].chips?.map(
+                          {conditionState[condition.id].condition?.map(
                             (chip, index) => (
                               <Chip
                                 key={index}
@@ -665,7 +572,7 @@ export const TabsDetails = ({
                                 ...prevState,
                                 [condition.id]: {
                                   ...(prevState[condition.id] || {
-                                    chips: [],
+                                    condition: [],
                                     inputValue: '',
                                   }), // Garante que tenha uma estrutura inicial
                                   inputValue: e.target.value,
@@ -699,23 +606,23 @@ export const TabsDetails = ({
                           }}
                         >
                           <FormControlLabel
-                            value="etapa"
+                            value="0"
                             disabled={!asSource.length}
                             control={<Radio size="small" />}
                             label="Etapa"
                           />
                           <FormControlLabel
-                            value="fila"
+                            value="1"
                             control={<Radio size="small" />}
                             label="Fila"
                           />
                           <FormControlLabel
-                            value="usuario"
+                            value="2"
                             control={<Radio size="small" />}
                             label="Usúario"
                           />
                           <FormControlLabel
-                            value="encerar"
+                            value="3"
                             control={<Radio size="small" />}
                             label="Encerar"
                           />
@@ -730,7 +637,7 @@ export const TabsDetails = ({
                           }
                         >
                           {/* Exibir as opções com base na escolha do radio */}
-                          {radioChoice[condition.id] === 'etapa' &&
+                          {radioChoice[condition.id] === '0' &&
                             optionsEtapas.map(source => (
                               <MenuItem
                                 key={source.id}
@@ -742,7 +649,7 @@ export const TabsDetails = ({
                                 }
                               </MenuItem>
                             ))}
-                          {radioChoice[condition.id] === 'fila' &&
+                          {radioChoice[condition.id] === '1' &&
                             optionsFilas.map(source => (
                               <MenuItem
                                 key={source.id}
@@ -753,7 +660,7 @@ export const TabsDetails = ({
                                   getLabelByTarget(source.target)}
                               </MenuItem>
                             ))}
-                          {radioChoice[condition.id] === 'usuario' &&
+                          {radioChoice[condition.id] === '2' &&
                             optionsUsuarios.map(source => (
                               <MenuItem
                                 key={source.id}

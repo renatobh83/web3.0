@@ -109,13 +109,13 @@ export const PanelChatFlow = () => {
 
   const edgeReconnectSuccessful = useRef(false)
   useEffect(() => {
+    console.log(nodes)
     setLocalNodes(nodes)
     nodes.forEach((nodeZ, idx) => {
       const nodeL = localNodes[idx]
       if (!deepEqual(nodeZ, nodeL, 'position')) {
-        // updateNodes(localNodes)
-        // updateEdges(localEdges)
-        console.log('fdi')
+        updateNodes(localNodes)
+        updateEdges(localEdges)
       }
     })
   }, [nodes])
@@ -207,9 +207,9 @@ export const PanelChatFlow = () => {
       ...chatFlow,
       flow,
     }
-    console.log(data, localNodes, nodes)
     updateNodes(localNodes)
     updateEdges(localEdges)
+    console.log(nodes)
     // await UpdateChatFlow(data)
   }
 

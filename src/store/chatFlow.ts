@@ -72,7 +72,6 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
   nodes: [],
   nodeSelect: undefined,
   updateNodes: (nodes: Node[]) => {
-    console.log("Nodes Update");
     set({ nodes });
   },
   updateEdges: (edges: Edge[]) => {
@@ -105,7 +104,7 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
     set((state) => ({
       nodes: [...state.nodes, newNode],
     })),
-  addConditionToNode: (nodeId, conditions) =>
+  addConditionToNode: (nodeId, newCondition) =>
     set((state) => ({
       nodes: state.nodes.map((node) =>
         node.id === nodeId
@@ -113,7 +112,15 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
               ...node,
               data: {
                 ...node.data,
-                conditions: [...(node.data.conditions || []), conditions],
+                conditions: node.data.conditions.some(
+                  (cond) => cond.id === newCondition.id
+                )
+                  ? node.data.conditions.map((cond) =>
+                      cond.id === newCondition.id
+                        ? { ...cond, ...newCondition }
+                        : cond
+                    ) // Atualiza a condição existente
+                  : [...(node.data.conditions || []), newCondition], // Adiciona uma nova condição
               },
             }
           : node
