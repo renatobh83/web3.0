@@ -56,112 +56,38 @@ const NODE_TYPES = {
   start: Start,
   boasVindas: BoasVindas,
 }
-function deepEqual(obj1, obj2, specificKey) {
-  // Verifica se ambos os objetos são iguais
-  if (obj1 === obj2) return true;
-
-  // Verifica se são objetos e não nulos
-  if (obj1 == null || obj2 == null || typeof obj1 !== 'object' || typeof obj2 !== 'object') {
-    return false;
-  }
-
-  // Obtem as chaves dos objetos
-  const keys1 = Object.keys(obj1);
-  const keys2 = Object.keys(obj2);
-
-  // Verifica se o número de chaves é diferente
-  if (keys1.length !== keys2.length) return false;
-
-  // Compara as chaves e valores
-  for (const key of keys1) {
-    // Se a chave específica foi fornecida, verifica apenas essa chave
-    if (specificKey === key) {
-
-      // Verifica se os valores são diferentes
-      if (!deepEqual(obj1[key], obj2[key], specificKey)) {
-        return true
-        return {
-          key: key,
-          oldValue: obj1[key],
-          newValue: obj2[key],
-        };
-      }
-    } else {
-      // Se a chave não for a específica, verifica normalmente
-      if (!keys2.includes(key) || !deepEqual(obj1[key], obj2[key], specificKey)) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
 export const PanelChatFlow = () => {
   const { flow: chatFlow } = useChatFlowStore()
   if (!chatFlow.id) {
     return <Navigate to="/chat-flow" />
   }
-  const { nodes, edges, clearNodeSelection, setEdges, removeEdge, reconnectEdge, setNodes, addNode, updateEdges, updateNodes } =
-    useChatFlowStore()
-  const [nodeSelect, setNodeSelect] = useState<Node | undefined>()
 
+  // Zustate Store
+  const { nodes, edges, clearNodeSelection, setEdges, removeEdge, reconnectEdge, addNode, setNodeSelect } =
+    useChatFlowStore()
+  const [selectedNode, setSelectedNode] = useState<Node | undefined>()
+  // Hooks do React Flow para controle local de nodes e edges
   const [localEdges, setLocalEdges, onEdgesChange] = useEdgesState(edges)
   const [localNodes, setLocalNodes, onNodesChange] = useNodesState(nodes)
+  // Atualize o estado do Zustand quando o estado local mudar
+  // useEffect(() => {
+  //   setNodes(localNodes)
+  // }, [localNodes, setNodes])
 
-  const edgeReconnectSuccessful = useRef(false)
-  useEffect(() => {
-    setLocalNodes(nodes)
-    nodes.forEach((nodeZ, idx) => {
-      const nodeL = localNodes[idx]
-      if (!deepEqual(nodeZ, nodeL, 'position')) {
-        // updateNodes(localNodes)
-        // updateEdges(localEdges)
-        console.log('fdi')
-      }
-    })
-  }, [nodes])
+  // useEffect(() => {
+  //   setEdges(localEdges)
+  // }, [localEdges, setEdges])
+  // Sincronizar o estado local com o Zustand sempre que ele mudar
 
-  useEffect(() => {
-    setLocalEdges(edges)
-  }, [edges])
+  const onNodeClick = (_event: React.MouseEvent<Element>, node: Node) => {
+    setSelectedNode(node)
+    setNodeSelect(node)
+  }
+  const onPanelClick = () => {
+    setSelectedNode(undefined)
+    setNodeSelect(undefined)
 
-  const onReconnectStart = useCallback(
-    (_: MouseEvent | TouchEvent, edge: Edge) => {
-      edgeReconnectSuccessful.current = false
-      setNodeSelect(undefined)
-    },
-    []
-  )
-
-  const onReconnect = useCallback(
-    (oldEdge: Edge, newConnection: Connection) => {
-      const nodeA = 'start'
-      const nodeB = 'nodeC'
-      if (oldEdge.source === nodeA && oldEdge.target === nodeB) {
-        return
-      }
-
-      edgeReconnectSuccessful.current = true
-      reconnectEdge(oldEdge, newConnection)
-      setLocalEdges(els => reconnectEdge(oldEdge, newConnection, els))
-    },
-    [reconnectEdge]
-  )
-  const onReconnectEnd = useCallback(
-    (_: MouseEvent | TouchEvent, edge: Edge) => {
-      const nodeA = 'start'
-      const nodeB = 'nodeC'
-
-      if (edge.source === nodeA && edge.target === nodeB) {
-        return
-      }
-      if (!edgeReconnectSuccessful.current) {
-        removeEdge(edge.id)
-        setLocalEdges(eds => eds.filter(e => e.id !== edge.id))
-      }
-      edgeReconnectSuccessful.current = true
-    },
-    [removeEdge]
-  )
+  }
   const [valueX, setValuex] = useState(0)
   const addNewNode = () => {
     const newNode = {
@@ -179,46 +105,118 @@ export const PanelChatFlow = () => {
       },
     }
     setValuex(v => v + 10)
-    setLocalNodes(prevNodes => [...prevNodes, newNode])
-    // addNode(newNode)
+    addNode(newNode)
+    // Atualiza os nós no Zustand
+    // setNodes(prevNodes => [...prevNodes, newNode])
   }
 
-  const onNodeClick = (_event: React.MouseEvent<Element>, node: Node) => {
-    setNodeSelect(node)
-  }
-  const onPanelClick = () => {
-    setNodeSelect(undefined)
-
-  }
+  //   atualizar label dos nodes
   const [labelNode, setLabelNode] = useState('')
 
   const handleLabelData = newLabel => {
-    if (nodeSelect) {
-      nodeSelect.data.label = newLabel
+    if (selectedNode) {
+      selectedNode.data.label = newLabel
       setLabelNode(newLabel)
     }
   }
-  const handleSavePanel = async () => {
+  useEffect(() => {
+    // toast.message('load node local', {
+    //   description: ' carregados',
+    //   position: 'top-center',
+    // })
+    // console.log('Att local')
+    setLocalNodes(nodes) // Atualiza os nodes locais quando os nodes no Zustand mudam
+  }, [nodes, setLocalNodes])
+
+  useEffect(() => {
+    // toast.message('load edge local', {
+    //   description: ' carregados',
+    //   position: 'top-center',
+    // })
+    setLocalEdges(edges) // Atualiza os edges locais quando os edges no Zustand mudam
+    setSelectedNode(undefined)
+    setNodeSelect(undefined)
+  }, [edges])
+
+  const edgeReconnectSuccessful = useRef(false)
+
+  const onSavePanel = async () => {
     const flow = {
-      nodeList: localNodes,
-      lineList: localEdges,
+      nodeList: nodes,
+      lineList: edges,
     }
     const data = {
       ...chatFlow,
+
       flow,
     }
-    console.log(data, localNodes, nodes)
-    updateNodes(localNodes)
-    updateEdges(localEdges)
-    // await UpdateChatFlow(data)
+    console.log(flow, data, localNodes)
+    await UpdateChatFlow(data)
   }
+  const onReconnectStart = useCallback(
+    (_: MouseEvent | TouchEvent, edge: Edge) => {
+      edgeReconnectSuccessful.current = false
+      setSelectedNode(undefined)
+      setNodeSelect(undefined)
+    },
+    []
+  )
+
+  const onReconnect = useCallback(
+    (oldEdge: Edge, newConnection: Connection) => {
+      const nodeA = 'start'
+      const nodeB = 'nodeC'
+      if (oldEdge.source === nodeA && oldEdge.target === nodeB) {
+        return
+      }
+
+      edgeReconnectSuccessful.current = true
+      reconnectEdge(oldEdge, newConnection)
+    },
+    [reconnectEdge]
+  )
+
+  const onReconnectEnd = useCallback(
+    (_: MouseEvent | TouchEvent, edge: Edge) => {
+      const nodeA = 'start'
+      const nodeB = 'nodeC'
+
+      if (edge.source === nodeA && edge.target === nodeB) {
+        return
+      }
+      if (!edgeReconnectSuccessful.current) {
+        // Se a reconexão não foi bem-sucedida, remove a aresta
+        // const newEdges = edges.filter(e => e.id !== edge.id)
+        // setEdges(newEdges)
+        removeEdge(edge.id)
+      }
+      edgeReconnectSuccessful.current = true
+    },
+    [removeEdge]
+  )
 
   const onConnect = (params: Connection | Edge) => {
     const updatedEdges = addEdge(params, localEdges)
     setLocalEdges(updatedEdges) // Atualiza os edges locais
     setEdges(updatedEdges) // Atualiza os edges no Zustand
   }
+  const updateNodePosition = useChatFlowStore((state) => state.updateNodePosition);
 
+
+  const handleNodesChange = (changes: NodeChange[]) => {
+    onNodesChange(changes);  // Atualiza o estado local no React Flow
+
+    // Sincroniza as mudanças de posição dos nós no Zustand
+    changes.forEach((change) => {
+      if (change.type === 'position' && change.position) {
+        updateNodePosition(change.id, change.position);  // Atualiza a posição no Zustand
+      }
+    });
+
+  };
+  const handleApagarNode = () => {
+    console.log(selectedNode)
+  }
   return (
     <Box
       sx={{
@@ -230,6 +228,7 @@ export const PanelChatFlow = () => {
       <Box
         sx={{ width: '100%', height: '100%', maxWidth: 'calc(100% - 390px)' }}
       >
+
         <ReactFlow
           nodes={localNodes}
           edges={localEdges}
@@ -237,7 +236,9 @@ export const PanelChatFlow = () => {
           edgeTypes={EDGE_TYPES}
           defaultEdgeOptions={{ type: 'default' }}
           connectionLineComponent={ConnectionLine}
-          onNodesChange={onNodesChange}
+          onNodesChange={handleNodesChange}
+          // onNodeDragStart={(_, node) => console.log('Drag started:', node)} // Debug
+          // onNodeDragStop={(_, node) => console.log('Drag stopped:', node)}
           onEdgesChange={onEdgesChange}
           snapToGrid={false}
           onReconnect={onReconnect}
@@ -276,19 +277,17 @@ export const PanelChatFlow = () => {
               justifyContent: 'space-between',
             }}
           >
-            <Button
-              onClick={handleSavePanel}
-              variant="contained" color="success">
+            <Button onClick={onSavePanel} variant="contained" color="success">
               <SaveRounded sx={{ mr: 1 }} />
               Salvar
             </Button>
             <Button
               variant="contained"
               color="warning"
-            // disabled={!selectedNode?.id && selectedNode?.type === 'square'}
-            // onClick={() => {
-            //   handleApagarNode()
-            // }}
+              disabled={!selectedNode?.id && selectedNode?.type === 'square'}
+              onClick={() => {
+                handleApagarNode()
+              }}
             >
               {/* <Add /> */}
               Apagar Node
@@ -334,15 +333,15 @@ export const PanelChatFlow = () => {
                   name="label"
                   variant="filled"
                   label="Nome"
-                  value={nodeSelect ? nodeSelect?.data?.label : ''}
+                  value={selectedNode ? labelNode : ''}
                   onChange={e => {
                     handleLabelData(e.target.value)
                   }}
                   focused
                 />
               </FormControl>
-              {nodeSelect && (
-                <TabsDetails node={nodeSelect} atualizarNode={() => { }} />
+              {selectedNode && (
+                <TabsDetails node={selectedNode} atualizarNode={() => { }} />
               )}
             </Box>
           </Box>

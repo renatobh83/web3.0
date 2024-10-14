@@ -19,7 +19,7 @@ import {
   Tabs,
   TextField,
   Typography,
-  debounce,
+
   useStepContext,
 } from '@mui/material'
 import { useReactFlow, type Node } from '@xyflow/react'
@@ -41,24 +41,34 @@ const optionsSe = [
   { label: 'Qualquer resposta', value: 'US' },
   { label: 'Respostas', value: 'R' },
 ]
+function isEmptyObject(obj) {
+  return Object.keys(obj).length === 0;
+}
+
+const debounce = (func, delay) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => func(...args), delay);
+  };
+};
+
+
 
 export const TabsDetails = ({
   node,
   atualizarNode,
 }: { node: Node | undefined; atualizarNode: (arg0: Node) => void }) => {
-  const { filas, usuarios, getEdgesByNodeId, getLabelByTarget, nodes } =
+
+  const { filas, usuarios, getEdgesByNodeId, getLabelByTarget, updateNode, addConditionToNode } =
     useChatFlowStore()
   const nodeType = node?.type
   const [tabSelected, setTabSelected] = useState(0)
-  const [actions, setActions] = useState<{
-    [key: string]: {
-      action: number
-    }
-  }>({})
+
   const [optionsEtapas, setOptionsEtapas] = useState([])
   const [optionsFilas, setOptionsFilas] = useState([])
   const [optionsUsuarios, setOptionsUsuarios] = useState([])
-
+  const [tempValue, setTempValue] = useState({});
   const [selectOption, setSelectOption] = useState({})
   const [radioChoice, setRadioChoice] = useState({})
   const [conditionState, setConditionState] = useState<{
@@ -152,7 +162,7 @@ export const TabsDetails = ({
     setTabSelected(newValue)
   }
 
-  const handleNodeAtualizacaoCondicao = novasCondicoes => {
+  const handleNodeAtualizacaoCondicao = (novasCondicoes: any[]) => {
     if (node) {
       const dataNew = {
         ...node.data,
@@ -162,8 +172,13 @@ export const TabsDetails = ({
         ...node,
         data: dataNew,
       }
-
-      atualizarNode(nodeAtt)
+      if (!isEmptyObject(radioChoice)) {
+        // updateNode(nodeAtt)
+        console.log(conditionState)
+        console.log(novasCondicoes, conditions)
+        // addConditionToNode(node.id, novasCondicoes)
+      }
+      // atualizarNode(nodeAtt)
     }
   }
   //   const salvarPainelDebounced = useCallback(debounce(onSavePanel, 1000), [])
@@ -178,19 +193,14 @@ export const TabsDetails = ({
         id,
       },
     ])
-    setActions(prev => ({
-      ...prev,
-      [id]: { action: newIndex }, // Adiciona a ação com o índice correspondente
-    }))
+
   }
   function removeCondition(arr, id) {
     // Filtra as condições para remover a que possui o id correspondente
     const newConditions = arr.filter(condition => condition.id !== id)
-
     // Atualiza as condições
-    handleNodeAtualizacaoCondicao(newConditions)
+    // handleNodeAtualizacaoCondicao(newConditions)
     setConditions(newConditions)
-
     // // Reindexa as ações
     // setActions(prev => {
     //   // Cria um novo objeto de ações reindexado
@@ -231,25 +241,14 @@ export const TabsDetails = ({
 
     //   return newActions // Retorna as ações reindexadas
     // })
-    setActions(prev => {
-      const newActions = { ...prev }
-      delete newActions[id] // Remove a ação que corresponde ao id da condição removida
 
-      // Reindexa as ações restantes
-      let index = 0 // Para reindexar as ações de 0 até N
-      // biome-ignore lint/complexity/noForEach: <explanation>
-      newConditions.forEach(condition => {
-        // Se a ação não estiver presente, a reindexação é feita aqui
-        newActions[condition.id] = { action: index++ } // Define a nova ação com o índice atual
-      })
-
-      return newActions // Retorna as ações reindexadas
-    })
   }
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    handleNodeAtualizacaoCondicao(conditions)
+    if (conditions.length >= 1) {
+      handleNodeAtualizacaoCondicao(conditions)
+    }
   }, [conditions])
 
   // Função para capturar mudanças no Select e enviar o id
@@ -266,65 +265,100 @@ export const TabsDetails = ({
       },
     }))
   }
+
+  // Função de debounce
+  const debouncedUpdate = debounce((id, value) => {
+    setConditionState(prevState => ({
+      ...prevState,
+      [id]: {
+        ...(prevState[id] || { chips: [], inputValue: '' }),
+        inputValue: value,
+      },
+    }));
+  }, 1500); // 500ms de debounce
   // Função para lidar com a inserção de chips
-  const handleKeyDown = (
-    id: string,
-    event: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (
-      event.key === 'Enter' &&
-      conditionState[id]?.inputValue?.trim() !== ''
-    ) {
+  const handleKeyDown = (id, event) => {
+    if (event.key === 'Enter' && tempValue[id]?.trim() !== '') {
       setConditionState(prevState => ({
         ...prevState,
         [id]: {
-          ...(prevState[id] || { chips: [], inputValue: '' }), // Garante que tenha uma estrutura inicial
+          ...(prevState[id] || { chips: [], inputValue: '' }),
           chips: [
             ...(prevState[id]?.chips || []),
-            conditionState[id].inputValue.trim(),
-          ], // Adiciona o chip
-          inputValue: '', // Limpa o campo de input após adicionar o chip
+            tempValue[id].trim(), // Usa o valor temporário ao pressionar "Enter"
+          ],
+          inputValue: '', // Limpa o campo após adicionar o chip
         },
-      }))
+      }));
+
+      setTempValue(prevState => ({
+        ...prevState,
+        [id]: '', // Limpa o valor temporário
+      }));
     }
-  }
+  };
+  // const handleKeyDown = (
+  //   id: string,
+  //   event: React.KeyboardEvent<HTMLInputElement>
+  // ) => {
+  //   if (
+  //     event.key === 'Enter' &&
+  //     conditionState[id]?.inputValue?.trim() !== ''
+  //   ) {
+  //     setConditionState(prevState => ({
+  //       ...prevState,
+  //       [id]: {
+  //         ...(prevState[id] || { chips: [], inputValue: '' }), // Garante que tenha uma estrutura inicial
+  //         chips: [
+  //           ...(prevState[id]?.chips || []),
+  //           conditionState[id].inputValue.trim(),
+  //         ], // Adiciona o chip
+  //         inputValue: '', // Limpa o campo de input após adicionar o chip
+  //       },
+  //     }))
+  //   }
+  // }
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    const updatedConditions = conditions.map(c => {
-      if (conditionState[c.id]) {
-        // Lógica para o tipo "US"
+    if (!isEmptyObject(conditionState)) {
+      const updatedConditions = conditions.map(c => {
+        if (conditionState[c.id]) {
+          // Lógica para o tipo "US"
 
-        if (conditionState[c.id].selectedOption === 'US') {
-          return {
-            ...c,
-            type: 'US',
-            condition: [],
-            action: actions[c.id]?.action,
-            nextStepId: conditionState[c.id].nextStepId,
-            userIdDestination: conditionState[c.id].userIdDestination,
-            queueId: conditionState[c.id].queueId,
+          if (conditionState[c.id].selectedOption === 'US') {
+            return {
+              ...c,
+              type: 'US',
+              condition: [],
+              nextStepId: conditionState[c.id].nextStepId,
+              userIdDestination: conditionState[c.id].userIdDestination,
+              queueId: conditionState[c.id].queueId,
+            }
+          }
+
+          // Lógica para o tipo "R"
+          if (conditionState[c.id].selectedOption === 'R') {
+            return {
+              ...c,
+              type: 'R',
+              nextStepId: conditionState[c.id].nextStepId,
+              userIdDestination: conditionState[c.id].userIdDestination,
+              queueId: conditionState[c.id].queueId,
+              condition: conditionState[c.id].chips, // Substitui diretamente pelos chips do estado atual
+            }
           }
         }
 
-        // Lógica para o tipo "R"
-        if (conditionState[c.id].selectedOption === 'R') {
-          return {
-            ...c,
-            type: 'R',
-            action: actions[c.id]?.action,
-            nextStepId: conditionState[c.id].nextStepId,
-            userIdDestination: conditionState[c.id].userIdDestination,
-            queueId: conditionState[c.id].queueId,
-            condition: conditionState[c.id].chips, // Substitui diretamente pelos chips do estado atual
-          }
-        }
-      }
+        return c // Retorna a condição original se não houver alteração no estado
+      })
 
-      return c // Retorna a condição original se não houver alteração no estado
-    })
 
-    handleNodeAtualizacaoCondicao(updatedConditions)
+
+
+      console.log(conditionState)
+      // handleNodeAtualizacaoCondicao(updatedConditions)
+    }
   }, [conditionState])
 
   // Função para deletar um chip
@@ -337,34 +371,32 @@ export const TabsDetails = ({
       },
     }))
   }
-  const TabsSelect = (
-    <Tabs
-      sx={{ mt: 2, minHeight: 60 }}
-      variant="fullWidth"
-      value={tabSelected}
-      onChange={(_event, newValue) => handleChangeTabs(newValue)}
-    >
-      <Tab label={'interacoes'} {...a11yProps(0, 'interacoes')} />
-      <Tab label={'Condicoes'} {...a11yProps(1, 'condicoes')} />
-    </Tabs>
-  )
+
 
   function changePosition(arr: Node[], from: number, to: number) {
     if (to >= 0 && to < arr.length) {
       const newArr = [...arr]
       newArr.splice(to, 0, newArr.splice(from, 1)[0]) // Move o item
       setConditions(newArr) // Atualiza o estado com a nova ordem
-      handleNodeAtualizacaoCondicao(newArr)
-      if (node) {
-        // Atualiza os dados no node (se necessário)
-        node.data = {
-          ...node.data,
-          conditions: newArr,
-        }
-      }
+
+      // handleNodeAtualizacaoCondicao(newArr)
+      // if (node) {
+      //   // Atualiza os dados no node (se necessário)
+      //   node.data = {
+      //     ...node.data,
+      //     conditions: newArr,
+      //   }
+      // }
     }
   }
-
+  // Função que controla o input temporário
+  const handleChange = (id, e) => {
+    const value = e.target.value;
+    setTempValue(prevState => ({
+      ...prevState,
+      [id]: value,
+    }));
+  };
   const handleChangeSelectOptions = (id, e) => {
     const selectedValue = e.target.value
 
@@ -378,6 +410,7 @@ export const TabsDetails = ({
         ...prevState,
         [id]: {
           ...prevState[id],
+          action: 0,
           nextStepId: selectedValue,
           userIdDestination: null,
           queueId: null,
@@ -388,6 +421,7 @@ export const TabsDetails = ({
         ...prevState,
         [id]: {
           ...prevState[id],
+          action: 1,
           queueId: selectedValue,
           userIdDestination: null,
           nextStepId: null,
@@ -398,6 +432,7 @@ export const TabsDetails = ({
         ...prevState,
         [id]: {
           ...prevState[id],
+          action: 2,
           userIdDestination: selectedValue,
           queueId: null,
           nextStepId: null,
@@ -410,7 +445,7 @@ export const TabsDetails = ({
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const newRadioValue = event.target.value
-    console.log(newRadioValue)
+
     setRadioChoice(prevState => ({
       ...prevState,
       [id]: newRadioValue, // Atualizar apenas o radioChoice do ID correto
@@ -429,6 +464,14 @@ export const TabsDetails = ({
     } else if (newRadioValue === 'usuario') {
       setOptionsUsuarios(usuarios) // Aqui você carrega os usuários
     } else if (newRadioValue === 'encerar') {
+      setConditionState((prev) => ({
+        ...prev,
+        [id]: {
+          ...prev[id],
+          action: 3
+        }
+      }))
+
     }
   }
 
@@ -436,6 +479,7 @@ export const TabsDetails = ({
     <>
       {nodeType === 'configuracao' ? (
         <TabConfiguracao node={node} />
+
       ) : nodeType === 'start' ? (
         <Box
           sx={{
@@ -465,7 +509,15 @@ export const TabsDetails = ({
         </Box>
       ) : (
         <>
-          {TabsSelect}
+          <Tabs
+            sx={{ mt: 2, minHeight: 60 }}
+            variant="fullWidth"
+            value={tabSelected}
+            onChange={(_event, newValue) => handleChangeTabs(newValue)}
+          >
+            <Tab label={'interações'} {...a11yProps(0, 'interacoes')} />
+            <Tab label={'Condições'} {...a11yProps(1, 'condicoes')} />
+          </Tabs>
           <TabPanel value={tabSelected} index={0}>
             <Interacoes node={node} />
           </TabPanel>
@@ -597,6 +649,14 @@ export const TabsDetails = ({
                           )}
                           <TextField
                             variant="outlined"
+                            value={tempValue[condition.id] || ''} // Usa o valor temporário durante a digitação
+                            onChange={e => handleChange(condition.id, e)} // Atualiza o valor temporário ao digitar
+                            onKeyDown={e => handleKeyDown(condition.id, e)} // Lida com a tecla Enter
+                            placeholder="Digite e pressione Enter"
+                            sx={{ width: '100%', margin: '4px' }}
+                          />
+                          {/* <TextField
+                            variant="outlined"
                             value={
                               conditionState[condition.id]?.inputValue || ''
                             }
@@ -615,7 +675,7 @@ export const TabsDetails = ({
                             onKeyDown={e => handleKeyDown(condition.id, e)}
                             placeholder="Digite e pressione Enter"
                             sx={{ width: '100%', margin: '4px' }}
-                          />
+                          /> */}
                         </Box>
                       )}
                     </FormControl>
@@ -674,11 +734,12 @@ export const TabsDetails = ({
                             optionsEtapas.map(source => (
                               <MenuItem
                                 key={source.id}
-                                value={source.target || source.id}
+                                value={source.target}
                               >
-                                {source.name ||
-                                  source.queue ||
-                                  getLabelByTarget(source.target)}
+                                {
+
+                                  getLabelByTarget(source.target)
+                                }
                               </MenuItem>
                             ))}
                           {radioChoice[condition.id] === 'fila' &&

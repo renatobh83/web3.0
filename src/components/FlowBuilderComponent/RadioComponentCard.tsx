@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import useChatFlowStore from '../../store/chatFlow'
 
 interface RadioComponentCardProps {
-  arg0: any
+  arg0?: any
 }
 
 export const RadioComponentCard = ({ arg0 }: RadioComponentCardProps) => {
