@@ -104,7 +104,7 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
     set((state) => ({
       nodes: [...state.nodes, newNode],
     })),
-  addConditionToNode: (nodeId, newCondition) =>
+  addConditionToNode: (nodeId, newCondition) => {
     set((state) => ({
       nodes: state.nodes.map((node) =>
         node.id === nodeId
@@ -125,7 +125,8 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
             }
           : node
       ),
-    })),
+    }));
+  },
   addInteracaoToNode: (nodeId, interaction) =>
     set((state) => ({
       nodes: state.nodes.map((node) =>

@@ -186,8 +186,8 @@ export const TabsDetails = ({
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (conditions.length >= 1) {
-      console.log(conditions)
-      // addConditionToNode(node?.id, conditions)
+
+      addConditionToNode(node?.id, conditions)
     }
   }, [conditions])
 
@@ -261,7 +261,7 @@ export const TabsDetails = ({
           }
           return condition
         })
-        console.log(condicoes)
+
         setConditions(condicoes)
       }
       // handleNodeAtualizacaoCondicao(updatedConditions)
