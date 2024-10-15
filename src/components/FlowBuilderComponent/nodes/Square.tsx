@@ -5,8 +5,8 @@ import useChatFlowStore from '../../../store/chatFlow'
 
 export const Square = (props: NodeProps) => {
   const [label, setLabel] = useState(props.data.label)
-  const nodeSelect = useChatFlowStore(state => state.nodeSelect)
-  const setNodeSelect = useChatFlowStore(state => state.setNodeSelect)
+  const nodeSelect = useChatFlowStore(state => state.selectedNode)
+  const setNodeSelect = useChatFlowStore(state => state.setSelectedNode)
 
   useEffect(() => {
     setLabel(props.data.label)
@@ -18,7 +18,7 @@ export const Square = (props: NodeProps) => {
       onClick={() => setNodeSelect(props.id)}
       id={props.id}
       sx={{
-        backgroundColor: nodeSelect === props.id ? 'lightgrey' : 'background.paper',
+        backgroundColor: nodeSelect?.id === props.id ? 'lightgrey' : 'background.paper',
         width: 150,
         p: '10px',
         border: '1px solid black',

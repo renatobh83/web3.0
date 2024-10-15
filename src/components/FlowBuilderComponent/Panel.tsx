@@ -63,14 +63,15 @@ export const PanelChatFlow = () => {
     return <Navigate to="/chat-flow" />
   }
   const { nodes, edges, deleteNode, updateNodePosition, setEdges,
-    removeEdge, reconnectEdge, addNode, updateEdges, updateNodes, nodeSelect } =
+    removeEdge, reconnectEdge, addNode, updateEdges, updateNodes, setSelectedNode, selectedNode } =
     useChatFlowStore()
 
   const [localEdges, setLocalEdges, onEdgesChange] = useEdgesState(edges)
   const [localNodes, setLocalNodes, onNodesChange] = useNodesState(nodes)
-  const [selectedNode, setSelectedNode] = useState<Node | undefined>(undefined)
+  // const [selectedNode, setSelectedNode] = useState<Node | undefined>(undefined)
 
   const edgeReconnectSuccessful = useRef(false)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (selectedNode?.id) {
       nodes.find(node => { if (node.id === selectedNode.id) setSelectedNode(node) })
@@ -80,7 +81,7 @@ export const PanelChatFlow = () => {
     updateNodes(nodes)
     updateEdges(localEdges)
   }, [nodes])
-
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     setLocalEdges(edges)
   }, [edges])
@@ -97,7 +98,7 @@ export const PanelChatFlow = () => {
     },
     []
   )
-
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const onReconnect = useCallback(
     (oldEdge: Edge, newConnection: Connection) => {
       const nodeA = 'start'
@@ -112,6 +113,7 @@ export const PanelChatFlow = () => {
     },
     [reconnectEdge]
   )
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const onReconnectEnd = useCallback(
     (_: MouseEvent | TouchEvent, edge: Edge) => {
       const nodeA = 'start'

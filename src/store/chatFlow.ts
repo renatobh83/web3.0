@@ -21,13 +21,13 @@ interface Node {
 interface EdgeStore {
   edges: Edge[];
   nodes: Node[];
-  nodeSelect: Node | null;
+  selectedNode: Node | undefined;
   setNodes: (nodes: Node[]) => void;
   setEdges: (edges: Edge[]) => void;
   updateNodes: (nodes: Node[]) => void;
   updateEdges: (nodes: Edge[]) => void;
   deleteNode: (nodeId: string) => void;
-  setNodeSelect: (node: Node | undefined) => void;
+  setSelectedNode: (node: Node | undefined) => void;
   getEdgesByNodeId: (nodeId: string) => { asSource: Edge[]; asTarget: Edge[] };
   getLabelByTarget: (targetId: string) => string | undefined;
   reconnectEdge: (oldEdge: Edge, newEdge: Edge) => void;
@@ -67,7 +67,7 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
   filas: [],
   edges: [],
   nodes: [],
-  nodeSelect: null,
+  selectedNode: undefined,
   updateNodes: (updatedNodes) =>
     set(() => ({
       nodes: updatedNodes,
@@ -82,9 +82,9 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
         (edge) => edge.source !== nodeId && edge.target !== nodeId
       ),
     })),
-  setNodeSelect: (nodeId) =>
+  setSelectedNode: (nodeId) =>
     set(() => ({
-      nodeSelect: nodeId,
+      selectedNode: nodeId,
     })),
   setNodes: (nodes: Node[]) => {
     set({ nodes });
