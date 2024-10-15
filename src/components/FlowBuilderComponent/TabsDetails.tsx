@@ -1,11 +1,4 @@
-import {
-  Box,
-  Card,
-  CardContent,
-  Tab,
-  Tabs,
-  Typography,
-} from '@mui/material'
+import { Box, Card, CardContent, Tab, Tabs, Typography } from '@mui/material'
 import type { Node } from '@xyflow/react'
 import { a11yProps, TabPanel } from '../MaterialUi/TablePanel'
 import { useState } from 'react'
@@ -17,8 +10,6 @@ export const TabsDetails = ({
   node,
   atualizarNode,
 }: { node: Node | undefined; atualizarNode: (arg0: Node) => void }) => {
-
-
   const nodeType = node?.type
   const [tabSelected, setTabSelected] = useState(0)
 
@@ -31,7 +22,6 @@ export const TabsDetails = ({
     <>
       {nodeType === 'configuracao' ? (
         <TabConfiguracao node={node} />
-
       ) : nodeType === 'start' ? (
         <Box
           sx={{
@@ -51,10 +41,14 @@ export const TabsDetails = ({
               </Typography>
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                 - Caso seja o primeiro contato do cliente, o sistema salvará
-                automaticamente na agenda as informações do cliente. - O Bot irá
-                interagir nos atendimentos iniciados pelos clientes. - O Bot irá
-                parar de interagir caso o atendimento seja assumido por um
-                usuário.
+                automaticamente na agenda as informações do cliente.{' '}
+                <p>
+                  {' '}
+                  - O Bot irá interagir nos atendimentos iniciados pelos
+                  clientes.
+                </p>{' '}
+                - O Bot irá parar de interagir caso o atendimento seja assumido
+                por um usuário.
               </Typography>
             </CardContent>
           </Card>

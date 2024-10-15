@@ -23,7 +23,7 @@ import { previousDay } from 'date-fns'
 import { unstable_DataStrategyFunction } from 'react-router-dom'
 
 function isEmptyObject(obj) {
-  return Object.keys(obj).length === 0;
+  return Object.keys(obj).length === 0
 }
 
 interface InteracoesProps {
@@ -34,23 +34,30 @@ const optionsSe = [
   { label: 'Respostas', value: 'R' },
 ]
 export const Condicoes = ({ node }: InteracoesProps) => {
-  const { filas, usuarios, getEdgesByNodeId, getLabelByTarget, updateNodeData, updatePositionArr } = useChatFlowStore()
+  const {
+    filas,
+    usuarios,
+    getEdgesByNodeId,
+    getLabelByTarget,
+    updateNodeData,
+    updatePositionArr,
+  } = useChatFlowStore()
   const { asSource } = getEdgesByNodeId(node.id)
 
   const [optionsEtapas, setOptionsEtapas] = useState([])
   const [optionsFilas, setOptionsFilas] = useState([])
   const [optionsUsuarios, setOptionsUsuarios] = useState([])
 
-  const [tempValue, setTempValue] = useState({});
+  const [tempValue, setTempValue] = useState({})
 
-  const [conditions, setConditions] = useState<{ type: string; id: string; shouldRemove: boolean }[]>(
-    []
-  )
+  const [conditions, setConditions] = useState<
+    { type: string; id: string; shouldRemove: boolean }[]
+  >([])
   const [conditionState, setConditionState] = useState<{
     [key: string]: {
-      id: string,
+      id: string
       type: string
-      action: number,
+      action: number
       condition?: string[]
       inputValue?: string
       queueId?: string | null | number
@@ -77,8 +84,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
             queueId: c.queueId,
           },
         }))
-
-      });
+      })
     } else {
       setConditions([])
     }
@@ -90,23 +96,24 @@ export const Condicoes = ({ node }: InteracoesProps) => {
       {
         type: '',
         condition: [],
-        id: crypto.randomUUID()
+        id: crypto.randomUUID(),
       },
     ])
   }
   function removeCondition(conditionId: string) {
-    const updatedConditions = conditions.map(cond =>
-      cond.id === conditionId
-        ? { ...cond, shouldRemove: true } // Marca o item com a flag shouldRemove
-        : cond // Mantém os outros itens inalterados
-    );
+    const updatedConditions = conditions.map(
+      cond =>
+        cond.id === conditionId
+          ? { ...cond, shouldRemove: true } // Marca o item com a flag shouldRemove
+          : cond // Mantém os outros itens inalterados
+    )
     setConditions(updatedConditions)
   }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (node?.id) {
       // biome-ignore lint/complexity/noForEach: <explanation>
-      conditions.forEach(cond => updateNodeData(node.id, cond, 'conditions'));
+      conditions.forEach(cond => updateNodeData(node.id, cond, 'conditions'))
     }
   }, [conditions])
 
@@ -115,10 +122,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
     setOptionsFilas(filas)
     setOptionsUsuarios(usuarios)
     setOptionsEtapas(asSource)
-
   }, [filas, usuarios])
-
-
 
   // Função para lidar com a inserção de condition
   const handleKeyDown = (id, event) => {
@@ -133,28 +137,30 @@ export const Condicoes = ({ node }: InteracoesProps) => {
           ],
           inputValue: '', // Limpa o campo após adicionar o chip
         },
-      }));
+      }))
 
       setTempValue(prevState => ({
         ...prevState,
         [id]: '', // Limpa o valor temporário
-      }));
+      }))
     }
-  };
+  }
   // Função que controla o input temporário
   const handleChangeInputChips = (id, e) => {
-    const value = e.target.value;
+    const value = e.target.value
     setTempValue(prevState => ({
       ...prevState,
       [id]: value,
-    }));
-  };
+    }))
+  }
   const handleDeleteInputChips = (id: string, chipToDelete: string) => {
     setConditionState(prevState => ({
       ...prevState,
       [id]: {
         ...prevState[id],
-        condition: prevState[id].condition.filter(chip => chip !== chipToDelete),
+        condition: prevState[id].condition.filter(
+          chip => chip !== chipToDelete
+        ),
       },
     }))
   }
@@ -179,8 +185,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
   ) => {
     const newRadioValue = Number(event.target.value)
 
-
-    setConditionState((prev) => ({
+    setConditionState(prev => ({
       ...prev,
       [id]: {
         ...prev[id],
@@ -188,16 +193,16 @@ export const Condicoes = ({ node }: InteracoesProps) => {
         nextStepId: '',
         userIdDestination: '',
         queueId: '',
-      }
+      },
     }))
 
     if (newRadioValue === 3) {
-      setConditionState((prev) => ({
+      setConditionState(prev => ({
         ...prev,
         [id]: {
           ...prev[id],
-          action: 3
-        }
+          action: 3,
+        },
       }))
     }
   }
@@ -253,14 +258,13 @@ export const Condicoes = ({ node }: InteracoesProps) => {
         if (conditionState.hasOwnProperty(condition.id)) {
           return {
             ...condition,
-            ...conditionState[condition.id]
+            ...conditionState[condition.id],
           }
         }
         return condition
       })
       setConditions(condicoes)
     }
-
   }, [conditionState])
 
   function changePosition(from: number, to: number) {
@@ -275,10 +279,11 @@ export const Condicoes = ({ node }: InteracoesProps) => {
   return (
     <>
       <Box sx={{ mt: 1 }}>
-        <Box
-          sx={{ display: 'flex', justifyContent: 'flex-end', pr: '4px' }}
-        >
-          <Button size="small" variant="outlined" onClick={() => addCondiction()}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', pr: '4px' }}>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => addCondiction()}
           >
             Add
           </Button>
@@ -303,11 +308,11 @@ export const Condicoes = ({ node }: InteracoesProps) => {
             width: '100%',
           }}
         >
-
-          {conditions.map((condition, idx) => (
-            // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-            <React.Fragment key={condition.id}>
-              {!condition.shouldRemove &&
+          {conditions
+            .filter(condition => !condition.shouldRemove) // Filtra os que devem ser renderizados
+            .map((condition, idx) => (
+              // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
+              <React.Fragment key={condition.id}>
                 <Box
                   id={condition.id}
                   key={idx}
@@ -321,7 +326,6 @@ export const Condicoes = ({ node }: InteracoesProps) => {
                     border: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 >
-
                   <Box
                     sx={{
                       width: '100%',
@@ -358,9 +362,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
                       size="small"
                       variant="outlined"
                       sx={{ minWidth: 10, mr: 1 }}
-                      onClick={() =>
-                        removeCondition(condition.id)
-                      }
+                      onClick={() => removeCondition(condition.id)}
                     >
                       <Close
                         sx={{ fontWeight: '500', width: 20, color: 'red' }}
@@ -373,9 +375,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
                     </InputLabel>
                     <Select
                       id={`select_se-${condition.id}`}
-                      value={
-                        conditionState[condition.id]?.type || ''
-                      }
+                      value={conditionState[condition.id]?.type || ''}
                       onChange={e => handleSelectSeChange(condition.id, e)}
                       input={<OutlinedInput label="se" />}
                     >
@@ -409,30 +409,33 @@ export const Condicoes = ({ node }: InteracoesProps) => {
                         <TextField
                           variant="outlined"
                           value={tempValue[condition.id] || ''} // Usa o valor temporário durante a digitação
-                          onChange={e => handleChangeInputChips(condition.id, e)} // Atualiza o valor temporário ao digitar
+                          onChange={e =>
+                            handleChangeInputChips(condition.id, e)
+                          } // Atualiza o valor temporário ao digitar
                           onKeyDown={e => handleKeyDown(condition.id, e)} // Lida com a tecla Enter
                           placeholder="Digite e pressione Enter"
                           sx={{ width: '100%', margin: '4px' }}
                         />
-
                       </Box>
                     )}
                   </FormControl>
                   <Divider />
                   <Box sx={{ padding: 1 }}>
                     <Typography variant="subtitle1" sx={{ px: 1 }}>
-                      Rotear para: {conditionState[condition.id]?.action}
+                      Rotear para:
                     </Typography>
 
                     <FormControl>
                       <RadioGroup
-
                         row
                         name={condition.id}
                         // value={radioChoice[condition.id]?.value || ''}
 
-
-                        value={conditionState[condition.id]?.action !== undefined ? conditionState[condition.id].action : ''}
+                        value={
+                          conditionState[condition.id]?.action !== undefined
+                            ? conditionState[condition.id].action
+                            : ''
+                        }
                         id={`radio-${condition.id}`}
                         onChange={e => handleRadioChange(condition.id, e)}
                         aria-labelledby="demo-row-radio-buttons-group-label"
@@ -472,7 +475,12 @@ export const Condicoes = ({ node }: InteracoesProps) => {
                         <Select
                           id={`select_route-${condition.id}`}
                           // value={selectOption[condition.id]?.value || ''} // Valor carregado do estado
-                          value={conditionState[condition.id]?.userIdDestination || conditionState[condition.id]?.queueId || conditionState[condition.id]?.nextStepId || ''} // Valor carregado do estado
+                          value={
+                            conditionState[condition.id]?.userIdDestination ||
+                            conditionState[condition.id]?.queueId ||
+                            conditionState[condition.id]?.nextStepId ||
+                            ''
+                          } // Valor carregado do estado
                           onChange={e =>
                             handleChangeSelectOptions(condition.id, e)
                           }
@@ -481,43 +489,31 @@ export const Condicoes = ({ node }: InteracoesProps) => {
 
                           {conditionState[condition.id]?.action === 0 &&
                             optionsEtapas.map(source => (
-                              <MenuItem
-                                key={source.id}
-                                value={source.target}
-                              >
+                              <MenuItem key={source.id} value={source.target}>
                                 {getLabelByTarget(source.target)}
                               </MenuItem>
                             ))}
                           {conditionState[condition.id]?.action === 1 &&
                             optionsFilas.map(source => (
-                              <MenuItem
-                                key={source.id}
-                                value={source.id}
-                              >
-                                {
-                                  source.queue
-                                }
+                              <MenuItem key={source.id} value={source.id}>
+                                {source.queue}
                               </MenuItem>
                             ))}
                           {conditionState[condition.id]?.action === 2 &&
                             optionsUsuarios.map(source => (
-                              <MenuItem
-                                key={source.id}
-                                value={source.id}
-                              >
+                              <MenuItem key={source.id} value={source.id}>
                                 {source.name}
                               </MenuItem>
                             ))}
                         </Select>
                       )}
                     </FormControl>
-                  </Box >
-                </Box >
-              }
-            </ React.Fragment>
-          ))}
-        </Box >
-      </Box >
+                  </Box>
+                </Box>
+              </React.Fragment>
+            ))}
+        </Box>
+      </Box>
     </>
   )
 }
