@@ -21,17 +21,18 @@ interface Node {
 interface EdgeStore {
   edges: Edge[];
   nodes: Node[];
-  nodeSelect: Node | undefined;
+  nodeSelect: Node | null;
   setNodes: (nodes: Node[]) => void;
   setEdges: (edges: Edge[]) => void;
   updateNodes: (nodes: Node[]) => void;
   updateEdges: (nodes: Edge[]) => void;
-
+  deleteNode: (nodeId: string) => void;
   setNodeSelect: (node: Node | undefined) => void;
   getEdgesByNodeId: (nodeId: string) => { asSource: Edge[]; asTarget: Edge[] };
   getLabelByTarget: (targetId: string) => string | undefined;
   reconnectEdge: (oldEdge: Edge, newEdge: Edge) => void;
   clearNodeSelection: () => void;
+  updateNodeData: (nodeId: string, newEntry: any[], type: string) => void;
   removeEdge: (edgeId: string) => void;
   removeSelectedNodesAndEdges: () => void; // Função que iremos criar
   addNode: (node: Node) => void;
@@ -70,20 +71,25 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
   filas: [],
   edges: [],
   nodes: [],
-  nodeSelect: undefined,
-  updateNodes: (nodes: Node[]) => {
-    set({ nodes });
-  },
+  nodeSelect: null,
+  updateNodes: (updatedNodes) =>
+    set(() => ({
+      nodes: updatedNodes,
+    })),
   updateEdges: (edges: Edge[]) => {
     set({ edges });
   },
-  setNodeSelect: (node: Node | undefined) => {
-    {
-      set(() => ({
-        nodeSelect: node,
-      }));
-    }
-  },
+  deleteNode: (nodeId) =>
+    set((state) => ({
+      nodes: state.nodes.filter((node) => node.id !== nodeId),
+      edges: state.edges.filter(
+        (edge) => edge.source !== nodeId && edge.target !== nodeId
+      ),
+    })),
+  setNodeSelect: (nodeId) =>
+    set(() => ({
+      nodeSelect: nodeId,
+    })),
   setNodes: (nodes: Node[]) => {
     console.log(nodes);
     set({ nodes });
@@ -99,7 +105,28 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
     }));
     // console.log(get().nodes);
   },
-
+  updateNodeData: (nodeId, newEntry, type) => {
+    set((state) => ({
+      nodes: state.nodes.map((node) =>
+        node.id === nodeId
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                [type]: node.data[type].some((item) => item.id === newEntry.id)
+                  ? node.data[type].map((item) =>
+                      item.id === newEntry.id ? newEntry : item
+                    )
+                  : [...node.data[type], newEntry],
+              },
+            }
+          : node
+      ),
+    }));
+    get().nodes.map((node) =>
+      node.id === nodeId ? console.log(node.data) : ""
+    );
+  },
   addNode: (newNode) =>
     set((state) => ({
       nodes: [...state.nodes, newNode],
@@ -141,12 +168,10 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
           : node
       ),
     })),
-  updateNodePosition: (nodeId: String, newPosition: { x: number; y: number }) =>
+  updateNodePosition: (nodeId, position) =>
     set((state) => ({
       nodes: state.nodes.map((node) =>
-        node.id === nodeId
-          ? { ...node, position: newPosition } // Atualiza a posição
-          : node
+        node.id === nodeId ? { ...node, position } : node
       ),
     })),
 
@@ -168,6 +193,7 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
     // Procura pela edge que tem o targetId fornecido
 
     const targetEdge = get().edges.find((edge) => edge.target === targetId);
+
     // Se a edge foi encontrada, procura o node associado ao targetId
     if (targetEdge) {
       const targetNode = get().nodes.find((node) => node.id === targetId);

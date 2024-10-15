@@ -1,47 +1,24 @@
 import { Box, Typography } from '@mui/material'
 import { type NodeProps, Handle, Position, useReactFlow } from '@xyflow/react'
 import { useEffect, useState } from 'react'
+import useChatFlowStore from '../../../store/chatFlow'
 
 export const Square = (props: NodeProps) => {
-  const { setNodes, getEdges, setEdges } = useReactFlow()
   const [label, setLabel] = useState(props.data.label)
+  const nodeSelect = useChatFlowStore(state => state.nodeSelect)
+  const setNodeSelect = useChatFlowStore(state => state.setNodeSelect)
 
   useEffect(() => {
     setLabel(props.data.label)
   }, [props.data.label])
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const key = e?.key.toLowerCase()
-      switch (true) {
-        case key === 'delete': {
-          setNodes(prevNodes =>
-            prevNodes.filter(node => {
-              if (node.selected) {
-                const connectionEdges = getEdges()
-                const filteredData = connectionEdges.filter(
-                  item => item.source !== node.id && item.target !== node.id
-                )
-                setEdges(filteredData)
-              }
-              return !node.selected
-            })
-          )
-          break
-        }
-        default:
-          break
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [])
+
+
   return (
     <Box
+      onClick={() => setNodeSelect(props.id)}
+      id={props.id}
       sx={{
-        backgroundColor: 'background.paper',
+        backgroundColor: nodeSelect === props.id ? 'lightgrey' : 'background.paper',
         width: 150,
         p: '10px',
         border: '1px solid black',
