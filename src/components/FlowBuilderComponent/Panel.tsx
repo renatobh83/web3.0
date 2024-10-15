@@ -71,7 +71,9 @@ export const PanelChatFlow = () => {
 
   const edgeReconnectSuccessful = useRef(false)
   useEffect(() => {
-
+    if (selectedNode.id) {
+      console.log(selectedNode, nodes)
+    }
     setLocalNodes(nodes)
     updateNodes(nodes)
     updateEdges(localEdges)
