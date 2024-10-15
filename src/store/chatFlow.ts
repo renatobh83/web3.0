@@ -31,8 +31,8 @@ interface EdgeStore {
   getEdgesByNodeId: (nodeId: string) => { asSource: Edge[]; asTarget: Edge[] };
   getLabelByTarget: (targetId: string) => string | undefined;
   reconnectEdge: (oldEdge: Edge, newEdge: Edge) => void;
-  clearNodeSelection: () => void;
-  updateNodeData: (nodeId: string, newEntry: any[], type: string) => void;
+  updatePositionArr: (nodeId: string, newPosition: any[], type: string) => void;
+  updateNodeData: (nodeId: string, newEntry: any, type: string) => void;
   removeEdge: (edgeId: string) => void;
   removeSelectedNodesAndEdges: () => void; // Função que iremos criar
   addNode: (node: Node) => void;
@@ -43,10 +43,6 @@ interface EdgeStore {
   addInteracaoToNode: (
     nodeId: string,
     interaction: { id: string; type: string }
-  ) => void;
-  addConditionToNode: (
-    nodeId: string,
-    condition: { id: string; type: string }
   ) => void;
   updateNode: (updatedNode: Node) => void;
 }
@@ -91,7 +87,6 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
       nodeSelect: nodeId,
     })),
   setNodes: (nodes: Node[]) => {
-    console.log(nodes);
     set({ nodes });
   },
   setEdges: (edges: Edge[]) => {
@@ -105,6 +100,22 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
     }));
     // console.log(get().nodes);
   },
+  updatePositionArr: (nodeId, newEntry, type) => {
+    set((state) => ({
+      nodes: state.nodes.map((node) =>
+        node.id === nodeId
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                [type]: newEntry,
+              },
+            }
+          : node
+      ),
+    }));
+  },
+
   updateNodeData: (nodeId, newEntry, type) => {
     set((state) => ({
       nodes: state.nodes.map((node) =>
@@ -113,47 +124,18 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
               ...node,
               data: {
                 ...node.data,
-                [type]: node.data[type].some((item) => item.id === newEntry.id)
-                  ? node.data[type].map((item) =>
-                      item.id === newEntry.id ? newEntry : item
-                    )
-                  : [...node.data[type], newEntry],
+                [type]: updateOrRemoveEntry(node.data[type], newEntry, true), // Chama a função aqui
               },
             }
           : node
       ),
     }));
-    get().nodes.map((node) =>
-      node.id === nodeId ? console.log(node.data) : ""
-    );
   },
   addNode: (newNode) =>
     set((state) => ({
       nodes: [...state.nodes, newNode],
     })),
-  addConditionToNode: (nodeId, newCondition) => {
-    set((state) => ({
-      nodes: state.nodes.map((node) =>
-        node.id === nodeId
-          ? {
-              ...node,
-              data: {
-                ...node.data,
-                conditions: node.data.conditions.some(
-                  (cond) => cond.id === newCondition.id
-                )
-                  ? node.data.conditions.map((cond) =>
-                      cond.id === newCondition.id
-                        ? { ...cond, ...newCondition }
-                        : cond
-                    ) // Atualiza a condição existente
-                  : [...(node.data.conditions || []), newCondition], // Adiciona uma nova condição
-              },
-            }
-          : node
-      ),
-    }));
-  },
+
   addInteracaoToNode: (nodeId, interaction) =>
     set((state) => ({
       nodes: state.nodes.map((node) =>
@@ -245,17 +227,7 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
     setNodes(remainingNodes);
     // setEdges(remainingEdges);
   },
-  clearNodeSelection: () => {
-    {
-      set((state) => ({
-        nodes: state.nodes.map((node) => ({
-          ...node,
-          selected: false, // Desmarca todos os nós
-        })),
-      }));
-      console.log("cancel", get().nodes);
-    }
-  },
+
   removeEdge: (edgeId) =>
     set((state) => ({
       edges: state.edges.filter((edge) => edge.id !== edgeId),
@@ -267,5 +239,30 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
       filas: [],
     }),
 }));
+const updateOrRemoveEntry = (
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  array: any[],
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  newEntry: any,
+  removeIfMissing = false
+) => {
+  // Verifica se o id já existe no array
+  const index = array.findIndex((item) => item.id === newEntry.id);
 
+  if (index !== -1) {
+    if (removeIfMissing && newEntry.shouldRemove) {
+      // Remove o item se a flag `shouldRemove` estiver ativa
+      return array.filter((item) => item.id !== newEntry.id);
+      // biome-ignore lint/style/noUselessElse: <explanation>
+    } else {
+      // Se encontrar o id, substitui o item no array com o novo objeto
+      array[index] = newEntry;
+    }
+  } else if (removeIfMissing && !newEntry.shouldRemove) {
+    // Se não encontrar e a remoção não for ativada, adiciona o novo objeto ao final do array
+    array.push(newEntry);
+  }
+
+  return array; // Retorna o array atualizado
+};
 export default useChatFlowStore;
