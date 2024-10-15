@@ -74,7 +74,7 @@ export const PanelChatFlow = () => {
   useEffect(() => {
     if (selectedNode?.id) {
       nodes.find(node => { if (node.id === selectedNode.id) setSelectedNode(node) })
-      console.log('update Select node')
+
     }
     setLocalNodes(nodes)
     updateNodes(nodes)

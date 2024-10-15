@@ -115,11 +115,7 @@ export const Interacoes = ({ node }: InteracoesProps) => {
       clearTimeout
     }
 
-    if (node?.id) {
-      // biome-ignore lint/complexity/noForEach: <explanation>
-      interacoes.forEach(interacao => updateNodeData(node.id, interacao, 'interactions'));
 
-    }
   }, [interacoes])
 
   const handlRemoveInteracao = (id: string) => {

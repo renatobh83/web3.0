@@ -62,7 +62,6 @@ export const Condicoes = ({ node }: InteracoesProps) => {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    console.log(node)
     if (node.data.conditions.length) {
       setConditions(node.data.conditions)
       node.data.conditions.map(c => {
