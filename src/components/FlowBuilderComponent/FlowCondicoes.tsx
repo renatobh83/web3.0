@@ -35,23 +35,22 @@ const optionsSe = [
 ]
 export const Condicoes = ({ node }: InteracoesProps) => {
   const { filas, usuarios, getEdgesByNodeId, getLabelByTarget, updateNodeData, updatePositionArr } = useChatFlowStore()
-  const { asSource, asTarget } = getEdgesByNodeId(node.id)
+  const { asSource } = getEdgesByNodeId(node.id)
 
   const [optionsEtapas, setOptionsEtapas] = useState([])
   const [optionsFilas, setOptionsFilas] = useState([])
   const [optionsUsuarios, setOptionsUsuarios] = useState([])
 
   const [tempValue, setTempValue] = useState({});
-  const [selectOption, setSelectOption] = useState<{
-    [key: string]: { value: string }
-  }>({})
-  const [radioChoice, setRadioChoice] = useState<{ [key: string]: { value: number } }>({})
+
   const [conditions, setConditions] = useState<{ type: string; id: string; shouldRemove: boolean }[]>(
     []
   )
   const [conditionState, setConditionState] = useState<{
     [key: string]: {
+      id: string,
       type: string
+      action: number,
       condition?: string[]
       inputValue?: string
       queueId?: string | null | number
@@ -66,47 +65,19 @@ export const Condicoes = ({ node }: InteracoesProps) => {
     if (node.data.conditions.length) {
       setConditions(node.data.conditions)
       node.data.conditions.map(c => {
-        console.log(c)
         setConditionState(prevState => ({
           ...prevState,
           [c.id]: {
             ...prevState[c.id],
-            type: c.type
+            action: c.action,
+            id: c.id,
+            type: c.type,
+            nextStepId: c.nextStepId,
+            userIdDestination: c.userIdDestination,
+            queueId: c.queueId,
           },
         }))
-        setRadioChoice(prevState => ({
-          ...prevState, // Mantém o estado anterior
-          [c.id]: {
-            value: c.action
-          }
-        }));
-        if (c.action === 2) {
-          setSelectOption(prevState => ({
-            ...prevState, // Mantém o estado anterior
-            [c.id]: {
-              value: c.userIdDestination
-            }
-          }));
-        }
-        if (c.action === 1) {
-          setSelectOption(prevState => ({
-            ...prevState, // Mantém o estado anterior
-            [c.id]: {
-              value: c.queueId
-            }
-          }));
-        }
-        if (c.action === 0) {
-          setConditionState(prevState => ({
-            ...prevState,
-            [c.id]: {
-              ...prevState[c.id],
-              nextStepId: c.nextStepId,
-              userIdDestination: null,
-              queueId: null,
-            },
-          }))
-        }
+
       });
     } else {
       setConditions([])
@@ -208,17 +179,16 @@ export const Condicoes = ({ node }: InteracoesProps) => {
   ) => {
     const newRadioValue = Number(event.target.value)
 
-    setRadioChoice(prevState => ({
-      ...prevState,
-      [id]: {
-        value: newRadioValue
-      }, // Atualizar apenas o radioChoice do ID correto
-    }))
 
-    // Limpar o select quando o radio é alterado
-    setSelectOption(prevState => ({
-      ...prevState,
-      [id]: { value: '' }, // Resetar o valor do select para o ID correspondente
+    setConditionState((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        action: newRadioValue,
+        nextStepId: '',
+        userIdDestination: '',
+        queueId: '',
+      }
     }))
 
     if (newRadioValue === 3) {
@@ -234,12 +204,12 @@ export const Condicoes = ({ node }: InteracoesProps) => {
   const handleChangeSelectOptions = (id: string, e: any) => {
     const selectedValue = e.target.value as string
 
-    setSelectOption(prevState => ({
-      ...prevState,
-      [id]: { value: selectedValue }, // Garantir que só o select do ID correto é atualizado
-    }))
+    // setSelectOption(prevState => ({
+    //   ...prevState,
+    //   [id]: { value: selectedValue }, // Garantir que só o select do ID correto é atualizado
+    // }))
 
-    if (radioChoice[id].value === 0) {
+    if (conditionState[id].action === 0) {
       setConditionState(prevState => ({
         ...prevState,
         [id]: {
@@ -250,7 +220,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
           queueId: null,
         },
       }))
-    } else if (radioChoice[id].value === 1) {
+    } else if (conditionState[id].action === 1) {
       setConditionState(prevState => ({
         ...prevState,
         [id]: {
@@ -261,7 +231,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
           nextStepId: null,
         },
       }))
-    } else if (radioChoice[id].value === 2) {
+    } else if (conditionState[id]?.action === 2) {
       setConditionState(prevState => ({
         ...prevState,
         [id]: {
@@ -290,6 +260,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
       })
       setConditions(condicoes)
     }
+
   }, [conditionState])
 
   function changePosition(from: number, to: number) {
@@ -335,7 +306,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
 
           {conditions.map((condition, idx) => (
             // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-            <>
+            <React.Fragment key={condition.id}>
               {!condition.shouldRemove &&
                 <Box
                   id={condition.id}
@@ -450,7 +421,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
                   <Divider />
                   <Box sx={{ padding: 1 }}>
                     <Typography variant="subtitle1" sx={{ px: 1 }}>
-                      Rotear para:
+                      Rotear para: {conditionState[condition.id]?.action}
                     </Typography>
 
                     <FormControl>
@@ -458,7 +429,10 @@ export const Condicoes = ({ node }: InteracoesProps) => {
 
                         row
                         name={condition.id}
-                        value={radioChoice[condition.id]?.value || ''}
+                        // value={radioChoice[condition.id]?.value || ''}
+
+
+                        value={conditionState[condition.id]?.action !== undefined ? conditionState[condition.id].action : ''}
                         id={`radio-${condition.id}`}
                         onChange={e => handleRadioChange(condition.id, e)}
                         aria-labelledby="demo-row-radio-buttons-group-label"
@@ -494,16 +468,18 @@ export const Condicoes = ({ node }: InteracoesProps) => {
                       </RadioGroup>
                     </FormControl>
                     <FormControl fullWidth sx={{ padding: 1, mt: 1 / 2 }}>
-                      {radioChoice[condition.id]?.value !== 3 && (
+                      {conditionState[condition.id]?.action !== 3 && (
                         <Select
                           id={`select_route-${condition.id}`}
-                          value={selectOption[condition.id]?.value || ''} // Valor carregado do estado
+                          // value={selectOption[condition.id]?.value || ''} // Valor carregado do estado
+                          value={conditionState[condition.id]?.userIdDestination || conditionState[condition.id]?.queueId || conditionState[condition.id]?.nextStepId || ''} // Valor carregado do estado
                           onChange={e =>
                             handleChangeSelectOptions(condition.id, e)
                           }
                         >
                           {/* Exibir as opções com base na escolha do radio */}
-                          {radioChoice[condition.id]?.value === 0 &&
+
+                          {conditionState[condition.id]?.action === 0 &&
                             optionsEtapas.map(source => (
                               <MenuItem
                                 key={source.id}
@@ -512,7 +488,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
                                 {getLabelByTarget(source.target)}
                               </MenuItem>
                             ))}
-                          {radioChoice[condition.id]?.value === 1 &&
+                          {conditionState[condition.id]?.action === 1 &&
                             optionsFilas.map(source => (
                               <MenuItem
                                 key={source.id}
@@ -523,7 +499,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
                                 }
                               </MenuItem>
                             ))}
-                          {radioChoice[condition.id]?.value === 2 &&
+                          {conditionState[condition.id]?.action === 2 &&
                             optionsUsuarios.map(source => (
                               <MenuItem
                                 key={source.id}
@@ -538,7 +514,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
                   </Box >
                 </Box >
               }
-            </>
+            </ React.Fragment>
           ))}
         </Box >
       </Box >

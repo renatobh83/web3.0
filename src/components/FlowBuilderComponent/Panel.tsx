@@ -169,9 +169,7 @@ export const PanelChatFlow = () => {
       ...chatFlow,
       flow,
     }
-
-    // updateNodes(localNodes)
-    // updateEdges(localEdges)
+    console.log(data, localNodes, nodes)
     await UpdateChatFlow(data)
   }
 
