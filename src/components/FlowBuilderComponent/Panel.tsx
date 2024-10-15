@@ -62,7 +62,8 @@ export const PanelChatFlow = () => {
   if (!chatFlow.id) {
     return <Navigate to="/chat-flow" />
   }
-  const { nodes, edges, clearNodeSelection, deleteNode, updateNodePosition, setEdges, removeEdge, reconnectEdge, setNodes, addNode, updateEdges, updateNodes } =
+  const { nodes, edges, deleteNode, updateNodePosition, setEdges,
+    removeEdge, reconnectEdge, addNode, updateEdges, updateNodes, nodeSelect } =
     useChatFlowStore()
 
   const [localEdges, setLocalEdges, onEdgesChange] = useEdgesState(edges)
@@ -71,8 +72,9 @@ export const PanelChatFlow = () => {
 
   const edgeReconnectSuccessful = useRef(false)
   useEffect(() => {
-    if (selectedNode.id) {
-      console.log(selectedNode, nodes)
+    if (selectedNode?.id) {
+      nodes.find(node => { if (node.id === selectedNode.id) setSelectedNode(node) })
+      console.log('update Select node')
     }
     setLocalNodes(nodes)
     updateNodes(nodes)
@@ -157,8 +159,8 @@ export const PanelChatFlow = () => {
   const [labelNode, setLabelNode] = useState('')
 
   const handleLabelData = newLabel => {
-    if (nodeSelect) {
-      nodeSelect.data.label = newLabel
+    if (selectedNode) {
+      selectedNode.data.label = newLabel
       setLabelNode(newLabel)
     }
   }
@@ -316,7 +318,7 @@ export const PanelChatFlow = () => {
                   name="label"
                   variant="filled"
                   label="Nome"
-                  value={selectedNode ? selectedNode?.data?.label : ''}
+                  value={selectedNode ? selectedNode?.data?.label : labelNode}
                   onChange={e => {
                     handleLabelData(e.target.value)
                   }}

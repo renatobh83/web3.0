@@ -98,22 +98,27 @@ export const Interacoes = ({ node }: InteracoesProps) => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
 
-    if (!isOnload) {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-      debounceRef.current = setTimeout(() => {
-        if (node?.id) {
-          // biome-ignore lint/complexity/noForEach: <explanation>
-          interacoes.forEach(interacao => updateNodeData(node.id, interacao, 'interactions'));
 
-        }
-      }, 700); // Tempo de debounce em milissegundos (300ms neste exemplo)
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    debounceRef.current = setTimeout(() => {
+      if (node?.id) {
+        // biome-ignore lint/complexity/noForEach: <explanation>
+        interacoes.forEach(interacao => updateNodeData(node.id, interacao, 'interactions'));
 
-      // Cleanup function para cancelar o timeout se `interacoes` mudar antes de concluir o debounce
-      return () => {
-        clearTimeout
       }
+    }, 700); // Tempo de debounce em milissegundos (300ms neste exemplo)
+
+    // Cleanup function para cancelar o timeout se `interacoes` mudar antes de concluir o debounce
+    return () => {
+      clearTimeout
+    }
+
+    if (node?.id) {
+      // biome-ignore lint/complexity/noForEach: <explanation>
+      interacoes.forEach(interacao => updateNodeData(node.id, interacao, 'interactions'));
+
     }
   }, [interacoes])
 
