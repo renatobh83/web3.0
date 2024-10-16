@@ -2,7 +2,7 @@ const data = {
   nodeList: [
     {
       id: "configurations",
-      type: "configuracao",
+      type: "configurations",
       position: { x: 340, y: 100 },
       deletable: false, // custom property to mark it as non-deletable
       draggable: false, // Não pode ser movido

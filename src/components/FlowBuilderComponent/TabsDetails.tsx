@@ -20,7 +20,7 @@ export const TabsDetails = ({
 
   return (
     <>
-      {nodeType === 'configuracao' ? (
+      {nodeType === 'configurations' ? (
         <TabConfiguracao node={node} />
       ) : nodeType === 'start' ? (
         <Box

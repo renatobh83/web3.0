@@ -52,7 +52,7 @@ const EDGE_TYPES = {
 }
 const NODE_TYPES = {
   square: Square,
-  configuracao: Configuracoes,
+  configurations: Configuracoes,
   start: Start,
   boasVindas: BoasVindas,
 }

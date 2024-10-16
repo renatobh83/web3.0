@@ -40,7 +40,7 @@ export const Interacoes = ({ node }: InteracoesProps) => {
     }
   }>({})
   useEffect(() => {
-    if (node.data.interactions.length) {
+    if (node.data?.interactions?.length) {
       setInteracoes(node.data.interactions)
       node.data.interactions.map(interacao => {
         setInteracoesState(prev => ({
@@ -90,7 +90,7 @@ export const Interacoes = ({ node }: InteracoesProps) => {
     setInteracoes(prev => [...prev, newInteracao])
     setHasChanges(true) // Marca que houve alteração
   }
-  ;[]
+    ;[]
   const debounceRef = useRef<null | number>(null)
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
