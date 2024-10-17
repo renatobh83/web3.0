@@ -85,6 +85,7 @@ const StyledMenu = styled((props: MenuProps) => (
 
 export const MenusNavbar = () => {
   const { decryptData } = useAuth()
+
   const navigate = useNavigate()
   const location = useLocation()
   const notificacaoTicket = useAtendimentoTicketStore(s => s.notificacaoTicket)
@@ -200,13 +201,14 @@ export const MenusNavbar = () => {
       setStatus(usuario.status === 'online')
     }
   }, [])
+
   return (
     <Stack
       direction="row"
       spacing={1}
       sx={{ justifyContent: 'center', alignItems: 'center' }}
     >
-      {/* <AudioNotification /> */}
+      <AudioNotification />
       <Tooltip title="Notificações" arrow placement="left">
 
         <>

@@ -87,7 +87,6 @@ export const MainLayout: React.FC = () => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const consultarTickets = useCallback(async () => {
     reset()
-    console.log('Consultar tickets', location.pathname)
     const params = {
       searchParam: '',
       pageNumber: 1,
@@ -98,7 +97,7 @@ export const MainLayout: React.FC = () => {
       withUnreadMessages: true,
       isNotAssignedUser: false,
       includeNotQueueDefined: true,
-      // date: new Date(),
+
     }
     try {
       const { data } = await ConsultarTickets(params)

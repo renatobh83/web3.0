@@ -14,6 +14,7 @@ import { useWebSocketStore } from '../store/socket'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { Errors } from '../utils/error'
+import { AudioNotification } from '../components/AtendimentoComponent/AudioNotification'
 
 export const useMixinSocket = () => {
   const { decryptData } = useAuth()
@@ -122,6 +123,7 @@ export const useMixinSocket = () => {
           ) {
             if (checkTicketFilter(data.payload.ticket)) {
               console.log('Notificacao do MinxSocket')
+
               handlerNotifications(data.payload)
             }
           }
@@ -160,7 +162,6 @@ export const useMixinSocket = () => {
           }
           try {
             const data_noti = await ConsultarTickets(params)
-
             updateNotificationsP(data_noti.data)
             verify = data_noti
           } catch (err) {

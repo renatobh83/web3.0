@@ -68,9 +68,9 @@ import { ListarContatos } from '../../services/contatos'
 import { useContatosStore } from '../../store/contatos'
 import { Errors } from '../../utils/error'
 import { useAuth } from '../../context/AuthContext'
-import { AudioNotification } from '../../components/AtendimentoComponent/AudioNotification'
 import { useSocketInitial } from '../../hooks/useSocketInitial'
 import { ListarMensagensRapidas } from '../../services/mensagensRapidas'
+import { AudioNotification } from '../../components/AtendimentoComponent/AudioNotification'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -155,6 +155,7 @@ interface Props {
 }
 
 export function Atendimento(props: Props) {
+
   const nav = useNavigate()
   const location = useLocation()
   const { window } = props
@@ -673,7 +674,7 @@ export function Atendimento(props: Props) {
   useEffect(() => {
     if (!contatos.length) listaContatos()
     if (!mensagensRapidas.length) listarMensagensRapidas()
-    console.log(contatos)
+
   }, [])
 
   const handleClick = () => {
@@ -989,7 +990,7 @@ export function Atendimento(props: Props) {
             value="open"
             disableRipple
           />
-
+          <AudioNotification />
           <Tab
             label={
               pendingGroupTickets().length ? (

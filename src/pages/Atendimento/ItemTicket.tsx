@@ -110,7 +110,7 @@ export const ItemTicket = ({
         bgcolor: 'background.paper',
       }}
     >
-      {ticket.status}
+
       <ListItemButton
         onClick={() => abrirChatContato(ticket)}
         sx={{

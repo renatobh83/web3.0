@@ -17,6 +17,7 @@ import { Socket } from 'socket.io-client'
 import { useNavigate } from 'react-router-dom'
 import { Errors } from '../utils/error'
 import { useUsuarioStore } from '../store/usuarios'
+import { AudioNotification } from '../components/AtendimentoComponent/AudioNotification'
 // import { EventEmitter } from "events";
 
 // export const eventEmitter = new EventEmitter();
@@ -66,6 +67,7 @@ export const useSocketInitial = () => {
   const userId = +localStorage.getItem('userId')
   let socket: WebSocket | Socket<DefaultEventsMap, DefaultEventsMap> | null =
     null
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (!getWs()) {
@@ -183,97 +185,97 @@ export const useSocketInitial = () => {
         )
       })
 
-      socket.on(`${usuario.tenantId}:ticketList`, async data => {
-        if (data.type === 'ticket:update') {
-          console.log('socket ON: TICKET:UPDATE 1')
-          try {
-            const params = {
-              searchParam: '',
-              pageNumber: 1,
-              status: ['open', 'pending'],
-              showAll: false,
-              count: null,
-              queuesIds: [],
-              withUnreadMessages: [true, false],
-              isNotAssignedUser: [true, false],
-              includeNotQueueDefined: [true, false],
-              // date: new Date(),
-            }
-            const { data } = await ConsultarTickets(params)
+      // socket.on(`${usuario.tenantId}:ticketList`, async data => {
+      //   // if (data.type === 'ticket:update') {
+      //   //   console.log('socket ON: TICKET:UPDATE 1')
+      //   //   try {
+      //   //     const params = {
+      //   //       searchParam: '',
+      //   //       pageNumber: 1,
+      //   //       status: ['open', 'pending'],
+      //   //       showAll: false,
+      //   //       count: null,
+      //   //       queuesIds: [],
+      //   //       withUnreadMessages: [true, false],
+      //   //       isNotAssignedUser: [true, false],
+      //   //       includeNotQueueDefined: [true, false],
+      //   //       // date: new Date(),
+      //   //     }
+      //   //     const { data } = await ConsultarTickets(params)
 
-            updateNotifications(data)
+      //   //     updateNotifications(data)
 
-            const orderTickets = tickets => {
-              const newTickes = orderBy(
-                tickets,
-                obj => parseISO(obj.lastMessageAt || obj.updatedAt),
-                ['asc']
-              )
-              return [...newTickes]
-            }
-            const newTickets = orderTickets(data.tickets)
-            // console.log('try ORDER_TICKETS', newTickets.map(ticket => ({ id: ticket.id, lastMessageAt: ticket.lastMessageAt })))
-            setTimeout(() => {
-              // console.log('try LOAD_TICKETS')
-              loadTickets(newTickets)
-            }, 200)
-            setTimeout(() => {
-              // console.log('try UPDATE_TICKET')
-              updateTicket(newTickets)
-            }, 400)
-            setTimeout(async () => {
-              // console.log('try UPDATE_CONTACT')
-              updateContact(newTickets)
-              // this.$store.commit('UPDATE_NOTIFICATIONS', data)
-            }, 600)
-          } catch (err) {
-            console.log('error try', err)
-          }
-        }
-        if (data.type === 'ticket:create') {
-          console.log('socket ON: TICKET:CREATE 1')
-          try {
-            const params = {
-              searchParam: '',
-              pageNumber: 1,
-              status: ['open', 'pending'],
-              showAll: false,
-              count: null,
-              queuesIds: [],
-              withUnreadMessages: false,
-              isNotAssignedUser: false,
-              includeNotQueueDefined: true,
-              // date: new Date(),
-            }
-            const { data } = await ConsultarTickets(params)
-            console.log('Params1', data)
-            updateNotifications(data)
-            const orderTickets = tickets => {
-              const newTickes = orderBy(
-                tickets,
-                obj => parseISO(obj.lastMessageAt || obj.updatedAt),
-                ['asc']
-              )
-              return [...newTickes]
-            }
-            const newTickets = orderTickets(data.tickets)
-            // console.log('try ORDER_TICKETS', newTickets.map(ticket => ({ id: ticket.id, lastMessageAt: ticket.lastMessageAt })))
-            setTimeout(() => {
-              loadTickets(newTickets)
-            }, 200)
-            setTimeout(() => {
-              updateTicket(newTickets)
-            }, 400)
-            setTimeout(() => {
-              // console.log('try UPDATE_CONTACT')
-              updateContact(newTickets)
-              // this.$store.commit('UPDATE_NOTIFICATIONS', data)
-            }, 600)
-          } catch (err) {
-            console.log('error try', err)
-          }
-        }
-      })
+      //   //     const orderTickets = tickets => {
+      //   //       const newTickes = orderBy(
+      //   //         tickets,
+      //   //         obj => parseISO(obj.lastMessageAt || obj.updatedAt),
+      //   //         ['asc']
+      //   //       )
+      //   //       return [...newTickes]
+      //   //     }
+      //   //     const newTickets = orderTickets(data.tickets)
+      //   //     // console.log('try ORDER_TICKETS', newTickets.map(ticket => ({ id: ticket.id, lastMessageAt: ticket.lastMessageAt })))
+      //   //     setTimeout(() => {
+      //   //       // console.log('try LOAD_TICKETS')
+      //   //       loadTickets(newTickets)
+      //   //     }, 200)
+      //   //     setTimeout(() => {
+      //   //       // console.log('try UPDATE_TICKET')
+      //   //       updateTicket(newTickets)
+      //   //     }, 400)
+      //   //     setTimeout(async () => {
+      //   //       // console.log('try UPDATE_CONTACT')
+      //   //       updateContact(newTickets)
+      //   //       // this.$store.commit('UPDATE_NOTIFICATIONS', data)
+      //   //     }, 600)
+      //   //   } catch (err) {
+      //   //     console.log('error try', err)
+      //   //   }
+      //   // }
+      //   // if (data.type === 'ticket:create') {
+      //   //   console.log('socket ON: TICKET:CREATE 1')
+      //   //   try {
+      //   //     const params = {
+      //   //       searchParam: '',
+      //   //       pageNumber: 1,
+      //   //       status: ['open', 'pending'],
+      //   //       showAll: false,
+      //   //       count: null,
+      //   //       queuesIds: [],
+      //   //       withUnreadMessages: false,
+      //   //       isNotAssignedUser: false,
+      //   //       includeNotQueueDefined: true,
+      //   //       // date: new Date(),
+      //   //     }
+      //   //     const { data } = await ConsultarTickets(params)
+      //   //     console.log('Params1', data)
+      //   //     updateNotifications(data)
+      //   //     const orderTickets = tickets => {
+      //   //       const newTickes = orderBy(
+      //   //         tickets,
+      //   //         obj => parseISO(obj.lastMessageAt || obj.updatedAt),
+      //   //         ['asc']
+      //   //       )
+      //   //       return [...newTickes]
+      //   //     }
+      //   //     const newTickets = orderTickets(data.tickets)
+      //   //     // console.log('try ORDER_TICKETS', newTickets.map(ticket => ({ id: ticket.id, lastMessageAt: ticket.lastMessageAt })))
+      //   //     setTimeout(() => {
+      //   //       loadTickets(newTickets)
+      //   //     }, 200)
+      //   //     setTimeout(() => {
+      //   //       updateTicket(newTickets)
+      //   //     }, 400)
+      //   //     setTimeout(() => {
+      //   //       // console.log('try UPDATE_CONTACT')
+      //   //       updateContact(newTickets)
+      //   //       // this.$store.commit('UPDATE_NOTIFICATIONS', data)
+      //   //     }, 600)
+      //   //   } catch (err) {
+      //   //     console.log('error try', err)
+      //   //   }
+      //   // }
+      // })
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
         if (data.type === 'chat:create') {
           eventEmitterScrool.emit('scrollToBottomMessageChat')
@@ -304,21 +306,21 @@ export const useSocketInitial = () => {
           }
 
           updateMessages(data.payload)
-          const params = {
+
+          const paramsOpen = {
             searchParam: '',
             pageNumber: 1,
-            status: ['open', 'pending'],
+            status: ['open'],
             showAll: false,
             count: null,
             queuesIds: [],
             withUnreadMessages: false,
             isNotAssignedUser: false,
             includeNotQueueDefined: true,
-            // date: new Date(),
-          }
 
+          }
           try {
-            const { data } = await ConsultarTickets(params)
+            const { data } = await ConsultarTickets(paramsOpen)
 
             updateNotifications(data)
             const orderTickets = tickets => {
@@ -329,7 +331,6 @@ export const useSocketInitial = () => {
               )
               return [...newTickes]
             }
-
             const newTickets = orderTickets(data.tickets)
             setTimeout(() => {
               // this.$store.commit('LOAD_TICKETS', newTickets);
@@ -345,6 +346,52 @@ export const useSocketInitial = () => {
             setTimeout(() => {
               updateContact(newTickets)
               updateNotifications(data)
+            }, 600)
+            try {
+              eventEmitterScrool.emit('scrollToBottomMessageChat')
+            } catch (error) { }
+          } catch (err) {
+            console.log('error try', err)
+          }
+          const paramsPending = {
+            searchParam: '',
+            pageNumber: 1,
+            status: ['pending'],
+            showAll: false,
+            count: null,
+            queuesIds: [],
+            withUnreadMessages: false,
+            isNotAssignedUser: false,
+            includeNotQueueDefined: true,
+
+          }
+          try {
+            const { data } = await ConsultarTickets(paramsPending)
+
+            updateNotificationsP(data)
+            const orderTickets = tickets => {
+              const newTickes = orderBy(
+                tickets,
+                obj => parseISO(obj.lastMessageAt || obj.updatedAt),
+                ['asc']
+              )
+              return [...newTickes]
+            }
+            const newTickets = orderTickets(data.tickets)
+            setTimeout(() => {
+              // this.$store.commit('LOAD_TICKETS', newTickets);
+              loadTickets(newTickets)
+            }, 200)
+            setTimeout(() => {
+              // this.$store.commit('UPDATE_TICKET', newTickets);
+              updateTicket(newTickets)
+              try {
+                updateMessages(data.payload)
+              } catch (e) { }
+            }, 400)
+            setTimeout(() => {
+              updateContact(newTickets)
+              updateNotificationsP(data)
             }, 600)
             try {
               eventEmitterScrool.emit('scrollToBottomMessageChat')
