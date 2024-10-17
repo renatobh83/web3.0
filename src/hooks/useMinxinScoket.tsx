@@ -136,8 +136,9 @@ export const useMixinSocket = () => {
           updateMessages(data.payload)
         }
         if (data.type === 'ticket:update') {
+          console.log(data.payload)
           updateTicket(data.payload)
-          updateNotifications(data.payload)
+          // updateNotifications(data.payload)
         }
       })
       socket?.on(`${usuario.tenantId}:ticketList`, async data => {
