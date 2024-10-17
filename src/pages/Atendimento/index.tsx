@@ -375,6 +375,7 @@ export function Atendimento(props: Props) {
     }
   }
   function handlerNotifications(data) {
+    console.log('Emiter')
     const options = {
       body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
       icon: data.ticket.contact.profilePicUrl,
@@ -397,7 +398,7 @@ export function Atendimento(props: Props) {
       AbrirChatMensagens(data.payload)
       goToChat(data.payload.id)
     }
-
+    <AudioNotification />
     // this.$nextTick(() => {
     //     // utilizar refs do layout
     //     this.$refs.audioNotificationPlay.play()

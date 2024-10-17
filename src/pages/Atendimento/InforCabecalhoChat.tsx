@@ -421,7 +421,7 @@ export const InfoCabecalhoMenssagens = () => {
                 label="usuario"
                 value={usuarioSelecionado || ''}
                 onChange={e => setUsuarioSelecionado(Number(e.target.value))}
-                // disabled={!filaSelecionada}
+              // disabled={!filaSelecionada}
               >
                 {usuarios
                   // .filter((user) =>

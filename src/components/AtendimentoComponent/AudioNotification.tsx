@@ -17,7 +17,8 @@ export const AudioNotification: React.FC = () => {
   }, [notificacaoTicket]);
 
   return (
-    < audio ref={audioRef} >
+    // biome-ignore lint/a11y/useMediaCaption: <explanation>
+    <audio ref={audioRef}>
       <source src={alertSound} type="audio/mp3" />
     </audio >
   )

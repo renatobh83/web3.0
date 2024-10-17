@@ -146,7 +146,7 @@ export const ItemTicket = ({
                 <Badge
                   badgeContent={ticket.unreadMessages}
                   color="secondary"
-                  // sx={{ mr: 1 }}
+                // sx={{ mr: 1 }}
                 />
               </Button>
             </Tooltip>
@@ -175,7 +175,7 @@ export const ItemTicket = ({
             display="flex"
             justifyContent="space-between"
             alignItems="center"
-            // sx={{ width: '100%' }}
+          // sx={{ width: '100%' }}
           >
             <Typography
               // fontWeight="bold"/

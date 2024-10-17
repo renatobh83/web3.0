@@ -287,8 +287,10 @@ export const useSocketInitial = () => {
               image: data.payload.ticket.contact.profilePicUrl,
               icon: data.payload.ticket.contact.profilePicUrl,
             })
+            console.log('notificacao socket inicial 1')
           }
           if (!data.payload.ticket.userId && !data.payload.fromMe) {
+            console.log('notificacao socket inicial 2')
             const message = new Notification('Novo cliente pendente', {
               body: 'Cliente: ' + data.payload.ticket.contact.name,
               tag: 'simple-push-demo-notification',
@@ -383,11 +385,11 @@ export const useSocketInitial = () => {
 
           // biome-ignore lint/complexity/noForEach: <explanation>
           verify?.data?.tickets.forEach(element => {
-            console.log(element.id, data.payload.id)
             pass_noti = element.id === data.payload.id ? true : pass_noti
           })
 
           if (pass_noti) {
+            console.log('notificacao socket inicial 3')
             const message = new Notification('Novo cliente pendente', {
               // biome-ignore lint/style/useTemplate: <explanation>
               body: 'Cliente: ' + data.payload.contact.name,

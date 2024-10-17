@@ -196,7 +196,6 @@ export const MenusNavbar = () => {
   // }, [notificacaoTicket])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-
     if (usuario) {
       setStatus(usuario.status === 'online')
     }
@@ -212,10 +211,11 @@ export const MenusNavbar = () => {
 
         <>
           <Button onClick={handleClick}>
-            {+notificationsP.count + +notifications.count === 0 ? (
+            {Number(notificationsP.count) + Number(notifications.count) === 0 ? (
               <NotificationsNoneIcon />
             ) : (
-              <Badge badgeContent={+notifications.count + +notificationsP.count} color="primary">
+              <Badge badgeContent={Number(notifications.count) + Number(notificationsP.count)} color="primary">
+
                 <NotificationsIcon />
               </Badge>
             )}
@@ -229,14 +229,14 @@ export const MenusNavbar = () => {
             onClose={handleClose}
             open={open}
           >
-            {+notifications.count + +notificationsP.count === 0 ? (
+            {Number(notificationsP.count) + Number(notifications.count) === 0 ? (
               <MenuItem onClick={handleClose} disableRipple>
                 <Typography>Não a nada de novo por aqui!!</Typography>
               </MenuItem>
             ) : (
               <MenuList sx={{ display: 'flex', gap: 2 }}>
 
-                {+notificationsP.count > 0 && (
+                {Number(notificationsP.count) > 0 && (
                   <MenuItem onClick={() => navigate('/atendimento')}>
                     <Typography>
                       {notificationsP.count} Clientes pendentes na fila{' '}

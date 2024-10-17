@@ -121,6 +121,7 @@ export const useMixinSocket = () => {
             data.payload.ticket.id !== ticketFocado.id
           ) {
             if (checkTicketFilter(data.payload.ticket)) {
+              console.log('Notificacao do MinxSocket')
               handlerNotifications(data.payload)
             }
           }
@@ -175,19 +176,19 @@ export const useMixinSocket = () => {
           verify.data.tickets.forEach(element => {
             pass_noti = element.id === data.payload.id ? true : pass_noti
           })
-          // Exibe Notificação
-          if (pass_noti) {
-            const message = new Notification('Novo cliente pendente', {
-              body: 'Cliente: ' + data.payload.contact.name,
-              tag: 'simple-push-demo-notification',
-            })
-            message.onclick = e => {
-              e.preventDefault()
-              window.focus()
-              AbrirChatMensagens(data.payload)
-              goToChat(data.payload.id)
-            }
-          }
+          // // Exibe Notificação
+          // if (pass_noti) {
+          //   const message = new Notification('Novo cliente pendente', {
+          //     body: 'Cliente: ' + data.payload.contact.name,
+          //     tag: 'simple-push-demo-notification',
+          //   })
+          //   message.onclick = e => {
+          //     e.preventDefault()
+          //     window.focus()
+          //     AbrirChatMensagens(data.payload)
+          //     goToChat(data.payload.id)
+          //   }
+          // }
         }
       })
       socket.on(`${usuario.tenantId}:contactList`, data => {

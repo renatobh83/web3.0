@@ -36,16 +36,23 @@ import { useAuth } from '../../context/AuthContext'
 export const Canais = () => {
   const { decryptData } = useAuth()
   const { chatFlows, loadChatFlows } = useWhatsappStore()
-  const [selectedChatBots, setSelectedChatBots] = useState({})
   const data = useWhatsappStore(s => s.whatsApps)
   const loadWhatsApps = useWhatsappStore(s => s.loadWhatsApps)
+
   const userProfile = decryptData("profile");
+
+  const [selectedChatBots, setSelectedChatBots] = useState({})
   const [whatsappSelecionado, setWhatsappSelecionado] = useState({})
   const [modalWhatsapp, setModalWhatsapp] = useState(false)
   const [modalQrCode, setModalQrCode] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [sessoes, setSessoes] = useState([])
+  // biome-ignore lint/complexity/noUselessTernary: <explanation>
+  const isAdmin = userProfile === "admin" ? true : false
 
-  const isAdmin = true
+  useEffect(() => {
+    setSessoes(data)
+  }, [data])
   // Função para lidar com a mudança de seleção
 
   const handleChange = (whatsapp, event) => {
@@ -70,15 +77,17 @@ export const Canais = () => {
       }
     })
   }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listChatFlow = useCallback(async () => {
     const { data } = await ListarChatFlow()
-    console.log(data)
+
     loadChatFlows(data.chatFlow)
   }, [])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (!chatFlows.length) listChatFlow()
+    listChatFlow()
+    console.log(data)
   }, [])
 
   // Preenche o estado inicial com base no item.chatFlowId
@@ -148,7 +157,7 @@ export const Canais = () => {
       ...whatsapp,
       chatFlowId: null,
     }
-    UpdateWhatsapp(whatsapp.id, form).then(data => {
+    UpdateWhatsapp(whatsapp.id, form).then(async data => {
       if (data.status === 200) {
         toast.success(
           `Whatsapp ${whatsapp.id ? 'editado' : 'criado'} com sucesso!`,
@@ -156,6 +165,8 @@ export const Canais = () => {
             position: 'top-center',
           }
         )
+        const { data } = await ListarWhatsapps()
+        loadWhatsApps(data)
       }
     })
   }
@@ -250,7 +261,7 @@ export const Canais = () => {
             columns={12}
             sx={{ mb: theme => theme.spacing(2) }}
           >
-            {data.map(item => (
+            {sessoes.map(item => (
               <Grid key={item.id} size={{ xs: 12, sm: 6, lg: 3 }}>
                 <Card
                   variant="outlined"
