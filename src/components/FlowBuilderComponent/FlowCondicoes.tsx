@@ -15,6 +15,7 @@ import {
   Select,
   TextField,
   Typography,
+  useTheme,
 } from '@mui/material'
 import type { Node } from '@xyflow/react'
 import React, { useEffect, useState } from 'react'
@@ -43,7 +44,10 @@ export const Condicoes = ({ node }: InteracoesProps) => {
     updatePositionArr,
   } = useChatFlowStore()
   const { asSource } = getEdgesByNodeId(node.id)
+  const theme = useTheme(); // Obtém o tema atual
 
+  // Verifica se o modo é escuro
+  const isDarkMode = theme.palette.mode === 'dark';
   const [optionsEtapas, setOptionsEtapas] = useState([])
   const [optionsFilas, setOptionsFilas] = useState([])
   const [optionsUsuarios, setOptionsUsuarios] = useState([])
@@ -278,7 +282,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
 
   return (
     <>
-      <Box sx={{ mt: 1 }}>
+      <Box sx={{ mt: 1, }}>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', pr: '4px' }}>
           <Button
             size="small"
@@ -299,6 +303,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
           display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'center',
+
         }}
       >
         <Box
@@ -317,7 +322,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
                   id={condition.id}
                   key={idx}
                   sx={{
-                    backgroundColor: '#f1f3f4',
+                    background: isDarkMode ? theme.palette.background.default : theme.palette.grey[200],
                     minHeight: '250px',
                     transition: 'box-shadow 0.3s ease-in-out',
                     my: 1,

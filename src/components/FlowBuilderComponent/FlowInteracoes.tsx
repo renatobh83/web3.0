@@ -6,6 +6,7 @@ import {
   Chip,
   TextField,
   Typography,
+  useTheme,
 } from '@mui/material'
 import type { Node } from '@xyflow/react'
 import { useEffect, useRef, useState } from 'react'
@@ -32,6 +33,12 @@ export const Interacoes = ({ node }: InteracoesProps) => {
   const [interacoes, setInteracoes] = useState<
     { type: string; id: string; shouldRemove: boolean }[]
   >([])
+
+
+  const theme = useTheme(); // Obtém o tema atual
+
+  // Verifica se o modo é escuro
+  const isDarkMode = theme.palette.mode === 'dark';
   const [interacoesState, setInteracoesState] = useState<{
     [key: string]: {
       id: string
@@ -201,7 +208,7 @@ export const Interacoes = ({ node }: InteracoesProps) => {
                 <Box
                   key={interacao.id}
                   sx={{
-                    backgroundColor: '#f1f3f4',
+                    background: isDarkMode ? theme.palette.background.default : theme.palette.grey[200],
                     minHeight: '250px',
                     transition: 'box-shadow 0.3s ease-in-out',
                     my: 1,

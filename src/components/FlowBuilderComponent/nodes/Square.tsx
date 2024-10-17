@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material'
+import { Box, Typography, useTheme } from '@mui/material'
 import { type NodeProps, Handle, Position, useReactFlow } from '@xyflow/react'
 import { useEffect, useState } from 'react'
 import useChatFlowStore from '../../../store/chatFlow'
@@ -7,7 +7,10 @@ export const Square = (props: NodeProps) => {
   const [label, setLabel] = useState(props.data.label)
   const nodeSelect = useChatFlowStore(state => state.selectedNode)
   const setNodeSelect = useChatFlowStore(state => state.setSelectedNode)
+  const theme = useTheme(); // Obtém o tema atual
 
+  // Verifica se o modo é escuro
+  const isDarkMode = theme.palette.mode === 'dark';
   useEffect(() => {
     setLabel(props.data.label)
   }, [props.data.label])
@@ -18,10 +21,11 @@ export const Square = (props: NodeProps) => {
       onClick={() => setNodeSelect(props.id)}
       id={props.id}
       sx={{
-        backgroundColor: nodeSelect?.id === props.id ? 'lightgrey' : 'background.paper',
+        backgroundColor: nodeSelect?.id !== props.id ? 'background.paper' : isDarkMode ? theme.palette.grey[500] // Cor de fundo para tema escuro
+          : '#cccddd',
         width: 150,
         p: '10px',
-        border: '1px solid black',
+        border: '1px solid #ccc',
         borderRadius: '3px',
         textAlign: 'center',
       }}

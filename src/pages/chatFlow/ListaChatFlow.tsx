@@ -16,9 +16,15 @@ export const ListaChatFlow: React.FC = () => {
     const [open, setOpen] = useState(false)
     const [flowSelecionado, setFlowSelecionado] = useState({})
     const [chatFlows, setChatFlows] = useState([])
+    const { setFlowData } = useChatFlowStore()
+    const nav = useNavigate()
     const closeModal = () => {
         setOpen(false)
         setFlowSelecionado({})
+    }
+    const handleEditarFlow = (flow: any) => {
+        setOpen(true)
+        setFlowSelecionado(flow)
     }
 
     const handleFlowCreateOrUpdate = (novoFlow: any) => {
@@ -55,8 +61,7 @@ export const ListaChatFlow: React.FC = () => {
         listarUsuarios()
         listaChatFlow()
     }, [])
-    const { setFlowData } = useChatFlowStore()
-    const nav = useNavigate()
+
 
     const handleOpenFlow = (ChatFlow: any) => {
         setFlowData({
@@ -121,7 +126,7 @@ export const ListaChatFlow: React.FC = () => {
                                 <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }} >
                                     <Tooltip title="Editar flow">
                                         <IconButton
-                                        // onClick={() => handleEditarFila(fila)}
+                                            onClick={() => handleEditarFlow(chatFlow)}
                                         >
                                             <Edit />
                                         </IconButton>

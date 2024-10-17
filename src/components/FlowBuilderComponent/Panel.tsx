@@ -3,8 +3,10 @@ import {
   Button,
   Divider,
   FormControl,
+  IconButton,
   TextField,
   Typography,
+  useTheme,
 } from '@mui/material'
 import {
   ReactFlow,
@@ -12,18 +14,11 @@ import {
   Controls,
   addEdge,
   useEdgesState,
-  reconnectEdge,
   useNodesState,
-  ConnectionMode,
   type Connection,
   Panel,
   type Edge,
   type Node,
-  MarkerType,
-  useReactFlow,
-  applyNodeChanges,
-  NodeChange,
-  OnNodesChange,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
@@ -32,8 +27,7 @@ import { DefaultEdge } from './edges/DefaultEdges'
 import { ConnectionLine } from './edges/ConnectionLine'
 import {
   Add,
-  LtePlusMobiledataTwoTone,
-  PlusOne,
+  ArrowLeft,
   SaveRounded,
 } from '@mui/icons-material'
 import { Configuracoes } from './nodes/Configuracoes'
@@ -43,8 +37,6 @@ import { Start } from './nodes/Start'
 import { BoasVindas } from './nodes/BoasVindas'
 import { TabsDetails } from './TabsDetails'
 import { Navigate, useNavigate } from 'react-router-dom'
-import { debounce } from 'lodash'
-import { useFlowStore } from '../../store/flowStore'
 import { toast } from 'sonner'
 
 const EDGE_TYPES = {
@@ -59,6 +51,9 @@ const NODE_TYPES = {
 
 export const PanelChatFlow = () => {
   const { flow: chatFlow } = useChatFlowStore()
+  const theme = useTheme(); // Obtém o tema do Material-UI
+  const isDarkMode = theme.palette.mode === 'dark';
+  const nav = useNavigate()
   if (!chatFlow.id) {
     return <Navigate to="/chat-flow" />
   }
@@ -241,16 +236,25 @@ export const PanelChatFlow = () => {
               border: '1px solid #ccc',
               padding: 12,
               borderRadius: 12,
-              background: 'white',
+              background: theme.palette.background.paper,
             }}
           >
-            {chatFlow.name}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, }}>
+              <IconButton onClick={() => nav("/chat-flow")}><ArrowLeft /></IconButton>
+              <Typography variant='subtitle2' >{(chatFlow.name).toUpperCase()}</Typography>
+            </Box>
           </Panel>
-          <Background gap={12} size={2} color="#ddd" />
-          <Controls />
+          <Background gap={12} size={1} style={{
+            color: isDarkMode ? theme.palette.grey[900] // Cor de fundo para tema escuro
+              : '#000'
+          }} />
+          <Controls style={{
+            color: isDarkMode ? theme.palette.grey[900] // Cor de fundo para tema escuro
+              : '#000'
+          }} />
         </ReactFlow>
       </Box>
-      <Box sx={{ flexGrow: 1 }}>
+      <Box sx={{ flexGrow: 1, background: theme.palette.background.paper }}>
         <Box sx={{ px: 2, py: 1, height: '100%' }}>
           <Box
             id="header-node"
@@ -304,8 +308,9 @@ export const PanelChatFlow = () => {
               sx={{
                 height: '32px',
                 pl: '12px',
-                backgroundColor: '#f1f3f4',
-                color: '#000',
+                backgroundColor: theme.palette.background.default,
+                borderRadius: '0.4rem',
+                // color: '#000',
               }}
             >
               <Typography variant="subtitle2" sx={{ lineHeight: '32px' }}>
@@ -334,6 +339,6 @@ export const PanelChatFlow = () => {
           </Box>
         </Box>
       </Box>
-    </Box>
+    </Box >
   )
 }
