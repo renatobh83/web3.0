@@ -122,9 +122,17 @@ export const useMixinSocket = () => {
             data.payload.ticket.id !== ticketFocado.id
           ) {
             if (checkTicketFilter(data.payload.ticket)) {
-              console.log('Notificacao do MinxSocket')
 
-              handlerNotifications(data.payload)
+              const message = new Notification('Novo cliente pendente', {
+                body: 'Cliente: ' + data.payload.ticket.contact.name,
+                tag: 'simple-push-demo-notification',
+              })
+              message.onclick = e => {
+                e.preventDefault()
+                window.focus()
+                AbrirChatMensagens(data.payload)
+                goToChat(data.payload.id)
+              }
             }
           }
           updateMessages(data.payload)
