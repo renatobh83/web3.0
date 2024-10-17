@@ -13,6 +13,8 @@ interface ItemStatusChannelProps {
 	item: {
 		status: string;
 		type: string;
+		number: string;
+		phone: any;
 		profilePic: string;
 		updatedAt: string;
 	};

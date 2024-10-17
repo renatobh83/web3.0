@@ -25,6 +25,18 @@ import {
   StartWhatsappSession,
   UpdateWhatsapp,
 } from '../../services/sessoesWhatsapp'
+
+interface DataItem {
+  status: string;
+  type: string;
+  name: string;
+  number: string;
+  phone: any;
+  profilePic: string;
+  updatedAt: string;
+}
+
+
 import { toast } from 'sonner'
 import AddTaskIcon from '@mui/icons-material/AddTask'
 import { ModalWhatsapp } from './ModalWhatsapp'
@@ -46,20 +58,42 @@ export const Canais = () => {
   const [modalWhatsapp, setModalWhatsapp] = useState(false)
   const [modalQrCode, setModalQrCode] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [sessoes, setSessoes] = useState([])
+  const [sessoes, setSessoes] = useState<{ [key: string]: { chatflow: number | null } }>({})
+
+
+
+  useEffect(() => {
+    if (data.length) {
+
+      data.map(item => {
+        setSessoes(prev => ({
+          ...prev,
+          [item.id]: {
+            ...prev[item.id],
+            chatflow: item.chatFlowId,
+          },
+        }))
+
+      })
+    }
+
+  }, [data])
+
   // biome-ignore lint/complexity/noUselessTernary: <explanation>
   const isAdmin = userProfile === "admin" ? true : false
 
-  useEffect(() => {
-    setSessoes(data)
-  }, [data])
+
   // Função para lidar com a mudança de seleção
 
   const handleChange = (whatsapp, event) => {
     // Atualiza o valor apenas para o card correspondente ao id
-    setSelectedChatBots(prev => ({
+
+    setSessoes(prev => ({
       ...prev,
-      [whatsapp.id]: event.target.value,
+      [whatsapp.id]: {
+        ...prev[whatsapp.id],
+        chatflow: event.target.value
+      },
     }))
     const form = {
       ...whatsapp,
@@ -74,31 +108,23 @@ export const Canais = () => {
             position: 'top-center',
           }
         )
+        useWhatsappStore.getState().updateWhatsApps(data.data)
       }
     })
   }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listChatFlow = useCallback(async () => {
     const { data } = await ListarChatFlow()
-
     loadChatFlows(data.chatFlow)
   }, [])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     listChatFlow()
-    console.log(data)
+
   }, [])
 
-  // Preenche o estado inicial com base no item.chatFlowId
-  useEffect(() => {
-    const defaultValues = {}
-    // biome-ignore lint/complexity/noForEach: <explanation>
-    data.forEach(item => {
-      defaultValues[item.id] = item.chatFlowId || '' // Usa o valor do item ou vazio
-    })
-    setSelectedChatBots(defaultValues)
-  }, [data])
+
 
   const handleOpenQrModal = channel => {
     setWhatsappSelecionado(channel)
@@ -149,9 +175,12 @@ export const Canais = () => {
   }
   const handleClearSelection = async whatsapp => {
     // Define o valor como '' (vazio) para remover a seleção
-    setSelectedChatBots(prev => ({
+    setSessoes(prev => ({
       ...prev,
-      [whatsapp.id]: '',
+      [whatsapp.id]: {
+        ...prev[whatsapp.id],
+        chatflow: null
+      },
     }))
     const form = {
       ...whatsapp,
@@ -224,8 +253,8 @@ export const Canais = () => {
               toast.success('Canal apagado', {
                 position: 'top-center',
               })
-              // const { data } = await ListarWhatsapps()
-              // loadWhatsApps(data)
+              const { data } = await ListarWhatsapps()
+              loadWhatsApps(data)
             })
           },
         },
@@ -261,7 +290,7 @@ export const Canais = () => {
             columns={12}
             sx={{ mb: theme => theme.spacing(2) }}
           >
-            {sessoes.map(item => (
+            {data.map(item => (
               <Grid key={item.id} size={{ xs: 12, sm: 6, lg: 3 }}>
                 <Card
                   variant="outlined"
@@ -327,7 +356,7 @@ export const Canais = () => {
                       >
                         <Select
                           sx={{ flexGrow: 1 }}
-                          value={selectedChatBots[item.id] || ''}
+                          value={sessoes[item.id]?.chatflow || ''}
                           onChange={e => handleChange(item, e)}
                           label="ChatBot"
                         >
@@ -338,7 +367,7 @@ export const Canais = () => {
                           ))}
                         </Select>
                         {/* Botão de limpar seleção */}
-                        {selectedChatBots[item.id] && (
+                        {sessoes[item.id]?.chatflow && (
                           <IconButton
                             onClick={() => handleClearSelection(item)}
                             size="small"
