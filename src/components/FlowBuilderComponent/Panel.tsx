@@ -60,7 +60,7 @@ export const PanelChatFlow = () => {
   const { nodes, edges, deleteNode, updateNodePosition, setEdges,
     removeEdge, reconnectEdge, addNode, updateEdges, updateNodes, setSelectedNode, selectedNode } =
     useChatFlowStore()
-
+  const [hasChange, setHasChange] = useState(false)
   const [localEdges, setLocalEdges, onEdgesChange] = useEdgesState(edges)
   const [localNodes, setLocalNodes, onNodesChange] = useNodesState(nodes)
   // const [selectedNode, setSelectedNode] = useState<Node | undefined>(undefined)
@@ -72,12 +72,14 @@ export const PanelChatFlow = () => {
       nodes.find(node => { if (node.id === selectedNode.id) setSelectedNode(node) })
 
     }
+    if (!hasChange) setHasChange(true)
     setLocalNodes(nodes)
     updateNodes(nodes)
     updateEdges(localEdges)
   }, [nodes])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
+    if (!hasChange) setHasChange(true)
     setLocalEdges(edges)
   }, [edges])
 
@@ -125,6 +127,16 @@ export const PanelChatFlow = () => {
     },
     [removeEdge]
   )
+  const handleSair = () => {
+    if (hasChange) {
+      toast.info('Salve o painel antes de sair', {
+        position: 'top-center'
+      })
+
+    } else {
+      nav("/chat-flow")
+    }
+  }
   const [valueX, setValuex] = useState(0)
   const addNewNode = () => {
     const newNode = {
@@ -142,8 +154,9 @@ export const PanelChatFlow = () => {
       },
     }
     setValuex(v => v + 10)
-    // setLocalNodes(prevNodes => [...prevNodes, newNode])
+
     addNode(newNode)
+
   }
 
   const onNodeClick = (_event: React.MouseEvent<Element>, node: Node) => {
@@ -170,7 +183,7 @@ export const PanelChatFlow = () => {
       ...chatFlow,
       flow,
     }
-    console.log(data, localNodes, nodes)
+    setHasChange(false)
     await UpdateChatFlow(data)
   }
 
@@ -240,7 +253,7 @@ export const PanelChatFlow = () => {
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, }}>
-              <IconButton onClick={() => nav("/chat-flow")}><ArrowLeft /></IconButton>
+              <IconButton onClick={() => handleSair()}><ArrowLeft /></IconButton>
               <Typography variant='subtitle2' >{(chatFlow.name).toUpperCase()}</Typography>
             </Box>
           </Panel>

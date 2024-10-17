@@ -236,12 +236,13 @@ export const Canais = () => {
     }
   }
   async function deleteWhatsapp(whatsapp) {
+
     toast.message(
       `Atenção!! Deseja realmente deletar o canal "${whatsapp.name}"?`,
       {
         description:
           'Os chats abertos desse canal serão fechados, mas poderão ser vistos no painel de atendimento.',
-        position: 'top-center',
+
         cancel: {
           label: 'Cancel',
           onClick: () => console.log('Cancel!'),
@@ -250,9 +251,7 @@ export const Canais = () => {
           label: 'Confirma',
           onClick: () => {
             DeletarWhatsapp(whatsapp.id).then(async () => {
-              toast.success('Canal apagado', {
-                position: 'top-center',
-              })
+              toast.success('Canal apagado')
               const { data } = await ListarWhatsapps()
               loadWhatsApps(data)
             })

@@ -59,7 +59,7 @@ const AppRoutes = () => {
           <Route path="*" element={<Navigate to="/login" />} />
         )}
       </Routes>
-      <Toaster />
+      <Toaster richColors expand={true} closeButton position="top-center" />
     </>
   )
 }
