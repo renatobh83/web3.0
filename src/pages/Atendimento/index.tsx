@@ -209,7 +209,11 @@ export function Atendimento(props: Props) {
   const { AbrirChatMensagens } = useAtendimentoTicketStore()
   const { themeMode, toggleThemeMode } = useApplicationStore()
   const { mode, setMode } = useColorScheme()
+  const [localTickets, setLocalTickets] = useState([])
 
+  useEffect(() => {
+    setLocalTickets(tickets)
+  }, [tickets])
   // const dispararEvento = (data: any) => {
   //   eventEmitter.emit('handlerNotifications', data)
   // }
@@ -513,7 +517,7 @@ export function Atendimento(props: Props) {
   }, [])
 
   const pendingTickets = (): Ticket[] => {
-    const filteredTickets = tickets.filter(
+    const filteredTickets = localTickets.filter(
       ticket => ticket.status === 'pending' && !ticket.isGroup
     )
     const groupedTickets = filteredTickets.reduce((acc, ticket) => {
@@ -538,7 +542,7 @@ export function Atendimento(props: Props) {
   }
 
   function openTickets(): Ticket[] {
-    const filteredTickets = tickets.filter(ticket => {
+    const filteredTickets = localTickets.filter(ticket => {
       if (profile === 'admin') {
         return ticket.status === 'open' && !ticket.isGroup
       }
@@ -568,20 +572,20 @@ export function Atendimento(props: Props) {
     return Object.values(groupedTickets)
   }
   function closedTickets(): Ticket[] {
-    return tickets
+    return localTickets
       .filter(ticket => ticket.status === 'closed' && !ticket.isGroup)
       .slice(0, 5)
     // return this.tickets.filter(ticket => ticket.status === 'closed' && !ticket.isGroup).slice(0, this.batchSize);
   }
   function closedGroupTickets(): Ticket[] {
-    return tickets
+    return localTickets
       .filter(ticket => ticket.status === 'closed' && ticket.isGroup)
       .slice(0, 5)
     // return this.tickets.filter(ticket => ticket.status === 'closed' && ticket.isGroup).slice(0, this.batchSize);
   }
   function openGroupTickets(): Ticket[] {
     // return this.tickets.filter(ticket => ticket.status === 'open' && ticket.isGroup)
-    const filteredTickets = tickets.filter(
+    const filteredTickets = localTickets.filter(
       ticket => ticket.status === 'open' && ticket.isGroup
     )
     const groupedTickets = filteredTickets.reduce((acc, ticket) => {
@@ -596,7 +600,7 @@ export function Atendimento(props: Props) {
   }
   function pendingGroupTickets(): Ticket[] {
     // return this.tickets.filter(ticket => ticket.status === 'pending' && ticket.isGroup)
-    const filteredTickets = tickets.filter(
+    const filteredTickets = localTickets.filter(
       ticket => ticket.status === 'pending' && ticket.isGroup
     )
     const groupedTickets = filteredTickets.reduce((acc, ticket) => {
@@ -610,10 +614,10 @@ export function Atendimento(props: Props) {
     // return Object.values(groupedTickets).slice(0, this.batchSize);
   }
   function privateMessages(): Ticket[] {
-    return tickets.filter(ticket => ticket.unreadMessages && !ticket.isGroup)
+    return localTickets.filter(ticket => ticket.unreadMessages && !ticket.isGroup)
   }
   function groupMessages(): Ticket[] {
-    return tickets.filter(ticket => ticket.unreadMessages && ticket.isGroup)
+    return localTickets.filter(ticket => ticket.unreadMessages && ticket.isGroup)
   }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -1025,8 +1029,6 @@ export function Atendimento(props: Props) {
                 key={ticket.id}
                 ticket={ticket}
                 filas={filas}
-                etiquetas={etiquetas}
-                buscaTicket={false}
               />
             ))}
           {tabTicketsStatus === 'pending' &&
@@ -1035,8 +1037,6 @@ export function Atendimento(props: Props) {
                 key={ticket.id}
                 ticket={ticket}
                 filas={filas}
-                etiquetas={etiquetas}
-                buscaTicket={false}
               />
             ))}
           {tabTicketsStatus === 'closed' &&
@@ -1045,8 +1045,6 @@ export function Atendimento(props: Props) {
                 key={ticket.id}
                 ticket={ticket}
                 filas={filas}
-                etiquetas={etiquetas}
-                buscaTicket={false}
               />
             ))}
         </List>
@@ -1060,8 +1058,6 @@ export function Atendimento(props: Props) {
               key={ticket.id}
               ticket={ticket}
               filas={filas}
-              etiquetas={etiquetas}
-              buscaTicket={false}
             />
           ))}
         {tabTickets === 1 &&
@@ -1071,8 +1067,6 @@ export function Atendimento(props: Props) {
               key={ticket.id}
               ticket={ticket}
               filas={filas}
-              etiquetas={etiquetas}
-              buscaTicket={false}
             />
           ))}
         {tabTickets === 1 &&
@@ -1082,8 +1076,6 @@ export function Atendimento(props: Props) {
               key={ticket.id}
               ticket={ticket}
               filas={filas}
-              etiquetas={etiquetas}
-              buscaTicket={false}
             />
           ))}
       </TabPanel>

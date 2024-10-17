@@ -29,16 +29,14 @@ interface ItemTicketProps {
   ticket: Ticket
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   filas: any[]
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  etiquetas: any[]
-  buscaTicket: boolean
+
 }
 
 export const ItemTicket = ({
-  etiquetas,
+
   filas,
   ticket,
-  buscaTicket,
+
 }: ItemTicketProps) => {
   const navigate = useNavigate()
   const { iniciarAtendimento } = useTicketService()
@@ -112,6 +110,7 @@ export const ItemTicket = ({
         bgcolor: 'background.paper',
       }}
     >
+      {ticket.status}
       <ListItemButton
         onClick={() => abrirChatContato(ticket)}
         sx={{
