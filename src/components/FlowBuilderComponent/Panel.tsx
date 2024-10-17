@@ -193,7 +193,7 @@ export const PanelChatFlow = () => {
     setEdges(updatedEdges) // Atualiza os edges no Zustand
   }
   const handleDeleteNode = (nodeId: string) => {
-    toast.info(
+    toast.error(
       `Atenção!! Deseja realmente deletar o node "${selectedNode?.data.label}"?`,
       {
         position: "top-center",

@@ -185,97 +185,96 @@ export const useSocketInitial = () => {
         )
       })
 
-      // socket.on(`${usuario.tenantId}:ticketList`, async data => {
-      //   // if (data.type === 'ticket:update') {
-      //   //   console.log('socket ON: TICKET:UPDATE 1')
-      //   //   try {
-      //   //     const params = {
-      //   //       searchParam: '',
-      //   //       pageNumber: 1,
-      //   //       status: ['open', 'pending'],
-      //   //       showAll: false,
-      //   //       count: null,
-      //   //       queuesIds: [],
-      //   //       withUnreadMessages: [true, false],
-      //   //       isNotAssignedUser: [true, false],
-      //   //       includeNotQueueDefined: [true, false],
-      //   //       // date: new Date(),
-      //   //     }
-      //   //     const { data } = await ConsultarTickets(params)
+      socket.on(`${usuario.tenantId}:ticketList`, async data => {
+        if (data.type === 'ticket:update') {
+          console.log('socket ON: TICKET:UPDATE 1')
+          try {
+            const params = {
+              searchParam: '',
+              pageNumber: 1,
+              status: ['open', 'pending', 'closed'],
+              showAll: false,
+              count: null,
+              queuesIds: [],
+              withUnreadMessages: [true, false],
+              isNotAssignedUser: [true, false],
+              includeNotQueueDefined: [true, false],
+              // date: new Date(),
+            }
+            const response = await ConsultarTickets(params)
 
-      //   //     updateNotifications(data)
-
-      //   //     const orderTickets = tickets => {
-      //   //       const newTickes = orderBy(
-      //   //         tickets,
-      //   //         obj => parseISO(obj.lastMessageAt || obj.updatedAt),
-      //   //         ['asc']
-      //   //       )
-      //   //       return [...newTickes]
-      //   //     }
-      //   //     const newTickets = orderTickets(data.tickets)
-      //   //     // console.log('try ORDER_TICKETS', newTickets.map(ticket => ({ id: ticket.id, lastMessageAt: ticket.lastMessageAt })))
-      //   //     setTimeout(() => {
-      //   //       // console.log('try LOAD_TICKETS')
-      //   //       loadTickets(newTickets)
-      //   //     }, 200)
-      //   //     setTimeout(() => {
-      //   //       // console.log('try UPDATE_TICKET')
-      //   //       updateTicket(newTickets)
-      //   //     }, 400)
-      //   //     setTimeout(async () => {
-      //   //       // console.log('try UPDATE_CONTACT')
-      //   //       updateContact(newTickets)
-      //   //       // this.$store.commit('UPDATE_NOTIFICATIONS', data)
-      //   //     }, 600)
-      //   //   } catch (err) {
-      //   //     console.log('error try', err)
-      //   //   }
-      //   // }
-      //   // if (data.type === 'ticket:create') {
-      //   //   console.log('socket ON: TICKET:CREATE 1')
-      //   //   try {
-      //   //     const params = {
-      //   //       searchParam: '',
-      //   //       pageNumber: 1,
-      //   //       status: ['open', 'pending'],
-      //   //       showAll: false,
-      //   //       count: null,
-      //   //       queuesIds: [],
-      //   //       withUnreadMessages: false,
-      //   //       isNotAssignedUser: false,
-      //   //       includeNotQueueDefined: true,
-      //   //       // date: new Date(),
-      //   //     }
-      //   //     const { data } = await ConsultarTickets(params)
-      //   //     console.log('Params1', data)
-      //   //     updateNotifications(data)
-      //   //     const orderTickets = tickets => {
-      //   //       const newTickes = orderBy(
-      //   //         tickets,
-      //   //         obj => parseISO(obj.lastMessageAt || obj.updatedAt),
-      //   //         ['asc']
-      //   //       )
-      //   //       return [...newTickes]
-      //   //     }
-      //   //     const newTickets = orderTickets(data.tickets)
-      //   //     // console.log('try ORDER_TICKETS', newTickets.map(ticket => ({ id: ticket.id, lastMessageAt: ticket.lastMessageAt })))
-      //   //     setTimeout(() => {
-      //   //       loadTickets(newTickets)
-      //   //     }, 200)
-      //   //     setTimeout(() => {
-      //   //       updateTicket(newTickets)
-      //   //     }, 400)
-      //   //     setTimeout(() => {
-      //   //       // console.log('try UPDATE_CONTACT')
-      //   //       updateContact(newTickets)
-      //   //       // this.$store.commit('UPDATE_NOTIFICATIONS', data)
-      //   //     }, 600)
-      //   //   } catch (err) {
-      //   //     console.log('error try', err)
-      //   //   }
-      //   // }
-      // })
+            // updateNotifications(response.data)
+            const orderTickets = tickets => {
+              const newTickes = orderBy(
+                tickets,
+                obj => parseISO(obj.lastMessageAt || obj.updatedAt),
+                ['asc']
+              )
+              return [...newTickes]
+            }
+            const newTickets = orderTickets(response.data.tickets)
+            // console.log('try ORDER_TICKETS', newTickets.map(ticket => ({ id: ticket.id, lastMessageAt: ticket.lastMessageAt })))
+            setTimeout(() => {
+              // console.log('try LOAD_TICKETS')
+              loadTickets(newTickets)
+            }, 200)
+            setTimeout(() => {
+              // console.log('try UPDATE_TICKET')
+              updateTicket(newTickets)
+            }, 400)
+            setTimeout(async () => {
+              // console.log('try UPDATE_CONTACT')
+              updateContact(newTickets)
+              // this.$store.commit('UPDATE_NOTIFICATIONS', data)
+            }, 600)
+          } catch (err) {
+            console.log('error try', err)
+          }
+        }
+        if (data.type === 'ticket:create') {
+          console.log('socket ON: TICKET:CREATE 1')
+          try {
+            const params = {
+              searchParam: '',
+              pageNumber: 1,
+              status: ['open', 'pending'],
+              showAll: false,
+              count: null,
+              queuesIds: [],
+              withUnreadMessages: false,
+              isNotAssignedUser: false,
+              includeNotQueueDefined: true,
+              // date: new Date(),
+            }
+            const { data } = await ConsultarTickets(params)
+            console.log('Params1', data)
+            updateNotifications(data)
+            const orderTickets = tickets => {
+              const newTickes = orderBy(
+                tickets,
+                obj => parseISO(obj.lastMessageAt || obj.updatedAt),
+                ['asc']
+              )
+              return [...newTickes]
+            }
+            const newTickets = orderTickets(data.tickets)
+            // console.log('try ORDER_TICKETS', newTickets.map(ticket => ({ id: ticket.id, lastMessageAt: ticket.lastMessageAt })))
+            setTimeout(() => {
+              loadTickets(newTickets)
+            }, 200)
+            setTimeout(() => {
+              updateTicket(newTickets)
+            }, 400)
+            setTimeout(() => {
+              // console.log('try UPDATE_CONTACT')
+              updateContact(newTickets)
+              // this.$store.commit('UPDATE_NOTIFICATIONS', data)
+            }, 600)
+          } catch (err) {
+            console.log('error try', err)
+          }
+        }
+      })
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
         if (data.type === 'chat:create') {
           eventEmitterScrool.emit('scrollToBottomMessageChat')

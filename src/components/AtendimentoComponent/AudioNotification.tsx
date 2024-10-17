@@ -9,6 +9,7 @@ export const AudioNotification: React.FC = () => {
   const alertSound = "/sound.mp3"; // Corrigido o caminho
 
   useEffect(() => {
+
     const playNotificationSound = async () => {
       if ((Number(notificacaoTicket.count) > 0 || Number(notificationsP.count) > 0) && audioRef.current) {
         try {

@@ -518,7 +518,7 @@ export function Atendimento(props: Props) {
   }, [])
 
   const pendingTickets = (): Ticket[] => {
-    const filteredTickets = localTickets.filter(
+    const filteredTickets = tickets.filter(
       ticket => ticket.status === 'pending' && !ticket.isGroup
     )
     const groupedTickets = filteredTickets.reduce((acc, ticket) => {
@@ -543,7 +543,7 @@ export function Atendimento(props: Props) {
   }
 
   function openTickets(): Ticket[] {
-    const filteredTickets = localTickets.filter(ticket => {
+    const filteredTickets = tickets.filter(ticket => {
       if (profile === 'admin') {
         return ticket.status === 'open' && !ticket.isGroup
       }
@@ -573,20 +573,20 @@ export function Atendimento(props: Props) {
     return Object.values(groupedTickets)
   }
   function closedTickets(): Ticket[] {
-    return localTickets
+    return tickets
       .filter(ticket => ticket.status === 'closed' && !ticket.isGroup)
       .slice(0, 5)
     // return this.tickets.filter(ticket => ticket.status === 'closed' && !ticket.isGroup).slice(0, this.batchSize);
   }
   function closedGroupTickets(): Ticket[] {
-    return localTickets
+    return tickets
       .filter(ticket => ticket.status === 'closed' && ticket.isGroup)
       .slice(0, 5)
     // return this.tickets.filter(ticket => ticket.status === 'closed' && ticket.isGroup).slice(0, this.batchSize);
   }
   function openGroupTickets(): Ticket[] {
     // return this.tickets.filter(ticket => ticket.status === 'open' && ticket.isGroup)
-    const filteredTickets = localTickets.filter(
+    const filteredTickets = tickets.filter(
       ticket => ticket.status === 'open' && ticket.isGroup
     )
     const groupedTickets = filteredTickets.reduce((acc, ticket) => {
@@ -601,7 +601,7 @@ export function Atendimento(props: Props) {
   }
   function pendingGroupTickets(): Ticket[] {
     // return this.tickets.filter(ticket => ticket.status === 'pending' && ticket.isGroup)
-    const filteredTickets = localTickets.filter(
+    const filteredTickets = tickets.filter(
       ticket => ticket.status === 'pending' && ticket.isGroup
     )
     const groupedTickets = filteredTickets.reduce((acc, ticket) => {
@@ -615,10 +615,10 @@ export function Atendimento(props: Props) {
     // return Object.values(groupedTickets).slice(0, this.batchSize);
   }
   function privateMessages(): Ticket[] {
-    return localTickets.filter(ticket => ticket.unreadMessages && !ticket.isGroup)
+    return tickets.filter(ticket => ticket.unreadMessages && !ticket.isGroup)
   }
   function groupMessages(): Ticket[] {
-    return localTickets.filter(ticket => ticket.unreadMessages && ticket.isGroup)
+    return tickets.filter(ticket => ticket.unreadMessages && ticket.isGroup)
   }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {

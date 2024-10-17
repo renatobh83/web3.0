@@ -173,23 +173,23 @@ export const useMixinSocket = () => {
           }
           // Faz verificação para se certificar que notificação pertence a fila do usuário
           let pass_noti = false
-
           verify.data.tickets.forEach(element => {
+
             pass_noti = element.id === data.payload.id ? true : pass_noti
           })
           // // Exibe Notificação
-          // if (pass_noti) {
-          //   const message = new Notification('Novo cliente pendente', {
-          //     body: 'Cliente: ' + data.payload.contact.name,
-          //     tag: 'simple-push-demo-notification',
-          //   })
-          //   message.onclick = e => {
-          //     e.preventDefault()
-          //     window.focus()
-          //     AbrirChatMensagens(data.payload)
-          //     goToChat(data.payload.id)
-          //   }
-          // }
+          if (pass_noti) {
+            const message = new Notification('Novo cliente pendente', {
+              body: 'Cliente: ' + data.payload.contact.name,
+              tag: 'simple-push-demo-notification',
+            })
+            message.onclick = e => {
+              e.preventDefault()
+              window.focus()
+              AbrirChatMensagens(data.payload)
+              goToChat(data.payload.id)
+            }
+          }
         }
       })
       socket.on(`${usuario.tenantId}:contactList`, data => {
