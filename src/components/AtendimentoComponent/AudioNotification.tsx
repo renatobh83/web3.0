@@ -20,7 +20,7 @@ export const AudioNotification: React.FC = () => {
       }
     };
 
-    playNotificationSound(); // Tenta tocar o som assim que uma notificação for recebida
+    // playNotificationSound(); // Tenta tocar o som assim que uma notificação for recebida
 
   }, [notificacaoTicket, notificationsP]);
 

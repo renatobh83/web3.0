@@ -65,6 +65,7 @@ interface AtendimentoTicketActions {
     messages: any[];
     messagesOffLine: any[];
   }) => void;
+  contatcUpdate: (payload: any) => void;
   updateMessages: (payload: any) => void;
   resetMessages: () => void;
   LocalizarMensagensTicket: (params: {
@@ -283,7 +284,9 @@ export const useAtendimentoTicketStore = create<
   notificacaoTicket: 0,
 
   // Mutations converted to actions
-
+  contatcUpdate: (payload) => {
+    console.log(get().tickets);
+  },
   setHasMore: (payload) => set({ hasMore: payload }),
 
   loadTicketFocado: (payload: any) =>
@@ -400,6 +403,7 @@ export const useAtendimentoTicketStore = create<
         }
         return t;
       });
+
       const updatedTicketFocado =
         state.ticketFocado.contactId === payload.id
           ? { ...state.ticketFocado, contact: payload }
@@ -441,7 +445,6 @@ export const useAtendimentoTicketStore = create<
 
   updateMessages: (payload) =>
     set((state) => {
-      console.log("updateMessages", location.pathname);
       if (state.ticketFocado.id === payload.ticket.id) {
         const updatedMessages = [...state.mensagens];
         const messageIndex = updatedMessages.findIndex(
@@ -525,17 +528,17 @@ export const useAtendimentoTicketStore = create<
       // Resetando ticket focado e mensagens
       set({ ticketFocado: {}, mensagens: [] });
 
-      // Consultar os dados do ticket
+      // // Consultar os dados do ticket
       const ticket = await ConsultarDadosTicket(data);
       set(() => ({ ticketFocado: { ...ticket.data } }));
 
-      // Definindo parâmetros para localizar as mensagens do ticket
+      // // Definindo parâmetros para localizar as mensagens do ticket
       const params = {
         ticketId: data.id,
         pageNumber: 1,
       };
 
-      // Chama a ação para localizar as mensagens
+      // // Chama a ação para localizar as mensagens
       await get().LocalizarMensagensTicket(params);
     } catch (error) {
       // Tratamento de erro

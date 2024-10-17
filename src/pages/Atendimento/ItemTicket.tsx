@@ -88,6 +88,7 @@ export const ItemTicket = ({
     )
       return
     if (ticket.id === ticketFocado.id) return
+
     AbrirChatMensagens(ticket)
     goToChat(ticket.id)
   }

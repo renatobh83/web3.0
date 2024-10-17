@@ -3,7 +3,7 @@ import { type NodeProps, Handle, Position, useReactFlow } from '@xyflow/react'
 import { useEffect, useState } from 'react'
 import useChatFlowStore from '../../../store/chatFlow'
 
-export const Square = (props: NodeProps) => {
+export const Node = (props: NodeProps) => {
   const [label, setLabel] = useState(props.data.label)
   const nodeSelect = useChatFlowStore(state => state.selectedNode)
   const setNodeSelect = useChatFlowStore(state => state.setSelectedNode)

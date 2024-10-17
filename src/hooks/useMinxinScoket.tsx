@@ -141,6 +141,7 @@ export const useMixinSocket = () => {
         }
       })
       socket?.on(`${usuario.tenantId}:ticketList`, async data => {
+        console.log(data)
         let verify = []
         if (data.type === 'notification:new') {
           console.log('socket ON: notification:New useMininxSocket')

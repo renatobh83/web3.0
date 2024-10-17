@@ -21,8 +21,9 @@ import {
   type Node,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Square } from './nodes/Square'
+import type React from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+
 import { DefaultEdge } from './edges/DefaultEdges'
 import { ConnectionLine } from './edges/ConnectionLine'
 import {
@@ -38,12 +39,13 @@ import { BoasVindas } from './nodes/BoasVindas'
 import { TabsDetails } from './TabsDetails'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { Node as NodeCustom } from './nodes/Node'
 
 const EDGE_TYPES = {
   default: DefaultEdge,
 }
 const NODE_TYPES = {
-  square: Square,
+  node: NodeCustom,
   configurations: Configuracoes,
   start: Start,
   boasVindas: BoasVindas,
@@ -141,7 +143,7 @@ export const PanelChatFlow = () => {
   const addNewNode = () => {
     const newNode = {
       id: crypto.randomUUID(),
-      type: 'square',
+      type: 'node',
       position: {
         x: valueX,
         y: 150,

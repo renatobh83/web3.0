@@ -27,7 +27,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Square } from './nodes/Square'
+import { Square } from './nodes/Node'
 import { DefaultEdge } from './edges/DefaultEdges'
 import { ConnectionLine } from './edges/ConnectionLine'
 import {
