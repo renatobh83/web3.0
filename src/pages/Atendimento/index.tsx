@@ -650,11 +650,23 @@ export function Atendimento() {
   useEffect(() => {
     // Adiciona o listener ao montar o componente
     eventEmitter.on('handlerNotifications', handlerNotifications)
+    eventEmitter.on('playSoundNotification', playNotificationSound)
     // Remove o listener ao desmontar o componente
     return () => {
       eventEmitter.off('handlerNotifications', handlerNotifications)
+      eventEmitter.off('playSoundNotification', playNotificationSound)
     }
   }, [])
+
+  if (Notification.permission === 'default') {
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        console.log('Permissão de notificação concedida');
+        // Agora você pode tocar sons quando necessário, pois o usuário já interagiu
+
+      }
+    });
+  }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     socketTicketList()

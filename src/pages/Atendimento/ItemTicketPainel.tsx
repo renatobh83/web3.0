@@ -3,6 +3,11 @@ import { formatDistance, parseJSON } from 'date-fns'
 import { useEffect, useState } from 'react'
 import { ptBR } from 'date-fns/locale'
 import { red } from '@mui/material/colors'
+const borderColor = {
+  open: '#1976d2',
+  pending: '#c10015',
+  closed: '#21ba45',
+}
 
 export const ItemTicketPainel = ({ ticket }) => {
   const dataInWords = (timestamp: string, updated: string) => {
@@ -66,7 +71,7 @@ export const ItemTicketPainel = ({ ticket }) => {
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mr: 1 }}>
             <Typography variant='caption'> #{ticket.id}</Typography>
             <Typography variant='caption'>{obterNomeFila(ticket.queueId)}</Typography>
-            <Chip label={ticket.status} />
+            <Chip label={ticket.status} sx={{ borderLeft: `3px solid ${borderColor[ticket?.status]}` }} />
           </Box>
         </Box>
         {/* </Box> */}

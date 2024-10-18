@@ -18,6 +18,7 @@ import { useUsuarioStore } from '../store/usuarios'
 import { orderTickets } from '../utils/ordertTickets'
 // import { EventEmitter } from "events";
 import { eventEmitter as eventNotification } from '../pages/Atendimento/index'
+import { eventEmitterMain } from '../layout/MainLayout'
 // export const eventEmitter = new EventEmitter();
 
 export const useSocketInitial = () => {
@@ -254,13 +255,19 @@ export const useSocketInitial = () => {
         // }
       })
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
+
         if (data.type === 'chat:create') {
           eventEmitterScrool.emit('scrollToBottomMessageChat')
           console.log('socket ON: CHAT:CREATE 2', data)
+
           // if (data.payload.ticket.userId !== userId) return
           // if (data.payload.fromMe) return
           if (data.payload.ticket.userId === userId && !data.payload.fromMe) {
-            eventNotification.emit('handlerNotifications', data.payload)
+            if (location.pathname.startsWith('/atendimento/')) {
+              eventNotification.emit('handlerNotifications', data.payload)
+            } else {
+              eventEmitterMain.emit('handlerNotifications', data.payload)
+            }
             // const message = new Notification('Contato: ' + data.payload.ticket.contact.name, {
             //   body: 'Mensagem: ' + data.payload.body,
             //   tag: 'notification-new-message-user',
@@ -275,7 +282,11 @@ export const useSocketInitial = () => {
             // }
           }
           if (!data.payload.ticket.userId && !data.payload.fromMe) {
-            eventNotification.emit('handlerNotifications', data.payload)
+            if (location.pathname !== "/") {
+              eventNotification.emit('handlerNotifications', data.payload)
+            } else {
+              eventEmitterMain.emit('handlerNotifications', data.payload)
+            }
             // const message = new Notification('Novo cliente pendente', {
             //   body: 'Cliente: ' + data.payload.ticket.contact.name,
             //   tag: 'notification-pending',

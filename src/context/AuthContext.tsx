@@ -14,6 +14,7 @@ import { useUserStore } from "../store/user.js";
 import { socketIO } from "../utils/socket.js";
 import { Errors } from "../utils/error.js";
 import { useApplicationStore } from "../store/application.js";
+import { EventEmitter } from "events";
 
 
 // import { socketIO } from "../utils/socket.js";
@@ -24,7 +25,6 @@ interface AuthContextType {
     encryptData: (data: string) => void
     login: (form: any) => void;
     logout: () => void;
-
 
 }
 
@@ -67,7 +67,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const encryptData = (data: string) => {
         return CryptoJS.AES.encrypt(data, secretKey).toString();
     }
-
 
 
     const decryptData = (key: string) => {

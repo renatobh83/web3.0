@@ -14,6 +14,7 @@ import { useWebSocketStore } from '../store/socket'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { Errors } from '../utils/error'
+import { format } from 'date-fns'
 
 
 export const useMixinSocket = () => {
@@ -111,7 +112,7 @@ export const useMixinSocket = () => {
     socket?.on('connect', () => {
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
         if (data.type === 'chat:create') {
-          console.log('socket ON: chat:create useMininxSocket')
+          console.log('socket ON: chat:create useMininxSocket', data)
           scrollToBottom()
           if (
             !data.payload.read &&
@@ -119,19 +120,46 @@ export const useMixinSocket = () => {
               !data.payload.ticket.userId) &&
             data.payload.ticket.id !== ticketFocado.id
           ) {
-            if (checkTicketFilter(data.payload.ticket)) {
 
+            if (data.payload.ticket.userId) {
+              eventNotification.emit('playSoundNotification')
+              const options = {
+                body: `${data.payload.body} - ${format(new Date(), 'HH:mm')}`,
+                icon: data.payload.ticket.contact.profilePicUrl,
+                tag: data.payload.ticket.id,
+                renotify: true,
+              }
+              const notification = new Notification(
+                `Mensagem de ${data.payload.ticket.contact.name}`,
+                options
+              )
+              setTimeout(() => {
+                notification.close()
+              }, 10000)
+              notification.onclick = e => {
+                e.preventDefault()
+
+                if (document.hidden) {
+                  window.focus()
+                }
+
+                AbrirChatMensagens(data.payload.ticket)
+                goToChat(data.payload.ticketId)
+              }
+            } else {
+              eventNotification.emit('playSoundNotification')
               const message = new Notification('Novo cliente pendente', {
                 body: 'Cliente: ' + data.payload.ticket.contact.name,
-                tag: 'simple-push-demo-notification',
+                tag: data.payload.ticket.id,
               })
               message.onclick = e => {
                 e.preventDefault()
                 window.focus()
-                AbrirChatMensagens(data.payload)
-                goToChat(data.payload.id)
+                AbrirChatMensagens(data.payload.ticket)
+                goToChat(data.payload.ticket.id)
               }
             }
+
           }
           updateMessages(data.payload)
         }
@@ -184,6 +212,7 @@ export const useMixinSocket = () => {
           })
           // // Exibe Notificação
           if (pass_noti) {
+            eventNotification.emit('playSoundNotification')
             const message = new Notification('Novo cliente pendente', {
               body: `Cliente: ${data.payload.contact.name}`,
               tag: 'simple-push-demo-notification',

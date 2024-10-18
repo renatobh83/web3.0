@@ -1,7 +1,7 @@
 import { Box, Stack } from '@mui/material'
 import { MenuDrawer } from '../components/MainComponents/MenuDrawer'
-import { useCallback, useEffect } from 'react'
-import { Outlet } from 'react-router-dom'
+import { useCallback, useEffect, useRef } from 'react'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { useNotificationsStore } from '../store/notifications'
 import { useWhatsappStore } from '../store/whatsapp'
 import { toast } from 'sonner'
@@ -11,10 +11,17 @@ import { ListarWhatsapps } from '../services/sessoesWhatsapp'
 import { useSocketInitial } from '../hooks/useSocketInitial'
 import { useAtendimentoTicketStore } from '../store/atendimentoTicket'
 import { Header } from '../components/MainComponents/Header'
+import { useAuth } from '../context/AuthContext'
+import { EventEmitter } from 'events'
+import { format } from 'date-fns'
+import { Errors } from '../utils/error'
 
+
+export const eventEmitterMain = new EventEmitter()
 export const MainLayout: React.FC = () => {
+  const nav = useNavigate()
   const { updateNotifications, updateNotificationsP, reset } = useNotificationsStore()
-
+  const { AbrirChatMensagens } = useAtendimentoTicketStore()
   const { loadWhatsApps, whatsApps } = useWhatsappStore()
   useSocketInitial()
   // Nao sendo invocada
@@ -69,6 +76,82 @@ export const MainLayout: React.FC = () => {
   //     this.closeModal();
   // }
 
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const alertSound = "/sound.mp3"; // Corrigido o caminho
+  const playNotificationSound = async () => {
+    if (audioRef.current) {
+      try {
+        await audioRef.current.play();
+      } catch (error) {
+        console.error("Erro ao tentar tocar o áudio de notificação:", error);
+      }
+    }
+  };
+
+  const goToChat = async (id: number) => {
+    try {
+      const timestamp = new Date().getTime()
+      nav(`/atendimento/${id}?t=${timestamp}`, {
+        replace: false,
+        state: { t: new Date().getTime() },
+      })
+    } catch (error) {
+      Errors(error)
+    }
+  }
+  function handlerNotifications(data) {
+    console.log('Emiter', data)
+    if (data.ticket.userId) {
+      const options = {
+        body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
+        icon: data.ticket.contact.profilePicUrl,
+        tag: data.ticket.id,
+        renotify: true,
+      }
+
+      const notification = new Notification(
+        `Mensagem de ${data.ticket.contact.name}`,
+        options
+      )
+
+      setTimeout(() => {
+        notification.close()
+      }, 10000)
+
+      notification.onclick = e => {
+        e.preventDefault()
+
+        if (document.hidden) {
+          window.focus()
+        }
+
+
+        AbrirChatMensagens(data.ticket)
+        goToChat(data.ticket.id)
+      }
+    } else {
+
+      const message = new Notification('Novo cliente pendente', {
+        body: 'Cliente: ' + data.ticket.contact.name,
+        tag: 'notification-pending',
+      })
+      message.onclick = e => {
+        e.preventDefault()
+
+        AbrirChatMensagens(data.ticket)
+        goToChat(data.ticket.id)
+      }
+    }
+    playNotificationSound()
+  }
+  useEffect(() => {
+    // Adiciona o listener ao montar o componente
+    eventEmitterMain.on('handlerNotifications', handlerNotifications)
+    // Remove o listener ao desmontar o componente
+    return () => {
+      eventEmitterMain.off('handlerNotifications', handlerNotifications)
+    }
+  }, [])
   const listarWhatsapps = useCallback(async () => {
     if (!whatsApps.length) {
       const { data } = await ListarWhatsapps()
@@ -146,6 +229,7 @@ export const MainLayout: React.FC = () => {
       await listarWhatsapps()
       await listarConfiguracoes()
       // consultarTickets()
+
     }
     conectar()
   }, [listarWhatsapps, listarConfiguracoes])
@@ -168,6 +252,10 @@ export const MainLayout: React.FC = () => {
           <Outlet />
         </Stack>
       </Box>
+      {/* biome-ignore lint/a11y/useMediaCaption: <explanation> */}
+      <audio ref={audioRef}>
+        <source src={alertSound} type="audio/mp3" />
+      </audio>
     </Box>
   )
 }
