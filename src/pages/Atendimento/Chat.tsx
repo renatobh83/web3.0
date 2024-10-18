@@ -260,7 +260,7 @@ export const Chat = () => {
         menssagemParaEncaminhar={mensagensParaEncaminhar}
         resetMensagenParaEncaminhar={resetMensagenParaEncaminhar}
       />
-      <AudioNotification />
+
     </Box>
     // <Box >
     // <InfoCabecalhoMenssagens drawerWidth={drawerWidth} handleDrawerToggle={handleDrawerToggle} />

@@ -9,6 +9,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import {
   ArrowDownwardSharp,
+  ConstructionOutlined,
   ContactPage,
   Home,
   Logout,
@@ -36,7 +37,7 @@ import {
   FormGroup,
 } from '@mui/material'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import PersonIcon from '@mui/icons-material/Person'
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt'
@@ -70,7 +71,6 @@ import { Errors } from '../../utils/error'
 import { useAuth } from '../../context/AuthContext'
 import { useSocketInitial } from '../../hooks/useSocketInitial'
 import { ListarMensagensRapidas } from '../../services/mensagensRapidas'
-import { AudioNotification } from '../../components/AtendimentoComponent/AudioNotification'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -150,16 +150,14 @@ function a11yProps(index: number, name: string) {
   }
 }
 
-interface Props {
-  window?: () => Window
-}
-
-export function Atendimento(props: Props) {
+export function Atendimento() {
 
   const nav = useNavigate()
-  const location = useLocation()
-  const { window } = props
+
+
   const { decryptData } = useAuth()
+  // Remove this const when copying and pasting into your project.
+
 
   const [openModalNovoTicket, setOpenModalNovoTicket] = useState(false)
 
@@ -212,6 +210,17 @@ export function Atendimento(props: Props) {
   const { mode, setMode } = useColorScheme()
   const [localTickets, setLocalTickets] = useState([])
 
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const alertSound = "/sound.mp3"; // Corrigido o caminho
+  const playNotificationSound = async () => {
+    if (audioRef.current) {
+      try {
+        await audioRef.current.play();
+      } catch (error) {
+        console.error("Erro ao tentar tocar o áudio de notificação:", error);
+      }
+    }
+  };
   useEffect(() => {
     setLocalTickets(tickets)
   }, [tickets])
@@ -379,35 +388,52 @@ export function Atendimento(props: Props) {
       Errors(error)
     }
   }
+
+
   function handlerNotifications(data) {
-    console.log('Emiter')
-    const options = {
-      body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
-      icon: data.ticket.contact.profilePicUrl,
-      tag: data.ticket.id,
-      renotify: true,
+    console.log('Emiter', data)
+    if (data.ticket.userId) {
+      const options = {
+        body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
+        icon: data.ticket.contact.profilePicUrl,
+        tag: data.ticket.id,
+        renotify: true,
+      }
+
+      const notification = new Notification(
+        `Mensagem de ${data.ticket.contact.name}`,
+        options
+      )
+
+      setTimeout(() => {
+        notification.close()
+      }, 10000)
+
+      notification.onclick = e => {
+        e.preventDefault()
+
+        if (document.hidden) {
+          window.focus()
+        }
+
+
+        AbrirChatMensagens(data.ticket)
+        goToChat(data.ticket.id)
+      }
+    } else {
+
+      const message = new Notification('Novo cliente pendente', {
+        body: 'Cliente: ' + data.ticket.contact.name,
+        tag: 'notification-pending',
+      })
+      message.onclick = e => {
+        e.preventDefault()
+
+        AbrirChatMensagens(data.ticket)
+        goToChat(data.ticket.id)
+      }
     }
-
-    const notification = new Notification(
-      `Mensagem de ${data.ticket.contact.name}`,
-      options
-    )
-
-    setTimeout(() => {
-      notification.close()
-    }, 10000)
-
-    notification.onclick = e => {
-      e.preventDefault()
-
-      AbrirChatMensagens(data.payload)
-      goToChat(data.payload.id)
-    }
-    <AudioNotification />
-    // this.$nextTick(() => {
-    //     // utilizar refs do layout
-    //     this.$refs.audioNotificationPlay.play()
-    // })
+    playNotificationSound()
   }
 
   const listarConfiguracoes = async () => {
@@ -990,7 +1016,7 @@ export function Atendimento(props: Props) {
             value="open"
             disableRipple
           />
-          <AudioNotification />
+
           <Tab
             label={
               pendingGroupTickets().length ? (
@@ -1133,9 +1159,7 @@ export function Atendimento(props: Props) {
     </>
   )
   useSocketInitial()
-  // Remove this const when copying and pasting into your project.
-  const container =
-    window !== undefined ? () => window().document.body : undefined
+
 
   return (
     <>
@@ -1162,7 +1186,7 @@ export function Atendimento(props: Props) {
         >
           {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
           <Drawer
-            container={container}
+            // container={container}
             variant="temporary"
             open={mobileOpen}
             onTransitionEnd={handleDrawerTransitionEnd}
@@ -1219,6 +1243,10 @@ export function Atendimento(props: Props) {
             close={closeModalNovoTicket}
           />
         )}
+        {/* biome-ignore lint/a11y/useMediaCaption: <explanation> */}
+        <audio ref={audioRef}>
+          <source src={alertSound} type="audio/mp3" />
+        </audio>
       </Box>
     </>
   )

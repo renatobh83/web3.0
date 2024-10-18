@@ -85,70 +85,70 @@ export const MainLayout: React.FC = () => {
 
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  const consultarTickets = useCallback(async () => {
-    reset()
-    const params = {
-      searchParam: '',
-      pageNumber: 1,
-      status: ['open', 'pending'],
-      showAll: false,
-      count: null,
-      queuesIds: [],
-      withUnreadMessages: true,
-      isNotAssignedUser: false,
-      includeNotQueueDefined: true,
+  // const consultarTickets = useCallback(async () => {
+  //   reset()
+  //   const params = {
+  //     searchParam: '',
+  //     pageNumber: 1,
+  //     status: ['open', 'pending'],
+  //     showAll: false,
+  //     count: null,
+  //     queuesIds: [],
+  //     withUnreadMessages: true,
+  //     isNotAssignedUser: false,
+  //     includeNotQueueDefined: true,
 
-    }
-    try {
-      const { data } = await ConsultarTickets(params)
-      updateNotifications(data)
-      setTimeout(() => {
-        updateNotifications(data)
-      }, 500)
+  //   }
+  //   try {
+  //     const { data } = await ConsultarTickets(params)
+  //     updateNotifications(data)
+  //     setTimeout(() => {
+  //       updateNotifications(data)
+  //     }, 500)
 
-    } catch (err) {
-      toast.error('Algum problema ao consultar tickets', {
-        position: 'top-center',
-      })
-      console.error(err)
-    }
-    const params2 = {
-      searchParam: '',
-      pageNumber: 1,
-      status: ['pending'],
-      showAll: false,
-      count: null,
-      queuesIds: [],
-      withUnreadMessages: false,
-      isNotAssignedUser: false,
-      includeNotQueueDefined: true,
-      // date: new Date(),
-    }
-    try {
-      const { data } = await ConsultarTickets(params2)
+  //   } catch (err) {
+  //     toast.error('Algum problema ao consultar tickets', {
+  //       position: 'top-center',
+  //     })
+  //     console.error(err)
+  //   }
+  //   const params2 = {
+  //     searchParam: '',
+  //     pageNumber: 1,
+  //     status: ['pending'],
+  //     showAll: false,
+  //     count: null,
+  //     queuesIds: [],
+  //     withUnreadMessages: false,
+  //     isNotAssignedUser: false,
+  //     includeNotQueueDefined: true,
+  //     // date: new Date(),
+  //   }
+  //   try {
+  //     const { data } = await ConsultarTickets(params2)
 
-      updateNotificationsP(data)
-      setTimeout(() => {
-        updateNotificationsP(data)
-      }, 500)
+  //     updateNotificationsP(data)
+  //     setTimeout(() => {
+  //       updateNotificationsP(data)
+  //     }, 500)
 
-    } catch (err) {
-      toast.error('Algum problema ao consultar tickets ', {
-        position: 'top-center',
-      })
-      console.error(err)
-    }
-  }, [])
+  //   } catch (err) {
+  //     toast.error('Algum problema ao consultar tickets ', {
+  //       position: 'top-center',
+  //     })
+  //     console.error(err)
+  //   }
+  // }, [])
 
 
   useEffect(() => {
     const conectar = async () => {
       await listarWhatsapps()
       await listarConfiguracoes()
-      consultarTickets()
+      // consultarTickets()
     }
     conectar()
-  }, [listarWhatsapps, listarConfiguracoes, consultarTickets])
+  }, [listarWhatsapps, listarConfiguracoes])
 
   return (
     <Box sx={{ display: 'flex' }}>

@@ -208,7 +208,7 @@ export const MenusNavbar = () => {
       spacing={1}
       sx={{ justifyContent: 'center', alignItems: 'center' }}
     >
-      <AudioNotification />
+
       <Tooltip title="Notificações" arrow placement="left">
 
         <>

@@ -17,7 +17,7 @@ import { Errors } from '../utils/error'
 import { useUsuarioStore } from '../store/usuarios'
 import { orderTickets } from '../utils/ordertTickets'
 // import { EventEmitter } from "events";
-
+import { eventEmitter as eventNotification } from '../pages/Atendimento/index'
 // export const eventEmitter = new EventEmitter();
 
 export const useSocketInitial = () => {
@@ -260,31 +260,32 @@ export const useSocketInitial = () => {
           // if (data.payload.ticket.userId !== userId) return
           // if (data.payload.fromMe) return
           if (data.payload.ticket.userId === userId && !data.payload.fromMe) {
-            const message = new Notification('Contato: ' + data.payload.ticket.contact.name, {
-              body: 'Mensagem: ' + data.payload.body,
-              tag: 'simple-push-demo-notification',
-              image: data.payload.ticket.contact.profilePicUrl,
-              icon: data.payload.ticket.contact.profilePicUrl,
-            })
-            message.onclick = e => {
-              e.preventDefault()
-              window.focus()
-              AbrirChatMensagens(data.payload.ticket)
-              goToChat(data.payload.ticket.id)
-            }
+            eventNotification.emit('handlerNotifications', data.payload)
+            // const message = new Notification('Contato: ' + data.payload.ticket.contact.name, {
+            //   body: 'Mensagem: ' + data.payload.body,
+            //   tag: 'notification-new-message-user',
+            //   // image: data.payload.ticket.contact.profilePicUrl,
+            //   icon: data.payload.ticket.contact.profilePicUrl,
+            // })
+            // message.onclick = e => {
+            //   e.preventDefault()
+            //   window.focus()
+            //   AbrirChatMensagens(data.payload.ticket)
+            //   goToChat(data.payload.ticket.id)
+            // }
           }
           if (!data.payload.ticket.userId && !data.payload.fromMe) {
-            console.log('notificacao socket inicial 2')
-            const message = new Notification('Novo cliente pendente', {
-              body: 'Cliente: ' + data.payload.ticket.contact.name,
-              tag: 'simple-push-demo-notification',
-            })
-            message.onclick = e => {
-              e.preventDefault()
-              window.focus()
-              AbrirChatMensagens(data.payload.ticket)
-              goToChat(data.payload.ticket.id)
-            }
+            eventNotification.emit('handlerNotifications', data.payload)
+            // const message = new Notification('Novo cliente pendente', {
+            //   body: 'Cliente: ' + data.payload.ticket.contact.name,
+            //   tag: 'notification-pending',
+            // })
+            // message.onclick = e => {
+            //   e.preventDefault()
+            //   window.focus()
+            //   AbrirChatMensagens(data.payload.ticket)
+            //   goToChat(data.payload.ticket.id)
+            // }
           }
 
           updateMessages(data.payload)

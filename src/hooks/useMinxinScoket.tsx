@@ -14,7 +14,7 @@ import { useWebSocketStore } from '../store/socket'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { Errors } from '../utils/error'
-import { AudioNotification } from '../components/AtendimentoComponent/AudioNotification'
+
 
 export const useMixinSocket = () => {
   const { decryptData } = useAuth()
@@ -90,9 +90,7 @@ export const useMixinSocket = () => {
     }
   }, [getWs, setWs])
 
-  const handlerNotifications = (data: any) => {
-    eventNotification.emit('handlerNotifications', data)
-  }
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const socketTicket = useCallback(() => {
     const socket = socketRef.current
@@ -144,17 +142,14 @@ export const useMixinSocket = () => {
           updateMessages(data.payload)
         }
         if (data.type === 'ticket:update') {
-          console.log(data.payload)
-          updateTicket(data.payload)
+          console.log('socket update ', data.payload)
+          // updateTicket(data.payload)
           // updateNotifications(data.payload)
         }
-      })
-      socket?.on(`${usuario.tenantId}:ticketList`, async data => {
-        console.log(data)
         let verify = []
         if (data.type === 'notification:new') {
           console.log('socket ON: notification:New useMininxSocket')
-          // console.log(data)
+
           scrollToBottom()
           // Atualiza notificações de mensagem
           // var data_noti = []
@@ -172,7 +167,7 @@ export const useMixinSocket = () => {
           }
           try {
             const data_noti = await ConsultarTickets(params)
-            updateNotificationsP(data_noti.data)
+            // updateNotificationsP(data_noti.data)
             verify = data_noti
           } catch (err) {
             toast.message('Algum problema ao consultar tickets', {
@@ -183,14 +178,14 @@ export const useMixinSocket = () => {
           }
           // Faz verificação para se certificar que notificação pertence a fila do usuário
           let pass_noti = false
+          // biome-ignore lint/complexity/noForEach: <explanation>
           verify.data.tickets.forEach(element => {
-
             pass_noti = element.id === data.payload.id ? true : pass_noti
           })
           // // Exibe Notificação
           if (pass_noti) {
             const message = new Notification('Novo cliente pendente', {
-              body: 'Cliente: ' + data.payload.contact.name,
+              body: `Cliente: ${data.payload.contact.name}`,
               tag: 'simple-push-demo-notification',
             })
             message.onclick = e => {
@@ -202,6 +197,8 @@ export const useMixinSocket = () => {
           }
         }
       })
+
+
       socket.on(`${usuario.tenantId}:contactList`, data => {
         updateContatos(data.payload)
       })

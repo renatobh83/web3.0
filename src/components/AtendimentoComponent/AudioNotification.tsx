@@ -11,7 +11,7 @@ export const AudioNotification: React.FC = () => {
   useEffect(() => {
 
     const playNotificationSound = async () => {
-      if ((Number(notificacaoTicket.count) > 0 || Number(notificationsP.count) > 0) && audioRef.current) {
+      if (audioRef.current) {
         try {
           await audioRef.current.play();
         } catch (error) {
@@ -20,7 +20,7 @@ export const AudioNotification: React.FC = () => {
       }
     };
 
-    // playNotificationSound(); // Tenta tocar o som assim que uma notificação for recebida
+    playNotificationSound(); // Tenta tocar o som assim que uma notificação for recebida
 
   }, [notificacaoTicket, notificationsP]);
 
