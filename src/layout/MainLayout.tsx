@@ -100,7 +100,7 @@ export const MainLayout: React.FC = () => {
     }
   }
   function handlerNotifications(data) {
-    console.log('Emiter', data)
+    console.log('Emiter from main', data)
     if (data.ticket.userId) {
       const options = {
         body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
@@ -132,7 +132,7 @@ export const MainLayout: React.FC = () => {
     } else {
 
       const message = new Notification('Novo cliente pendente', {
-        body: 'Cliente: ' + data.ticket.contact.name,
+        body: `Cliente: ${data.ticket.contact.name}`,
         tag: 'notification-pending',
       })
       message.onclick = e => {
@@ -144,6 +144,7 @@ export const MainLayout: React.FC = () => {
     }
     playNotificationSound()
   }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     // Adiciona o listener ao montar o componente
     eventEmitterMain.on('handlerNotifications', handlerNotifications)
@@ -228,15 +229,16 @@ export const MainLayout: React.FC = () => {
     const conectar = async () => {
       await listarWhatsapps()
       await listarConfiguracoes()
-      // consultarTickets()
 
     }
+
     conectar()
   }, [listarWhatsapps, listarConfiguracoes])
 
   return (
     <Box sx={{ display: 'flex' }}>
       <MenuDrawer />
+      {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
 
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
         <Stack

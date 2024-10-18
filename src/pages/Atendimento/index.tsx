@@ -205,6 +205,7 @@ export function Atendimento() {
   })
   const openNav = Boolean(anchorElNav)
   const openFiltro = Boolean(anchorElFiltro)
+  const [filas, setFilas] = useState([])
   const { AbrirChatMensagens } = useAtendimentoTicketStore()
   const { themeMode, toggleThemeMode } = useApplicationStore()
   const { mode, setMode } = useColorScheme()
@@ -222,7 +223,7 @@ export function Atendimento() {
     }
   };
   useEffect(() => {
-    setLocalTickets(tickets)
+    console.log(tickets)
   }, [tickets])
   // const dispararEvento = (data: any) => {
   //   eventEmitter.emit('handlerNotifications', data)
@@ -488,7 +489,7 @@ export function Atendimento() {
   //     setLoading(false)
   //   }
   // }
-  const [filas, setFilas] = useState([])
+
 
   // async function listarUsuarios() {
   //   try {
@@ -601,7 +602,7 @@ export function Atendimento() {
   function closedTickets(): Ticket[] {
     return tickets
       .filter(ticket => ticket.status === 'closed' && !ticket.isGroup)
-      .slice(0, 5)
+      .slice(0, 15)
     // return this.tickets.filter(ticket => ticket.status === 'closed' && !ticket.isGroup).slice(0, this.batchSize);
   }
   function closedGroupTickets(): Ticket[] {
@@ -700,6 +701,7 @@ export function Atendimento() {
   }
   const { contatos, loadContacts } = useContatosStore()
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listaContatos = useCallback(async () => {
     const { data } = await ListarContatos()
     loadContacts(data.contacts)

@@ -15,6 +15,7 @@ import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { Errors } from '../utils/error'
 import { format } from 'date-fns'
+import { orderTickets } from '../utils/ordertTickets'
 
 
 export const useMixinSocket = () => {
@@ -23,7 +24,7 @@ export const useMixinSocket = () => {
   const usuario = JSON.parse(decryptData('usuario'))
 
   const userId = +localStorage.getItem('userId')
-
+  const loadTickets = useAtendimentoTicketStore(state => state.loadTickets)
   const ticketFocado = useAtendimentoTicketStore(state => state.ticketFocado)
   const setTicketFocado = useAtendimentoTicketStore(
     state => state.setTicketFocado
@@ -38,7 +39,7 @@ export const useMixinSocket = () => {
   const updateContatos = useContatosStore(s => s.updateContact)
   const [loading, setLoading] = useState(false)
   const socketRef = useRef<Socket | null>(null)
-
+  const { resetUnread } = useAtendimentoTicketStore()
   const { getWs, setWs } = useWebSocketStore()
   const updateNotifications = useNotificationsStore(s => s.updateNotifications)
   const updateNotificationsP = useNotificationsStore(
@@ -149,7 +150,7 @@ export const useMixinSocket = () => {
             } else {
               eventNotification.emit('playSoundNotification')
               const message = new Notification('Novo cliente pendente', {
-                body: 'Cliente: ' + data.payload.ticket.contact.name,
+                body: `Cliente: ${data.payload.ticket.contact.name}`,
                 tag: data.payload.ticket.id,
               })
               message.onclick = e => {
@@ -170,9 +171,28 @@ export const useMixinSocket = () => {
           updateMessages(data.payload)
         }
         if (data.type === 'ticket:update') {
-          console.log('socket update ', data.payload)
-          // updateTicket(data.payload)
-          // updateNotifications(data.payload)
+          const params = {
+            searchParam: '',
+            pageNumber: 1,
+            status: ['open', 'closed', 'pending'],
+            showAll: false,
+            count: null,
+            queuesIds: [],
+            withUnreadMessages: false,
+            isNotAssignedUser: false,
+            includeNotQueueDefined: true,
+          }
+          const response = await ConsultarTickets(params)
+          const newTicketsOrder = orderTickets(response.data.tickets)
+          setTimeout(() => {
+            loadTickets(newTicketsOrder)
+          }, 200)
+          setTimeout(() => {
+            updateTicket(data.payload)
+          }, 400)
+          setTimeout(async () => {
+            resetUnread(data.payload)
+          }, 600)
         }
         let verify = []
         if (data.type === 'notification:new') {

@@ -24,6 +24,7 @@ import { useTicketService } from '../../hooks/useTicketService'
 import { ObterContato } from '../../services/contatos'
 import { useApplicationStore } from '../../store/application'
 import { useAtendimentoStore } from '../../store/atendimento'
+import { toast } from 'sonner'
 
 interface ItemTicketProps {
   ticket: Ticket
@@ -40,6 +41,7 @@ export const ItemTicket = ({
 }: ItemTicketProps) => {
   const navigate = useNavigate()
   const { iniciarAtendimento } = useTicketService()
+  const setTicketFocado = useAtendimentoTicketStore(state => state.setTicketFocado)
   const dataInWords = (timestamp: string, updated: string) => {
     const data = timestamp ? new Date(Number(timestamp)) : parseJSON(updated)
     return formatDistance(data, new Date(), { locale: ptBR })
@@ -79,6 +81,8 @@ export const ItemTicket = ({
       if (mobileOpen) setMobileOpen(false)
     }
   }
+  const userid = +localStorage.getItem('userId')
+  const nav = useNavigate()
   const abrirChatContato = async ticket => {
     if (
       !(
@@ -87,6 +91,7 @@ export const ItemTicket = ({
       )
     )
       return
+    nav("/atendimento")
     if (ticket.id === ticketFocado.id) return
 
     AbrirChatMensagens(ticket)

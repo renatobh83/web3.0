@@ -258,45 +258,24 @@ export const useSocketInitial = () => {
 
         if (data.type === 'chat:create') {
           eventEmitterScrool.emit('scrollToBottomMessageChat')
-          console.log('socket ON: CHAT:CREATE 2', data)
-
+          console.log('socket ON: CHAT:CREATE - nova mensagem ')
           // if (data.payload.ticket.userId !== userId) return
           // if (data.payload.fromMe) return
           if (data.payload.ticket.userId === userId && !data.payload.fromMe) {
-            if (location.pathname.startsWith('/atendimento/')) {
+            if (location.pathname.startsWith('/atendimento')) {
               eventNotification.emit('handlerNotifications', data.payload)
             } else {
               eventEmitterMain.emit('handlerNotifications', data.payload)
             }
-            // const message = new Notification('Contato: ' + data.payload.ticket.contact.name, {
-            //   body: 'Mensagem: ' + data.payload.body,
-            //   tag: 'notification-new-message-user',
-            //   // image: data.payload.ticket.contact.profilePicUrl,
-            //   icon: data.payload.ticket.contact.profilePicUrl,
-            // })
-            // message.onclick = e => {
-            //   e.preventDefault()
-            //   window.focus()
-            //   AbrirChatMensagens(data.payload.ticket)
-            //   goToChat(data.payload.ticket.id)
-            // }
+
           }
           if (!data.payload.ticket.userId && !data.payload.fromMe) {
-            if (location.pathname !== "/") {
+            if (location.pathname.startsWith('/atendimento')) {
               eventNotification.emit('handlerNotifications', data.payload)
             } else {
               eventEmitterMain.emit('handlerNotifications', data.payload)
             }
-            // const message = new Notification('Novo cliente pendente', {
-            //   body: 'Cliente: ' + data.payload.ticket.contact.name,
-            //   tag: 'notification-pending',
-            // })
-            // message.onclick = e => {
-            //   e.preventDefault()
-            //   window.focus()
-            //   AbrirChatMensagens(data.payload.ticket)
-            //   goToChat(data.payload.ticket.id)
-            // }
+
           }
 
           updateMessages(data.payload)
@@ -398,7 +377,7 @@ export const useSocketInitial = () => {
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
         let verify = []
         if (data.type === 'notification:new') {
-          console.log('socket ON: notification:New IN SOCKET INICIAl')
+          console.log('socket ON: notification:New')
           const params = {
             searchParam: '',
             pageNumber: 1,
@@ -430,7 +409,8 @@ export const useSocketInitial = () => {
           })
 
           if (pass_noti) {
-            console.log('notificacao socket inicial 3')
+
+            eventNotification.emit('playSoundNotification')
             const message = new Notification('Novo cliente pendente', {
               // biome-ignore lint/style/useTemplate: <explanation>
               body: 'Cliente: ' + data.payload.contact.name,

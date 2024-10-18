@@ -32,7 +32,7 @@ interface AtendimentoTicketState {
   chatTicketDisponivel: boolean;
   tickets: Ticket[];
   ticketsLocalizadosBusca: Ticket[];
-  ticketFocado: Ticket;
+  ticketFocado: Ticket | {};
   hasMore: boolean;
   contatos: any[];
   mensagens: any[];
@@ -55,7 +55,7 @@ interface AtendimentoTicketActions {
   deleteTicket: (ticketId: string) => void;
   updateTicketFocadoContact: (payload: any) => void;
   updateContact: (payload: any) => void;
-  setTicketFocado: (payload: Ticket) => void;
+  setTicketFocado: (payload: Ticket | {}) => void;
   updateMessageStatus: (payload: Message & { ticket: Ticket }) => void;
   loadInitialMessages: (payload: {
     messages: any[];
