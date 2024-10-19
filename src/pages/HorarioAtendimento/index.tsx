@@ -218,6 +218,7 @@ export const HorarioAtendimento = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+        
         }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 / 2 }}>
@@ -252,6 +253,7 @@ export const HorarioAtendimento = () => {
             flexWrap: 'wrap',
             justifyContent: 'center',
             backgroundColor: theme.palette.background.default,
+            transition: 'background-color 0.3s ease-in-out',
             width: '100%',
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
           }}

@@ -117,9 +117,14 @@ export const Configuracoes = () => {
             inputProps={{ 'aria-label': 'controlled' }}
           />
         ) : (
-          <TextField variant='standard' 
-          multiline rows={item.key === 'callRejectMessage' ?3 : 0} 
-          value={item.value} sx={{width: '280px', textAlign: 'right', display: 'flex'}}/>
+          <TextField 
+          variant='filled'
+          multiline 
+          rows={item.key === 'callRejectMessage' ? 3 : 0} 
+          value={item.value}
+           sx={{width: item.key === 'callRejectMessage' ? '280px' : "60px"} }
+          inputProps={{ style: {textAlign: 'right'} }}
+           />
         )}
         </Box>
             </ListItem>
