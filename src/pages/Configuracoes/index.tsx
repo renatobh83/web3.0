@@ -1,5 +1,5 @@
 import { Settings } from '@mui/icons-material'
-import { Box, Checkbox, List, ListItem, Tab, Tabs, Toolbar, Typography } from '@mui/material'
+import { Box, Checkbox, List, ListItem, ListItemText, Tab, Tabs, TextField, Toolbar, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 
@@ -8,7 +8,18 @@ interface TabPanelProps {
   index: number
   value: number
 }
-
+const keyValues = {
+  botTicketActive  : {title: 'Fluxo ativo para o Bot de atendimento', subtitle: 'Fluxo a ser utilizado pelo Bot para os novos atendimentos'},
+  NotViewAssignedTickets  : {title: 'Não visualizar Tickets já atribuidos à outros usuários', subtitle: 'Somente o usuário responsável pelo ticket e/ou os administradores visualizarão a atendimento.'},
+  NotViewTicketsChatBot  : {title: 'Não visualizar Tickets no ChatBot', subtitle: 'Somente administradores poderão visualizar tickets que estivem interagindo com o ChatBot.'},
+  DirectTicketsToWallets  : {title: 'Forçar atendimento via Carteira', subtitle: 'Caso o contato tenha carteira vínculada, o sistema irá direcionar o atendimento somente para os donos da carteira de clientes.'},
+  ignoreGroupMsg  : {title: 'Ignorar Mensagens de Grupo', subtitle: 'Habilitando esta opção o sistema não abrirá ticket para grupos.'},
+  rejectCalls  : {title: 'Recusar chamadas no Whatsapp', subtitle: 'Quando ativo, as ligações de aúdio e vídeo serão recusadas, automaticamente.'},
+  callRejectMessage  : {title: 'Mensagem para ligacoes recusadas', subtitle: 'Mensagem enviado quando as ligações de aúdio e vídeo forem recusadas, automaticamente.'},
+  chatbotLane  : {title: 'Habilitar guia de atendimento de Chatbots', subtitle: 'Habilitando esta opção será adicionada uma guia de atendimento exclusiva para os chatbots.'},
+  // NotViewTicketsChatBot  : {title: 'Não visualizar Tickets no ChatBot', 
+  // subtitle: ' Quando habilitado, nenhum usuário poderá ver os tickets atendidos pelo chatbot.'},
+}
 function CustomTabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props
 
@@ -38,7 +49,7 @@ export const Configuracoes = () => {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
-  const confi  = JSON.parse(localStorage.getItem("configuracoes"))
+  const confi  = JSON.parse(decryptData("configuracoes"))
   const [configuracoesOpcoes, setConfiguracoesOpcoes] = useState([])
 
   const usuario =  JSON.parse(decryptData('usuario'))
@@ -86,7 +97,7 @@ export const Configuracoes = () => {
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        {/* <Box  sx={{display: "flex", flexDirection: 'column', justifyContent: "space-between"}}> */}
+
         {configuracoesOpcoes
        .filter(id => id.tenantId === usuario.tenantId)
         .map(item => (
@@ -96,7 +107,8 @@ export const Configuracoes = () => {
              sx={{display: "flex", flexDirection: 'row', justifyContent: "space-between", width: '100%'}}
             onClick={(event) => handleListItemClick(event, item.id)}
             >
-              <Typography variant='body2'>Desc</Typography> 
+
+              <ListItemText secondary={keyValues[item.key]?.subtitle || ""}>{keyValues[item.key]?.title || "Valor não encontrado"}</ListItemText>
             <Box>
               {(item.value === "disabled" || item.value === "enabled") ? (
           <Checkbox 
@@ -105,13 +117,15 @@ export const Configuracoes = () => {
             inputProps={{ 'aria-label': 'controlled' }}
           />
         ) : (
-          <Typography variant='body2'>{item.value}</Typography>  // Mostra o valor quando não for 'disabled' ou 'enabled'
+          <TextField variant='standard' 
+          multiline rows={item.key === 'callRejectMessage' ?3 : 0} 
+          value={item.value} sx={{width: '280px', textAlign: 'right', display: 'flex'}}/>
         )}
         </Box>
             </ListItem>
             </List>
         ))}
-        {/* </Box> */}
+        
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         Item Two

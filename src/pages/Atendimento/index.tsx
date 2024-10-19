@@ -155,7 +155,7 @@ export function Atendimento() {
   const nav = useNavigate()
 
 
-  const { decryptData } = useAuth()
+  const { decryptData , encryptData} = useAuth()
   // Remove this const when copying and pasting into your project.
 
 
@@ -440,7 +440,7 @@ export function Atendimento() {
   const listarConfiguracoes = async () => {
     if (!localStorage.getItem('configuracoes')) {
       const { data } = await ListarConfiguracoes()
-      localStorage.setItem('configuracoes', JSON.stringify(data))
+      localStorage.setItem('configuracoes', encryptData(JSON.stringify(data)))
     }
   }
   const consultaTickets = async (paramsInit = {}) => {

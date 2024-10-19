@@ -150,11 +150,11 @@ export const MainLayout: React.FC = () => {
       loadWhatsApps(data)
     }
   }, [])
-
+  const {encryptData} = useAuth()
   const listarConfiguracoes = useCallback(async () => {
     if (!localStorage.getItem('configuracoes')) {
       const { data } = await ListarConfiguracoes()
-      localStorage.setItem('configuracoes', JSON.stringify(data))
+      localStorage.setItem('configuracoes', encryptData(JSON.stringify(data)))
     }
   }, [])
 
