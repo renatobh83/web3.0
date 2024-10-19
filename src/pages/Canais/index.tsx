@@ -27,15 +27,14 @@ import {
 } from '../../services/sessoesWhatsapp'
 
 interface DataItem {
-  status: string;
-  type: string;
-  name: string;
-  number: string;
-  phone: any;
-  profilePic: string;
-  updatedAt: string;
+  status: string
+  type: string
+  name: string
+  number: string
+  phone: any
+  profilePic: string
+  updatedAt: string
 }
-
 
 import { toast } from 'sonner'
 import AddTaskIcon from '@mui/icons-material/AddTask'
@@ -51,20 +50,19 @@ export const Canais = () => {
   const data = useWhatsappStore(s => s.whatsApps)
   const loadWhatsApps = useWhatsappStore(s => s.loadWhatsApps)
 
-  const userProfile = decryptData("profile");
+  const userProfile = decryptData('profile')
 
   const [selectedChatBots, setSelectedChatBots] = useState({})
   const [whatsappSelecionado, setWhatsappSelecionado] = useState({})
   const [modalWhatsapp, setModalWhatsapp] = useState(false)
   const [modalQrCode, setModalQrCode] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [sessoes, setSessoes] = useState<{ [key: string]: { chatflow: number | null } }>({})
-
-
+  const [sessoes, setSessoes] = useState<{
+    [key: string]: { chatflow: number | null }
+  }>({})
 
   useEffect(() => {
     if (data.length) {
-
       data.map(item => {
         setSessoes(prev => ({
           ...prev,
@@ -73,15 +71,12 @@ export const Canais = () => {
             chatflow: item.chatFlowId,
           },
         }))
-
       })
     }
-
   }, [data])
 
   // biome-ignore lint/complexity/noUselessTernary: <explanation>
-  const isAdmin = userProfile === "admin" ? true : false
-
+  const isAdmin = userProfile === 'admin' ? true : false
 
   // Função para lidar com a mudança de seleção
 
@@ -92,7 +87,7 @@ export const Canais = () => {
       ...prev,
       [whatsapp.id]: {
         ...prev[whatsapp.id],
-        chatflow: event.target.value
+        chatflow: event.target.value,
       },
     }))
     const form = {
@@ -121,10 +116,7 @@ export const Canais = () => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     listChatFlow()
-
   }, [])
-
-
 
   const handleOpenQrModal = channel => {
     setWhatsappSelecionado(channel)
@@ -179,7 +171,7 @@ export const Canais = () => {
       ...prev,
       [whatsapp.id]: {
         ...prev[whatsapp.id],
-        chatflow: null
+        chatflow: null,
       },
     }))
     const form = {
@@ -236,7 +228,6 @@ export const Canais = () => {
     }
   }
   async function deleteWhatsapp(whatsapp) {
-
     toast.message(
       `Atenção!! Deseja realmente deletar o canal "${whatsapp.name}"?`,
       {
@@ -293,7 +284,11 @@ export const Canais = () => {
               <Grid key={item.id} size={{ xs: 12, sm: 6, lg: 3 }}>
                 <Card
                   variant="outlined"
-                  sx={{ height: '100%', flexGrow: 1 }}
+                  sx={{
+                    height: '100%',
+                    flexGrow: 1,
+                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                  }}
                   id="card"
                 >
                   <CardContent>
@@ -432,18 +427,16 @@ export const Canais = () => {
                       )}
                       <Divider orientation="vertical" />
                       <Box>
-                        {[
-                          'CONNECTED',
-                          'PAIRING',
-                          'TIMEOUT',
-                        ].includes(item.status) && (
-                            <Button
-                              variant="outlined"
-                              onClick={() => handleDisconectWhatsSession(item.id)}
-                            >
-                              Desconectar
-                            </Button>
-                          )}
+                        {['CONNECTED', 'PAIRING', 'TIMEOUT'].includes(
+                          item.status
+                        ) && (
+                          <Button
+                            variant="outlined"
+                            onClick={() => handleDisconectWhatsSession(item.id)}
+                          >
+                            Desconectar
+                          </Button>
+                        )}
                       </Box>
                     </Box>
                   </CardContent>

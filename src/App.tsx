@@ -16,10 +16,10 @@ import { ChatFlow } from './pages/chatFlow/Index'
 import { ListaChatFlow } from './pages/chatFlow/ListaChatFlow'
 import { PanelChatFlow } from './components/FlowBuilderComponent/Panel'
 import { HorarioAtendimento } from './pages/HorarioAtendimento'
+import { Configuracoes } from './pages/Configuracoes'
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth()
-
 
   return (
     <>
@@ -41,13 +41,15 @@ const AppRoutes = () => {
               <Route path="/filas" element={<Filas />} />
               <Route path="/mensagens-rapidas" element={<MensagensRapidas />} />
               <Route path="/sessoes" element={<Canais />} />
-              <Route path='/chat-flow' element={<ChatFlow />} >
+              <Route path="/chat-flow" element={<ChatFlow />}>
                 <Route index element={<ListaChatFlow />} />
-                <Route path='builder' element={<PanelChatFlow />} />
+                <Route path="builder" element={<PanelChatFlow />} />
               </Route>
-              <Route path="/horarioAtendimento" element={<HorarioAtendimento />} />
-
-
+              <Route
+                path="/horarioAtendimento"
+                element={<HorarioAtendimento />}
+              />
+              <Route path="/configuracoes" element={<Configuracoes />} />
             </Route>
             <Route path="/atendimento" element={<Atendimento />}>
               <Route path=":ticketId" element={<Chat />} />

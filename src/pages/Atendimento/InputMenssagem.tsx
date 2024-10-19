@@ -638,7 +638,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
               {textChat && (
                 <Tooltip title="Enviar Mensagem">
                   <IconButton
-                    disabled={ticketFocado.status !== 'open'}
+                    disabled={ticketFocado.status !== 'open' || loading}
                     onClick={enviarMensagem}
                   >
                     <Send />

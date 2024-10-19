@@ -62,7 +62,7 @@ export const DashTicketsFilas = () => {
     queuesIds: []
   }>({
     // biome-ignore lint/complexity/noUselessTernary: <explanation>
-    showAll: profile === "admin" ? true : false,
+    showAll: profile === 'admin' ? true : false,
     dateStart: format(sub(new Date(), { days: 30 }), 'yyyy-MM-dd'),
     dateEnd: dayjs(new Date()).format('YYYY-MM-DD'),
     queuesIds: [],
@@ -134,7 +134,7 @@ export const DashTicketsFilas = () => {
         .then(res => {
           setTickets(res.data)
         })
-        .catch(error => { })
+        .catch(error => {})
         .finally(() => {
           setIsloading(false)
           setDrawerFiltro(false)
@@ -237,7 +237,7 @@ export const DashTicketsFilas = () => {
           px: 3,
         }}
       >
-        <Typography variant='h6'>Painel Atendimentos</Typography>
+        <Typography variant="h6">Painel Atendimentos</Typography>
         <Button
           variant="outlined"
           size="small"
@@ -246,12 +246,8 @@ export const DashTicketsFilas = () => {
         >
           Filtros
         </Button>
-        <Box >
-          <Button
-            variant="outlined"
-            size="small"
-
-          >
+        <Box>
+          <Button variant="outlined" size="small">
             Action
           </Button>
         </Box>
@@ -261,38 +257,61 @@ export const DashTicketsFilas = () => {
           height: '85vh',
           overflow: 'auto',
           willChange: 'scroll-position',
-          mt: 2
+          mt: 2,
         }}
       >
         {Object.entries(cTicketsUser()).map(([key, tickets]) => (
-          <Grid key={key} container
+          <Grid
+            key={key}
+            container
             spacing={2}
             columns={12}
             sx={{ mb: theme => theme.spacing(2) }}
           >
             {Object.entries(tickets).map(([k, t]) => (
-              <Grid size={{ xs: 12, sm: 6, lg: 4 }}
-                sx={{ maxWidth: '100%', minWidth: 0, lineHeight: '1.5', }}
-                key={k}>
-                <Card sx={{ borderRadius: '0 !important', p: '0 !important', }} >
-                  <Stack direction={'row'} alignItems={'center'} gap={2} sx={{ px: 2, py: 1, }}>
+              <Grid
+                size={{ xs: 12, sm: 6, lg: 4 }}
+                sx={{
+                  maxWidth: '100%',
+                  minWidth: 0,
+                  lineHeight: '1.5',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                }}
+                key={k}
+              >
+                <Card sx={{ borderRadius: '0 !important', p: '0 !important' }}>
+                  <Stack
+                    direction={'row'}
+                    alignItems={'center'}
+                    gap={2}
+                    sx={{ px: 2, py: 1 }}
+                  >
                     <Avatar />
-                    <Box sx={{ flexDirection: 'column', display: 'flex', }}>
-                      <Typography variant='overline' >{definirNomeUsuario(t[0])}</Typography>
-                      <Typography variant='caption'> Atendimentos: {t.length}</Typography>
+                    <Box sx={{ flexDirection: 'column', display: 'flex' }}>
+                      <Typography variant="overline">
+                        {definirNomeUsuario(t[0])}
+                      </Typography>
+                      <Typography variant="caption">
+                        {' '}
+                        Atendimentos: {t.length}
+                      </Typography>
                     </Box>
                   </Stack>
                   <Divider />
-                  <Box sx={{ height: 320, overflow: 'auto', backgroundColor: 'background.paper' }}>
+                  <Box
+                    sx={{
+                      height: 320,
+                      overflow: 'auto',
+                      backgroundColor: 'background.paper',
+                    }}
+                  >
                     {t.map(ticket => (
-                      <Box key={ticket.protocol} sx={{ px: 2, py: 1 }} >
+                      <Box key={ticket.protocol} sx={{ px: 2, py: 1 }}>
                         <ItemTicketPainel ticket={ticket} />
                       </Box>
                     ))}
                   </Box>
                 </Card>
-
-
               </Grid>
             ))}
           </Grid>
@@ -343,7 +362,7 @@ export const DashTicketsFilas = () => {
                   ml: 2,
                   mb: 2,
                 }}
-              // className={`flex items-center ml-4 ${switchStates.showAll ? 'mb-4' : ''}`}
+                // className={`flex items-center ml-4 ${switchStates.showAll ? 'mb-4' : ''}`}
               >
                 <Switch
                   name="showAll"
@@ -391,6 +410,6 @@ export const DashTicketsFilas = () => {
           )}
         </Box>
       </Drawer>
-    </Box >
+    </Box>
   )
 }

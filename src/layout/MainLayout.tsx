@@ -16,11 +16,9 @@ import { EventEmitter } from 'events'
 import { format } from 'date-fns'
 import { Errors } from '../utils/error'
 
-
 export const eventEmitterMain = new EventEmitter()
 export const MainLayout: React.FC = () => {
   const nav = useNavigate()
-  const { updateNotifications, updateNotificationsP, reset } = useNotificationsStore()
   const { AbrirChatMensagens } = useAtendimentoTicketStore()
   const { loadWhatsApps, whatsApps } = useWhatsappStore()
   useSocketInitial()
@@ -76,17 +74,17 @@ export const MainLayout: React.FC = () => {
   //     this.closeModal();
   // }
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const alertSound = "/sound.mp3"; // Corrigido o caminho
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const alertSound = '/sound.mp3' // Corrigido o caminho
   const playNotificationSound = async () => {
     if (audioRef.current) {
       try {
-        await audioRef.current.play();
+        await audioRef.current.play()
       } catch (error) {
-        console.error("Erro ao tentar tocar o áudio de notificação:", error);
+        console.error('Erro ao tentar tocar o áudio de notificação:', error)
       }
     }
-  };
+  }
 
   const goToChat = async (id: number) => {
     try {
@@ -108,29 +106,22 @@ export const MainLayout: React.FC = () => {
         tag: data.ticket.id,
         renotify: true,
       }
-
       const notification = new Notification(
         `Mensagem de ${data.ticket.contact.name}`,
         options
       )
-
       setTimeout(() => {
         notification.close()
       }, 10000)
-
       notification.onclick = e => {
         e.preventDefault()
-
         if (document.hidden) {
           window.focus()
         }
-
-
         AbrirChatMensagens(data.ticket)
         goToChat(data.ticket.id)
       }
     } else {
-
       const message = new Notification('Novo cliente pendente', {
         body: `Cliente: ${data.ticket.contact.name}`,
         tag: 'notification-pending',
@@ -166,7 +157,6 @@ export const MainLayout: React.FC = () => {
       localStorage.setItem('configuracoes', JSON.stringify(data))
     }
   }, [])
-
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   // const consultarTickets = useCallback(async () => {
@@ -224,12 +214,10 @@ export const MainLayout: React.FC = () => {
   //   }
   // }, [])
 
-
   useEffect(() => {
     const conectar = async () => {
       await listarWhatsapps()
       await listarConfiguracoes()
-
     }
 
     conectar()
@@ -238,8 +226,6 @@ export const MainLayout: React.FC = () => {
   return (
     <Box sx={{ display: 'flex' }}>
       <MenuDrawer />
-      {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
-
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
         <Stack
           spacing={2}
