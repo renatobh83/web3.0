@@ -33,12 +33,11 @@ import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ModalUsuario } from '../../pages/Usuarios/ModalUsuario'
 import { useUsuarioStore } from '../../store/usuarios'
-import { UpdateIsOnlineUsuario } from '../../services/user'
 import { RealizarLogout } from '../../services/login'
 import { useAuth } from '../../context/AuthContext'
 import { useAtendimentoStore } from '../../store/atendimento'
 import { Errors } from '../../utils/error'
-import { AudioNotification } from '../AtendimentoComponent/AudioNotification'
+import { ConsultarTickets } from '../../services/tickets'
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -88,8 +87,8 @@ export const MenusNavbar = () => {
 
   const navigate = useNavigate()
   const location = useLocation()
-  const notificacaoTicket = useAtendimentoTicketStore(s => s.notificacaoTicket)
-  const { notifications, notificationsP } = useNotificationsStore()
+
+  const { notifications, notificationsP, updateNotifications, updateNotificationsP } = useNotificationsStore()
   const { mode, setMode } = useColorScheme()
   const [status, setStatus] = useState(false)
   const usuario = JSON.parse(decryptData("usuario"))
@@ -201,7 +200,45 @@ export const MenusNavbar = () => {
       setStatus(usuario.status === 'online')
     }
   }, [])
+  const consultaTickets = async () => {
+    const paramsOpen = {
+      searchParam: '',
+      pageNumber: 1,
+      status: ['open'],
+      showAll: false,
+      count: null,
+      queuesIds: [],
+      withUnreadMessages: false,
+      isNotAssignedUser: false,
+      includeNotQueueDefined: true,
+    }
+    try {
+      const response = await ConsultarTickets(paramsOpen)
+      updateNotifications(response.data)
+    } catch (error) {
+    }
+    const paramsPending = {
+      searchParam: '',
+      pageNumber: 1,
+      status: ['pending'],
+      showAll: false,
+      count: null,
+      queuesIds: [],
+      withUnreadMessages: false,
+      isNotAssignedUser: false,
+      includeNotQueueDefined: true,
+    }
+    try {
+      const response = await ConsultarTickets(paramsPending)
+      updateNotificationsP(response.data)
+    } catch (error) {
 
+    }
+  }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    consultaTickets()
+  }, [])
   return (
     <Stack
       direction="row"

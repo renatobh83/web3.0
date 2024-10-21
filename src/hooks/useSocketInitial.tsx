@@ -186,7 +186,6 @@ export const useSocketInitial = () => {
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
         if (data.type === 'ticket:update') {
           console.log('socket ON: ticket:update', data)
-
           const params = {
             searchParam: '',
             pageNumber: 1,
@@ -199,7 +198,9 @@ export const useSocketInitial = () => {
             includeNotQueueDefined: true,
           }
           const response = await ConsultarTickets(params)
+
           const newTicketsOrder = orderTickets(response.data.tickets)
+
           setTimeout(() => {
             loadTickets(newTicketsOrder)
           }, 200)
@@ -209,6 +210,41 @@ export const useSocketInitial = () => {
           setTimeout(async () => {
             resetUnread(data.payload)
           }, 600)
+
+          const paramsPending = {
+            searchParam: '',
+            pageNumber: 1,
+            status: ['pending'],
+            showAll: false,
+            count: null,
+            queuesIds: [],
+            withUnreadMessages: false,
+            isNotAssignedUser: false,
+            includeNotQueueDefined: true,
+          }
+          try {
+            const response = await ConsultarTickets(paramsPending)
+            updateNotificationsP(response.data)
+          } catch (error) {
+
+          }
+          const paramsOpen = {
+            searchParam: '',
+            pageNumber: 1,
+            status: ['open'],
+            showAll: false,
+            count: null,
+            queuesIds: [],
+            withUnreadMessages: false,
+            isNotAssignedUser: false,
+            includeNotQueueDefined: true,
+          }
+          try {
+            const response = await ConsultarTickets(paramsOpen)
+            updateNotifications(response.data)
+          } catch (error) {
+
+          }
         }
         // if (data.type === 'ticket:create') {
         //   console.log('socket ON: TICKET:CREATE 1')
@@ -258,13 +294,14 @@ export const useSocketInitial = () => {
 
         if (data.type === 'chat:create') {
           eventEmitterScrool.emit('scrollToBottomMessageChat')
-          console.log('socket ON: CHAT:CREATE - nova mensagem ')
+          console.log('socket ON: CHAT:CREATE - nova mensagem ', data)
           // if (data.payload.ticket.userId !== userId) return
           // if (data.payload.fromMe) return
           if (data.payload.ticket.userId === userId && !data.payload.fromMe) {
             if (location.pathname.startsWith('/atendimento')) {
               eventNotification.emit('handlerNotifications', data.payload)
             } else {
+
               eventEmitterMain.emit('handlerNotifications', data.payload)
             }
 
@@ -273,8 +310,10 @@ export const useSocketInitial = () => {
             if (location.pathname.startsWith('/atendimento')) {
               eventNotification.emit('handlerNotifications', data.payload)
             } else {
+
               eventEmitterMain.emit('handlerNotifications', data.payload)
             }
+
 
           }
 
@@ -381,7 +420,7 @@ export const useSocketInitial = () => {
           const params = {
             searchParam: '',
             pageNumber: 1,
-            status: ['open', 'pending'],
+            status: ['pending'],
             showAll: false,
             count: null,
             queuesIds: [],
@@ -391,7 +430,6 @@ export const useSocketInitial = () => {
           }
           try {
             const data_noti = await ConsultarTickets(params)
-
             updateNotificationsP(data_noti.data)
             verify = data_noti
           } catch (err) {
@@ -410,7 +448,7 @@ export const useSocketInitial = () => {
 
           if (pass_noti) {
 
-            eventNotification.emit('playSoundNotification')
+            eventEmitterMain.emit('playSoundNotification')
             const message = new Notification('Novo cliente pendente', {
               // biome-ignore lint/style/useTemplate: <explanation>
               body: 'Cliente: ' + data.payload.contact.name,

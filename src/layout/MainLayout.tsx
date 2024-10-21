@@ -139,9 +139,11 @@ export const MainLayout: React.FC = () => {
   useEffect(() => {
     // Adiciona o listener ao montar o componente
     eventEmitterMain.on('handlerNotifications', handlerNotifications)
+    eventEmitterMain.on('playSoundNotification', playNotificationSound)
     // Remove o listener ao desmontar o componente
     return () => {
       eventEmitterMain.off('handlerNotifications', handlerNotifications)
+      eventEmitterMain.off('playSoundNotification', playNotificationSound)
     }
   }, [])
   const listarWhatsapps = useCallback(async () => {
@@ -150,7 +152,7 @@ export const MainLayout: React.FC = () => {
       loadWhatsApps(data)
     }
   }, [])
-  const {encryptData} = useAuth()
+  const { encryptData } = useAuth()
   const listarConfiguracoes = useCallback(async () => {
     if (!localStorage.getItem('configuracoes')) {
       const { data } = await ListarConfiguracoes()
