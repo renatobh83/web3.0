@@ -17,6 +17,7 @@ import { ListaChatFlow } from './pages/chatFlow/ListaChatFlow'
 import { PanelChatFlow } from './components/FlowBuilderComponent/Panel'
 import { HorarioAtendimento } from './pages/HorarioAtendimento'
 import { Configuracoes } from './pages/Configuracoes'
+import { Campanhas } from './pages/campanhas'
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth()
@@ -48,6 +49,10 @@ const AppRoutes = () => {
               <Route
                 path="/horarioAtendimento"
                 element={<HorarioAtendimento />}
+              />
+              <Route
+                path="/campanhas"
+                element={<Campanhas />}
               />
               <Route path="/configuracoes" element={<Configuracoes />} />
             </Route>
