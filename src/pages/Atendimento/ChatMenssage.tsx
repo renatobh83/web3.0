@@ -209,7 +209,6 @@ export const ChatMensagem = ({
     setTimeout(() => {
       const element = document.getElementById('inicioListaMensagensChat')
       if (element) {
-        console.log('Elemento encontrado, rolando para o fim')
         element.scrollIntoView({ behavior: 'smooth' })
       } else {
         console.log('Elemento não encontrado')
