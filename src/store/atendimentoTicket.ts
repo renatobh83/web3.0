@@ -109,7 +109,9 @@ const checkTicketFilter = (ticket: Ticket) => {
   };
 
   const NotViewTicketsChatBot = () => {
-    const configuracoes = JSON.parse(localStorage.getItem("configuracoes"));
+    const configuracoes = JSON.parse(
+      decryptData(localStorage.getItem("configuracoes"))
+    );
     const conf = configuracoes?.find(
       (c: { key: string }) => c.key === "NotViewTicketsChatBot"
     );
@@ -117,7 +119,9 @@ const checkTicketFilter = (ticket: Ticket) => {
   };
 
   const DirectTicketsToWallets = () => {
-    const configuracoes = JSON.parse(localStorage.getItem("configuracoes"));
+    const configuracoes = JSON.parse(
+      decryptData(localStorage.getItem("configuracoes"))
+    );
     const conf = configuracoes?.find(
       (c: { key: string }) => c.key === "DirectTicketsToWallets"
     );
@@ -125,7 +129,9 @@ const checkTicketFilter = (ticket: Ticket) => {
   };
 
   const isNotViewAssignedTickets = () => {
-    const configuracoes = JSON.parse(localStorage.getItem("configuracoes"));
+    const configuracoes = JSON.parse(
+      decryptData(localStorage.getItem("configuracoes"))
+    );
     const conf = configuracoes?.find(
       (c: { key: string }) => c.key === "NotViewAssignedTickets"
     );
