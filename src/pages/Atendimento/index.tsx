@@ -155,7 +155,7 @@ export function Atendimento() {
   const nav = useNavigate()
 
 
-  const { decryptData , encryptData} = useAuth()
+  const { decryptData, encryptData } = useAuth()
   // Remove this const when copying and pasting into your project.
 
 
@@ -839,6 +839,13 @@ export function Atendimento() {
                             <Checkbox
                               checked={pesquisaTickets.status.includes('open')}
                               onChange={() => statusTickets('open')}
+                              sx={{
+                                '& .MuiSvgIcon-root': {
+                                  borderRadius: '50%', // ou manter quadrado se preferir
+                                  border: '2px solid currentColor', // ajusta a borda
+                                  fill: 'transparent', // remove o preenchimento interno
+                                }
+                              }}
                             />
                           }
                           label="Abertos"
@@ -852,6 +859,13 @@ export function Atendimento() {
                                 'pending'
                               )}
                               onChange={() => statusTickets('pending')}
+                              sx={{
+                                '& .MuiSvgIcon-root': {
+                                  borderRadius: '50%', // ou manter quadrado se preferir
+                                  border: '2px solid currentColor', // ajusta a borda
+                                  fill: 'transparent', // remove o preenchimento interno
+                                }
+                              }}
                             />
                           }
                           label="Pendentes"
@@ -865,6 +879,13 @@ export function Atendimento() {
                                 'closed'
                               )}
                               onChange={() => statusTickets('closed')}
+                              sx={{
+                                '& .MuiSvgIcon-root': {
+                                  borderRadius: '50%', // ou manter quadrado se preferir
+                                  border: '2px solid currentColor', // ajusta a borda
+                                  fill: 'transparent', // remove o preenchimento interno
+                                }
+                              }}
                             />
                           }
                           label="Resolvidos"

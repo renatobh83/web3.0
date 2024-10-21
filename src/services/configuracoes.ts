@@ -7,9 +7,9 @@ export function ListarConfiguracoes() {
   });
 }
 
-export function AlterarConfiguracao(data: { Key: any }) {
+export function AlterarConfiguracao(data: { key: any }) {
   return request({
-    url: `/settings/${data.Key}/`,
+    url: `/settings/${data.key}/`,
     method: "put",
     data,
   });
