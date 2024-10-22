@@ -1,11 +1,14 @@
 import { Box, Typography, Button, TableCell, TableHead, TableRow, TableBody, IconButton, Tooltip } from "@mui/material"
 import { CustomTableContainer } from "../../components/MaterialUi/CustomTable"
 import { format, parseISO } from "date-fns"
-import { useCallback, useEffect, useState } from "react"
-import { WhatsApp, Edit, Delete } from "@mui/icons-material"
+import { SetStateAction, useCallback, useEffect, useState } from "react"
+import { WhatsApp, Edit, Delete, Group } from "@mui/icons-material"
 import { DeletarCampanha, ListarCampanhas } from "../../services/campanhas"
 import { ModalCampanha } from "./ModalCampanha"
 import { toast } from "sonner"
+import { ContatosCampanha } from "./ContatosCampanha"
+import { set } from "lodash"
+import { Outlet, useNavigate } from "react-router-dom"
 const status = {
     pending: 'Pendente',
     scheduled: 'Programada',
@@ -15,9 +18,11 @@ const status = {
 }
 
 export const Campanhas = () => {
+    const nav = useNavigate()
     const [campanhas, setCampanhas] = useState([])
     const [campanhaId, setCampanhaId] = useState(null)
     const [open, setOpen] = useState(false)
+    const [openContatos, setOpenContatos] = useState(false)
     const handleCloseModal = () => {
         setOpen(false)
         setCampanhaId(null)
@@ -30,11 +35,23 @@ export const Campanhas = () => {
             setCampanhas([])
         }
     }, [])
-    const handleEditarCampanha = (id) => {
+    const handleEditarCampanha = (id: SetStateAction<null>) => {
         setCampanhaId(id)
         setOpen(true)
     }
-    const handleDeleteCampanha = (campanha) => {
+    const handleAddContatosCampanha = (campanha: any) => {
+
+        nav(`/campanhas/${campanha.id}`, {
+            state: { campanha: campanha }
+        })
+        // setCampanhaId(id)
+        // setOpenContatos(true)
+    }
+    const handleCloseContatoCampanha = () => {
+        setCampanhaId(null)
+        setOpenContatos(false)
+    }
+    const handleDeleteCampanha = (campanha: { name: any }) => {
         toast.info(
             `Atenção!! Deseja realmente deletar a campamanha "${campanha.name}"?`,
             {
@@ -78,23 +95,19 @@ export const Campanhas = () => {
         { name: 'lidas', label: 'Lidas', field: 'lidas', align: 'center' },
         {
             name: 'acoes', label: 'Ações', field: 'acoes', align: 'center',
-            renderCell: (params: { row }) => (
+            renderCell: (params: { row: { id: any } }) => (
                 <Box
                     sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}
                     className="flex justify-center space-x-2"
                 >
-                    {params.row.number && (
-                        <Tooltip title="Abrir ticket">
-                            <IconButton
-                            // onClick={() => {
-                            //     setContatoSelecionado(params.row)
-                            //     handleSaveTicket(params.row)
-                            // }}
-                            >
-                                <WhatsApp />
-                            </IconButton>
-                        </Tooltip>
-                    )}
+
+                    <Tooltip title="Lista de contato da campanha">
+                        <IconButton
+                            onClick={() => handleAddContatosCampanha(params.row)}
+                        >
+                            <Group />
+                        </IconButton>
+                    </Tooltip>
                     <Tooltip title="Edit">
                         <IconButton
                             onClick={() => handleEditarCampanha(params.row)}
@@ -168,7 +181,9 @@ export const Campanhas = () => {
                     ))}
                 </TableBody>
             </CustomTableContainer>
+            {/* Falta incluir paginacao */}
             {open && <ModalCampanha open={open} setClose={handleCloseModal} campanhaId={campanhaId} />}
+            <Outlet />
         </Box>
 
     )

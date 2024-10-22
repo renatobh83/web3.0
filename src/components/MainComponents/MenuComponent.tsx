@@ -74,12 +74,12 @@ export const MenuComponent: React.FC<Props> = ({ userProfile, exibirMenuBeta, st
             icon: <DashboardIcon />,
             routeName: 'painel-atendimentos'
         },
-        {
-            title: 'Relatórios',
-            caption: 'Relatórios gerais',
-            icon: <SummarizeIcon />,
-            routeName: 'relatorios'
-        },
+        // {
+        //     title: 'Relatórios',
+        //     caption: 'Relatórios gerais',
+        //     icon: <SummarizeIcon />,
+        //     routeName: 'relatorios'
+        // },
         {
             title: 'Usuarios',
             caption: 'Admin de usuários',
@@ -104,12 +104,12 @@ export const MenuComponent: React.FC<Props> = ({ userProfile, exibirMenuBeta, st
             icon: <SmartToyIcon />,
             routeName: 'chat-flow'
         },
-        {
-            title: 'Etiquetas',
-            caption: 'Cadastro de etiquetas',
-            icon: <LabelIcon />,
-            routeName: 'etiquetas'
-        },
+        // {
+        //     title: 'Etiquetas',
+        //     caption: 'Cadastro de etiquetas',
+        //     icon: <LabelIcon />,
+        //     routeName: 'etiquetas'
+        // },
         {
             title: 'Horário de Atendimento',
             caption: 'Horário de funcionamento',

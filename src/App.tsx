@@ -18,6 +18,7 @@ import { PanelChatFlow } from './components/FlowBuilderComponent/Panel'
 import { HorarioAtendimento } from './pages/HorarioAtendimento'
 import { Configuracoes } from './pages/Configuracoes'
 import { Campanhas } from './pages/campanhas'
+import { ContatosCampanha } from './pages/campanhas/ContatosCampanha'
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth()
@@ -53,6 +54,12 @@ const AppRoutes = () => {
               <Route
                 path="/campanhas"
                 element={<Campanhas />}
+              >
+
+              </Route>
+              <Route
+                path="/campanhas/:campanhaId"
+                element={<ContatosCampanha />}
               />
               <Route path="/configuracoes" element={<Configuracoes />} />
             </Route>

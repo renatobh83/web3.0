@@ -88,7 +88,6 @@ export const ModalCampanha = ({ open, setClose, campanhaId }: ModalCampanhaProps
         setClose()
     }
     const handleOnChange = (e, key) => {
-        console.log(e)
         setCampanha(prev => ({
             ...prev,
             [key]: key === "start" ? adjustedDate(e) : e
