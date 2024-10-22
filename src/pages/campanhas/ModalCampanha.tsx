@@ -16,6 +16,9 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { MolduraCelular } from "../../components/MolduraCelular"
 import { useEffect, useState } from "react"
 import { ChatMensagem } from "../Atendimento/ChatMenssage"
+import { useWhatsappStore } from "../../store/whatsapp"
+import { AlterarCampanha, CriarCampanha } from "../../services/campanhas"
+import { toast } from "sonner"
 const variaveis = [
     { label: 'Nome', value: '{{name}}' },
     { label: 'E-mail (se existir)', value: '{{email}}' },
@@ -37,9 +40,10 @@ interface Campanha {
 interface ModalCampanhaProps {
     open: boolean,
     setClose: () => void
+    campanhaId: any
 }
 
-export const ModalCampanha = ({ open, setClose }: ModalCampanhaProps) => {
+export const ModalCampanha = ({ open, setClose, campanhaId }: ModalCampanhaProps) => {
     const {
         register,
         handleSubmit,
@@ -47,6 +51,11 @@ export const ModalCampanha = ({ open, setClose }: ModalCampanhaProps) => {
         setValue,
         formState: { errors },
     } = useForm<Campanha>()
+    const { whatsApps } = useWhatsappStore()
+    function cSessions() {
+        return whatsApps.filter(w => ["whatsapp", "baileys"].includes(w.type) && !w.isDeleted)
+    }
+
     const [campanha, setCampanha] = useState({
         name: null,
         start: null,
@@ -57,10 +66,32 @@ export const ModalCampanha = ({ open, setClose }: ModalCampanhaProps) => {
         sessionId: null,
         delay: 20
     })
+    const adjustedDate = (date) => {
+        const dateUTC = dayjs(date).toISOString()
+        const adjustedDate = dayjs(dateUTC).tz('America/Sao_Paulo').format()
+        return adjustedDate
+    }
+    function resetarCampanha() {
+        setCampanha({
+            name: null,
+            start: null,
+            message1: null,
+            message2: null,
+            message3: null,
+            mediaUrl: null,
+            delay: 20,
+            sessionId: null
+        })
+    }
+    const handleCloseModal = () => {
+        resetarCampanha()
+        setClose()
+    }
     const handleOnChange = (e, key) => {
+        console.log(e)
         setCampanha(prev => ({
             ...prev,
-            [key]: key === "delay" ? Number(e) : e
+            [key]: key === "start" ? adjustedDate(e) : e
         }))
     }
     const [messagemPreview, setMessagemPreview] = useState('message1')
@@ -86,8 +117,29 @@ export const ModalCampanha = ({ open, setClose }: ModalCampanhaProps) => {
             quotedMsg: null
         }
     )
-    const onSubimit = contato => {
-        console.log('ls', campanha)
+
+    const onSubimit = async () => {
+        const medias = new FormData()
+        // biome-ignore lint/complexity/noForEach: <explanation>
+        Object.keys(campanha).forEach((key) => {
+            medias.append(key, campanha[key])
+        })
+        try {
+            if (campanhaId?.id) {
+                const { data } = await AlterarCampanha(medias, campanhaId.id)
+                toast.info('Campanha editada!')
+                handleCloseModal()
+            } else {
+                const { data } = await CriarCampanha(medias)
+                toast.info('Campanha criada!')
+                handleCloseModal()
+            }
+        } catch (error) {
+            console.log(error)
+        }
+
+
+        // console.log('ls', campanha, cSessions())
     }
     function cMessages() {
         const messages: { id: string; body: any; mediaUrl: null; ack: number; read: boolean; fromMe: boolean; mediaType: string; isDeleted: boolean; createdAt: string; updatedAt: string; quotedMsgId: null; delay: number; ticketId: number; contactId: null; userId: null; contact: null; quotedMsg: null }[] = []
@@ -107,8 +159,19 @@ export const ModalCampanha = ({ open, setClose }: ModalCampanhaProps) => {
         return messages
     }
     useEffect(() => {
-        console.log(cMessages())
-    }, [])
+        if (campanhaId) {
+            setCampanha({
+                delay: campanhaId.delay,
+                start: campanhaId.start,
+                name: campanhaId.name,
+                message1: campanhaId.message1,
+                message2: campanhaId.message2,
+                message3: campanhaId.message3,
+                sessionId: campanhaId.sessionId,
+                mediaUrl: campanhaId.mediaUrl
+            })
+        }
+    }, [campanhaId])
     return (
         <Dialog open={open} fullWidth maxWidth='md' >
             <DialogContent >
@@ -126,12 +189,12 @@ export const ModalCampanha = ({ open, setClose }: ModalCampanhaProps) => {
                                 value={campanha?.name || ''}
                                 onChange={e => handleOnChange(e.target.value, 'name')}
                             />
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
                                 <Stack spacing={2} sx={{ minWidth: 305 }}>
                                     <DateTimePicker
-                                        // value={campanha?.start || ''}
-                                        onChange={e => handleOnChange(e.target.value, 'start')}
-                                    // referenceDate={dayjs('2022-04-17T15:30')}
+                                        value={dayjs(campanha.start) || ''}
+                                        onChange={e => handleOnChange(e, 'start')}
+
                                     />
 
                                 </Stack>
@@ -140,14 +203,19 @@ export const ModalCampanha = ({ open, setClose }: ModalCampanhaProps) => {
                         <Box sx={{ display: 'flex', gap: 2 }}>
                             <FormControl fullWidth>
                                 <InputLabel>Enviar por:</InputLabel>
-                                <Select label='Enviar por' variant="outlined">
-                                    <MenuItem>2</MenuItem>
-                                    <MenuItem>3</MenuItem>
-                                    <MenuItem>4</MenuItem>
+                                <Select
+                                    label='Enviar por'
+                                    variant="outlined"
+                                    value={campanha?.sessionId || ''}
+                                    onChange={e => handleOnChange(Number(e.target.value), 'sessionId')}
+                                >
+                                    {cSessions().map(sessao => (
+                                        <MenuItem key={sessao.id} value={sessao.id}>{sessao.name}</MenuItem>
+                                    ))}
                                 </Select>
                             </FormControl>
                             <TextField sx={{ width: '100px' }} variant="outlined" label='Delay'
-                                onChange={e => handleOnChange(e.target.value, 'delay')} />
+                                onChange={e => handleOnChange(Number(e.target.value), 'delay')} />
                             {/* <TextField fullWidth variant="outlined" label='Nome da campanha' /> */}
                         </Box>
                         <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
@@ -170,6 +238,7 @@ export const ModalCampanha = ({ open, setClose }: ModalCampanhaProps) => {
                                         variant="filled"
                                         multiline
                                         rows={5}
+                                        value={campanha?.message2 || ''}
                                         onChange={e => handleOnChange(e.target.value, 'message2')}
                                     />
                                 </Box>
@@ -180,13 +249,14 @@ export const ModalCampanha = ({ open, setClose }: ModalCampanhaProps) => {
                                         variant="filled"
                                         multiline
                                         rows={5}
+                                        value={campanha?.message3 || ''}
                                         onChange={e => handleOnChange(e.target.value, 'message3')}
                                     />
                                 </Box>
                             </Box>
                             <Box id="rigth" sx={{ width: '500px', display: 'flex', flexDirection: 'column' }}>
                                 <RadioGroup
-                                    // value={typeSelected[v.day].type}
+                                    value={messagemPreview}
                                     onChange={e => setMessagemPreview(e.target.value)}
                                     sx={{
                                         display: 'flex',
@@ -211,7 +281,7 @@ export const ModalCampanha = ({ open, setClose }: ModalCampanhaProps) => {
                     </Box>
                     <DialogActions>
                         <Button variant="contained" color="success" type="submit">Salvar</Button>
-                        <Button variant="contained" color="error" onClick={() => setClose()}>Cancelar</Button>
+                        <Button variant="contained" color="error" onClick={() => handleCloseModal()}>Cancelar</Button>
                     </DialogActions>
                 </form>
             </DialogContent>
