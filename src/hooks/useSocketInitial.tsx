@@ -290,6 +290,9 @@ export const useSocketInitial = () => {
         //   }
         // }
       })
+      socket.on(`${usuario.tenantId}:messageUpdate`, async data => {
+        console.log(data)
+      })
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
 
         if (data.type === 'chat:create') {

@@ -113,7 +113,7 @@ export const useMixinSocket = () => {
     socket?.on('connect', () => {
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
         if (data.type === 'chat:create') {
-          console.log('socket ON: chat:create useMininxSocket', data)
+
           scrollToBottom()
           if (
             !data.payload.read &&

@@ -222,9 +222,7 @@ export function Atendimento() {
       }
     }
   };
-  useEffect(() => {
-    console.log(tickets)
-  }, [tickets])
+
   // const dispararEvento = (data: any) => {
   //   eventEmitter.emit('handlerNotifications', data)
   // }

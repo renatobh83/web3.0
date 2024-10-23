@@ -17,10 +17,15 @@ interface ContatosCampanhaProps {
 }
 export const ContatosCampanha = () => {
     const { state } = useLocation();
+    const navigate = useNavigate()
     const { campanhaId } = useParams()
     if (!state) {
         return <Navigate to="/campanhas" />
     }
+
+    const handleGoToCampanhas = () => {
+        navigate('/campanhas'); // Muda para a rota '/campanhas'
+    };
     const [pagination, setPagination] = useState({ page: 0, rowsPerPage: 10 });
     const [paginationModal, setPaginationModal] = useState({ page: 0, rowsPerPage: 10 });
 
@@ -113,7 +118,7 @@ export const ContatosCampanha = () => {
         setContatos(data.contacts)
     }, [])
     const listarContatosCampanha = useCallback(async () => {
-        const { data } = await ListarContatosCampanha(5)
+        const { data } = await ListarContatosCampanha(campanhaId)
         setContatosCampanha(data)
     }, [])
 
@@ -250,7 +255,7 @@ export const ContatosCampanha = () => {
                             <Typography>Início: {format(parseISO(campanha.start), 'dd/MM/yyyy HH:mm')} - Status {campanha.status}</Typography>
                         </Box>
                         <Button variant="contained" color="secondary"
-                            onClick={() => <Navigate to="/campanhas" />}
+                            onClick={() => handleGoToCampanhas()}
                             startIcon={<ArrowLeft />}>Listar Campanhas</Button>
                     </Box>
                 </Card>
@@ -324,8 +329,8 @@ export const ContatosCampanha = () => {
                             <Typography variant="h4">Selecionar Contatos</Typography>
                             <Box>
                                 <ButtonGroup >
-                                    <Button onClick={() => addContatosCampanha()} variant="contained" color="success">Adiconar</Button>
                                     <Button onClick={() => handlCloseModalAddContato()} variant="contained" color="error">Cancelar</Button>
+                                    <Button onClick={() => addContatosCampanha()} variant="contained" color="info">Adiconar</Button>
                                 </ButtonGroup>
                             </Box>
                         </Box>

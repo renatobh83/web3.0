@@ -19,6 +19,7 @@ import { ChatMensagem } from "../Atendimento/ChatMenssage"
 import { useWhatsappStore } from "../../store/whatsapp"
 import { AlterarCampanha, CriarCampanha } from "../../services/campanhas"
 import { toast } from "sonner"
+import { MobileDateTimePicker } from "@mui/x-date-pickers/MobileDateTimePicker"
 const variaveis = [
     { label: 'Nome', value: '{{name}}' },
     { label: 'E-mail (se existir)', value: '{{email}}' },
@@ -119,6 +120,7 @@ export const ModalCampanha = ({ open, setClose, campanhaId }: ModalCampanhaProps
 
     const onSubimit = async () => {
         const medias = new FormData()
+        console.log(campanha)
         // biome-ignore lint/complexity/noForEach: <explanation>
         Object.keys(campanha).forEach((key) => {
             medias.append(key, campanha[key])
@@ -190,7 +192,7 @@ export const ModalCampanha = ({ open, setClose, campanhaId }: ModalCampanhaProps
                             />
                             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
                                 <Stack spacing={2} sx={{ minWidth: 305 }}>
-                                    <DateTimePicker
+                                    <MobileDateTimePicker
                                         value={dayjs(campanha.start) || ''}
                                         onChange={e => handleOnChange(e, 'start')}
 

@@ -217,7 +217,7 @@ export const ChatMensagem = ({
   }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-
+    console.log(menssagens)
     // Adiciona o listener ao montar o componente
     eventEmitterScrool.on('scrollToBottomMessageChat', scrollToBottom)
     // Remove o listener ao desmontar o componente
@@ -230,38 +230,6 @@ export const ChatMensagem = ({
 
   return (
     <>
-      {/* <Box
-        id="box-message"
-        sx={{
-          minHeight: 'calc(-135px + 100vh)',
-          height: 'calc(-135px + 100vh)',
-          overflowY: 'auto',
-          width: '100%',
-          position: 'relative',
-          contain: 'strict',
-          willChange: 'scroll-position',
-        }}
-      >
-        <Box
-          id="scrollarea_container"
-          sx={{
-            scrollbarWidth: 'none',
-            display: 'flex',
-            width: '100% !important',
-            height: '100% !important',
-            position: 'relative',
-            overflow: 'auto',
-            flexDirection: 'column-reverse',
-          }}
-        >
-          <Box
-            id="scrollarae-absoulte"
-            sx={{
-              position: 'absolute',
-              minHeight: '100%',
-              minWidth: '100%',
-            }}
-          > */}
       <Box
         id="messages"
         sx={{
@@ -379,6 +347,7 @@ export const ChatMensagem = ({
                                 ))}
 
                               {/* Mostrar mensagens com agendamento */}
+
                               {mensagem.scheduleDate && (
                                 <>
                                   <IconButton
@@ -461,6 +430,11 @@ export const ChatMensagem = ({
                                     </Popover>
                                   )}
                                 </>
+                              )}
+                              {mensagem.reaction || mensagem.reactionFromMe && (
+                                <Box sx={{ position: 'absolute', bottom: 5, left: mensagem.fromMe ? '10px' : 'none', right: mensagem.fromMe ? 'none' : '10px', }}>
+                                  {mensagem.reaction} {mensagem.reactionFromMe}
+                                </Box>
                               )}
                               {mensagem.isDeleted && (
                                 <Typography variant="body2">
@@ -761,6 +735,7 @@ export const ChatMensagem = ({
                                             sx={{
                                               fontSize: '12px',
                                               color: 'rgba(0, 0, 0, 0.45)',
+                                              mr: 1
                                             }}
                                           >
                                             {dataInWords(mensagem.createdAt)}
@@ -782,6 +757,7 @@ export const ChatMensagem = ({
                                           {dataInWords(mensagem.createdAt)}
                                         </Typography>
                                       )}
+
                                     </Box>
                                   </>
                                 )}
@@ -804,9 +780,6 @@ export const ChatMensagem = ({
         </span >
       </Box >
       <div id="inicioListaMensagensChat" />
-      {/* </Box>
-        </Box>
-      </Box> */}
     </>
   )
 }

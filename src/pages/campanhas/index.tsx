@@ -1,9 +1,9 @@
 import { Box, Typography, Button, TableCell, TableHead, TableRow, TableBody, IconButton, Tooltip } from "@mui/material"
 import { CustomTableContainer } from "../../components/MaterialUi/CustomTable"
-import { format, parseISO } from "date-fns"
+import { format, parseISO, startOfDay } from "date-fns"
 import { SetStateAction, useCallback, useEffect, useState } from "react"
-import { WhatsApp, Edit, Delete, Group } from "@mui/icons-material"
-import { DeletarCampanha, ListarCampanhas } from "../../services/campanhas"
+import { WhatsApp, Edit, Delete, Group, AccessTimeFilledOutlined, AccessTime, Cancel } from "@mui/icons-material"
+import { CancelarCampanha, DeletarCampanha, IniciarCampanha, ListarCampanhas } from "../../services/campanhas"
 import { ModalCampanha } from "./ModalCampanha"
 import { toast } from "sonner"
 import { ContatosCampanha } from "./ContatosCampanha"
@@ -40,12 +40,12 @@ export const Campanhas = () => {
         setOpen(true)
     }
     const handleAddContatosCampanha = (campanha: any) => {
-
         nav(`/campanhas/${campanha.id}`, {
             state: { campanha: campanha }
         })
-        // setCampanhaId(id)
-        // setOpenContatos(true)
+    }
+    function isValidDate(v) {
+        return startOfDay(new Date(parseISO(v))).getTime() >= startOfDay(new Date()).getTime()
     }
     const handleCloseContatoCampanha = () => {
         setCampanhaId(null)
@@ -70,6 +70,51 @@ export const Campanhas = () => {
                 },
             }
         )
+    }
+    const cancelarCampanha = (campanha) => {
+        toast.info(
+            `Atenção!! Deseja realmente cancelar a campamanha "${campanha.name}"?`,
+            {
+                cancel: {
+                    label: 'Cancel',
+                    onClick: () => console.log('Cancel!'),
+                },
+                action: {
+                    label: 'Confirma',
+                    onClick: () => {
+                        CancelarCampanha(campanha.id)
+                            .then(res => {
+                                toast.success('Campanha cancelada.')
+                                listarCampanhas()
+                            }).catch(err => {
+                                toast.error('Não foi possível cancelar a campanha.', err)
+                            })
+                    },
+                },
+            }
+        )
+    }
+    const iniciarCampanha = (campanha) => {
+        if (!isValidDate(campanha.start)) {
+            toast.error('Não é possível programar campanha com data menor que a atual')
+            return
+        }
+        if (campanha.contactsCount === "0") {
+            toast.error('Necessário ter contatos vinculados para programar a campanha.')
+            return
+        }
+
+        if (campanha.status !== 'pending' && campanha.status !== 'canceled') {
+            toast.error('Só é permitido programar campanhas que estejam pendentes ou canceladas.')
+            return
+        }
+        IniciarCampanha(campanha.id)
+            .then(() => {
+                toast.success('Campanha iniciada.')
+                listarCampanhas()
+            }).catch(err => {
+                toast.error('Não foi possível iniciar a campanha.', err)
+            })
     }
     const columns = [
         { name: 'id', label: '#', field: 'id', align: 'left' },
@@ -108,6 +153,25 @@ export const Campanhas = () => {
                             <Group />
                         </IconButton>
                     </Tooltip>
+                    {['pending', 'canceled'].includes(params.row.status) && (
+                        <Tooltip title="Programar envio">
+                            <IconButton
+                                onClick={() => iniciarCampanha(params.row)}
+                            >
+                                <AccessTime />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                    {['scheduled', 'processing'].includes(params.row.status) &&
+                        (
+                            <Tooltip title="Cancelar envio">
+                                <IconButton
+                                    onClick={() => cancelarCampanha(params.row)}
+                                >
+                                    <Cancel />
+                                </IconButton>
+                            </Tooltip>
+                        )}
                     <Tooltip title="Edit">
                         <IconButton
                             onClick={() => handleEditarCampanha(params.row)}
@@ -141,7 +205,7 @@ export const Campanhas = () => {
                 <Typography variant="h6">Campanhas</Typography>
                 <Button
                     variant="contained"
-                    color="primary"
+                    color="info"
                     onClick={() => setOpen(true)}
                 >
                     Adicionar
@@ -183,7 +247,7 @@ export const Campanhas = () => {
             </CustomTableContainer>
             {/* Falta incluir paginacao */}
             {open && <ModalCampanha open={open} setClose={handleCloseModal} campanhaId={campanhaId} />}
-            <Outlet />
+
         </Box>
 
     )

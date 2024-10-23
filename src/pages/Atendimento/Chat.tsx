@@ -67,6 +67,7 @@ export const Chat = () => {
   }, [])
 
   const onLoadMore = async () => {
+    console.log('load More')
     if (loading) return
     if (!hasMore || ticketFocado.id) {
       return
