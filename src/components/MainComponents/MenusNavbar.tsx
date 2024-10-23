@@ -6,10 +6,12 @@ import {
   alpha,
   Avatar,
   Badge,
+  Box,
   Button,
   Divider,
   FormControlLabel,
   FormGroup,
+  IconButton,
   ListItemText,
   Menu,
   MenuItem,
@@ -38,6 +40,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useAtendimentoStore } from '../../store/atendimento'
 import { Errors } from '../../utils/error'
 import { ConsultarTickets } from '../../services/tickets'
+import { useWhatsappStore } from '../../store/whatsapp'
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -145,7 +148,7 @@ export const MenusNavbar = () => {
   const handleToggleColor = () => {
     toggleThemeMode() // Alterna o tema na store
   }
-
+  const { whatsApps } = useWhatsappStore()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
   const { encryptData } = useAuth()
@@ -245,9 +248,46 @@ export const MenusNavbar = () => {
       spacing={1}
       sx={{ justifyContent: 'center', alignItems: 'center' }}
     >
+      {whatsApps?.map(item => (
+        <>
+          {/* Equivalente a `q-mx-xs` e `q-pa-none` */}
+          < Tooltip
+            arrow
+            title={
+              item.status === 'CONNECTED' ?
+                `Esta conectado na conta  ${item.phone.pushname}-${item.phone.wid.user}`
 
+                : item.status
+            }
+            placement="top"
+            sx={{
+              maxHeight: 300,
+              bgcolor: 'blue.100',
+              color: 'grey.900',
+              overflowY: 'auto',
+            }}
+          >
+            <IconButton
+              sx={{
+                borderRadius: '50%', // Equivalente ao `rounded`
+                opacity: item.status === 'CONNECTED' ? 1 : 0.5, // Condição de opacidade
+                padding: 0,
+                width: 30, // Tamanho equivalente ao `size="18px"` ajustado
+                height: 30,
+
+              }}
+            >
+              {/* O ícone pode ser um `img` ou `Avatar` */}
+              <Avatar
+                src={`../${item.type}-logo.png`}
+                sx={{ width: 18, height: 18 }} // Ajuste do tamanho do ícone
+              />
+            </IconButton>
+          </Tooltip>
+        </>
+      ))
+      }
       <Tooltip title="Notificações" arrow placement="left">
-
         <>
           <Button onClick={handleClick}>
             {Number(notificationsP.count) + Number(notifications.count) === 0 ? (
@@ -366,6 +406,6 @@ export const MenusNavbar = () => {
         toggleColorMode={handleToggleColor}
       />
       {modalUsuario && <ModalUsuario />}
-    </Stack>
+    </Stack >
   )
 }

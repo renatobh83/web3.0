@@ -13,7 +13,6 @@ import { formatarMensagemWhatsapp } from '../../utils/helpers'
 
 import { EncaminharComponent } from '../../components/AtendimentoComponent/EncaminharComponent'
 import { useOutletContext } from 'react-router-dom'
-import { AudioNotification } from '../../components/AtendimentoComponent/AudioNotification'
 
 export type OutletContextType = {
   drawerWidth: number
