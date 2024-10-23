@@ -9,7 +9,16 @@ const TIPO_ACAO = ["consulta", "agendamento", "confirmacao", "laudo", "preparo"]
 export const WebhookConfiguracao = () => {
     const [tempValue, setTempValue] = useState('')
     const [open, setOpen] = useState(false)
-    const [webhookEdit, setWebhookEdit] = useState({})
+    const [webhookEdit, setWebhookEdit] = useState<{
+        action: string[],
+        usuario: string,
+        senha: string
+    }>({
+        action: [],
+        usuario: '',
+        senha: '',
+    })
+
     const [webhooks, setWebhooks] = useState([])
 
     const [stateWebhook, setStateWebhook] = useState<{
@@ -70,7 +79,11 @@ export const WebhookConfiguracao = () => {
                         )} */}
                     <Tooltip title="Edit">
                         <IconButton
-                        // onClick={() => handleEditarCampanha(params.row)}
+                            onClick={() => {
+
+                                setWebhookEdit(params.webhook)
+                                setOpen(true)
+                            }}
                         >
                             <Edit />
                         </IconButton>
@@ -131,6 +144,12 @@ export const WebhookConfiguracao = () => {
     useEffect(() => {
         listaWebhook()
     }, [])
+
+    useEffect(() => {
+        if (webhookEdit.id) {
+            setStateWebhook(webhookEdit)
+        }
+    }, [webhookEdit])
     return (
         <>
             <Box
@@ -190,8 +209,10 @@ export const WebhookConfiguracao = () => {
                 <DialogContent sx={{ display: 'flex', gap: 4, flexDirection: 'column' }}>
                     <Box sx={{ display: 'flex', gap: 4 }}>
                         <TextField variant="filled" label='Usuario'
+                            value={stateWebhook.usuario}
                             onChange={e => handleOnChange(e.target.value, 'usuario')} />
                         <TextField variant="filled" label='Senha'
+                            value={stateWebhook.senha}
                             onChange={e => handleOnChange(e.target.value, 'senha')} />
                     </Box>
                     <FormControl fullWidth>
