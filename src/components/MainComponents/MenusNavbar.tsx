@@ -41,6 +41,7 @@ import { useAtendimentoStore } from '../../store/atendimento'
 import { Errors } from '../../utils/error'
 import { ConsultarTickets } from '../../services/tickets'
 import { useWhatsappStore } from '../../store/whatsapp'
+import React from 'react'
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -249,10 +250,11 @@ export const MenusNavbar = () => {
       sx={{ justifyContent: 'center', alignItems: 'center' }}
     >
       {whatsApps?.map(item => (
-        <>
+        <React.Fragment key={item.id}>
           {/* Equivalente a `q-mx-xs` e `q-pa-none` */}
           < Tooltip
             arrow
+
             title={
               item.status === 'CONNECTED' ?
                 `Esta conectado na conta  ${item.phone.pushname}-${item.phone.wid.user}`
@@ -284,7 +286,7 @@ export const MenusNavbar = () => {
               />
             </IconButton>
           </Tooltip>
-        </>
+        </React.Fragment>
       ))
       }
       <Tooltip title="Notificações" arrow placement="left">

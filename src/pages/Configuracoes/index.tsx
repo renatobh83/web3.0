@@ -1,10 +1,11 @@
-import { Settings, Title } from '@mui/icons-material'
+import { Settings, Title, Webhook } from '@mui/icons-material'
 import { Box, Button, Checkbox, List, ListItem, ListItemText, Switch, Tab, Tabs, TextField, Toolbar, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { AlterarConfiguracao, ListarConfiguracoes } from '../../services/configuracoes'
 import { debounce } from 'lodash'
 import { toast } from 'sonner'
+import { WebhookConfiguracao } from '../../components/configuracoes/WebhookComponent'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -92,6 +93,9 @@ export const Configuracoes = () => {
         )
     }, 1500)
   )
+  const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue)
+  }
   const handleChange = async (value: React.SyntheticEvent, key: string) => {
     setConfiguracoesOpcoes(prevState =>
       prevState.map(config =>
@@ -107,12 +111,12 @@ export const Configuracoes = () => {
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
           value={value}
-          onChange={handleChange}
+          onChange={handleChangeTab}
           aria-label="basic tabs example"
         >
-          <Tab label="Configuracoes Gerais" {...a11yProps(0)} icon={<Settings />} />
-          {/* <Tab label="Item Two" {...a11yProps(1)} />
-          <Tab label="Item Three" {...a11yProps(2)} /> */}
+          <Tab label="Configurações Gerais" {...a11yProps(0)} icon={<Settings />} />
+          <Tab label="Configuração Webhooks" {...a11yProps(1)} icon={<Webhook />} />
+          {/* <Tab label="Item Three" {...a11yProps(2)} /> */}
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
@@ -153,7 +157,7 @@ export const Configuracoes = () => {
 
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        Item Two
+        <WebhookConfiguracao />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
         Item Three
