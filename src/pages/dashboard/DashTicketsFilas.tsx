@@ -134,7 +134,7 @@ export const DashTicketsFilas = () => {
         .then(res => {
           setTickets(res.data)
         })
-        .catch(error => {})
+        .catch(error => { })
         .finally(() => {
           setIsloading(false)
           setDrawerFiltro(false)
@@ -226,11 +226,13 @@ export const DashTicketsFilas = () => {
   const [isLoading, setIsloading] = useState(false)
 
   return (
-    <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2 }}>
+    <Box sx={{
+      width: '100%',
+      maxWidth: { sm: '100%', md: '1700px' }, pt: 2
+    }}>
       <Box
         sx={{
           display: 'flex',
-
           alignItems: 'center',
           flexWrap: 'wrap',
           justifyContent: 'space-between',
@@ -362,7 +364,7 @@ export const DashTicketsFilas = () => {
                   ml: 2,
                   mb: 2,
                 }}
-                // className={`flex items-center ml-4 ${switchStates.showAll ? 'mb-4' : ''}`}
+              // className={`flex items-center ml-4 ${switchStates.showAll ? 'mb-4' : ''}`}
               >
                 <Switch
                   name="showAll"

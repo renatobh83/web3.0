@@ -24,7 +24,7 @@ const optionsProfile = [
 
 export const ModalUsuario: React.FC = () => {
     const { modalUsuario, toggleModalUsuario, usuarioSelecionado, setUsuarioSelecionado } = useUsuarioStore()
-
+    const [isLoading, setIsLoading] = useState(false)
     const [usuario, setUsuario] = useState({
         username: '',
         name: '',
@@ -87,6 +87,7 @@ export const ModalUsuario: React.FC = () => {
 
     }, [usuarioSelecionado])
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        setIsLoading(true)
         event.preventDefault();
         if (validateInputs()) {
             if (usuario?.id) {
@@ -95,8 +96,10 @@ export const ModalUsuario: React.FC = () => {
                 } = usuario
                 const params = { email, id, name, password, profile }
                 await UpdateUsuarios(usuario.id, params)
+                setIsLoading(false)
             } else {
                 await CriarUsuario(usuario)
+                setIsLoading(false)
             }
             setUsuarioSelecionado(null)
         }
@@ -194,7 +197,10 @@ export const ModalUsuario: React.FC = () => {
                             font: 'message-box',
 
                         }}
+                            variant="contained"
+                            color="error"
                             onClick={toggleModalUsuario}
+                            disabled={isLoading}
                         >
                             Cancelar</Button>
                         <Button type="submit"
@@ -204,6 +210,9 @@ export const ModalUsuario: React.FC = () => {
 
                             }}
                             onClick={validateInputs}
+                            variant="contained"
+                            color="success"
+                            disabled={isLoading}
                         >
                             Salvar</Button>
                     </DialogActions>

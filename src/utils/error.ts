@@ -3,6 +3,7 @@ import backendErrors from "../services/erros";
 
 export function Errors(err) {
   const errorMsg = err?.data?.error;
+  console.log(err);
   let error = "Ocorreu um erro não identificado.";
   if (errorMsg) {
     if (backendErrors[errorMsg]) {

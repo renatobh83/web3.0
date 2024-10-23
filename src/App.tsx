@@ -19,6 +19,7 @@ import { HorarioAtendimento } from './pages/HorarioAtendimento'
 import { Configuracoes } from './pages/Configuracoes'
 import { Campanhas } from './pages/campanhas'
 import { ContatosCampanha } from './pages/campanhas/ContatosCampanha'
+import { ApiExternal } from './pages/api'
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth()
@@ -62,6 +63,7 @@ const AppRoutes = () => {
                 element={<ContatosCampanha />}
               />
               <Route path="/configuracoes" element={<Configuracoes />} />
+              <Route path="/api-service" element={<ApiExternal />} />
             </Route>
             <Route path="/atendimento" element={<Atendimento />}>
               <Route path=":ticketId" element={<Chat />} />

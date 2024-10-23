@@ -17,6 +17,7 @@ interface ModalChatFlowProps {
 
 export const ModalChatFlow = ({ open, closeModal, flowSelecionado, updateFlow }: ModalChatFlowProps) => {
     const [flowError, setflowError] = useState(false);
+    const [isLoading, setIsLoading] = useState(false)
     const [flowErrorMessage, setflowErrorMessage] = useState('');
     const userId = +localStorage.getItem('userId')
     const [chatFlow, setChatFlow] = useState({
@@ -38,6 +39,7 @@ export const ModalChatFlow = ({ open, closeModal, flowSelecionado, updateFlow }:
         return isValid;
     }
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        setIsLoading(true)
         event.preventDefault();
         if (validateInputs()) {
 
@@ -45,6 +47,7 @@ export const ModalChatFlow = ({ open, closeModal, flowSelecionado, updateFlow }:
                 const { data } = await UpdateChatFlow(chatFlow)
                 updateFlow(data)
                 closeModal()
+                setIsLoading(false)
             } else {
 
                 const flow = { ...getDefaultFlow(), ...chatFlow, id: null }
@@ -52,6 +55,7 @@ export const ModalChatFlow = ({ open, closeModal, flowSelecionado, updateFlow }:
                 const { data } = await CriarChatFlow(flow)
                 updateFlow(data)
                 closeModal()
+                setIsLoading(false)
             }
 
         }
@@ -120,6 +124,9 @@ export const ModalChatFlow = ({ open, closeModal, flowSelecionado, updateFlow }:
                             font: 'message-box',
 
                         }}
+                            disabled={isLoading}
+                            variant="contained"
+                            color="error"
                             onClick={closeModal}
                         >
                             Cancelar</Button>
@@ -129,6 +136,9 @@ export const ModalChatFlow = ({ open, closeModal, flowSelecionado, updateFlow }:
                                 font: 'message-box',
 
                             }}
+                            disabled={isLoading}
+                            variant="contained"
+                            color="success"
                             onClick={validateInputs}
                         >
                             Salvar</Button>

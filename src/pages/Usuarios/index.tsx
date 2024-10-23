@@ -124,7 +124,7 @@ export const Usuarios: React.FC = () => {
                 />
                 <Button
                     variant="contained"
-                    color="primary"
+                    color="secondary"
                     onClick={() => {
                         setUsuarioSelecionado(null);
                         toggleModalUsuario();

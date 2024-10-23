@@ -99,7 +99,7 @@ export const ListaChatFlow: React.FC = () => {
                 <Typography variant="h6">Fluxos</Typography>
                 <Button
                     variant="contained"
-                    color="primary"
+                    color="secondary"
                     onClick={() => setOpen(true)}
                 >
                     Adicionar

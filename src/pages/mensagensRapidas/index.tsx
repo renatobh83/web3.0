@@ -12,6 +12,7 @@ import { CustomTableContainer } from "../../components/MaterialUi/CustomTable"
 
 export const MensagensRapidas = () => {
     const [mensagensRapidas, setMensagensRapidas] = useState([])
+
     const [mensagensRapidasSelecionada, setMensagensRapidasSelecionada] = useState({})
     const [open, setOpen] = useState(false)
     const closeModal = () => {
@@ -76,7 +77,7 @@ export const MensagensRapidas = () => {
                 <Typography variant="h6">Mensagens Rápidas </Typography>
                 <Button
                     variant="contained"
-                    color="primary"
+                    color="secondary"
                     onClick={() => setOpen(true)}
                 >
                     Adicionar

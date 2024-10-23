@@ -22,6 +22,7 @@ interface ModalMensagemRapidaProps {
 export const ModalMensagemRapida = ({ open, closeModal, mensagensRapidasSelecionada, updateMensagem }: ModalMensagemRapidaProps) => {
     const [chaveError, setChaveError] = useState(false);
     const [chaveErrorMessage, setChaveErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false)
     const [mensagemError, setMensagemError] = useState(false);
     const [mensagemErrorMessage, setMensagemErrorMessage] = useState('');
     const [mensagemRapida, setMensagemRapida] = useState({
@@ -54,15 +55,18 @@ export const ModalMensagemRapida = ({ open, closeModal, mensagensRapidasSelecion
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setIsLoading(true)
         if (validateInputs()) {
             if (mensagensRapidasSelecionada?.id) {
                 const { data } = await AlterarMensagemRapida(mensagemRapida)
                 updateMensagem(data)
                 closeModal()
+                setIsLoading(false)
             } else {
                 const { data } = await CriarMensagemRapida(mensagemRapida)
                 updateMensagem(data)
                 closeModal()
+                setIsLoading(false)
             }
 
         }
@@ -108,15 +112,22 @@ export const ModalMensagemRapida = ({ open, closeModal, mensagensRapidasSelecion
                         />
                     </Stack>
                     <DialogActions>
-                        <Button sx={{
-                            fontWeight: 'bold',
-                            font: 'message-box',
+                        <Button
+                            disabled={isLoading}
+                            sx={{
+                                fontWeight: 'bold',
+                                font: 'message-box',
 
-                        }}
+                            }}
+                            variant="contained"
+                            color="error"
                             onClick={closeModal}
                         >
                             Cancelar</Button>
                         <Button type="submit"
+                            disabled={isLoading}
+                            variant="contained"
+                            color="success"
                             sx={{
                                 fontWeight: 'bold',
                                 font: 'message-box',

@@ -15,6 +15,7 @@ interface ModalFilaProps {
 
 export const ModalFila = ({ open, closeModal, filaSelecionada, updateFilas }: ModalFilaProps) => {
     const [filaError, setFilaError] = useState(false);
+    const [isLoading, setIsLoading] = useState(false)
     const [filaErrorMessage, setFilaErrorMessage] = useState('');
     const [fila, setFila] = useState({
         queue: '',
@@ -32,16 +33,19 @@ export const ModalFila = ({ open, closeModal, filaSelecionada, updateFilas }: Mo
         return isValid;
     }
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        setIsLoading(true)
         event.preventDefault();
         if (validateInputs()) {
             if (filaSelecionada?.id) {
                 const { data } = await AlterarFila(fila)
                 updateFilas(data)
                 closeModal()
+                setIsLoading(false)
             } else {
                 const { data } = await CriarFila(fila)
                 updateFilas(data)
                 closeModal()
+                setIsLoading(false)
             }
 
         }
@@ -96,6 +100,9 @@ export const ModalFila = ({ open, closeModal, filaSelecionada, updateFilas }: Mo
 
                         }}
                             onClick={closeModal}
+                            variant="contained"
+                            color="error"
+                            disabled={isLoading}
                         >
                             Cancelar</Button>
                         <Button type="submit"
@@ -104,6 +111,9 @@ export const ModalFila = ({ open, closeModal, filaSelecionada, updateFilas }: Mo
                                 font: 'message-box',
 
                             }}
+                            variant="contained"
+                            color="success"
+                            disabled={isLoading}
                             onClick={validateInputs}
                         >
                             Salvar</Button>

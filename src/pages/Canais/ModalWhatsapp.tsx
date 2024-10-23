@@ -58,7 +58,7 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 
 	const whatsApps = useWhatsappStore(s => s.whatsApps)
 	const loadWhatsApps = useWhatsappStore(s => s.loadWhatsApps)
-
+	const [isLoading, setIsLoading] = useState(false)
 	const [whatsapp, setWhatsapp] = useState({
 		name: '',
 		wppUser: '',
@@ -135,6 +135,7 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 		return DDI + phoneNumber;
 	}
 	const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		setIsLoading(true)
 		event.preventDefault();
 		if (whatsapp.wppUser) {
 			whatsapp.wppUser = formatPhoneNumber(whatsapp.wppUser)
@@ -145,12 +146,14 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 				const { data } = await ListarWhatsapps()
 				loadWhatsApps(data)
 				handleClose()
+				setIsLoading(false)
 			})
 		} else {
 			CriarWhatsapp(whatsapp).then(async () => {
 				const { data } = await ListarWhatsapps()
 				loadWhatsApps(data)
 				handleClose()
+				setIsLoading(false)
 			})
 		}
 
@@ -286,8 +289,8 @@ export const ModalWhatsapp = ({ isOpen, handleClose, item }: ModalWhatsappProps)
 				</Alert>
 			)}
 			<DialogActions>
-				<Button onClick={() => handleClose()} variant="contained" color="error">Cancelar</Button>
-				<Button type="submit" variant="contained" color="success">Gravar</Button>
+				<Button disabled={isLoading} onClick={() => handleClose()} variant="contained" color="error">Cancelar</Button>
+				<Button disabled={isLoading} type="submit" variant="contained" color="success">Gravar</Button>
 			</DialogActions>
 		</Dialog>
 	);

@@ -86,7 +86,7 @@ export const Filas = () => {
         <Typography variant="h6">Filas</Typography>
         <Button
           variant="contained"
-          color="primary"
+          color="secondary"
           onClick={() => setOpen(true)}
         >
           Adicionar
@@ -114,7 +114,7 @@ export const Filas = () => {
                       <Edit />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title="Apagar usuário">
+                  <Tooltip title="Apagar fila">
                     <IconButton onClick={() => handleDeleteFila(fila)}>
                       <Delete sx={{ color: red[400] }} />
                     </IconButton>

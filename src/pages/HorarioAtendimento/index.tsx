@@ -218,7 +218,7 @@ export const HorarioAtendimento = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-        
+
         }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 / 2 }}>
@@ -231,7 +231,7 @@ export const HorarioAtendimento = () => {
         </Box>
         <Button
           variant="contained"
-          color="info"
+          color="secondary"
           onClick={() => salvarHorariosAtendimento()}
         >
           Salvar
@@ -402,7 +402,7 @@ export const HorarioAtendimento = () => {
 
             <Button
               variant="contained"
-              color="info"
+              color="secondary"
               onClick={() => salvarMensagemAusencia()}
             >
               Salvar

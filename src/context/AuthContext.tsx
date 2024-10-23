@@ -21,7 +21,7 @@ import { EventEmitter } from "events";
 
 interface AuthContextType {
     isAuthenticated: boolean;
-    decryptData: (encryptedData: string) => void
+    decryptData: (encryptedData: string) => string | null
     encryptData: (data: string) => void
     login: (form: any) => void;
     logout: () => void;
@@ -69,7 +69,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
 
 
-    const decryptData = (key: string) => {
+    const decryptData = (key: string): string | null => {
         const encrypted = localStorage.getItem(key);
 
         if (!encrypted) {

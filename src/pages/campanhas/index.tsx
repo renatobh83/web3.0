@@ -9,6 +9,7 @@ import { toast } from "sonner"
 import { ContatosCampanha } from "./ContatosCampanha"
 import { set } from "lodash"
 import { Outlet, useNavigate } from "react-router-dom"
+import { Errors } from "../../utils/error"
 const status = {
     pending: 'Pendente',
     scheduled: 'Programada',
@@ -16,6 +17,16 @@ const status = {
     canceled: 'Cancelada',
     finished: 'Finalizada'
 }
+
+
+interface campanha {
+    id: string,
+    name: string
+    start: string
+    contactsCount: string
+    status: string
+}
+
 
 export const Campanhas = () => {
     const nav = useNavigate()
@@ -51,7 +62,7 @@ export const Campanhas = () => {
         setCampanhaId(null)
         setOpenContatos(false)
     }
-    const handleDeleteCampanha = (campanha: { name: any }) => {
+    const handleDeleteCampanha = (campanha: campanha) => {
         toast.info(
             `Atenção!! Deseja realmente deletar a campamanha "${campanha.name}"?`,
             {
@@ -65,13 +76,15 @@ export const Campanhas = () => {
                         DeletarCampanha(campanha)
                             .then(() => {
                                 listarCampanhas()
+                            }).catch(err => {
+                                Errors(err)
                             })
                     },
                 },
             }
         )
     }
-    const cancelarCampanha = (campanha) => {
+    const cancelarCampanha = (campanha: campanha) => {
         toast.info(
             `Atenção!! Deseja realmente cancelar a campamanha "${campanha.name}"?`,
             {
@@ -87,14 +100,15 @@ export const Campanhas = () => {
                                 toast.success('Campanha cancelada.')
                                 listarCampanhas()
                             }).catch(err => {
-                                toast.error('Não foi possível cancelar a campanha.', err)
+                                Errors(err)
                             })
                     },
                 },
             }
         )
     }
-    const iniciarCampanha = (campanha) => {
+    const iniciarCampanha = (campanha: campanha) => {
+
         if (!isValidDate(campanha.start)) {
             toast.error('Não é possível programar campanha com data menor que a atual')
             return
@@ -194,7 +208,10 @@ export const Campanhas = () => {
         listarCampanhas()
     }, [open])
     return (
-        <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2 }}>
+        <Box sx={{
+            width: '100%', maxWidth: { sm: '100%', md: '1700px' },
+            pt: 2
+        }}>
             <Box
                 sx={{
                     display: 'flex',
@@ -205,7 +222,7 @@ export const Campanhas = () => {
                 <Typography variant="h6">Campanhas</Typography>
                 <Button
                     variant="contained"
-                    color="info"
+                    color="secondary"
                     onClick={() => setOpen(true)}
                 >
                     Adicionar

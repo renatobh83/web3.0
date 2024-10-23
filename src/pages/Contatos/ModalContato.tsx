@@ -41,7 +41,6 @@ export const ContatoModal: React.FC<{
 
 
   const onSubimit = contato => {
-
     setLoading(true)
     if (contact) {
       EditarContato(contact.id, contato)
@@ -70,7 +69,6 @@ export const ContatoModal: React.FC<{
           setLoading(false)
         })
     }
-
   }
 
   const formatPhoneNumber = (value: string) => {
@@ -115,7 +113,6 @@ export const ContatoModal: React.FC<{
 
   useEffect(() => {
     if (contact) {
-      console.log(contact)
       setValue('name', contact.name || '')
       setValue('email', contact.email || '')
       setValue('number', contact.number || '')
@@ -170,7 +167,7 @@ export const ContatoModal: React.FC<{
                 //   setValue('number', formattedNumber) // Atualiza o valor do formulário com o número formatado
                 // }}
                 error={!!errors.number}
-                helperText="Número do celular deverá conter 9 dígitos e ser precedido do DDI E DDD."
+                helperText="Número do celular deverá conter 9 dígitos e ser precedido do DDD."
               />
             </Grid>
 

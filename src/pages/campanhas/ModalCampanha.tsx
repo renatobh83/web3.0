@@ -1,17 +1,14 @@
 import {
-    Box, Button, Dialog, DialogActions, DialogContent, FormControl, FormControlLabel, InputLabel, MenuItem, OutlinedInput,
+    Box, Button, Dialog, DialogActions, DialogContent,
+    FormControl, FormControlLabel, InputLabel, MenuItem,
     Radio,
     RadioGroup,
     Select, Stack, TextField, Typography
 } from "@mui/material"
 
-
-import Grid from '@mui/material/Grid2'
-import BasicDateTimePicker from "../../components/AtendimentoComponent/DateTimePicker"
-import dayjs, { Dayjs } from "dayjs"
+import dayjs from "dayjs"
 import { useForm } from "react-hook-form"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { MolduraCelular } from "../../components/MolduraCelular"
 import { useEffect, useState } from "react"
@@ -20,6 +17,7 @@ import { useWhatsappStore } from "../../store/whatsapp"
 import { AlterarCampanha, CriarCampanha } from "../../services/campanhas"
 import { toast } from "sonner"
 import { MobileDateTimePicker } from "@mui/x-date-pickers/MobileDateTimePicker"
+import { Errors } from "../../utils/error"
 const variaveis = [
     { label: 'Nome', value: '{{name}}' },
     { label: 'E-mail (se existir)', value: '{{email}}' },
@@ -120,20 +118,27 @@ export const ModalCampanha = ({ open, setClose, campanhaId }: ModalCampanhaProps
 
     const onSubimit = async () => {
         const medias = new FormData()
-        console.log(campanha)
+
         // biome-ignore lint/complexity/noForEach: <explanation>
         Object.keys(campanha).forEach((key) => {
             medias.append(key, campanha[key])
         })
         try {
             if (campanhaId?.id) {
-                const { data } = await AlterarCampanha(medias, campanhaId.id)
-                toast.info('Campanha editada!')
-                handleCloseModal()
+                AlterarCampanha(medias, campanhaId.id)
+                    .then(() => {
+                        toast.info('Campanha editada!')
+                        handleCloseModal()
+                    }).catch(err => {
+                        Errors(err)
+                        handleCloseModal()
+                    })
             } else {
-                const { data } = await CriarCampanha(medias)
-                toast.info('Campanha criada!')
-                handleCloseModal()
+                CriarCampanha(medias)
+                    .then(() => {
+                        toast.info('Campanha criada!')
+                        handleCloseModal()
+                    }).catch(err => Errors(err))
             }
         } catch (error) {
             console.log(error)

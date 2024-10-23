@@ -263,11 +263,10 @@ export const ContatosCampanha = () => {
                 <CardContent >
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant="h6">Contatos</Typography>
-                        <Box>
-                            <ButtonGroup variant="outlined" >
-                                <Button variant="contained" color="error" onClick={() => handledeletarTodosContatosCampanha()}>Limpar campanha</Button>
-                                <Button variant="contained" color="info" onClick={() => setModalContato(true)}>Adicionar contato</Button>
-                            </ButtonGroup>
+                        <Box sx={{ display: 'flex', gap: 2 }}>
+                            <Button variant="contained" color="success" onClick={() => setModalContato(true)}>Adicionar contato</Button>
+                            <Button variant="contained" color="error" onClick={() => handledeletarTodosContatosCampanha()}>Limpar campanha</Button>
+
                         </Box>
                     </Box>
                     <CustomTableContainer sx={{ mt: 2 }}>
@@ -327,11 +326,11 @@ export const ContatosCampanha = () => {
                     <DialogContent>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                             <Typography variant="h4">Selecionar Contatos</Typography>
-                            <Box>
-                                <ButtonGroup >
-                                    <Button onClick={() => handlCloseModalAddContato()} variant="contained" color="error">Cancelar</Button>
-                                    <Button onClick={() => addContatosCampanha()} variant="contained" color="info">Adiconar</Button>
-                                </ButtonGroup>
+                            <Box sx={{ display: 'flex', gap: 2 }}>
+
+                                <Button onClick={() => addContatosCampanha()} variant="contained" color="success">Adiconar</Button>
+                                <Button onClick={() => handlCloseModalAddContato()} variant="contained" color="error">Cancelar</Button>
+
                             </Box>
                         </Box>
 
