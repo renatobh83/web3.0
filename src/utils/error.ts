@@ -2,8 +2,8 @@ import { toast } from "sonner";
 import backendErrors from "../services/erros";
 
 export function Errors(err) {
-  const errorMsg = err?.data?.error;
-  console.log(err);
+  const errorMsg = err?.data?.error || err?.data?.message;
+
   let error = "Ocorreu um erro não identificado.";
   if (errorMsg) {
     if (backendErrors[errorMsg]) {

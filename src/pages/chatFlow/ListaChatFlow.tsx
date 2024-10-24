@@ -28,7 +28,6 @@ export const ListaChatFlow: React.FC = () => {
     }
 
     const handleFlowCreateOrUpdate = (novoFlow: any) => {
-
         if (flowSelecionado?.id) {
             setChatFlows((prev) => {
                 const index = prev.findIndex((flow) => flow.id === flowSelecionado.id)
@@ -43,6 +42,7 @@ export const ListaChatFlow: React.FC = () => {
     const listaChatFlow = useCallback(async () => {
         const { data } = await ListarChatFlow()
         setChatFlows(data.chatFlow)
+        console.log(data)
     }, [])
     const [filas, setFilas] = useState([])
     const [usuarios, setUsuarios] = useState([])

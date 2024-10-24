@@ -31,6 +31,7 @@ const backendErrors = {
     "Erro ao buscar a mensagem no WhtasApp, talvez ela seja muito antiga.",
   ERR_NO_UPDATE_CAMPAIGN_NOT_IN_CANCELED_PENDING:
     "Apenas campanhas pendentes ou canceladas podem ser editadas ou excluidas.",
+  ERR_USER_NOT_FOUND: "Credenciais invalidas.",
 };
 
 export default backendErrors;

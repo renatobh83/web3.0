@@ -75,5 +75,17 @@ const data = {
 };
 
 export function getDefaultFlow() {
-  return data;
+  // Cria um novo ID único para o flow, por exemplo, usando timestamp ou alguma outra lógica
+  const flowId = Date.now(); // Exemplo simples de ID único
+
+  // Faz uma cópia profunda de 'data' para garantir que novos fluxos não compartilhem referências a objetos
+  const newFlow = JSON.parse(JSON.stringify(data));
+
+  // Gera um ID exclusivo para cada nó e associa ao novo fluxo
+  newFlow.nodeList = newFlow.nodeList.map((node) => ({
+    ...node,
+    chatflow: `${flowId}`, // Adiciona a propriedade 'chatflow' exclusiva para esse flow
+  }));
+
+  return newFlow;
 }

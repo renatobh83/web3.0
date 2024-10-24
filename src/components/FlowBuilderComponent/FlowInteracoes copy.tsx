@@ -41,7 +41,7 @@ export const Interacoes = ({ node }: InteracoesProps) => {
     { type: string; id: string; shouldRemove: boolean }[]
   >([])
 
-  const debounceRef = useRef<null | number>(null)
+
   const theme = useTheme(); // Obtém o tema atual
 
   // Verifica se o modo é escuro
@@ -56,84 +56,82 @@ export const Interacoes = ({ node }: InteracoesProps) => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     console.log(node)
-    if (node?.data?.interactions?.length) {
-      const nodeChatflow = node.chatflow; // Pega o chatflow associado ao nó
+    // if (node.data?.interactions?.length) {
+    //   setInteracoes(node.data.interactions)
+    //   node.data.interactions.map(interacao => {
+    //     setInteracoesState(prev => ({
+    //       ...prev,
+    //       [interacao.id]: {
+    //         ...prev[interacao.id],
+    //         id: interacao.id,
+    //         type: interacao.type,
+    //         data: interacao.data,
+    //       },
+    //     }))
+    //   })
+    // } else {
+    //   setInteracoes([])
+    // }
+    // // Define que o carregamento inicial terminou
+    // setIsOnload(false)
+    // return () => {
+    //   setIsOnload(false)
+    //   setWebhooks([])
+    // }
+  }, [node.id])
 
-      setInteracoes(node.data.interactions.map(interacao => {
-        // Assegura que a interação está associada ao chatflow correto
-        if (interacao.chatflow === nodeChatflow) {
-          setInteracoesState(prev => ({
-            ...prev,
-            [interacao.id]: {
-              ...prev[interacao.id],
-              id: interacao.id,
-              type: interacao.type,
-              data: interacao.data,
-            },
-          }));
-          return interacao;
-        }
-        return null; // Caso a interação não pertença a este fluxo, ignora
-      }).filter(Boolean));
-    } else {
-      setInteracoes([]);
-    }
-    return () => {
-      setInteracoes([]);
-      setInteracoesState({});
-    }
-  }, [node.id]);
-
-  // Ao salvar as interações, assegura que elas pertencem ao chatflow correto
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (!isEmptyObject(interacoesState)) {
       const iter = interacoes.map(iteracao => {
+        // biome-ignore lint/suspicious/noPrototypeBuiltins: <explanation>
         if (interacoesState.hasOwnProperty(iteracao.id)) {
           return {
             ...iteracao,
             ...interacoesState[iteracao.id],
-            chatflow: node.chatflow, // Assegura que o chatflow está associado corretamente
-          };
+          }
         }
-        return iteracao;
-      });
-      setInteracoes(iter);
-      setHasChanges(true);
+        return iteracao
+      })
+      setInteracoes(iter)
+      setHasChanges(true) // Marca que houve alteração
     }
-  }, [interacoesState]);
+  }, [interacoesState])
 
-  // Função para adicionar uma nova interação, vinculada ao chatflow
   const addInteracao = (type: string) => {
     const newInteracao = {
       type: type,
       id: crypto.randomUUID(),
-      chatflow: node.chatflow, // Associa a interação ao chatflow atual
-    };
-    setInteracoes(prev => [...prev, newInteracao]);
-    setHasChanges(true); // Marca que houve alteração
-  };
-
-  // Salva as interações no fluxo atual
+    }
+    setInteracoes(prev => [...prev, newInteracao])
+    setHasChanges(true) // Marca que houve alteração
+  }
+    ;[]
+  const debounceRef = useRef<null | number>(null)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
+      clearTimeout(debounceRef.current)
     }
     debounceRef.current = setTimeout(() => {
       if (hasChanges) {
         if (node?.id) {
-          interacoes.forEach(interacao => {
-            if (interacao.chatflow === node.chatflow) {
-              updateNodeData(node.id, interacao, 'interactions'); // Atualiza apenas as interações do chatflow correto
-            }
-          });
+          // biome-ignore lint/complexity/noForEach: <explanation>
+          interacoes.forEach(interacao =>
+            updateNodeData(node.id, interacao, 'interactions')
+          )
         }
-        setHasChanges(false);
+        setHasChanges(false) // Resetar flag de alterações após salvar
       }
-    }, 700);
+    }, 700) // Tempo de debounce em milissegundos (300ms neste exemplo)
+
+    // Cleanup function para cancelar o timeout se `interacoes` mudar antes de concluir o debounce
     return () => {
-      clearTimeout(debounceRef.current);
-    };
-  }, [interacoes, hasChanges]);
+      clearTimeout
+    }
+
+  }, [interacoes, hasChanges])
+
   const handlRemoveInteracao = (id: string) => {
     const newInteracoes = interacoes.map(
       iter =>

@@ -40,6 +40,7 @@ import { TabsDetails } from './TabsDetails'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Node as NodeCustom } from './nodes/Node'
+import { WebhookField } from './nodes/WebhookField'
 
 const EDGE_TYPES = {
   default: DefaultEdge,
@@ -49,6 +50,7 @@ const NODE_TYPES = {
   configurations: Configuracoes,
   start: Start,
   boasVindas: BoasVindas,
+
 }
 
 export const PanelChatFlow = () => {
@@ -59,6 +61,7 @@ export const PanelChatFlow = () => {
   if (!chatFlow.id) {
     return <Navigate to="/chat-flow" />
   }
+
   const { nodes, edges, deleteNode, updateNodePosition, setEdges,
     removeEdge, reconnectEdge, addNode, updateEdges, updateNodes, setSelectedNode, selectedNode } =
     useChatFlowStore()
@@ -140,8 +143,10 @@ export const PanelChatFlow = () => {
     }
   }
   const [valueX, setValuex] = useState(0)
+
   const addNewNode = () => {
     const newNode = {
+
       id: crypto.randomUUID(),
       type: 'node',
       position: {
@@ -162,6 +167,7 @@ export const PanelChatFlow = () => {
   }
 
   const onNodeClick = (_event: React.MouseEvent<Element>, node: Node) => {
+
     setSelectedNode(node)
   }
   const onPanelClick = () => {

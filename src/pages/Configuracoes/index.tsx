@@ -58,6 +58,7 @@ export const Configuracoes = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const usuario = JSON.parse(decryptData('usuario'))
+
   const [checked, setChecked] = useState<{
     [key: string]: {
       checked: string
@@ -115,7 +116,9 @@ export const Configuracoes = () => {
           aria-label="basic tabs example"
         >
           <Tab label="Configurações Gerais" {...a11yProps(0)} icon={<Settings />} />
-          <Tab label="Configuração Webhooks" {...a11yProps(1)} icon={<Webhook />} />
+          {usuario.profile === "admin" &&
+            <Tab label="Configuração Webhooks" {...a11yProps(1)} icon={<Webhook />} />
+          }
           {/* <Tab label="Item Three" {...a11yProps(2)} /> */}
         </Tabs>
       </Box>

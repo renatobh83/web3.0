@@ -2,19 +2,47 @@ import { Box, Button, Chip, Dialog, DialogActions, DialogContent, FormControl, I
 import { CustomTableContainer } from "../MaterialUi/CustomTable"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
-import { Group, AccessTime, Cancel, Edit, Delete } from "@mui/icons-material"
-import { CriarWebhook, ListarWebhook } from "../../services/webhooks"
+import { Group, AccessTime, Cancel, Edit, Delete, ConnectedTvTwoTone, Wifi, Refresh } from "@mui/icons-material"
+import { ConectarApi, CriarWebhook, DeletarApi, ListarWebhook, UpdateApi, UpdateStatusApi } from "../../services/webhooks"
+import { useAuth } from "../../context/AuthContext"
+import { Navigate } from "react-router-dom"
+import { Errors } from "../../utils/error"
+import { format, parseISO } from "date-fns"
 
 const TIPO_ACAO = ["consulta", "agendamento", "confirmacao", "laudo", "preparo"]
+
+
+const isExpiredToken = async (expDate) => {
+    const currentDate = new Date();
+    const diffInMilliseconds = expDate - currentDate;
+
+    if (diffInMilliseconds <= 0) {
+
+        return true
+    }
+    return false
+}
 export const WebhookConfiguracao = () => {
+    const { decryptData } = useAuth()
+    const [isLoading, setIsloading] = useState(false)
+    const profile = decryptData('profile')
+    if (profile !== "admin") {
+        return Navigate({ to: '/configuracoes' })
+    }
+
     const [tempValue, setTempValue] = useState('')
     const [open, setOpen] = useState(false)
     const [webhookEdit, setWebhookEdit] = useState<{
+        id?: string,
         action: string[],
+        nomeApi: string
         usuario: string,
         senha: string
+        expDate: string
     }>({
+        expDate: '',
         action: [],
+        nomeApi: '',
         usuario: '',
         senha: '',
     })
@@ -23,19 +51,34 @@ export const WebhookConfiguracao = () => {
 
     const [stateWebhook, setStateWebhook] = useState<{
         action: string[],
+        nomeApi: string
         usuario: string,
         senha: string
+        expDate: string
     }>({
+        expDate: '',
         action: [],
+        nomeApi: '',
         usuario: '',
         senha: '',
     })
 
     const columns = [
         { field: 'id', headerName: 'ID', name: 'id' },
+        { field: 'Descricao', headerName: 'desc', name: 'nomeApi' },
         { field: 'Usuario', headerName: 'usuario', name: "usuario" },
         { field: 'Senha', headerName: 'senha', name: "senha" },
         { field: 'Status', headerName: 'status', name: "status" },
+        {
+            field: 'Data Expira', headerName: 'expData', name: "expDate",
+            renderCell: ({ value }) => {
+                if (value) {
+                    return format(parseISO(value), 'dd/MM/yyyy HH:mm');
+                }
+                return ''; // Retorna uma string vazia ou algum texto padrão
+            }
+
+        },
         {
             field: 'Operações', headerName: 'oper', name: "action",
             renderCell: (params: any) => {
@@ -51,32 +94,26 @@ export const WebhookConfiguracao = () => {
                     className="flex justify-center space-x-2"
                 >
 
-                    <Tooltip title="Lista de contato da campanha">
-                        <IconButton
-                        // onClick={() => handleAddContatosCampanha(params.row)}
-                        >
-                            <Group />
-                        </IconButton>
-                    </Tooltip>
-                    {/* {['pending', 'canceled'].includes(params.row.status) && (
-                        <Tooltip title="Programar envio">
+
+                    {['DESCONECTADA'].includes(params.webhook.status) && (
+                        <Tooltip title="Conectar">
                             <IconButton
-                                onClick={() => iniciarCampanha(params.row)}
+                                onClick={() => handlConnectApi(params.webhook)}
                             >
-                                <AccessTime />
+                                <Wifi />
                             </IconButton>
                         </Tooltip>
-                    )} */}
-                    {/* {['scheduled', 'processing'].includes(params.row.status) &&
+                    )}
+                    {['CONECTADA'].includes(params.webhook.status) &&
                         (
-                            <Tooltip title="Cancelar envio">
+                            <Tooltip title="Gerar um novo token">
                                 <IconButton
-                                    onClick={() => cancelarCampanha(params.row)}
+                                    onClick={() => handlConnectApi(params.webhook)}
                                 >
-                                    <Cancel />
+                                    <Refresh />
                                 </IconButton>
                             </Tooltip>
-                        )} */}
+                        )}
                     <Tooltip title="Edit">
                         <IconButton
                             onClick={() => {
@@ -90,7 +127,7 @@ export const WebhookConfiguracao = () => {
                     </Tooltip>
                     <Tooltip title="Delete">
                         <IconButton
-                        // onClick={() => handleDeleteCampanha(params.row)}
+                            onClick={() => handleDeleteApi(params.webhook)}
                         >
                             <Delete />
                         </IconButton>
@@ -129,26 +166,109 @@ export const WebhookConfiguracao = () => {
 
         }
     }
-    const handleSalvar = () => {
+    const handleSalvar = async () => {
         if (!stateWebhook.usuario.trim() || !stateWebhook.senha.trim()) {
             toast.info('Preencher todas as informações')
             return
         }
-        CriarWebhook(stateWebhook).then(data => console.log(data))
+        try {
+            setIsloading(true)
+            const data = {
+                ...stateWebhook,
+                status: 'DESCONECTADA'
+            }
+            if (webhookEdit.id) {
+
+                const { data } = await UpdateApi(webhookEdit.id, stateWebhook)
+                setWebhooks(prevApis => prevApis.map(item => item.id === webhookEdit?.id ? data : item))
+                setOpen(false)
+                setIsloading(false)
+            } else {
+
+                CriarWebhook(data).then(_ => {
+                    listaWebhook()
+                    setOpen(false)
+                    setIsloading(false)
+                    setStateWebhook({
+                        expDate: '',
+                        action: [],
+                        nomeApi: '',
+                        usuario: '',
+                        senha: '',
+                    })
+                })
+            }
+        } catch (error) {
+            Errors(error)
+        }
+
     }
 
     const listaWebhook = useCallback(async () => {
         const { data } = await ListarWebhook()
-        setWebhooks(data)
+        if (data.length) {
+            setWebhooks(data)
+        }
+
     }, [])
+    const handlConnectApi = async (api) => {
+        try {
+            await ConectarApi(api)
+            listaWebhook()
+        } catch (error) {
+            Errors(error)
+        }
+
+    }
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         listaWebhook()
     }, [])
+    const handleDeleteApi = (api: any) => {
+        toast.info(`Atenção!! Deseja realmente deletar a api "${api.nomeApi}"?`, {
+            position: 'top-center',
+            cancel: {
+                label: 'Cancel',
+                onClick: () => console.log('Cancel!'),
+            },
+            action: {
+                label: 'Confirma',
+                onClick: () => {
+                    try {
+                        DeletarApi(api.id).then(_ => {
+                            toast.info('Api deleta')
+                            listaWebhook()
+                        })
 
+                    } catch (error) {
+                        Errors(error)
+                    }
+                },
+            },
+        })
+    }
+    const handleCloseModalApi = () => {
+        setWebhookEdit({
+            expDate: '',
+            action: [],
+            nomeApi: '',
+            usuario: '',
+            senha: '',
+        })
+        setStateWebhook({
+            expDate: '',
+            action: [],
+            nomeApi: '',
+            usuario: '',
+            senha: '',
+        })
+        setOpen(false)
+    }
     useEffect(() => {
         if (webhookEdit.id) {
             setStateWebhook(webhookEdit)
         }
+
     }, [webhookEdit])
     return (
         <>
@@ -207,6 +327,10 @@ export const WebhookConfiguracao = () => {
             {open && <Dialog open={open} fullWidth maxWidth='md'>
 
                 <DialogContent sx={{ display: 'flex', gap: 4, flexDirection: 'column' }}>
+                    <Typography variant="h4">{webhookEdit?.id ? 'Editar webhook' : 'Cadastrar webhook'}</Typography>
+                    <TextField variant="filled" label='Descricao api'
+                        value={stateWebhook.nomeApi}
+                        onChange={e => handleOnChange(e.target.value, 'nomeApi')} />
                     <Box sx={{ display: 'flex', gap: 4 }}>
                         <TextField variant="filled" label='Usuario'
                             value={stateWebhook.usuario}
@@ -245,12 +369,9 @@ export const WebhookConfiguracao = () => {
                     </FormControl>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" color="success" onClick={() => handleSalvar()}>Salvar</Button>
-                    <Button variant="contained" color="error"
-                        onClick={() => {
-                            setWebhookEdit({})
-                            setOpen(false)
-                        }}
+                    <Button variant="contained" disabled={isLoading} color="success" onClick={() => handleSalvar()}>Salvar</Button>
+                    <Button variant="contained" color="error" disabled={isLoading}
+                        onClick={() => handleCloseModalApi()}
                     >Cancelar</Button>
                 </DialogActions>
             </Dialog >
