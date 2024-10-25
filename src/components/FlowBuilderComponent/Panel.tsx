@@ -196,7 +196,7 @@ export const PanelChatFlow = () => {
       ...chatFlow,
       flow,
     }
-    console.log(data, nodes)
+    console.log(nodes, data)
     setHasChange(false)
     await UpdateChatFlow(data)
   }

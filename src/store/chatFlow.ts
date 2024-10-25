@@ -101,6 +101,7 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
     // console.log(get().nodes);
   },
   updatePositionArr: (nodeId, newEntry, type) => {
+    console.log(newEntry);
     set((state) => ({
       nodes: state.nodes.map((node) =>
         node.id === nodeId
@@ -250,7 +251,7 @@ const updateOrRemoveEntry = (
 ) => {
   // Verifica se o id já existe no array
   const index = array.findIndex((item) => item.id === newEntry.id);
-  console.log(newEntry, removeIfMissing);
+
   if (index !== -1) {
     if (removeIfMissing && newEntry.shouldRemove) {
       // Remove o item se a flag `shouldRemove` estiver ativa

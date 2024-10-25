@@ -14,10 +14,8 @@ const TIPO_ACAO = ["consulta", "agendamento", "confirmacao", "laudo", "preparo"]
 
 const isExpiredToken = async (expDate) => {
     const currentDate = new Date();
-    const diffInMilliseconds = expDate - currentDate;
-
+    const diffInMilliseconds = parseISO(expDate) - currentDate;
     if (diffInMilliseconds <= 0) {
-
         return true
     }
     return false
@@ -39,12 +37,14 @@ export const WebhookConfiguracao = () => {
         usuario: string,
         senha: string
         expDate: string
+        baseURl: string
     }>({
         expDate: '',
         action: [],
         nomeApi: '',
         usuario: '',
         senha: '',
+        baseURl: ''
     })
 
     const [webhooks, setWebhooks] = useState([])
@@ -55,12 +55,14 @@ export const WebhookConfiguracao = () => {
         usuario: string,
         senha: string
         expDate: string
+        baseURl: string
     }>({
         expDate: '',
         action: [],
         nomeApi: '',
         usuario: '',
         senha: '',
+        baseURl: ''
     })
 
     const columns = [
@@ -69,6 +71,7 @@ export const WebhookConfiguracao = () => {
         { field: 'Usuario', headerName: 'usuario', name: "usuario" },
         { field: 'Senha', headerName: 'senha', name: "senha" },
         { field: 'Status', headerName: 'status', name: "status" },
+        { field: 'Link', headerName: 'baseURl', name: "baseURl" },
         {
             field: 'Data Expira', headerName: 'expData', name: "expDate",
             renderCell: ({ value }) => {
@@ -195,6 +198,7 @@ export const WebhookConfiguracao = () => {
                         nomeApi: '',
                         usuario: '',
                         senha: '',
+                        baseURl: ''
                     })
                 })
             }
@@ -207,11 +211,20 @@ export const WebhookConfiguracao = () => {
     const listaWebhook = useCallback(async () => {
         const { data } = await ListarWebhook()
         if (data.length) {
+            data.map(async item => {
+                if (item.expDate) {
+                    if (await isExpiredToken(item.expDate)) {
+
+                        handlConnectApi(item)
+                    }
+                }
+            })
             setWebhooks(data)
         }
 
     }, [])
     const handlConnectApi = async (api) => {
+        console.log(api)
         try {
             await ConectarApi(api)
             listaWebhook()
@@ -254,6 +267,7 @@ export const WebhookConfiguracao = () => {
             nomeApi: '',
             usuario: '',
             senha: '',
+            baseURl: ''
         })
         setStateWebhook({
             expDate: '',
@@ -261,6 +275,7 @@ export const WebhookConfiguracao = () => {
             nomeApi: '',
             usuario: '',
             senha: '',
+            baseURl: ''
         })
         setOpen(false)
     }
@@ -338,6 +353,9 @@ export const WebhookConfiguracao = () => {
                         <TextField variant="filled" label='Senha'
                             value={stateWebhook.senha}
                             onChange={e => handleOnChange(e.target.value, 'senha')} />
+                        <TextField variant="filled" label='Link'
+                            value={stateWebhook.baseURl}
+                            onChange={e => handleOnChange(e.target.value, 'baseURl')} />
                     </Box>
                     <FormControl fullWidth>
                         <Box sx={{

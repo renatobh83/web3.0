@@ -4,7 +4,10 @@ import {
   Button,
   ButtonGroup,
   Chip,
+  FormControlLabel,
   MenuItem,
+  Radio,
+  RadioGroup,
   Select,
   Stack,
   TextField,
@@ -34,9 +37,9 @@ export const Interacoes = ({ node }: InteracoesProps) => {
   const [webhooks, setWebhooks] = useState([])
 
   const [selectApi, setSelectApi] = useState('')
-  const updateNodeData = useChatFlowStore(state => state.updateNodeData)
+  const { updateNodeData, updatePositionArr } = useChatFlowStore()
   const [hasChanges, setHasChanges] = useState(false)
-  const [isOnload, setIsOnload] = useState(true)
+
   const [interacoes, setInteracoes] = useState<
     { type: string; id: string; shouldRemove: boolean }[]
   >([])
@@ -55,7 +58,6 @@ export const Interacoes = ({ node }: InteracoesProps) => {
   }>({})
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    console.log(node)
     if (node.data?.interactions?.length) {
       setInteracoes(node.data.interactions)
       node.data.interactions.map(interacao => {
@@ -96,6 +98,7 @@ export const Interacoes = ({ node }: InteracoesProps) => {
       setInteracoes(iter)
       setHasChanges(true) // Marca que houve alteração
     }
+    console.log(interacoesState)
   }, [interacoesState])
 
   const addInteracao = (type: string) => {
@@ -162,7 +165,12 @@ export const Interacoes = ({ node }: InteracoesProps) => {
       const newArr = [...interacoes]
       newArr.splice(to, 0, newArr.splice(from, 1)[0]) // Move o item
       setInteracoes(newArr) // Atualiza o estado com a nova ordem
+      updatePositionArr(node.id, newArr, 'interactions')
     }
+  }
+  const handleSelectRadio = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log((event.target as HTMLInputElement).value)
+    setSelectApi(((event.target as HTMLInputElement).value))
   }
   const listarWebhook = useCallback(async () => {
     const { data } = await ListarWebhook()
@@ -277,56 +285,72 @@ export const Interacoes = ({ node }: InteracoesProps) => {
                       />
                     </Button>
 
+                    <Box sx={{ width: '100%', mt: 2, px: 3, }} >
+                      {interacao.type === 'WebhookField' &&
+                        <>
+                          <RadioGroup
+                            value={interacoesState[interacao.id]?.data?.webhook?.apiId || selectApi}
+                            onChange={handleSelectRadio}
+                            row
+                            name="row-radio-buttons-group"
+                          >
+                            {webhooks?.filter(i => i.status === "CONECTADA")
+                              .map(w => (
+                                <FormControlLabel
+                                  key={w.id}
+                                  value={w.id}
+                                  control={<Radio
+                                    size="small"
 
-                    {interacao.type === 'WebhookField' &&
-                      <Box sx={{ width: '100%', mt: 2, px: 3 }}>
-                        {webhooks?.map(w => (
-                          <pre>{w.id}</pre>
-                        ))}
+                                  />} label={w.nomeApi} />
+
+                              ))}
+                          </RadioGroup>
+                          <TextField
+                            name={interacao.type}
+                            id={interacao.id}
+                            sx={{ mt: 3 }}
+                            focused
+                            value={interacoesState[interacao.id]?.data?.webhook?.acao || ''}
+                            onChange={e => handleChange(e)}
+                            label={
+                              <Typography variant="subtitle1">Digite a ação </Typography>
+                            }
+                            multiline
+                            maxRows={7}
+                            fullWidth
+                            variant="standard"
+                          />
+                        </>
+                      }
+
+                      {interacao.type === 'MessageField' &&
                         <TextField
+                          value={
+                            interacoesState[interacao.id]?.data?.message ||
+                            interacoesState[interacao.id]?.data?.webhook ||
+                            ''
+                          }
                           name={interacao.type}
                           id={interacao.id}
-                          sx={{ mt: 3 }}
                           focused
                           onChange={e => handleChange(e)}
                           label={
-                            <Typography variant="subtitle1">Digite a ação </Typography>
+                            <Typography variant="subtitle1">Digite a mensagem </Typography>
                           }
                           multiline
                           maxRows={7}
                           fullWidth
                           variant="standard"
                         />
-
-                      </Box>
-                    }
-
-                    {interacao.type === 'MessageField' &&
-                      <TextField
-                        value={
-                          interacoesState[interacao.id]?.data?.message ||
-                          interacoesState[interacao.id]?.data?.webhook ||
-                          ''
-                        }
-                        name={interacao.type}
-                        id={interacao.id}
-                        focused
-                        onChange={e => handleChange(e)}
-                        label={
-                          <Typography variant="subtitle1">Digite a mensagem </Typography>
-                        }
-                        multiline
-                        maxRows={7}
-                        fullWidth
-                        variant="standard"
-                      />
-                    }
+                      }
+                    </Box>
                   </Box>
                 </Box>
               </React.Fragment>
             ))}
         </Box>
       </Box>
-    </Box>
+    </Box >
   )
 }
