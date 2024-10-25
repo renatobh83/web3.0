@@ -73,7 +73,6 @@ export const Condicoes = ({ node }: InteracoesProps) => {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    console.log(node.data)
     if (node.data.conditions.length) {
       setConditions(node.data.conditions)
       node.data.conditions.map(c => {
@@ -87,6 +86,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
             nextStepId: c.nextStepId,
             userIdDestination: c.userIdDestination,
             queueId: c.queueId,
+            condition: c.condition
           },
         }))
       })
@@ -401,6 +401,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
                       >
                         {conditionState[condition.id].condition?.map(
                           (chip, index) => (
+
                             <Chip
                               // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                               key={index}
