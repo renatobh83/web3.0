@@ -87,5 +87,5 @@ export function getDefaultFlow() {
     chatflow: `${flowId}`, // Adiciona a propriedade 'chatflow' exclusiva para esse flow
   }));
 
-  return newFlow;
+  return data;
 }

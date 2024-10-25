@@ -81,6 +81,7 @@ export const PanelChatFlow = () => {
     setLocalNodes(nodes)
     updateNodes(nodes)
     updateEdges(localEdges)
+    console.log(nodes, localNodes)
   }, [nodes])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -145,24 +146,25 @@ export const PanelChatFlow = () => {
   const [valueX, setValuex] = useState(0)
 
   const addNewNode = () => {
-    const newNode = {
+    console.log(chatFlow.flow)
+    // const newNode = {
 
-      id: crypto.randomUUID(),
-      type: 'node',
-      position: {
-        x: valueX,
-        y: 150,
-      },
-      data: {
-        label: 'Nova etapa',
-        interactions: [],
-        conditions: [],
-        actions: [],
-      },
-    }
-    setValuex(v => v + 10)
+    //   id: crypto.randomUUID(),
+    //   type: 'node',
+    //   position: {
+    //     x: valueX,
+    //     y: 150,
+    //   },
+    //   data: {
+    //     label: 'Nova etapa',
+    //     interactions: [],
+    //     conditions: [],
+    //     actions: [],
+    //   },
+    // }
+    // setValuex(v => v + 10)
 
-    addNode(newNode)
+    // addNode(newNode)
 
   }
 

@@ -50,9 +50,7 @@ export const ModalChatFlow = ({ open, closeModal, flowSelecionado, updateFlow }:
                 setIsLoading(false)
             } else {
                 const flowId = Date.now(); // Exemplo simples de ID único
-
-
-                const flow = { ...getDefaultFlow(), ...chatFlow, id: flowId }
+                const flow = { ...getDefaultFlow(), ...chatFlow, flowId: flowId }
 
                 const { data } = await CriarChatFlow(flow)
                 updateFlow(data)
