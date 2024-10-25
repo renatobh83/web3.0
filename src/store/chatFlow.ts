@@ -54,8 +54,8 @@ interface FlowState {
     flow: Record<string, any>;
     usuarios: any[];
     filas: any[];
-    nodes: Node[];
-    edges: Edge[];
+    nodes?: Node[];
+    edges?: Edge[];
   }) => void;
   resetFlowData: () => void;
 }
@@ -237,6 +237,8 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
       flow: {},
       usuarios: [],
       filas: [],
+      nodes: [],
+      edges: [],
     }),
 }));
 const updateOrRemoveEntry = (
@@ -248,7 +250,7 @@ const updateOrRemoveEntry = (
 ) => {
   // Verifica se o id já existe no array
   const index = array.findIndex((item) => item.id === newEntry.id);
-
+  console.log(newEntry, removeIfMissing);
   if (index !== -1) {
     if (removeIfMissing && newEntry.shouldRemove) {
       // Remove o item se a flag `shouldRemove` estiver ativa

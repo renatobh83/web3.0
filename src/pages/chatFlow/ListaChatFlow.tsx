@@ -18,9 +18,12 @@ export const ListaChatFlow: React.FC = () => {
     const [chatFlows, setChatFlows] = useState([])
     const { setFlowData } = useChatFlowStore()
     const nav = useNavigate()
+
     const closeModal = () => {
         setOpen(false)
-        setFlowSelecionado({})
+        if (flowSelecionado.id) {
+            setFlowSelecionado({})
+        }
     }
     const handleEditarFlow = (flow: any) => {
         setOpen(true)
@@ -67,7 +70,7 @@ export const ListaChatFlow: React.FC = () => {
         setFlowData({
             flow: ChatFlow,
             usuarios,
-            filas
+            filas,
         })
         nav("builder")
     }

@@ -55,6 +55,7 @@ const NODE_TYPES = {
 
 export const PanelChatFlow = () => {
   const { flow: chatFlow } = useChatFlowStore()
+
   const theme = useTheme(); // Obtém o tema do Material-UI
   const isDarkMode = theme.palette.mode === 'dark';
   const nav = useNavigate()
@@ -63,7 +64,7 @@ export const PanelChatFlow = () => {
   }
 
   const { nodes, edges, deleteNode, updateNodePosition, setEdges,
-    removeEdge, reconnectEdge, addNode, updateEdges, updateNodes, setSelectedNode, selectedNode } =
+    removeEdge, reconnectEdge, addNode, resetFlowData, updateEdges, updateNodes, setSelectedNode, selectedNode } =
     useChatFlowStore()
   const [hasChange, setHasChange] = useState(false)
   const [localEdges, setLocalEdges, onEdgesChange] = useEdgesState(edges)
@@ -81,7 +82,7 @@ export const PanelChatFlow = () => {
     setLocalNodes(nodes)
     updateNodes(nodes)
     updateEdges(localEdges)
-    console.log(nodes, localNodes)
+
   }, [nodes])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -134,37 +135,39 @@ export const PanelChatFlow = () => {
     [removeEdge]
   )
   const handleSair = () => {
-    if (hasChange) {
-      toast.info('Salve o painel antes de sair', {
-        position: 'top-center'
-      })
+    resetFlowData()
+    setSelectedNode(undefined)
+    nav("/chat-flow")
+    // if (hasChange) {
+    //   toast.info('Salve o painel antes de sair', {
+    //     position: 'top-center'
+    //   })
 
-    } else {
-      nav("/chat-flow")
-    }
+    // } else {
+
+    // }
   }
   const [valueX, setValuex] = useState(0)
 
   const addNewNode = () => {
-    console.log(chatFlow.flow)
-    // const newNode = {
 
-    //   id: crypto.randomUUID(),
-    //   type: 'node',
-    //   position: {
-    //     x: valueX,
-    //     y: 150,
-    //   },
-    //   data: {
-    //     label: 'Nova etapa',
-    //     interactions: [],
-    //     conditions: [],
-    //     actions: [],
-    //   },
-    // }
-    // setValuex(v => v + 10)
+    const newNode = {
+      id: crypto.randomUUID(),
+      type: 'node',
+      position: {
+        x: valueX,
+        y: 150,
+      },
+      data: {
+        label: 'Nova etapa',
+        interactions: [],
+        conditions: [],
+        actions: [],
+      },
+    }
+    setValuex(v => v + 10)
 
-    // addNode(newNode)
+    addNode(newNode)
 
   }
 
@@ -193,6 +196,7 @@ export const PanelChatFlow = () => {
       ...chatFlow,
       flow,
     }
+    console.log(data, nodes)
     setHasChange(false)
     await UpdateChatFlow(data)
   }
@@ -356,7 +360,7 @@ export const PanelChatFlow = () => {
                 />
               </FormControl>
               {selectedNode && (
-                <TabsDetails node={selectedNode} atualizarNode={() => { }} />
+                <TabsDetails node={selectedNode} />
               )}
             </Box>
           </Box>

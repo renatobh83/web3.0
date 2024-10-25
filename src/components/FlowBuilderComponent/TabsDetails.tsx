@@ -7,9 +7,8 @@ import { Interacoes } from './FlowInteracoes'
 import { Condicoes } from './FlowCondicoes'
 
 export const TabsDetails = ({
-  node,
-  atualizarNode,
-}: { node: Node | undefined; atualizarNode: (arg0: Node) => void }) => {
+  node
+}: { node: Node | undefined }) => {
   const nodeType = node?.type
   const [tabSelected, setTabSelected] = useState(0)
 
