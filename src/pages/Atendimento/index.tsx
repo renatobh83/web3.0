@@ -151,13 +151,10 @@ function a11yProps(index: number, name: string) {
 }
 
 export function Atendimento() {
-
   const nav = useNavigate()
-
 
   const { decryptData, encryptData } = useAuth()
   // Remove this const when copying and pasting into your project.
-
 
   const [openModalNovoTicket, setOpenModalNovoTicket] = useState(false)
 
@@ -211,17 +208,17 @@ export function Atendimento() {
   const { mode, setMode } = useColorScheme()
   const [localTickets, setLocalTickets] = useState([])
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const alertSound = "/sound.mp3"; // Corrigido o caminho
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const alertSound = '/sound.mp3' // Corrigido o caminho
   const playNotificationSound = async () => {
     if (audioRef.current) {
       try {
-        await audioRef.current.play();
+        await audioRef.current.play()
       } catch (error) {
-        console.error("Erro ao tentar tocar o áudio de notificação:", error);
+        console.error('Erro ao tentar tocar o áudio de notificação:', error)
       }
     }
-  };
+  }
 
   // const dispararEvento = (data: any) => {
   //   eventEmitter.emit('handlerNotifications', data)
@@ -388,7 +385,6 @@ export function Atendimento() {
     }
   }
 
-
   function handlerNotifications(data) {
     console.log('Emiter', data)
     if (data.ticket.userId) {
@@ -415,12 +411,10 @@ export function Atendimento() {
           window.focus()
         }
 
-
         AbrirChatMensagens(data.ticket)
         goToChat(data.ticket.id)
       }
     } else {
-
       const message = new Notification('Novo cliente pendente', {
         body: 'Cliente: ' + data.ticket.contact.name,
         tag: 'notification-pending',
@@ -487,7 +481,6 @@ export function Atendimento() {
   //     setLoading(false)
   //   }
   // }
-
 
   // async function listarUsuarios() {
   //   try {
@@ -660,11 +653,10 @@ export function Atendimento() {
   if (Notification.permission === 'default') {
     Notification.requestPermission().then(permission => {
       if (permission === 'granted') {
-        console.log('Permissão de notificação concedida');
+        console.log('Permissão de notificação concedida')
         // Agora você pode tocar sons quando necessário, pois o usuário já interagiu
-
       }
-    });
+    })
   }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -712,7 +704,6 @@ export function Atendimento() {
   useEffect(() => {
     if (!contatos.length) listaContatos()
     if (!mensagensRapidas.length) listarMensagensRapidas()
-
   }, [])
 
   const handleClick = () => {
@@ -842,7 +833,7 @@ export function Atendimento() {
                                   borderRadius: '50%', // ou manter quadrado se preferir
                                   border: '2px solid currentColor', // ajusta a borda
                                   fill: 'transparent', // remove o preenchimento interno
-                                }
+                                },
                               }}
                             />
                           }
@@ -862,7 +853,7 @@ export function Atendimento() {
                                   borderRadius: '50%', // ou manter quadrado se preferir
                                   border: '2px solid currentColor', // ajusta a borda
                                   fill: 'transparent', // remove o preenchimento interno
-                                }
+                                },
                               }}
                             />
                           }
@@ -882,7 +873,7 @@ export function Atendimento() {
                                   borderRadius: '50%', // ou manter quadrado se preferir
                                   border: '2px solid currentColor', // ajusta a borda
                                   fill: 'transparent', // remove o preenchimento interno
-                                }
+                                },
                               }}
                             />
                           }
@@ -947,7 +938,7 @@ export function Atendimento() {
 
       {tabTickets === 0 && (
         <Tabs
-          sx={{ mt: 2, minHeight: 60 }}
+          sx={{ mt: 2 }}
           variant="fullWidth"
           value={tabTicketsStatus}
           onChange={(_event, newValue) => setTabTicketsStatus(newValue)}
@@ -1085,27 +1076,15 @@ export function Atendimento() {
           {tabTicketsStatus === 'open' &&
             //  <ItemTicket key={tickets[0].id} ticket={tickets[0]} filas={filas} etiquetas={etiquetas} buscaTicket={false} />
             openTickets().map(ticket => (
-              <ItemTicket
-                key={ticket.id}
-                ticket={ticket}
-                filas={filas}
-              />
+              <ItemTicket key={ticket.id} ticket={ticket} filas={filas} />
             ))}
           {tabTicketsStatus === 'pending' &&
             pendingTickets().map(ticket => (
-              <ItemTicket
-                key={ticket.id}
-                ticket={ticket}
-                filas={filas}
-              />
+              <ItemTicket key={ticket.id} ticket={ticket} filas={filas} />
             ))}
           {tabTicketsStatus === 'closed' &&
             closedTickets().map(ticket => (
-              <ItemTicket
-                key={ticket.id}
-                ticket={ticket}
-                filas={filas}
-              />
+              <ItemTicket key={ticket.id} ticket={ticket} filas={filas} />
             ))}
         </List>
       </TabPanel>
@@ -1114,29 +1093,17 @@ export function Atendimento() {
         {tabTickets === 1 &&
           tabTicketsStatus === 'open' &&
           openGroupTickets().map(ticket => (
-            <ItemTicket
-              key={ticket.id}
-              ticket={ticket}
-              filas={filas}
-            />
+            <ItemTicket key={ticket.id} ticket={ticket} filas={filas} />
           ))}
         {tabTickets === 1 &&
           tabTicketsStatus === 'pending' &&
           pendingGroupTickets().map(ticket => (
-            <ItemTicket
-              key={ticket.id}
-              ticket={ticket}
-              filas={filas}
-            />
+            <ItemTicket key={ticket.id} ticket={ticket} filas={filas} />
           ))}
         {tabTickets === 1 &&
           tabTicketsStatus === 'closed' &&
           closedGroupTickets().map(ticket => (
-            <ItemTicket
-              key={ticket.id}
-              ticket={ticket}
-              filas={filas}
-            />
+            <ItemTicket key={ticket.id} ticket={ticket} filas={filas} />
           ))}
       </TabPanel>
       <Box
@@ -1192,7 +1159,6 @@ export function Atendimento() {
     </>
   )
   useSocketInitial()
-
 
   return (
     <>
