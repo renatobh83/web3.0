@@ -61,7 +61,8 @@ export const useSocketInitial = () => {
   }
 
   const { AbrirChatMensagens, resetUnread } = useAtendimentoTicketStore()
-  const { editarUsuario, insertNewUser, toggleModalUsuario, deletarUsuario } = useUsuarioStore()
+  const { editarUsuario, insertNewUser, toggleModalUsuario, deletarUsuario } =
+    useUsuarioStore()
   const usuario = JSON.parse(decryptData('usuario'))
   const userId = +localStorage.getItem('userId')
   let socket: WebSocket | Socket<DefaultEventsMap, DefaultEventsMap> | null =
@@ -109,10 +110,8 @@ export const useSocketInitial = () => {
           toggleModalUsuario()
         }
         if (data.action === 'delete') {
-
           deletarUsuario(Number(data.userId))
         }
-
       })
       socket.on(`${usuario.tenantId}:whatsappSession`, data => {
         console.log('socket ON: UPDATE_SESSION')
@@ -225,9 +224,7 @@ export const useSocketInitial = () => {
           try {
             const response = await ConsultarTickets(paramsPending)
             updateNotificationsP(response.data)
-          } catch (error) {
-
-          }
+          } catch (error) {}
           const paramsOpen = {
             searchParam: '',
             pageNumber: 1,
@@ -242,9 +239,7 @@ export const useSocketInitial = () => {
           try {
             const response = await ConsultarTickets(paramsOpen)
             updateNotifications(response.data)
-          } catch (error) {
-
-          }
+          } catch (error) {}
         }
         // if (data.type === 'ticket:create') {
         //   console.log('socket ON: TICKET:CREATE 1')
@@ -294,7 +289,6 @@ export const useSocketInitial = () => {
         console.log(data)
       })
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
-
         if (data.type === 'chat:create') {
           eventEmitterScrool.emit('scrollToBottomMessageChat')
           console.log('socket ON: CHAT:CREATE - nova mensagem ', data)
@@ -304,20 +298,15 @@ export const useSocketInitial = () => {
             if (location.pathname.startsWith('/atendimento')) {
               eventNotification.emit('handlerNotifications', data.payload)
             } else {
-
               eventEmitterMain.emit('handlerNotifications', data.payload)
             }
-
           }
           if (!data.payload.ticket.userId && !data.payload.fromMe) {
             if (location.pathname.startsWith('/atendimento')) {
               eventNotification.emit('handlerNotifications', data.payload)
             } else {
-
               eventEmitterMain.emit('handlerNotifications', data.payload)
             }
-
-
           }
 
           updateMessages(data.payload)
@@ -433,6 +422,7 @@ export const useSocketInitial = () => {
           }
           try {
             const data_noti = await ConsultarTickets(params)
+
             updateNotificationsP(data_noti.data)
             verify = data_noti
           } catch (err) {
@@ -450,7 +440,6 @@ export const useSocketInitial = () => {
           })
 
           if (pass_noti) {
-
             eventEmitterMain.emit('playSoundNotification')
             const message = new Notification('Novo cliente pendente', {
               // biome-ignore lint/style/useTemplate: <explanation>

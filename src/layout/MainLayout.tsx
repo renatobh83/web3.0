@@ -98,7 +98,6 @@ export const MainLayout: React.FC = () => {
     }
   }
   function handlerNotifications(data) {
-    console.log('Emiter from main', data)
     if (data.ticket.userId) {
       const options = {
         body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
@@ -138,6 +137,7 @@ export const MainLayout: React.FC = () => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     // Adiciona o listener ao montar o componente
+    console.log('emiter')
     eventEmitterMain.on('handlerNotifications', handlerNotifications)
     eventEmitterMain.on('playSoundNotification', playNotificationSound)
     // Remove o listener ao desmontar o componente
