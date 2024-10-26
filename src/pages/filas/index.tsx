@@ -7,6 +7,7 @@ import {
   TableBody,
   TableCell,
   TableHead,
+  TablePagination,
   TableRow,
   Tooltip,
   Typography,
@@ -74,6 +75,19 @@ export const Filas = () => {
   useEffect(() => {
     listarFilas()
   }, [])
+  const [pagination, setPagination] = useState({ page: 0, rowsPerPage: 10 })
+  const handlePageChange = (event: unknown, newPage: number) => {
+    setPagination(prev => ({ ...prev, page: newPage }))
+  }
+
+  const handleRowsPerPageChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setPagination({
+      page: 0,
+      rowsPerPage: Number.parseInt(event.target.value, 10),
+    })
+  }
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2 }}>
       <Box
@@ -102,29 +116,44 @@ export const Filas = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {filas.map(fila => (
-            <TableRow key={fila.id}>
-              <TableCell>{fila.id}</TableCell>
-              <TableCell>{fila.queue.toUpperCase()}</TableCell>
-              <TableCell>{fila.isActive ? <Check /> : <Close />}</TableCell>
-              <TableCell>
-                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                  <Tooltip title="Editar fila">
-                    <IconButton onClick={() => handleEditarFila(fila)}>
-                      <Edit />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Apagar fila">
-                    <IconButton onClick={() => handleDeleteFila(fila)}>
-                      <Delete sx={{ color: red[400] }} />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-              </TableCell>
-            </TableRow>
-          ))}
+          {filas
+            .slice(
+              pagination.page * pagination.rowsPerPage,
+              pagination.page * pagination.rowsPerPage + pagination.rowsPerPage
+            )
+            .map(fila => (
+              <TableRow key={fila.id}>
+                <TableCell>{fila.id}</TableCell>
+                <TableCell>{fila.queue.toUpperCase()}</TableCell>
+                <TableCell>{fila.isActive ? <Check /> : <Close />}</TableCell>
+                <TableCell>
+                  <Box
+                    sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}
+                  >
+                    <Tooltip title="Editar fila">
+                      <IconButton onClick={() => handleEditarFila(fila)}>
+                        <Edit />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Apagar fila">
+                      <IconButton onClick={() => handleDeleteFila(fila)}>
+                        <Delete sx={{ color: red[400] }} />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </TableCell>
+              </TableRow>
+            ))}
         </TableBody>
       </CustomTableContainer>
+      <TablePagination
+        component="div"
+        count={filas.length}
+        page={pagination.page}
+        onPageChange={handlePageChange}
+        rowsPerPage={pagination.rowsPerPage}
+        onRowsPerPageChange={handleRowsPerPageChange}
+      />
       {open && (
         <ModalFila
           open={open}

@@ -338,7 +338,7 @@ export function Atendimento() {
           status: statusAtualizado, // Atualizar apenas o campo status
         }
       })
-    }, 200),
+    }, 60),
     []
   )
   const handleChange = event => {
@@ -416,7 +416,7 @@ export function Atendimento() {
       }
     } else {
       const message = new Notification('Novo cliente pendente', {
-        body: 'Cliente: ' + data.ticket.contact.name,
+        body: `Cliente: ${data.ticket.contact.name}`,
         tag: 'notification-pending',
       })
       message.onclick = e => {
@@ -447,6 +447,7 @@ export function Atendimento() {
       ...pesquisaTickets,
       ...paramsInit,
     }
+
     try {
       if (pesquisaTickets.status.lengh === 0) return
       const { data } = await ConsultarTickets(params)
@@ -672,7 +673,7 @@ export function Atendimento() {
     // listarUsuarios()
     listarConfiguracoes()
     listarEtiquetas()
-    resetTickets()
+    // resetTickets()
     const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento'))
     if (!filtros?.pageNumber !== 1) {
       localStorage.setItem(
