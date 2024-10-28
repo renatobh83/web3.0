@@ -280,7 +280,7 @@ export const ModalCampanha = ({ open, setClose, campanhaId }: ModalCampanhaProps
                                     ))}
                                 </RadioGroup>
                                 <MolduraCelular>
-                                    <ChatMensagem menssagens={cMessages()} />
+                                    <ChatMensagem menssagens={cMessages()} scrollTo={false} />
                                 </MolduraCelular>
                             </Box>
                         </Box>

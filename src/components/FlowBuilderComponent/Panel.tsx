@@ -302,7 +302,7 @@ export const PanelChatFlow = () => {
             <Button
               variant="contained"
               color="warning"
-              disabled={!selectedNode?.id || selectedNode.type !== "square"}
+              disabled={!selectedNode?.id || selectedNode.type !== "node"}
               onClick={() => {
                 handleDeleteNode(selectedNode.id)
               }}

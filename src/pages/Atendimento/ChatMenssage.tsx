@@ -46,16 +46,18 @@ interface ChatMensagemProps {
   menssagens: object,
   getMensagenParaEncaminhar?: (menssagen: any) => void
   openModalEcanminhar?: () => void
+  scrollTo?: boolean
 }
 
 export const ChatMensagem = ({
   menssagens,
   setReplyingMessage,
   getMensagenParaEncaminhar,
-  openModalEcanminhar
+  openModalEcanminhar,
+  scrollTo
 }: ChatMensagemProps) => {
 
-
+  const isScrool = scrollTo === false ? scrollTo : true
   const [modalImageUrl, setModalImageUrl] = useState<string | null>(null)
   const lastMessageRef = useRef<HTMLInputElement | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
@@ -217,11 +219,13 @@ export const ChatMensagem = ({
   }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    console.log(menssagens)
+
     // Adiciona o listener ao montar o componente
     eventEmitterScrool.on('scrollToBottomMessageChat', scrollToBottom)
     // Remove o listener ao desmontar o componente
-    scrollToBottom()
+
+    if (isScrool)
+      scrollToBottom()
 
     return () => {
       eventEmitterScrool.off('scrollToBottomMessageChat', scrollToBottom)

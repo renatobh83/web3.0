@@ -144,7 +144,7 @@ export const Interacoes = ({ node }: InteracoesProps) => {
 
     setHasChanges(true)
     setInteracoes(newInteracoes)
-    setInteracoesState({})
+    // setInteracoesState({})
 
   }
 
