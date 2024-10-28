@@ -207,6 +207,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
         [id]: {
           ...prev[id],
           action: 3,
+          closeTicket: 'Obrigado por acessar nossos serviços.'
         },
       }))
     }
