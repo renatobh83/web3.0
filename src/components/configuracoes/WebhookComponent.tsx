@@ -9,7 +9,7 @@ import { Navigate } from "react-router-dom"
 import { Errors } from "../../utils/error"
 import { format, parseISO } from "date-fns"
 
-const TIPO_ACAO = ["consulta", "agendamento", "confirmacao", "laudo", "preparo", "pdf"]
+const TIPO_ACAO = ["consulta", "agendamento", "confirmacao", "laudo", "preparo", "pdf", "consultacpf"]
 
 
 const isExpiredToken = async (expDate) => {
@@ -157,6 +157,7 @@ export const WebhookConfiguracao = () => {
     }
     const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
         if (event.key === 'Enter' && tempValue.trim()) {
+
             if (TIPO_ACAO.includes((tempValue.toLowerCase().trim()))) {
                 setStateWebhook(prev => ({
                     ...prev,
