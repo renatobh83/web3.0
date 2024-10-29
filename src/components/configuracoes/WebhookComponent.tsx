@@ -9,7 +9,7 @@ import { Navigate } from "react-router-dom"
 import { Errors } from "../../utils/error"
 import { format, parseISO } from "date-fns"
 
-const TIPO_ACAO = ["consulta", "agendamento", "confirmacao", "laudo", "preparo", "pdf", "consultacpf"]
+const TIPO_ACAO = ["consulta", "agendamento", "confirmacao", "laudo", "preparo", "pdf", "consultacpf", 'validacpf', 'planos']
 
 
 const isExpiredToken = async (expDate) => {
@@ -212,20 +212,35 @@ export const WebhookConfiguracao = () => {
     const listaWebhook = useCallback(async () => {
         const { data } = await ListarWebhook()
         if (data.length) {
-            data.map(async item => {
-                if (item.expDate) {
-                    if (await isExpiredToken(item.expDate)) {
+            // data.map(async item => {
+            //     if (item.expDate) {
+            //         if (await isExpiredToken(item.expDate)) {
 
-                        handlConnectApi(item)
-                    }
-                }
-            })
+            //             handlConnectApi(item)
+            //         }
+            //     }
+            // })
             setWebhooks(data)
         }
 
     }, [])
+    const setTokenRefreshTimeouts = (items, refreshToken) => {
+        // biome-ignore lint/complexity/noForEach: <explanation>
+        items.forEach((item) => {
+            if (item.expDate) {
+                const currentDate = new Date();
+                const timeLeft = parseISO(item.expDate) - currentDate;
+                console.log(timeLeft)
+                if (timeLeft > 0) {
+                    setTimeout(() => {
+                        refreshToken(item);
+                    }, timeLeft);
+                }
+            }
+        });
+    };
     const handlConnectApi = async (api) => {
-        console.log(api)
+
         try {
             await ConectarApi(api)
             listaWebhook()
@@ -236,6 +251,13 @@ export const WebhookConfiguracao = () => {
     }
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
+        setTokenRefreshTimeouts(webhooks, (item) => {
+            handlConnectApi(item)
+        });
+    }, [webhooks]);
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+
         listaWebhook()
     }, [])
     const handleDeleteApi = (api: any) => {
