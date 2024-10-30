@@ -9,7 +9,6 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import {
   ArrowDownwardSharp,
-  ConstructionOutlined,
   ContactPage,
   Home,
   Logout,
@@ -36,7 +35,7 @@ import {
   FormControlLabel,
   FormGroup,
 } from '@mui/material'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import PersonIcon from '@mui/icons-material/Person'
@@ -60,7 +59,6 @@ import ToggleColorMode from '../../components/MaterialUi/Login/ToggleColorMode'
 import { useAtendimentoStore } from '../../store/atendimento'
 import { useApplicationStore } from '../../store/application'
 import { InfoCabecalhoMenssagens } from './InforCabecalhoChat'
-import { ListarUsuarios } from '../../services/user'
 import { toast } from 'sonner'
 import { ModalUsuario } from '../Usuarios/ModalUsuario'
 import { useMixinSocket } from '../../hooks/useMinxinScoket'
@@ -71,6 +69,7 @@ import { Errors } from '../../utils/error'
 import { useAuth } from '../../context/AuthContext'
 import { useSocketInitial } from '../../hooks/useSocketInitial'
 import { ListarMensagensRapidas } from '../../services/mensagensRapidas'
+import { RealizarLogout } from '../../services/login'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -153,7 +152,7 @@ function a11yProps(index: number, name: string) {
 export function Atendimento() {
   const nav = useNavigate()
 
-  const { decryptData, encryptData } = useAuth()
+  const { decryptData, encryptData, logout } = useAuth()
   // Remove this const when copying and pasting into your project.
 
   const [openModalNovoTicket, setOpenModalNovoTicket] = useState(false)
@@ -716,7 +715,16 @@ export function Atendimento() {
       return
     }
   }
-
+  const efetuarLogout = async () => {
+    try {
+      await RealizarLogout(usuario)
+      logout()
+    } catch (error) {
+      toast.error(`Não foi possível realizar logout ${error}`, {
+        position: 'top-center',
+      })
+    }
+  }
   const drawer = (
     <>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
@@ -739,7 +747,7 @@ export function Atendimento() {
               <Typography>Perfil</Typography>
             </MenuItem>
             <MenuItem
-            // onClick={efetuarLogout}
+              onClick={() => efetuarLogout()}
             >
               <Logout />
               <Typography>Sair</Typography>

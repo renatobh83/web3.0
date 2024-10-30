@@ -42,6 +42,7 @@ import { Errors } from '../../utils/error'
 import { ConsultarTickets } from '../../services/tickets'
 import { useWhatsappStore } from '../../store/whatsapp'
 import React from 'react'
+import checkTicketFilter from '../../utils/checkTicketFilter'
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -113,7 +114,7 @@ export const MenusNavbar = () => {
     setUsuarioSelecionado(usuario)
     toggleModalUsuario()
   }
-
+  const user = +localStorage.getItem('userId')
   const { mobileOpen, setMobileOpen } = useAtendimentoStore()
   const goToChat = async (id: number) => {
     try {
@@ -196,6 +197,7 @@ export const MenusNavbar = () => {
       setStatus(usuario.status === 'online')
     }
   }, [])
+
   const consultaTickets = async () => {
     const paramsOpen = {
       searchParam: '',
@@ -210,6 +212,7 @@ export const MenusNavbar = () => {
     }
     try {
       const response = await ConsultarTickets(paramsOpen)
+
       updateNotifications(response.data)
     } catch (error) {
     }
@@ -228,9 +231,13 @@ export const MenusNavbar = () => {
       const response = await ConsultarTickets(paramsPending)
       updateNotificationsP(response.data)
     } catch (error) {
-
     }
   }
+  const userNotificationsCount = notifications.tickets
+    .filter(ticket => ticket.userId === user)
+    .reduce((acc, ticket) => acc + Number(ticket.unreadMessages), 0);
+
+  const totalNotificationsCount = userNotificationsCount + Number(notificationsP.count);
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     consultaTickets()
@@ -287,7 +294,7 @@ export const MenusNavbar = () => {
             {Number(notificationsP.count) + Number(notifications.count) === 0 ? (
               <NotificationsNoneIcon />
             ) : (
-              <Badge badgeContent={Number(notifications.count) + Number(notificationsP.count)} color="primary">
+              <Badge badgeContent={totalNotificationsCount} color="primary">
 
                 <NotificationsIcon />
               </Badge>
@@ -317,7 +324,7 @@ export const MenusNavbar = () => {
                   </MenuItem>
                 )}
 
-                {notifications?.tickets?.map(ticket => (
+                {notifications?.tickets?.filter(i => i.userId === user).map(ticket => (
                   <MenuItem
                     key={ticket.id}
                     sx={{ display: 'flex', gap: 3 }}

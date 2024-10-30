@@ -238,6 +238,7 @@ export const useSocketInitial = () => {
           }
           try {
             const response = await ConsultarTickets(paramsOpen)
+            console.log(response)
             updateNotifications(response.data)
           } catch (error) { }
         }
