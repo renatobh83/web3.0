@@ -65,7 +65,7 @@ export const useSocketInitial = () => {
     useUsuarioStore()
   const usuario = JSON.parse(decryptData('usuario'))
   const userId = +localStorage.getItem('userId')
-  let socket: WebSocket | Socket<DefaultEventsMap, DefaultEventsMap> | null =
+  let socket: Socket | null =
     null
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -83,7 +83,7 @@ export const useSocketInitial = () => {
         }
       })
       socket.on(`tokenInvalid:${socket.id}`, () => {
-        socket.disconnect()
+        socket?.disconnect()
         localStorage.removeItem('token')
         localStorage.removeItem('username')
         localStorage.removeItem('profile')
@@ -224,7 +224,7 @@ export const useSocketInitial = () => {
           try {
             const response = await ConsultarTickets(paramsPending)
             updateNotificationsP(response.data)
-          } catch (error) {}
+          } catch (error) { }
           const paramsOpen = {
             searchParam: '',
             pageNumber: 1,
@@ -239,7 +239,7 @@ export const useSocketInitial = () => {
           try {
             const response = await ConsultarTickets(paramsOpen)
             updateNotifications(response.data)
-          } catch (error) {}
+          } catch (error) { }
         }
         // if (data.type === 'ticket:create') {
         //   console.log('socket ON: TICKET:CREATE 1')
@@ -522,6 +522,10 @@ export const useSocketInitial = () => {
     }
     return () => {
       console.log('Conexão WebSocket fechada')
+
+      //update
+      resetWs()
+      socket?.disconnect()
     }
   }, [getWs, setWs])
 }

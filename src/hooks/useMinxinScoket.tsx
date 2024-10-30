@@ -40,7 +40,7 @@ export const useMixinSocket = () => {
   const [loading, setLoading] = useState(false)
   const socketRef = useRef<Socket | null>(null)
   const { resetUnread } = useAtendimentoTicketStore()
-  const { getWs, setWs } = useWebSocketStore()
+  const { getWs, setWs, resetWs } = useWebSocketStore()
   const updateNotifications = useNotificationsStore(s => s.updateNotifications)
   const updateNotificationsP = useNotificationsStore(
     s => s.updateNotificationsP
@@ -62,18 +62,18 @@ export const useMixinSocket = () => {
       Errors(error)
     }
   }
-
+  let socket: Socket | null = null
   const { AbrirChatMensagens } = useAtendimentoTicketStore()
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    let socket: Socket<DefaultEventsMap, DefaultEventsMap> | null = null
+
     if (!getWs()) {
       socket = socketIO()
       setWs(socket)
       socketRef.current = socket
       // Token inválido, desconecta e redireciona
-      socket?.on(`tokenInvalid:${socket.id}`, () => {
-        socket.disconnect()
+      socket.on(`tokenInvalid:${socket.id}`, () => {
+        socket?.disconnect()
         localStorage.removeItem('token')
         localStorage.removeItem('username')
         localStorage.removeItem('profile')
@@ -87,6 +87,8 @@ export const useMixinSocket = () => {
     return () => {
       if (socket) {
         // socket.disconnect()
+        resetWs()
+        socket.disconnect()
         console.log('Socket disconnected')
       }
     }

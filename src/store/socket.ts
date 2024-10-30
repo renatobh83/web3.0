@@ -1,14 +1,15 @@
+import type { Socket } from "socket.io-client";
 import { create } from "zustand";
 
 interface webSocketStaoreProps {
-  ws: WebSocket | null;
-  setWs: (ws: WebSocket) => void;
-  getWs: () => WebSocket | null;
+  ws: Socket | null;
+  setWs: (ws: Socket) => void;
+  getWs: () => Socket | null;
   resetWs: () => void;
 }
 export const useWebSocketStore = create<webSocketStaoreProps>((set, get) => ({
-  ws: null as WebSocket | null,
-  setWs: (ws: WebSocket) => set({ ws }),
+  ws: null as Socket | null,
+  setWs: (ws: Socket) => set({ ws }),
   getWs: () => get().ws, // Função para obter a instância atual
   resetWs: () => set({ ws: null }),
 }));
