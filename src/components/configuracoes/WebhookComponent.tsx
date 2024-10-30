@@ -9,7 +9,7 @@ import { Navigate } from "react-router-dom"
 import { Errors } from "../../utils/error"
 import { format, parseISO } from "date-fns"
 
-const TIPO_ACAO = ["consulta", "agendamento", "confirmacao", "laudo", "preparo", "pdf", "consultacpf", 'validacpf', 'planos']
+const TIPO_ACAO = ["consulta", "sendpreparo", "agendamento", "confirmacao", "laudo", "preparo", "pdf", "consultacpf", 'validacpf', 'planos']
 
 
 const isExpiredToken = async (expDate) => {
