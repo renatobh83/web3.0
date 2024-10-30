@@ -87,7 +87,7 @@ const StyledMenu = styled((props: MenuProps) => (
 }))
 
 export const MenusNavbar = () => {
-  const { decryptData } = useAuth()
+  const { decryptData, logout } = useAuth()
 
   const navigate = useNavigate()
   const location = useLocation()
@@ -180,15 +180,7 @@ export const MenusNavbar = () => {
   const efetuarLogout = async () => {
     try {
       await RealizarLogout(usuario)
-      localStorage.removeItem('token')
-      localStorage.removeItem('username')
-      localStorage.removeItem('profile')
-      localStorage.removeItem('userId')
-      localStorage.removeItem('queues')
-      localStorage.removeItem('usuario')
-      localStorage.removeItem('filtrosAtendimento')
-
-      window.location.href = '/login'
+      logout()
     } catch (error) {
       toast.error(`Não foi possível realizar logout ${error}`, {
         position: 'top-center',
@@ -392,7 +384,7 @@ export const MenusNavbar = () => {
             <Person />
             <Typography>Perfil</Typography>
           </MenuItem>
-          <MenuItem onClick={efetuarLogout}>
+          <MenuItem onClick={() => efetuarLogout()}>
             <Logout />
             <Typography>Sair</Typography>
           </MenuItem>

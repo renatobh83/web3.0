@@ -73,7 +73,7 @@ export const ModalApi = ({ open, setClose, apiEdit }: ModalApiProps) => {
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (apiEdit.id) {
-            console.log(apiEdit)
+
             setStateModalApi({
                 name: apiEdit.name,
                 sessionId: apiEdit.sessionId,

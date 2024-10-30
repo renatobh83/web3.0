@@ -521,7 +521,7 @@ export const useSocketInitial = () => {
       })
     }
     return () => {
-      console.log('Conexão WebSocket fechada')
+      console.log('useSocketInitial fechada')
 
       //update
       resetWs()

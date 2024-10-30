@@ -137,7 +137,7 @@ export const MainLayout: React.FC = () => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     // Adiciona o listener ao montar o componente
-    console.log('emiter')
+
     eventEmitterMain.on('handlerNotifications', handlerNotifications)
     eventEmitterMain.on('playSoundNotification', playNotificationSound)
     // Remove o listener ao desmontar o componente
@@ -146,6 +146,7 @@ export const MainLayout: React.FC = () => {
       eventEmitterMain.off('playSoundNotification', playNotificationSound)
     }
   }, [])
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listarWhatsapps = useCallback(async () => {
     if (!whatsApps.length) {
       const { data } = await ListarWhatsapps()
@@ -153,6 +154,7 @@ export const MainLayout: React.FC = () => {
     }
   }, [])
   const { encryptData } = useAuth()
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listarConfiguracoes = useCallback(async () => {
     if (!localStorage.getItem('configuracoes')) {
       const { data } = await ListarConfiguracoes()

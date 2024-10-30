@@ -47,12 +47,11 @@ const pesquisaTicketsFiltroPadrao = {
     // date: new Date(),
 };
 const logoff = () => {
-    toast.error('Dados removido do localStorage, sera necessario logar na aplicacao novamente', {
-        position: 'top-center'
-    })
+    // toast.error('Dados removido do localStorage, sera necessario logar na aplicacao novamente', {
+    //     position: 'top-center'
+    // })
     // Remove todos os dados do localStorage
     localStorage.clear();
-
     setTimeout(() => {
         // Redireciona o usuário para a página de login (ou outro fluxo de logoff)
         window.location.href = '/login'; // Substitua '/login' pela rota de login da sua aplicação
@@ -146,7 +145,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
                 // rota dash
             } else {
-                window.location.href = "/atendimento";
+                setTimeout(() => {
+                    window.location.href = "/atendimento";
+                }, 1000)
+
                 // 'rota atendimento'
             }
         } catch (error) {
@@ -157,7 +159,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const logout = () => {
-        localStorage.removeItem("token");
+        logoff()
         setIsAuthenticated(false);
     };
 

@@ -69,6 +69,7 @@ export const useMixinSocket = () => {
 
     if (!getWs()) {
       socket = socketIO()
+      console.log('Socket connect', location.pathname)
       setWs(socket)
       socketRef.current = socket
       // Token inválido, desconecta e redireciona
@@ -89,7 +90,7 @@ export const useMixinSocket = () => {
         // socket.disconnect()
         resetWs()
         socket.disconnect()
-        console.log('Socket disconnected')
+        console.log('useMinxinScoket disconnected')
       }
     }
   }, [getWs, setWs])

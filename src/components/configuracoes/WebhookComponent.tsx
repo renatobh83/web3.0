@@ -224,21 +224,7 @@ export const WebhookConfiguracao = () => {
         }
 
     }, [])
-    const setTokenRefreshTimeouts = (items, refreshToken) => {
-        // biome-ignore lint/complexity/noForEach: <explanation>
-        items.forEach((item) => {
-            if (item.expDate) {
-                const currentDate = new Date();
-                const timeLeft = parseISO(item.expDate) - currentDate;
-                console.log(timeLeft)
-                if (timeLeft > 0) {
-                    setTimeout(() => {
-                        refreshToken(item);
-                    }, timeLeft);
-                }
-            }
-        });
-    };
+
     const handlConnectApi = async (api) => {
 
         try {
@@ -249,12 +235,27 @@ export const WebhookConfiguracao = () => {
         }
 
     }
+
+    const setTokenRefreshTimeouts = (items, refreshToken) => {
+        const currentDate = new Date();
+        // biome-ignore lint/complexity/noForEach: <explanation>
+        items.forEach((item) => {
+            if (item.status === "CONECTADA") {
+                const timeLeft = parseISO(item.expDate) - currentDate;
+                if (timeLeft > 0) {
+                    setTimeout(() => {
+                        refreshToken(item);
+                    }, timeLeft);
+                }
+            }
+        });
+    };
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         setTokenRefreshTimeouts(webhooks, (item) => {
             handlConnectApi(item)
         });
-    }, [webhooks]);
+    }, []);
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
 
