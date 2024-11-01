@@ -335,7 +335,7 @@ export const MenusNavbar = () => {
                       <ListItemText>{ticket.name}</ListItemText>
                       <Typography
                         variant="body2"
-                        sx={{ color: 'text.secondary' }}
+                        sx={{ color: 'text.secondary', width: '150px', textOverflow: "ellipsis", overflow: "hidden" }}
                       >
                         {ticket.lastMessage}
                       </Typography>
