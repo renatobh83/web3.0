@@ -650,14 +650,28 @@ export function Atendimento() {
     }
   }, [])
 
-  if (Notification.permission === 'default') {
-    Notification.requestPermission().then(permission => {
-      if (permission === 'granted') {
-        console.log('Permissão de notificação concedida')
-        // Agora você pode tocar sons quando necessário, pois o usuário já interagiu
-      }
-    })
-  }
+if ('Notification' in window) {
+    // Verifica se o navegador suporta a API Notification
+    if (Notification.permission === 'default') {
+        // Solicita permissão para notificações caso não tenha sido concedida
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                // Permissão concedida
+                console.log("Notificações habilitadas!");
+            } else {
+                console.log("Permissão para notificações foi negada.");
+            }
+        });
+    } else if (Notification.permission === 'granted') {
+        // Permissão já concedida
+        console.log("Notificações já estão habilitadas!");
+    } else {
+        console.log("Permissão para notificações foi negada.");
+    }
+} else {
+    // Caso a API Notification não esteja disponível (ex: navegadores móveis)
+    console.log("Notificações não são suportadas neste dispositivo.");
+}
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     socketTicketList()
