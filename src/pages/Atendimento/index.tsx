@@ -657,20 +657,17 @@ if ('Notification' in window) {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
                 // Permissão concedida
-                console.log("Notificações habilitadas!");
-            } else {
-                console.log("Permissão para notificações foi negada.");
-            }
+                return
+            } return
         });
     } else if (Notification.permission === 'granted') {
         // Permissão já concedida
-        console.log("Notificações já estão habilitadas!");
-    } else {
-        console.log("Permissão para notificações foi negada.");
-    }
+       return
+    } 
+  return
 } else {
     // Caso a API Notification não esteja disponível (ex: navegadores móveis)
-    console.log("Notificações não são suportadas neste dispositivo.");
+   return
 }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
