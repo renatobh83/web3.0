@@ -110,7 +110,7 @@ const checkTicketFilter = (ticket: Ticket) => {
 
   const NotViewTicketsChatBot = () => {
     const configuracoes = JSON.parse(
-      decryptData(localStorage.getItem('configuracoes'))
+      decryptData(localStorage.getItem('configuracoes') ?? '')
     )
     const conf = configuracoes?.find(
       (c: { key: string }) => c.key === 'NotViewTicketsChatBot'
@@ -120,7 +120,7 @@ const checkTicketFilter = (ticket: Ticket) => {
 
   const DirectTicketsToWallets = () => {
     const configuracoes = JSON.parse(
-      decryptData(localStorage.getItem('configuracoes'))
+      decryptData(localStorage.getItem('configuracoes') ?? '')
     )
     const conf = configuracoes?.find(
       (c: { key: string }) => c.key === 'DirectTicketsToWallets'
@@ -130,7 +130,7 @@ const checkTicketFilter = (ticket: Ticket) => {
 
   const isNotViewAssignedTickets = () => {
     const configuracoes = JSON.parse(
-      decryptData(localStorage.getItem('configuracoes'))
+      decryptData(localStorage.getItem('configuracoes') ?? '')
     )
     const conf = configuracoes?.find(
       (c: { key: string }) => c.key === 'NotViewAssignedTickets'
@@ -151,7 +151,7 @@ const checkTicketFilter = (ticket: Ticket) => {
   const isAdminShowAll = profile === 'admin' && filtros.showAll
   const isQueuesTenantExists = filasCadastradas.length > 0
 
-  const userId = usuario?.userId || +localStorage.getItem('userId')
+  const userId = usuario?.userId || Number(localStorage.getItem('userId'))
 
   // Verificar se é admin e se está solicitando para mostrar todos
   if (isAdminShowAll) {
@@ -172,7 +172,7 @@ const checkTicketFilter = (ticket: Ticket) => {
   }
 
   // verificar se já é um ticket do usuário
-  if (ticket?.userId == userId) {
+  if (ticket?.userId === userId) {
     // console.log('Ticket do usuário', ticket?.userId, userId)
     return true
   }
@@ -224,7 +224,7 @@ const checkTicketFilter = (ticket: Ticket) => {
     const isQueue = filtros.queuesIds.findIndex(
       (q: number | undefined) => ticket.queueId === q
     )
-    if (isQueue == -1) {
+    if (isQueue === -1) {
       console.log('filas filtradas e diferentes da do ticket', ticket.queueId)
       return false
     }
@@ -233,7 +233,8 @@ const checkTicketFilter = (ticket: Ticket) => {
   // se configuração para carteira ativa: verificar se já é um ticket da carteira do usuário
   if (DirectTicketsToWallets() && (ticket?.contact?.wallets?.length || 0) > 0) {
     const idx = ticket?.contact?.wallets.findIndex(
-      (w: { id: any }) => w.id == userId
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      (w: { id: any }) => w.id === userId
     )
     if (idx !== -1) {
       console.log('Ticket da carteira do usuário')
@@ -293,7 +294,7 @@ export const useAtendimentoTicketStore = create<
   notificacaoTicket: 0,
 
   // Mutations converted to actions
-  contatcUpdate: payload => {
+  contatcUpdate: _payload => {
     console.log(get().tickets)
   },
   setHasMore: payload => set({ hasMore: payload }),
@@ -390,7 +391,7 @@ export const useAtendimentoTicketStore = create<
 
   deleteTicket: ticketId =>
     set(state => {
-      const updatedTickets = state.tickets.filter(t => t.id !== ticketId)
+      const updatedTickets = state.tickets.filter(t => t.id !== +ticketId)
       return { tickets: updatedTickets }
     }),
 
@@ -503,7 +504,7 @@ export const useAtendimentoTicketStore = create<
     if (ticketFocado?.scheduledMessages) {
       // Filtra as mensagens agendadas para remover a que foi atualizada.
       const updatedScheduledMessages = ticketFocado.scheduledMessages.filter(
-        m => m.id !== payload.id
+        (m: { id: any }) => m.id !== payload.id
       )
 
       // Atualiza o ticket focado com as mensagens agendadas filtradas.

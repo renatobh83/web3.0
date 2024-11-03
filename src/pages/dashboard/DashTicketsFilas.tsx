@@ -2,23 +2,17 @@ import {
   Avatar,
   Button,
   Card,
-  Checkbox,
   CircularProgress,
   Divider,
   Drawer,
   FormControlLabel,
-  FormGroup,
   List,
-  ListItem,
   Radio,
   RadioGroup,
-  Skeleton,
   Stack,
   Switch,
   Toolbar,
   Typography,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material'
 import Grid from '@mui/material/Grid2'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
@@ -31,12 +25,9 @@ import dayjs, { type Dayjs } from 'dayjs'
 import { ConsultarTicketsQueuesService } from '../../services/estatistica'
 import { useAuth } from '../../context/AuthContext'
 import { toast } from 'sonner'
-import { CheckBox } from '@mui/icons-material'
-import { ItemTicket } from '../Atendimento/ItemTicket'
 import { ItemTicketPainel } from '../Atendimento/ItemTicketPainel'
 import { groupBy } from 'lodash'
 import { format, sub } from 'date-fns'
-import { red } from '@mui/material/colors'
 dayjs.extend(isSameOrAfter)
 
 const optionsVisao = [
@@ -134,7 +125,7 @@ export const DashTicketsFilas = () => {
         .then(res => {
           setTickets(res.data)
         })
-        .catch(error => { })
+        .catch(error => {})
         .finally(() => {
           setIsloading(false)
           setDrawerFiltro(false)
@@ -226,10 +217,13 @@ export const DashTicketsFilas = () => {
   const [isLoading, setIsloading] = useState(false)
 
   return (
-    <Box sx={{
-      width: '100%',
-      maxWidth: { sm: '100%', md: '1700px' }, pt: 2
-    }}>
+    <Box
+      sx={{
+        width: '100%',
+        maxWidth: { sm: '100%', md: '1700px' },
+        pt: 2,
+      }}
+    >
       <Box
         sx={{
           display: 'flex',
@@ -364,7 +358,7 @@ export const DashTicketsFilas = () => {
                   ml: 2,
                   mb: 2,
                 }}
-              // className={`flex items-center ml-4 ${switchStates.showAll ? 'mb-4' : ''}`}
+                // className={`flex items-center ml-4 ${switchStates.showAll ? 'mb-4' : ''}`}
               >
                 <Switch
                   name="showAll"
