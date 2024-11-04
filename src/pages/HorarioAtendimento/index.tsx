@@ -1,8 +1,5 @@
 import {
-  Help,
-  HelpCenterOutlined,
-  Inbox,
-  QuestionMark,
+  Help
 } from '@mui/icons-material'
 import {
   Box,
@@ -110,7 +107,7 @@ const initialBusinessHours = [
 export const HorarioAtendimento = () => {
   const theme = useTheme()
   const isDarkMode = theme.palette.mode === 'dark'
-  const [type, setType] = useState(optType)
+  const [type] = useState(optType)
   const [businessHours, setBusinessHours] = useState(initialBusinessHours)
   const [messageBusinessHours, setMessageBusinessHours] = useState('')
 
@@ -264,7 +261,7 @@ export const HorarioAtendimento = () => {
             columns={{ xs: 4, sm: 8, md: 12 }}
             sx={{ width: '100%' }}
           >
-            {businessHours.map((v, index) => (
+            {businessHours.map((v) => (
               <Grid
                 key={v.day}
                 size={{ xs: 2, sm: 4, md: 4 }}

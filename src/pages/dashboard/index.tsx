@@ -1,19 +1,18 @@
-import { Box, Button, Stack, Toolbar, Typography } from '@mui/material'
+import { Box, Button, Stack, Typography } from '@mui/material'
 import BasicDateTimePicker from '../../components/AtendimentoComponent/DateTimePicker'
 import { useState } from 'react'
-import { Dayjs } from 'dayjs'
-import { subDays, format, formatDuration, differenceInDays } from 'date-fns'
-import { DashTicketsFilas } from './DashTicketsFilas'
+import type { Dayjs } from 'dayjs'
+// import { differenceInDays } from 'date-fns'
 
 export const Dashboard: React.FC = () => {
   const [dateTimeStart, setDateTimeStart] = useState<Dayjs | null>(null)
   const [dateTimeEnd, setDateTimeEnd] = useState<Dayjs | null>(null)
 
   const setConfigWidth = () => {
-    const diffDays = differenceInDays(
-      new Date(dateTimeEnd),
-      new Date(dateTimeStart)
-    )
+    // const diffDays = differenceInDays(
+    //   new Date(dateTimeEnd),
+    //   new Date(dateTimeStart)
+    // )
     // if (diffDays > 30) {
     //   configWidth = { horizontal: true, width: 2200 }
     // } else {

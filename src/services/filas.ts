@@ -15,7 +15,7 @@ export function ListarFilas() {
   });
 }
 
-export function AlterarFila(data: { id: any }) {
+export function AlterarFila(data) {
   return request({
     url: `/queue/${data.id}`,
     method: "put",
@@ -23,7 +23,7 @@ export function AlterarFila(data: { id: any }) {
   });
 }
 
-export function DeletarFila(data: { id: any }) {
+export function DeletarFila(data) {
   return request({
     url: `/queue/${data.id}`,
     method: "delete",

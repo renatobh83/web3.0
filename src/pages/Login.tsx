@@ -1,11 +1,10 @@
 import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Stack from '@mui/material/Stack';
-import { createTheme, ThemeProvider, PaletteMode } from '@mui/material/styles';
+import { createTheme, ThemeProvider, type PaletteMode } from '@mui/material/styles';
 
 
 import getSignInSideTheme from '../components/MaterialUi/getSignInSideTheme';
-import TemplateFrame from '../components/MaterialUi/Login/TemplateFrame';
 
 import SignInCard from '../components/MaterialUi/Login/SignInCard';
 import Content from '../components/MaterialUi/Login/Content';

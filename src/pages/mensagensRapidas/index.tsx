@@ -1,26 +1,17 @@
-import styled from '@emotion/styled'
 import {
-  Table,
   Box,
   Typography,
   Button,
   TableCell,
   TableHead,
   TableRow,
-  DialogActions,
-  Checkbox,
-  DialogContent,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Input,
   TableBody,
   IconButton,
   Tooltip,
   TablePagination,
 } from '@mui/material'
 import { ModalMensagemRapida } from './ModalMensagemRapida'
-import { SetStateAction, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   DeletarMensagemRapida,
   ListarMensagensRapidas,
@@ -28,7 +19,6 @@ import {
 import { Edit, Delete } from '@mui/icons-material'
 import { red } from '@mui/material/colors'
 import { toast } from 'sonner'
-import { DeletarFila } from '../../services/filas'
 import { CustomTableContainer } from '../../components/MaterialUi/CustomTable'
 
 export const MensagensRapidas = () => {
@@ -46,8 +36,9 @@ export const MensagensRapidas = () => {
     setMensagensRapidasSelecionada(mensagem)
     setOpen(true)
   }
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const handleMensagemRapidaUpdate = (novaMensagem: any) => {
-    if (mensagensRapidasSelecionada?.id) {
+    if ("id" in mensagensRapidasSelecionada && mensagensRapidasSelecionada.id) {
       setMensagensRapidas(prev => {
         const index = prev.findIndex(
           fila => fila.id === mensagensRapidasSelecionada.id
@@ -70,6 +61,7 @@ export const MensagensRapidas = () => {
     listarMensagensRapidas()
   }, [])
 
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const handleDeleteMessage = (msg: any) => {
     toast.info(
       `Atenção!! Deseja realmente deletar a mensamgem rapida "${msg.message}"?`,
@@ -93,7 +85,7 @@ export const MensagensRapidas = () => {
     )
   }
   const [pagination, setPagination] = useState({ page: 0, rowsPerPage: 10 })
-  const handlePageChange = (event: unknown, newPage: number) => {
+  const handlePageChange = (_event: unknown, newPage: number) => {
     setPagination(prev => ({ ...prev, page: newPage }))
   }
 
