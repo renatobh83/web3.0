@@ -15,7 +15,7 @@ export function ListarMensagensRapidas() {
   });
 }
 
-export function AlterarMensagemRapida(data: { id: any }) {
+export function AlterarMensagemRapida(data) {
   return request({
     url: `/fastreply/${data.id}`,
     method: "put",

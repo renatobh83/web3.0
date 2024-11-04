@@ -13,12 +13,11 @@ const service = axios.create({
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const handlerError = (err: any) => {
   const errorMsg = err?.response?.data?.error;
-  let error = "Ocorreu um erro não identificado.";
   if (errorMsg) {
     if (backendErrors[errorMsg]) {
-      error = backendErrors[errorMsg];
+      backendErrors[errorMsg];
     } else {
-      error = err.response.data.error;
+      err.response.data.error;
     }
   }
 };

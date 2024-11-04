@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-interface Usuario {
+export interface Usuario {
   userId?: string;
   username?: string;
   tenantId?: string | null;
@@ -17,7 +17,7 @@ interface UsuarioStore {
   modalUsuario: boolean;
   modalFilaUsuario: boolean;
 
-  setUsuarioSelecionado: (usuario: Usuario) => void;
+  setUsuarioSelecionado: (usuario: Usuario | null) => void;
   criarUsuario: (usuario: Usuario) => void;
   editarUsuario: (usuario: Usuario) => void;
   deletarUsuario: (userId: number) => void;
@@ -63,6 +63,7 @@ export const useUsuarioStore = create<UsuarioStore>((set) => ({
   toggleModalUsuario: () =>
     set((state) => {
       const newState = !state.modalUsuario;
+
       return {
         modalUsuario: newState,
         usuarioSelecionado: newState ? state.usuarioSelecionado : null,
