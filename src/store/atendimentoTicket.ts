@@ -5,16 +5,21 @@ import CryptoJS from "crypto-js";
 import { toast } from "sonner";
 
 import { ConsultarDadosTicket, LocalizarMensagens } from "../services/tickets";
-
 export interface Ticket {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   [x: string]: any;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   whatsapp: any;
   channel: string;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   lastMessageAt: any;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   updatedAt: any;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   user: any;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   username: any;
-  contactId: any;
+  contactId: number;
   id: number;
   name: string;
   lastMessage: string;
@@ -24,6 +29,7 @@ export interface Ticket {
   status?: string;
   autoReplyId?: number;
   queueId?: number;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   contact?: any;
   unreadMessages?: number;
 }
@@ -32,13 +38,27 @@ interface AtendimentoTicketState {
   chatTicketDisponivel: boolean;
   tickets: Ticket[];
   ticketsLocalizadosBusca: Ticket[];
+
+  // biome-ignore lint/complexity/noBannedTypes: <explanation>
   ticketFocado: Ticket | {};
   hasMore: boolean;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   contatos: any[];
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   mensagens: any[];
   notificacaoTicket: number;
 }
-const decryptData = (encryptedData: string) => {
+interface Message {
+  id: string;
+  fromMe: boolean;
+  ticket: Ticket;
+  ack: number;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  [key: string]: any;
+}
+
+const decryptData = (encryptedData: string | null): string => {
+  if (!encryptedData) return ""; // Retorna uma string vazia caso o valor seja null
   const bytes = CryptoJS.AES.decrypt(
     encryptedData,
     import.meta.env.VITE_APP_SECRET_KEY
@@ -48,24 +68,32 @@ const decryptData = (encryptedData: string) => {
 interface AtendimentoTicketActions {
   setHasMore: (payload: boolean) => void;
   loadTickets: (payload: Ticket[]) => void;
-  // redirectToChat: (ticketId: string) => void;
   resetTickets: () => void;
   resetUnread: (payload: { ticketId: string }) => void;
   updateTicket: (payload: Ticket) => void;
   deleteTicket: (ticketId: string) => void;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   updateTicketFocadoContact: (payload: any) => void;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   updateContact: (payload: any) => void;
+  // biome-ignore lint/complexity/noBannedTypes: <explanation>
   setTicketFocado: (payload: Ticket | {}) => void;
   updateMessageStatus: (payload: Message & { ticket: Ticket }) => void;
   loadInitialMessages: (payload: {
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     messages: any[];
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     messagesOffLine: any[];
   }) => void;
   loadMoreMessages: (payload: {
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     messages: any[];
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     messagesOffLine: any[];
   }) => void;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   contatcUpdate: (payload: any) => void;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   updateMessages: (payload: any) => void;
   resetMessages: () => void;
   LocalizarMensagensTicket: (params: {
@@ -75,7 +103,7 @@ interface AtendimentoTicketActions {
   redirectToChat: (ticketId: string) => void;
   AbrirChatMensagens: (data: { id: string }) => Promise<void>;
 }
-
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const orderMessages = (messages: any[]) => {
   const newMessages = orderBy(
     messages,
@@ -139,7 +167,9 @@ const checkTicketFilter = (ticket: Ticket) => {
   };
   const filtros =
     JSON.parse(localStorage.getItem("filtrosAtendimento")) || filtroPadrao;
-  const usuario = JSON.parse(decryptData(localStorage.getItem("usuario")!));
+  const usuario = JSON.parse(
+    decryptData(localStorage.getItem("usuario") ?? "")
+  );
   const UserQueues = JSON.parse(localStorage.getItem("queues"));
   const filasCadastradas = JSON.parse(
     localStorage.getItem("filasCadastradas") || "[]"
@@ -169,7 +199,7 @@ const checkTicketFilter = (ticket: Ticket) => {
   }
 
   // verificar se já é um ticket do usuário
-  if (ticket?.userId == userId) {
+  if (ticket?.userId === userId) {
     // console.log('Ticket do usuário', ticket?.userId, userId)
     return true;
   }
@@ -221,7 +251,7 @@ const checkTicketFilter = (ticket: Ticket) => {
     const isQueue = filtros.queuesIds.findIndex(
       (q: number | undefined) => ticket.queueId === q
     );
-    if (isQueue == -1) {
+    if (isQueue === -1) {
       console.log("filas filtradas e diferentes da do ticket", ticket.queueId);
       return false;
     }
@@ -230,7 +260,7 @@ const checkTicketFilter = (ticket: Ticket) => {
   // se configuração para carteira ativa: verificar se já é um ticket da carteira do usuário
   if (DirectTicketsToWallets() && (ticket?.contact?.wallets?.length || 0) > 0) {
     const idx = ticket?.contact?.wallets.findIndex(
-      (w: { id: any }) => w.id == userId
+      (w: { id: number }) => w.id === userId
     );
     if (idx !== -1) {
       console.log("Ticket da carteira do usuário");
@@ -290,15 +320,10 @@ export const useAtendimentoTicketStore = create<
   notificacaoTicket: 0,
 
   // Mutations converted to actions
-  contatcUpdate: (payload) => {
+  contatcUpdate: (_payload) => {
     console.log(get().tickets);
   },
   setHasMore: (payload) => set({ hasMore: payload }),
-
-  loadTicketFocado: (payload: any) =>
-    set(() => {
-      console.log(payload);
-    }),
 
   loadTickets: (payload) =>
     set((state) => {
@@ -329,12 +354,12 @@ export const useAtendimentoTicketStore = create<
   resetUnread: (payload) =>
     set((state) => {
       const ticketIndex = state.tickets.findIndex(
-        (t) => t.id === payload.ticketId
+        (t) => t.id === Number(payload.ticketId)
       );
       if (ticketIndex !== -1) {
-        state.tickets[ticketIndex] = { ...payload, unreadMessages: 0 };
+        state.tickets[ticketIndex].unreadMessages = 0;
       }
-      return { tickets: state.tickets };
+      return { tickets: [...state.tickets] };
     }),
 
   updateTicket: (payload) =>
@@ -359,12 +384,14 @@ export const useAtendimentoTicketStore = create<
         };
         const updatedTickets = [...state.tickets];
         updatedTickets[ticketIndex] = updatedTicket;
-
-        if (state.ticketFocado.id === payload.id) {
-          return {
-            tickets: updatedTickets.filter((t) => checkTicketFilter(t)),
-            ticketFocado: { ...state.ticketFocado, ...payload },
-          };
+        if ("id" in state.ticketFocado) {
+          // Agora o TypeScript sabe que ticketFocado é do tipo Ticket
+          if (state.ticketFocado.id === payload.id) {
+            return {
+              tickets: updatedTickets.filter((t) => checkTicketFilter(t)),
+              ticketFocado: { ...state.ticketFocado, ...payload },
+            };
+          }
         }
 
         return { tickets: updatedTickets.filter((t) => checkTicketFilter(t)) };
@@ -387,7 +414,9 @@ export const useAtendimentoTicketStore = create<
 
   deleteTicket: (ticketId) =>
     set((state) => {
-      const updatedTickets = state.tickets.filter((t) => t.id !== ticketId);
+      const updatedTickets = state.tickets.filter(
+        (t) => t.id !== Number(ticketId)
+      );
       return { tickets: updatedTickets };
     }),
 
@@ -398,6 +427,7 @@ export const useAtendimentoTicketStore = create<
 
   updateContact: (payload) =>
     set((state) => {
+      let updatedTicketFocado: Ticket;
       const updatedTickets = state.tickets.map((t) => {
         if (t.contactId === payload.id) {
           return {
@@ -409,11 +439,12 @@ export const useAtendimentoTicketStore = create<
         }
         return t;
       });
-
-      const updatedTicketFocado =
-        state.ticketFocado.contactId === payload.id
-          ? { ...state.ticketFocado, contact: payload }
-          : state.ticketFocado;
+      if ("contactId" in state.ticketFocado) {
+        updatedTicketFocado =
+          state.ticketFocado.contactId === payload.id
+            ? { ...state.ticketFocado, contact: payload }
+            : state.ticketFocado;
+      }
 
       return { tickets: updatedTickets, ticketFocado: updatedTicketFocado };
     }),
@@ -422,7 +453,10 @@ export const useAtendimentoTicketStore = create<
     set(() => ({
       ticketFocado: {
         ...payload,
-        status: payload.status === "pending" ? "open" : payload.status,
+        status:
+          "status" in payload && payload.status === "pending"
+            ? "open"
+            : "status" in payload && payload.status,
       },
     })),
 
@@ -451,7 +485,10 @@ export const useAtendimentoTicketStore = create<
 
   updateMessages: (payload) =>
     set((state) => {
-      if (state.ticketFocado.id === payload.ticket.id) {
+      if (
+        "id" in state.ticketFocado &&
+        state.ticketFocado.id === payload.ticket.id
+      ) {
         const updatedMessages = [...state.mensagens];
         const messageIndex = updatedMessages.findIndex(
           (m) => m.id === payload.id
@@ -477,11 +514,13 @@ export const useAtendimentoTicketStore = create<
     }),
 
   resetMessages: () => set(() => ({ mensagens: [] })),
+
   updateMessageStatus: (payload) => {
     const { ticketFocado, mensagens } = get();
 
     // Se o ticket não for o focado, não atualiza.
-    if (ticketFocado?.id !== payload.ticket.id) return;
+    if (("id" in ticketFocado && ticketFocado?.id) !== payload.ticket.id)
+      return;
 
     const messageIndex = mensagens.findIndex((m) => m.id === payload.id);
     const updatedMensagens = [...mensagens];
@@ -494,7 +533,10 @@ export const useAtendimentoTicketStore = create<
     set({ mensagens: updatedMensagens });
 
     // Tratar a atualização das mensagens agendadas, se existirem
-    if (ticketFocado?.scheduledMessages) {
+    if (
+      "scheduledMessages" in ticketFocado &&
+      ticketFocado?.scheduledMessages
+    ) {
       const updatedScheduledMessages = ticketFocado.scheduledMessages.filter(
         (m) => m.id !== payload.id
       );

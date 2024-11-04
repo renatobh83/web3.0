@@ -207,21 +207,11 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
       }),
     })),
   removeSelectedNodesAndEdges: () => {
-    const { nodes, edges, setNodes, setEdges } = get();
+    const { nodes, setNodes } = get();
 
     // Filtrar nós que NÃO estão selecionados
     const remainingNodes = nodes.filter(
-      (node) => node.id !== get().nodeSelect?.id
-    );
-
-    // Filtrar arestas que NÃO estão conectadas aos nós selecionados
-    const remainingEdges = edges.filter(
-      (edge) =>
-        !nodes.some(
-          (node) =>
-            get().nodeSelect?.id &&
-            (edge.source === node.id || edge.target === node.id)
-        )
+      (node) => node.id !== get().selectedNode?.id
     );
 
     // Atualizar o estado no Zustand

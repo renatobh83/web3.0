@@ -1,10 +1,5 @@
 import { create } from "zustand";
 
-interface WhatsApp {
-  id: number;
-  [key: string]: any;
-}
-
 interface State {
   whatsApps: any[];
   chatFlows: any[];

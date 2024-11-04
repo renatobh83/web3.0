@@ -282,8 +282,9 @@ export const HorarioAtendimento = () => {
                   subheader={v.label}
                 />
                 <CardContent sx={{ px: 2, paddingBottom: '16px !important' }}>
+
                   <RadioGroup
-                    value={typeSelected[v.day].type}
+                    value={v.type}
                     onChange={e => handleChangeRadio(v.day, e.target.value)}
                     sx={{
                       display: 'flex',
