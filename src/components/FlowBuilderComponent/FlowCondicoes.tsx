@@ -1,8 +1,7 @@
-import { Close, Message, North, South, Webhook } from '@mui/icons-material'
+import { Close, North, South } from '@mui/icons-material'
 import {
   Box,
   Button,
-  ButtonGroup,
   Chip,
   Divider,
   FormControl,
@@ -20,8 +19,6 @@ import {
 import type { Node } from '@xyflow/react'
 import React, { useEffect, useState } from 'react'
 import useChatFlowStore from '../../store/chatFlow'
-import { previousDay } from 'date-fns'
-import { unstable_DataStrategyFunction } from 'react-router-dom'
 
 function isEmptyObject(obj) {
   return Object.keys(obj).length === 0
@@ -212,6 +209,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
       }))
     }
   }
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const handleChangeSelectOptions = (id: string, e: any) => {
     const selectedValue = e.target.value as string
 
@@ -318,11 +316,9 @@ export const Condicoes = ({ node }: InteracoesProps) => {
           {conditions
             .filter(condition => !condition.shouldRemove) // Filtra os que devem ser renderizados
             .map((condition, idx) => (
-              // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
               <React.Fragment key={condition.id}>
                 <Box
                   id={condition.id}
-                  key={idx}
                   sx={{
                     background: isDarkMode ? theme.palette.background.default : theme.palette.grey[200],
                     minHeight: '250px',

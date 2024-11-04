@@ -1,9 +1,10 @@
 import request from "./request";
 
-export function ListarContatos() {
+export function ListarContatos(params: any) {
   return request({
     url: "/contacts/",
     method: "get",
+    params,
   });
 }
 
