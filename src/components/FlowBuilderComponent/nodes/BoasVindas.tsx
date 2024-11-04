@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material"
-import { type NodeProps, Handle, Position } from "@xyflow/react"
+import { Handle, Position } from "@xyflow/react"
 
-export const BoasVindas = (props: NodeProps) => {
+export const BoasVindas = () => {
 
     return (
         <Box sx={{

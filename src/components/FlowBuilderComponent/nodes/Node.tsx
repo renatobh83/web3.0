@@ -1,5 +1,5 @@
 import { Box, Typography, useTheme } from '@mui/material'
-import { type NodeProps, Handle, Position, useReactFlow } from '@xyflow/react'
+import { type NodeProps, Handle, Position } from '@xyflow/react'
 import { useEffect, useState } from 'react'
 import useChatFlowStore from '../../../store/chatFlow'
 

@@ -5,11 +5,8 @@ import {
   ButtonGroup,
   Chip,
   FormControlLabel,
-  MenuItem,
   Radio,
   RadioGroup,
-  Select,
-  Stack,
   TextField,
   Typography,
   useTheme,
@@ -18,7 +15,6 @@ import type { Node } from '@xyflow/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import useChatFlowStore from '../../store/chatFlow'
 import React from 'react'
-import { toast } from 'sonner'
 import { ListarWebhook } from '../../services/webhooks'
 
 interface InteracoesProps {
@@ -58,7 +54,7 @@ export const Interacoes = ({ node }: InteracoesProps) => {
   }>({})
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (node.data?.interactions?.length) {
+    if (Array.isArray(node.data.interactions) && node.data?.interactions?.length) {
       setInteracoes(node.data.interactions)
       node.data.interactions.map(interacao => {
         setInteracoesState(prev => ({
@@ -74,12 +70,6 @@ export const Interacoes = ({ node }: InteracoesProps) => {
     } else {
       setInteracoes([])
     }
-    // // Define que o carregamento inicial terminou
-    // setIsOnload(false)
-    // return () => {
-    //   setIsOnload(false)
-    //   setWebhooks([])
-    // }
   }, [node.id])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>

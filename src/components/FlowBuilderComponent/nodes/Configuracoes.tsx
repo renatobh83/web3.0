@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material"
-import { type NodeProps, Handle, Position } from "@xyflow/react"
 
-export const Configuracoes = (props: NodeProps) => {
+
+export const Configuracoes = () => {
 
     return (
         <Box sx={{ backgroundColor: 'background.paper', width: 150, p: '10px', border: '1px solid #ccc', borderRadius: '3px', textAlign: 'center' }}
