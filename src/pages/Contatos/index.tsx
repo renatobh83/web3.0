@@ -94,7 +94,8 @@ export const Contatos: React.FC<{
       field: 'name',
       align: 'left',
       style: 'w-[300px]',
-      format: (v: any, r: { number: any; name: any; pushname: any }) =>
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      format: (_v: any, r: { number: any; name: any; pushname: any }) =>
         r.number && r.name === r.number && r.pushname ? r.pushname : r.name,
     },
     {
@@ -117,7 +118,9 @@ export const Contatos: React.FC<{
       field: 'tags',
       align: 'center',
       style: 'w-[300px]',
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       renderCell: (params: { value: any }) => (
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
         <div dangerouslySetInnerHTML={{ __html: params.value }} />
       ),
     },
@@ -189,9 +192,9 @@ export const Contatos: React.FC<{
   const { contatos, loadContacts } = useContatosStore()
   const whatsapp = useWhatsappStore(s => s.whatsApps)
   const [contatoSelecionado, setContatoSelecionado] = useState(null)
-  const [loading, setLoading] = useState(false)
+
   const [modalOpen, setModalOpen] = useState(false)
-  const handlePageChange = (event: unknown, newPage: number) => {
+  const handlePageChange = (_event: unknown, newPage: number) => {
     setPagination(prev => ({ ...prev, page: newPage }))
   }
 
@@ -203,11 +206,7 @@ export const Contatos: React.FC<{
       rowsPerPage: Number.parseInt(event.target.value, 10),
     })
   }
-  const [params, setParams] = useState({
-    pageNumber: 1,
-    searchParam: null,
-    hasMore: true,
-  })
+
   const handleEdit = contato => {
     setContatoSelecionado(contato)
     setModalOpen(true)
@@ -226,7 +225,7 @@ export const Contatos: React.FC<{
         action: {
           label: 'Confirma',
           onClick: () => {
-            DeletarContato(contato.id).then(async data => {
+            DeletarContato(contato.id).then(async _data => {
               toast.success('Contato apagado', {
                 position: 'top-center',
               })
@@ -241,11 +240,13 @@ export const Contatos: React.FC<{
     setModalOpen(false)
     setContatoSelecionado(null)
   }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listaContatos = useCallback(async () => {
     const { data } = await ListarContatos()
     loadContacts(data.contacts)
   }, [])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (!contatos.length) listaContatos()
   }, [])
