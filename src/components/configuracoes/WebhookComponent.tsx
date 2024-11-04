@@ -1,12 +1,11 @@
 import { Box, Button, Chip, Dialog, DialogActions, DialogContent, FormControl, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
-import { Edit, Delete, Wifi, Refresh } from "@mui/icons-material"
+import { Edit, Delete } from "@mui/icons-material"
 import { ConectarApi, CriarWebhook, DeletarApi, ListarWebhook, UpdateApi } from "../../services/webhooks"
 import { useAuth } from "../../context/AuthContext"
 import { Navigate } from "react-router-dom"
 import { Errors } from "../../utils/error"
-import { format, parseISO } from "date-fns"
 
 const TIPO_ACAO = ["consulta", "sendpreparo", "agendamento", "confirmacao", "laudo", "preparo", "pdf", "consultacpf", 'validacpf', 'planos']
 

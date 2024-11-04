@@ -70,7 +70,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (node.data.conditions.length) {
+    if (Array.isArray(node.data.conditions) && node.data.conditions.length) {
       setConditions(node.data.conditions)
       node.data.conditions.map(c => {
         setConditionState(prevState => ({
@@ -93,14 +93,14 @@ export const Condicoes = ({ node }: InteracoesProps) => {
   }, [node.id])
 
   function addCondiction() {
-    setConditions(prev => [
-      ...prev,
-      {
-        type: '',
-        condition: [],
-        id: crypto.randomUUID(),
-      },
-    ])
+    // setConditions(prev => [
+    //   ...prev,
+    //   {
+    //     type: '',
+    //     condition: [],
+    //     id: crypto.randomUUID(),
+    //   },
+    // ])
   }
   function removeCondition(conditionId: string) {
     const updatedConditions = conditions.map(
@@ -170,9 +170,9 @@ export const Condicoes = ({ node }: InteracoesProps) => {
   // Função para capturar mudanças no Select e enviar o id
   const handleSelectSeChange = (
     id: string,
-    event: React.ChangeEvent<{ value: unknown }>
+    event: string
   ) => {
-    const selectedValue = event.target.value as string
+    const selectedValue = event
     setConditionState(prevState => ({
       ...prevState,
       [id]: {
@@ -379,7 +379,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
                     <Select
                       id={`select_se-${condition.id}`}
                       value={conditionState[condition.id]?.type || ''}
-                      onChange={e => handleSelectSeChange(condition.id, e)}
+                      onChange={e => handleSelectSeChange(condition.id, e.target.value)}
                       input={<OutlinedInput label="se" />}
                     >
                       {optionsSe.map(opt => (
