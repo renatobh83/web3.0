@@ -1,15 +1,19 @@
-import { Settings, Webhook } from '@mui/icons-material'
+import { Settings, Title, Webhook } from '@mui/icons-material'
 import {
   Box,
+  Button,
+  Checkbox,
   List,
+  ListItem,
   ListItemText,
   Switch,
   Tab,
   Tabs,
   TextField,
+  Toolbar,
+  Typography,
 } from '@mui/material'
-import type React from 'react'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import {
   AlterarConfiguracao,
@@ -24,14 +28,13 @@ interface TabPanelProps {
   index: number
   value: number
 }
-
 const keyValues = {
   userCreation: {
     title: 'Criação de usuario',
     subtitle: 'Permitir que um novo usuario se registre pela tela e login.',
   },
   NotViewTicketsQueueUndefined: {
-    title: 'Não visualizar Tickets sem fila definida',
+    title: 'Não visualizar TIckets sem fila definida',
     subtitle:
       'Somente administradores poderão visualizar tickets que não estiverem em fila.',
   },
@@ -64,22 +67,23 @@ const keyValues = {
       'Quando ativo, as ligações de aúdio e vídeo serão recusadas, automaticamente.',
   },
   callRejectMessage: {
-    title: 'Mensagem para ligações recusadas',
+    title: 'Mensagem para ligacoes recusadas',
     subtitle:
-      'Mensagem enviada quando as ligações de aúdio e vídeo forem recusadas, automaticamente.',
+      'Mensagem enviado quando as ligações de aúdio e vídeo forem recusadas, automaticamente.',
   },
   chatbotLane: {
     title: 'Habilitar guia de atendimento de Chatbots',
     subtitle:
       'Habilitando esta opção será adicionada uma guia de atendimento exclusiva para os chatbots.',
   },
+  // NotViewTicketsChatBot  : {title: 'Não visualizar Tickets no ChatBot',
+  // subtitle: ' Quando habilitado, nenhum usuário poderá ver os tickets atendidos pelo chatbot.'},
 }
-
 function CustomTabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props
+
   return (
     <div
-      // biome-ignore lint/a11y/useSemanticElements: <explanation>
       role="tabpanel"
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
@@ -97,55 +101,63 @@ function a11yProps(index: number) {
     'aria-controls': `simple-tabpanel-${index}`,
   }
 }
-
 export const Configuracoes = () => {
   const { decryptData, encryptData } = useAuth()
   const [value, setValue] = useState(0)
-  const confi = JSON.parse(decryptData('configuracoes') || '[]')
-  const [configuracoesOpcoes, setConfiguracoesOpcoes] = useState(confi || [])
+
+  const confi = JSON.parse(decryptData('configuracoes'))
+  const [configuracoesOpcoes, setConfiguracoesOpcoes] = useState([])
+  const [selectedIndex, setSelectedIndex] = useState(0)
+
   const usuario = JSON.parse(decryptData('usuario'))
 
+  const [checked, setChecked] = useState<{
+    [key: string]: {
+      checked: string
+    }
+  }>({})
+
   useEffect(() => {
-    setConfiguracoesOpcoes(confi)
-  }, [confi])
+    if (confi) {
+      setConfiguracoesOpcoes(confi)
+    }
+  }, [setConfiguracoesOpcoes])
 
   const handleChangeCheck = (
     event: React.ChangeEvent<HTMLInputElement>,
     key: string
   ) => {
-    const isChecked = event.target.checked
+    const value = event.target.checked
     setConfiguracoesOpcoes(prevState =>
       prevState.map(config =>
         config.key === key
-          ? { ...config, value: isChecked ? 'enabled' : 'disabled' }
+          ? { ...config, value: value === true ? 'enabled' : 'disabled' }
           : config
       )
     )
-    const params = { key, value: isChecked ? 'enabled' : 'disabled' }
+    const params = { key, value: value === true ? 'enabled' : 'disabled' }
     debounceChange(params)
   }
-
   const debounceChange = debounce(params => {
     AlterarConfiguracao(params).then(async data => {
       if (data.status === 200) {
-        toast.info('Configuração atualizada')
+        toast.info('Configuracao atualizada')
         const { data } = await ListarConfiguracoes()
         localStorage.setItem('configuracoes', encryptData(JSON.stringify(data)))
       }
     })
   }, 1500)
-
   const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
-
-  const handleChangeText = (value: string, key: string) => {
+  const handleChange = async (value: React.SyntheticEvent, key: string) => {
     setConfiguracoesOpcoes(prevState =>
       prevState.map(config =>
-        config.key === key ? { ...config, value } : config
+        config.key === key ? { ...config, value: value } : config
       )
     )
-    debounceChange({ key, value })
+    const params = { key, value: value }
+    debounceChange(params)
   }
 
   return (
@@ -168,6 +180,7 @@ export const Configuracoes = () => {
               icon={<Webhook />}
             />
           )}
+          {/* <Tab label="Item Three" {...a11yProps(2)} /> */}
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
@@ -179,22 +192,36 @@ export const Configuracoes = () => {
               component="nav"
               aria-label="main mailbox folders"
             >
-              <Box sx={{ display: 'flex' }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                }}
+                // onClick={(event) => handleListItemClick(event, item.id)}
+              >
                 <ListItemText secondary={keyValues[item.key]?.subtitle || ''}>
                   {keyValues[item.key]?.title || 'Valor não encontrado'}
                 </ListItemText>
                 {item.value === 'disabled' || item.value === 'enabled' ? (
                   <Switch
-                    checked={item.value === 'enabled'}
+                    checked={
+                      configuracoesOpcoes.find(
+                        config => config.key === item.key
+                      )?.value === 'enabled'
+                        ? true
+                        : false || false
+                    } // Usa o estado para controlar o checkbox
                     onChange={e => handleChangeCheck(e, item.key)}
                   />
                 ) : (
                   <TextField
-                    onChange={e => handleChangeText(e.target.value, item.key)}
+                    onChange={e => handleChange(e.target.value, item.key)}
                     variant="filled"
                     multiline
                     rows={item.key === 'callRejectMessage' ? 3 : 0}
-                    value={item.value || ''}
+                    value={
+                      configuracoesOpcoes.find(config => config.id === item.id)
+                        ?.value || ''
+                    }
                     sx={{
                       width:
                         item.key === 'callRejectMessage' ? '280px' : '60px',
@@ -208,6 +235,9 @@ export const Configuracoes = () => {
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <WebhookConfiguracao />
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={2}>
+        Item Three
       </CustomTabPanel>
     </Box>
   )

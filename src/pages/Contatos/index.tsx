@@ -4,9 +4,11 @@ import {
   Button,
   IconButton,
   styled,
+  Tab,
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TablePagination,
   TableRow,
@@ -19,7 +21,7 @@ import ImportExportIcon from '@mui/icons-material/ImportExport'
 import { useCallback, useEffect, useState } from 'react'
 import { useContatosStore } from '../../store/contatos'
 import { useWhatsappStore } from '../../store/whatsapp'
-import { Delete, Edit, WhatsApp } from '@mui/icons-material'
+import { Delete, Edit, Message, WhatsApp } from '@mui/icons-material'
 
 import { ModalNovoTicket } from '../Atendimento/ModalNovoTicket'
 import { DeletarContato, ListarContatos } from '../../services/contatos'
@@ -41,7 +43,7 @@ export const Contatos: React.FC<{
   isChatContact?: boolean
 }> = ({ isChatContact = false }) => {
   const [openModalNovoTicket, setOpenModalNovoTicket] = useState(false)
-  const handleSaveTicket = async (contact: { id: any }) => {
+  const handleSaveTicket = async contact => {
     if (!contact.id) return
 
     setOpenModalNovoTicket(true)
@@ -187,9 +189,9 @@ export const Contatos: React.FC<{
   const { contatos, loadContacts } = useContatosStore()
   const whatsapp = useWhatsappStore(s => s.whatsApps)
   const [contatoSelecionado, setContatoSelecionado] = useState(null)
-  // const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
-  const handlePageChange = (_event: unknown, newPage: number) => {
+  const handlePageChange = (event: unknown, newPage: number) => {
     setPagination(prev => ({ ...prev, page: newPage }))
   }
 
@@ -201,17 +203,17 @@ export const Contatos: React.FC<{
       rowsPerPage: Number.parseInt(event.target.value, 10),
     })
   }
-  // const [params, setParams] = useState({
-  //   pageNumber: 1,
-  //   searchParam: null,
-  //   hasMore: true,
-  // })
-  const handleEdit = (contato: SetStateAction<null>) => {
+  const [params, setParams] = useState({
+    pageNumber: 1,
+    searchParam: null,
+    hasMore: true,
+  })
+  const handleEdit = contato => {
     setContatoSelecionado(contato)
     setModalOpen(true)
   }
 
-  const handleDelete = (contato: { name: any; id: any }) => {
+  const handleDelete = contato => {
     toast.message(
       `Atenção!! Deseja realmente deletar o contto "${contato.name}"?`,
       {
@@ -224,7 +226,7 @@ export const Contatos: React.FC<{
         action: {
           label: 'Confirma',
           onClick: () => {
-            DeletarContato(contato.id).then(async _data => {
+            DeletarContato(contato.id).then(async data => {
               toast.success('Contato apagado', {
                 position: 'top-center',
               })
@@ -239,13 +241,11 @@ export const Contatos: React.FC<{
     setModalOpen(false)
     setContatoSelecionado(null)
   }
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listaContatos = useCallback(async () => {
     const { data } = await ListarContatos()
     loadContacts(data.contacts)
   }, [])
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (!contatos.length) listaContatos()
   }, [])
@@ -273,9 +273,9 @@ export const Contatos: React.FC<{
           placeholder="Localize"
           value={filter}
           onChange={e => setFilter(e.target.value)}
-          // InputProps={{
-          //   startAdornment: <SearchIcon />,
-          // }}
+        // InputProps={{
+        //   startAdornment: <SearchIcon />,
+        // }}
         />
         <Box sx={{ gap: 2, display: 'flex' }}>
           <Button

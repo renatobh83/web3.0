@@ -19,9 +19,8 @@ export const useContatosStore = create<ContactsState>(set => ({
   // Ação para carregar múltiplos contatos
   loadContacts: contacts =>
     set(state => {
-      const newContacts: Contact[] = []
+      const newContacts = []
 
-      // biome-ignore lint/complexity/noForEach: <explanation>
       contacts.forEach(contact => {
         const contactIndex = state.contatos.findIndex(c => c.id === contact.id)
         if (contactIndex !== -1) {
@@ -41,8 +40,9 @@ export const useContatosStore = create<ContactsState>(set => ({
       if (contactIndex !== -1) {
         state.contatos[contactIndex] = contact
         return { contatos: [...state.contatos] }
+      } else {
+        return { contatos: [contact, ...state.contatos] }
       }
-      return { contatos: [contact, ...state.contatos] }
     }),
 
   // Ação para deletar um contato

@@ -1,53 +1,53 @@
-import request from './request'
+import request from "./request";
 
 export function ListarUsuarios() {
   return request({
-    url: '/users/',
-    method: 'get',
-  })
+    url: "/users/",
+    method: "get",
+  });
 }
 
 export function CriarUsuario(data: any) {
   return request({
-    url: '/users',
-    method: 'post',
+    url: "/users",
+    method: "post",
     data,
-  })
+  });
 }
 
 export function UpdateUsuarios(userId: any, data: any) {
   return request({
     url: `/users/${userId}`,
-    method: 'put',
+    method: "put",
     data,
-  })
+  });
 }
 
 export function UpdateConfiguracoesUsuarios(userId: any, data: any) {
   return request({
     url: `/users/${userId}/configs`,
-    method: 'put',
+    method: "put",
     data,
-  })
+  });
 }
 
 export function DadosUsuario(userId: any) {
   return request({
     url: `/users/${userId}`,
-    method: 'get',
-  })
+    method: "get",
+  });
 }
 
 export function DeleteUsuario(userId: any) {
   return request({
     url: `/users/${userId}`,
-    method: 'delete',
-  })
+    method: "delete",
+  });
 }
 export function UpdateIsOnlineUsuario(userId, data) {
   return request({
     url: `/usersIsOnline/${userId}`,
-    method: 'put',
+    method: "put",
     data,
-  })
+  });
 }

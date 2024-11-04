@@ -1,6 +1,6 @@
 import request from './request'
 
-export function ConsultarTicketsQueuesService(params: any) {
+export function ConsultarTicketsQueuesService(params) {
   return request({
     url: '/dash-tickets-queues',
     method: 'get',
@@ -8,14 +8,7 @@ export function ConsultarTicketsQueuesService(params: any) {
   })
 }
 
-export function RelatorioContatos(params: {
-  startDate: string
-  endDate: string
-  ddds: never[]
-  tags: never[]
-  wallets: never[]
-  searchParam: string
-}) {
+export function RelatorioContatos(params) {
   return request({
     url: '/contacts-report',
     method: 'get',
@@ -23,7 +16,7 @@ export function RelatorioContatos(params: {
   })
 }
 
-export function RelatorioResumoAtendimentosUsuarios(params: any) {
+export function RelatorioResumoAtendimentosUsuarios(params) {
   return request({
     url: '/statistics-per-users',
     method: 'get',
@@ -31,7 +24,7 @@ export function RelatorioResumoAtendimentosUsuarios(params: any) {
   })
 }
 
-export function GetDashTicketsAndTimes(params: any) {
+export function GetDashTicketsAndTimes(params) {
   return request({
     url: '/statistics-tickets-times',
     method: 'get',
@@ -39,7 +32,7 @@ export function GetDashTicketsAndTimes(params: any) {
   })
 }
 
-export function GetDashTicketsChannels(params: any) {
+export function GetDashTicketsChannels(params) {
   return request({
     url: '/statistics-tickets-channels',
     method: 'get',
@@ -47,7 +40,7 @@ export function GetDashTicketsChannels(params: any) {
   })
 }
 
-export function GetDashTicketsEvolutionChannels(params: any) {
+export function GetDashTicketsEvolutionChannels(params) {
   return request({
     url: '/statistics-tickets-evolution-channels',
     method: 'get',
@@ -55,7 +48,7 @@ export function GetDashTicketsEvolutionChannels(params: any) {
   })
 }
 
-export function GetDashTicketsEvolutionByPeriod(params: any) {
+export function GetDashTicketsEvolutionByPeriod(params) {
   return request({
     url: '/statistics-tickets-evolution-by-period',
     method: 'get',
@@ -63,7 +56,7 @@ export function GetDashTicketsEvolutionByPeriod(params: any) {
   })
 }
 
-export function GetDashTicketsPerUsersDetail(params: any) {
+export function GetDashTicketsPerUsersDetail(params) {
   return request({
     url: '/statistics-tickets-per-users-detail',
     method: 'get',
@@ -71,7 +64,7 @@ export function GetDashTicketsPerUsersDetail(params: any) {
   })
 }
 
-export function GetDashTicketsQueue(params: any) {
+export function GetDashTicketsQueue(params) {
   return request({
     url: '/statistics-tickets-queue',
     method: 'get',
@@ -79,7 +72,7 @@ export function GetDashTicketsQueue(params: any) {
   })
 }
 
-export function GetDashTicketsUser(params: any) {
+export function GetDashTicketsUser(params) {
   return request({
     url: '/statistics-tickets-user',
     method: 'get',
@@ -87,7 +80,7 @@ export function GetDashTicketsUser(params: any) {
   })
 }
 
-export function GetDashTicketsStatus(params: any) {
+export function GetDashTicketsStatus(params) {
   return request({
     url: '/statistics-tickets-status',
     method: 'get',
