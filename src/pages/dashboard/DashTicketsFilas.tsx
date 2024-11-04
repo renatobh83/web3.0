@@ -2,23 +2,17 @@ import {
   Avatar,
   Button,
   Card,
-  Checkbox,
   CircularProgress,
   Divider,
   Drawer,
   FormControlLabel,
-  FormGroup,
   List,
-  ListItem,
   Radio,
   RadioGroup,
-  Skeleton,
   Stack,
   Switch,
   Toolbar,
   Typography,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material'
 import Grid from '@mui/material/Grid2'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
@@ -31,12 +25,9 @@ import dayjs, { type Dayjs } from 'dayjs'
 import { ConsultarTicketsQueuesService } from '../../services/estatistica'
 import { useAuth } from '../../context/AuthContext'
 import { toast } from 'sonner'
-import { CheckBox } from '@mui/icons-material'
-import { ItemTicket } from '../Atendimento/ItemTicket'
 import { ItemTicketPainel } from '../Atendimento/ItemTicketPainel'
 import { groupBy } from 'lodash'
 import { format, sub } from 'date-fns'
-import { red } from '@mui/material/colors'
 dayjs.extend(isSameOrAfter)
 
 const optionsVisao = [
@@ -52,7 +43,7 @@ export const DashTicketsFilas = () => {
   const [selectedOption, setSelectedOption] = useState<string>(
     optionsVisao[0].value
   )
-  const [visao, setVisao] = useState('U')
+  const [visao] = useState('U')
   const [drawerFiltro, setDrawerFiltro] = useState(false)
   const profile = decryptData('profile')
   const [pesquisaTickets, setPesquisaTickets] = useState<{
@@ -106,7 +97,6 @@ export const DashTicketsFilas = () => {
     //   duration: 2000,
     // })
   }
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     consultarTickets()
   }, [])
@@ -134,7 +124,7 @@ export const DashTicketsFilas = () => {
         .then(res => {
           setTickets(res.data)
         })
-        .catch(error => { })
+
         .finally(() => {
           setIsloading(false)
           setDrawerFiltro(false)

@@ -1,11 +1,12 @@
-import { Close, Tune } from "@mui/icons-material"
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from "@mui/material"
+import { Close } from "@mui/icons-material"
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material"
 import { useState } from "react"
 import { ChatMensagem } from "../../pages/Atendimento/ChatMenssage"
 import { PesquisaContato } from "./PesquisaContato"
 import { EncaminharMensagem } from "../../services/tickets"
 
 interface EncaminharComponentProps {
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     menssagemParaEncaminhar: any
     open: boolean,
     setClose: (value: boolean) => void
@@ -14,7 +15,7 @@ interface EncaminharComponentProps {
 export const EncaminharComponent = ({ menssagemParaEncaminhar, open, setClose, resetMensagenParaEncaminhar }: EncaminharComponentProps) => {
 
 
-    const [contatoSeleciondo, setContatoSelecionado] = useState('')
+    const [contatoSeleciondo, setContatoSelecionado] = useState({})
 
 
     const handleCloseModal = () => {
@@ -22,7 +23,7 @@ export const EncaminharComponent = ({ menssagemParaEncaminhar, open, setClose, r
         setClose(false)
     }
     const handleConfirmarEncaminhamentoMensagem = () => {
-        if (!contatoSeleciondo?.id) return
+        if ("id" in contatoSeleciondo && !contatoSeleciondo?.id) return
         EncaminharMensagem(menssagemParaEncaminhar, contatoSeleciondo)
             .then(data => console.log(data))
     }

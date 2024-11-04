@@ -1,4 +1,4 @@
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { useAuth } from './context/AuthContext'
 import { MainLayout } from './layout/MainLayout'
