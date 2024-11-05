@@ -21,27 +21,18 @@ import { ptBR } from 'date-fns/locale'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTicketService } from '../../hooks/useTicketService'
-import { ObterContato } from '../../services/contatos'
-import { useApplicationStore } from '../../store/application'
 import { useAtendimentoStore } from '../../store/atendimento'
-import { toast } from 'sonner'
 
 interface ItemTicketProps {
   ticket: Ticket
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   filas: any[]
-
 }
 
-export const ItemTicket = ({
-
-  filas,
-  ticket,
-
-}: ItemTicketProps) => {
+export const ItemTicket = ({ filas, ticket }: ItemTicketProps) => {
   const navigate = useNavigate()
   const { iniciarAtendimento } = useTicketService()
-  const setTicketFocado = useAtendimentoTicketStore(state => state.setTicketFocado)
+  // const setTicketFocado = useAtendimentoTicketStore(state => state.setTicketFocado)
   const dataInWords = (timestamp: string, updated: string) => {
     const data = timestamp ? new Date(Number(timestamp)) : parseJSON(updated)
     return formatDistance(data, new Date(), { locale: ptBR })
@@ -57,6 +48,7 @@ export const ItemTicket = ({
   const AbrirChatMensagens = useAtendimentoTicketStore(
     s => s.AbrirChatMensagens
   )
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     // Função que atualiza a label
     const updateTimeLabel = () => {
@@ -81,18 +73,20 @@ export const ItemTicket = ({
       if (mobileOpen) setMobileOpen(false)
     }
   }
-  const userid = +localStorage.getItem('userId')
+  // const userid = +localStorage.getItem('userId')
   const nav = useNavigate()
   const abrirChatContato = async ticket => {
-    if (
-      !(
-        ticket.status !== 'pending' &&
-        (ticket.id !== ticketFocado.id || location.pathname !== 'chat')
+    if ('id' in ticketFocado) {
+      if (
+        !(
+          ticket.status !== 'pending' &&
+          (ticket.id !== ticketFocado.id || location.pathname !== 'chat')
+        )
       )
-    )
-      return
-    nav("/atendimento")
-    if (ticket.id === ticketFocado.id) return
+        return
+    }
+    nav('/atendimento')
+    if ('id' in ticketFocado) if (ticket.id === ticketFocado.id) return
 
     AbrirChatMensagens(ticket)
     goToChat(ticket.id)
@@ -116,7 +110,6 @@ export const ItemTicket = ({
         bgcolor: 'background.paper',
       }}
     >
-
       <ListItemButton
         onClick={() => abrirChatContato(ticket)}
         sx={{
@@ -151,7 +144,7 @@ export const ItemTicket = ({
                 <Badge
                   badgeContent={ticket.unreadMessages}
                   color="secondary"
-                // sx={{ mr: 1 }}
+                  // sx={{ mr: 1 }}
                 />
               </Button>
             </Tooltip>
@@ -180,7 +173,7 @@ export const ItemTicket = ({
             display="flex"
             justifyContent="space-between"
             alignItems="center"
-          // sx={{ width: '100%' }}
+            // sx={{ width: '100%' }}
           >
             <Typography
               // fontWeight="bold"/

@@ -16,7 +16,7 @@ import { useWhatsappStore } from '../../store/whatsapp'
 import { ItemStatusChannel } from './ItemStatusChannel'
 import { useCallback, useEffect, useState } from 'react'
 import { ListarChatFlow } from '../../services/chatflow'
-import { Clear, Edit, PlusOne } from '@mui/icons-material'
+import { Clear, Edit } from '@mui/icons-material'
 import {
   DeletarWhatsapp,
   DeleteWhatsappSession,
@@ -26,22 +26,21 @@ import {
   UpdateWhatsapp,
 } from '../../services/sessoesWhatsapp'
 
-interface DataItem {
-  status: string
-  type: string
-  name: string
-  number: string
-  phone: any
-  profilePic: string
-  updatedAt: string
-}
+// interface DataItem {
+//   status: string
+//   type: string
+//   name: string
+//   number: string
+//   phone: any
+//   profilePic: string
+//   updatedAt: string
+// }
 
 import { toast } from 'sonner'
 import AddTaskIcon from '@mui/icons-material/AddTask'
 import { ModalWhatsapp } from './ModalWhatsapp'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { ModalQrCode } from './ModalQrCode'
-import { eventEmitter } from '../../hooks/useSocketInitial'
 import { useAuth } from '../../context/AuthContext'
 
 export const Canais = () => {
@@ -52,11 +51,10 @@ export const Canais = () => {
 
   const userProfile = decryptData('profile')
 
-  const [selectedChatBots, setSelectedChatBots] = useState({})
   const [whatsappSelecionado, setWhatsappSelecionado] = useState({})
   const [modalWhatsapp, setModalWhatsapp] = useState(false)
   const [modalQrCode, setModalQrCode] = useState(false)
-  const [loading, setLoading] = useState(false)
+  // const [loading, setLoading] = useState(false)
   const [sessoes, setSessoes] = useState<{
     [key: string]: { chatflow: number | null }
   }>({})
@@ -206,9 +204,10 @@ export const Canais = () => {
     } catch (error) {
       console.error(error)
     }
-    setLoading(false)
+    // setLoading(false)
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const handleOpenModalWhatsapp = (item?: any) => {
     setWhatsappSelecionado(item)
     setModalWhatsapp(true)
@@ -220,7 +219,7 @@ export const Canais = () => {
     try {
       await StartWhatsappSession(whatsAppId)
       const dataFind = data.find(w => w.id === whatsAppId)
-      if (dataFind.type === 'waba' || data.dataFind === 'telegram') {
+      if (dataFind.type === 'waba' || dataFind === 'telegram') {
         window.location.reload()
       }
     } catch (error) {
@@ -463,7 +462,4 @@ export const Canais = () => {
       )}
     </>
   )
-}
-function loadWhatsApps(arg0: any) {
-  throw new Error('Function not implemented.')
 }

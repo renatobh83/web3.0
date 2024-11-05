@@ -12,16 +12,8 @@ import {
 } from '@mui/material'
 import { CustomTableContainer } from '../../components/MaterialUi/CustomTable'
 import { format, parseISO, startOfDay } from 'date-fns'
-import { SetStateAction, useCallback, useEffect, useState } from 'react'
-import {
-  WhatsApp,
-  Edit,
-  Delete,
-  Group,
-  AccessTimeFilledOutlined,
-  AccessTime,
-  Cancel,
-} from '@mui/icons-material'
+import { type SetStateAction, useCallback, useEffect, useState } from 'react'
+import { Edit, Delete, Group, AccessTime, Cancel } from '@mui/icons-material'
 import {
   CancelarCampanha,
   DeletarCampanha,
@@ -30,9 +22,7 @@ import {
 } from '../../services/campanhas'
 import { ModalCampanha } from './ModalCampanha'
 import { toast } from 'sonner'
-import { ContatosCampanha } from './ContatosCampanha'
-import { set } from 'lodash'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Errors } from '../../utils/error'
 const status = {
   pending: 'Pendente',
@@ -55,7 +45,7 @@ export const Campanhas = () => {
   const [campanhas, setCampanhas] = useState([])
   const [campanhaId, setCampanhaId] = useState(null)
   const [open, setOpen] = useState(false)
-  const [openContatos, setOpenContatos] = useState(false)
+  // const [openContatos, setOpenContatos] = useState(false)
   const handleCloseModal = () => {
     setOpen(false)
     setCampanhaId(null)
@@ -72,6 +62,7 @@ export const Campanhas = () => {
     setCampanhaId(id)
     setOpen(true)
   }
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const handleAddContatosCampanha = (campanha: any) => {
     nav(`/campanhas/${campanha.id}`, {
       state: { campanha: campanha },
@@ -83,10 +74,10 @@ export const Campanhas = () => {
       startOfDay(new Date()).getTime()
     )
   }
-  const handleCloseContatoCampanha = () => {
-    setCampanhaId(null)
-    setOpenContatos(false)
-  }
+  // const handleCloseContatoCampanha = () => {
+  //   setCampanhaId(null)
+  //   setOpenContatos(false)
+  // }
   const handleDeleteCampanha = (campanha: campanha) => {
     toast.info(
       `Atenção!! Deseja realmente deletar a campamanha "${campanha.name}"?`,
@@ -122,7 +113,7 @@ export const Campanhas = () => {
           label: 'Confirma',
           onClick: () => {
             CancelarCampanha(campanha.id)
-              .then(res => {
+              .then(_res => {
                 toast.success('Campanha cancelada.')
                 listarCampanhas()
               })
@@ -164,13 +155,13 @@ export const Campanhas = () => {
       })
   }
   const columns = [
-    { name: 'id', label: '#', field: 'id', align: 'left' },
-    { name: 'name', label: 'Campanha', field: 'name', align: 'left' },
+    { name: 'id', label: '#', field: 'id' },
+    { name: 'name', label: 'Campanha', field: 'name' },
     {
       name: 'start',
       label: 'Início',
       field: 'start',
-      align: 'center',
+
       renderCell: ({ value }) => format(parseISO(value), 'dd/MM/yyyy HH:mm'),
     },
     {
@@ -189,27 +180,24 @@ export const Campanhas = () => {
       name: 'pendentesEnvio',
       label: 'À Enviar',
       field: 'pendentesEnvio',
-      align: 'center',
     },
     {
       name: 'pendentesEntrega',
       label: 'À Entregar',
       field: 'pendentesEntrega',
-      align: 'center',
     },
     {
       name: 'recebidas',
       label: 'Recebidas',
       field: 'recebidas',
-      align: 'center',
     },
-    { name: 'lidas', label: 'Lidas', field: 'lidas', align: 'center' },
+    { name: 'lidas', label: 'Lidas', field: 'lidas' },
     {
       name: 'acoes',
       label: 'Ações',
       field: 'acoes',
-      align: 'center',
-      renderCell: (params: { row: { id: any } }) => (
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      renderCell: (params: { row: any; value: any }) => (
         <Box
           sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}
           className="flex justify-center space-x-2"
@@ -247,12 +235,13 @@ export const Campanhas = () => {
       ),
     },
   ]
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     listarCampanhas()
   }, [open])
 
   const [pagination, setPagination] = useState({ page: 0, rowsPerPage: 10 })
-  const handlePageChange = (event: unknown, newPage: number) => {
+  const handlePageChange = (_event: unknown, newPage: number) => {
     setPagination(prev => ({ ...prev, page: newPage }))
   }
 

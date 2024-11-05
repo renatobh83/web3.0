@@ -3,6 +3,7 @@ import { formatDistance, parseJSON } from 'date-fns'
 import { useEffect, useState } from 'react'
 import { ptBR } from 'date-fns/locale'
 import { red } from '@mui/material/colors'
+import { Ticket } from '../../store/atendimentoTicket'
 const borderColor = {
   open: '#1976d2',
   pending: '#c10015',
@@ -29,7 +30,7 @@ export const ItemTicketPainel = ({ ticket }) => {
   }, [ticket.lastMessageAt, ticket.updatedAt])
 
   return (
-    <Card sx={{ height: '95px', p: 0, }} >
+    <Card sx={{ height: '95px', p: 0 }}>
       <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', p: 1 }}>
         <Box
           sx={{
@@ -46,32 +47,63 @@ export const ItemTicketPainel = ({ ticket }) => {
             alt="Profile"
           />
         </Box>
-        <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column', flexGrow: '1' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-            <Typography noWrap variant='subtitle2'
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1,
+            flexDirection: 'column',
+            flexGrow: '1',
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              width: '100%',
+            }}
+          >
+            <Typography
+              noWrap
+              variant="subtitle2"
               sx={{
                 maxWidth: '50%',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-              }}>{!ticket.name ? ticket.contact.name : ticket.name}</Typography>
-            <Chip label={timeLabel}
+              }}
+            >
+              {!ticket.name ? ticket.contact.name : ticket.name}
+            </Typography>
+            <Chip
+              label={timeLabel}
               size="small"
               sx={{
                 maxWidth: '50%',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-              }} />
+              }}
+            />
           </Box>
-          <Typography noWrap variant='body1' sx={{
-            maxWidth: '50%',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}>{ticket.lastMessage}</Typography>
+          <Typography
+            noWrap
+            variant="body1"
+            sx={{
+              maxWidth: '50%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {ticket.lastMessage}
+          </Typography>
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mr: 1 }}>
-            <Typography variant='caption'> #{ticket.id}</Typography>
-            <Typography variant='caption'>{obterNomeFila(ticket.queueId)}</Typography>
-            <Chip label={ticket.status} sx={{ borderLeft: `3px solid ${borderColor[ticket?.status]}` }} />
+            <Typography variant="caption"> #{ticket.id}</Typography>
+            <Typography variant="caption">
+              {obterNomeFila(ticket.queueId)}
+            </Typography>
+            <Chip
+              label={ticket.status}
+              sx={{ borderLeft: `3px solid ${borderColor[ticket?.status]}` }}
+            />
           </Box>
         </Box>
         {/* </Box> */}
@@ -79,7 +111,6 @@ export const ItemTicketPainel = ({ ticket }) => {
     </Card>
   )
 }
-
 
 const obterNomeFila = (ticket: Ticket) => {
   const filas = JSON.parse(localStorage.getItem('filasCadastradas'))

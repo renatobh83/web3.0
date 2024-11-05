@@ -4,11 +4,9 @@ import {
   Button,
   IconButton,
   styled,
-  Tab,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TablePagination,
   TableRow,
@@ -21,7 +19,7 @@ import ImportExportIcon from '@mui/icons-material/ImportExport'
 import { useCallback, useEffect, useState } from 'react'
 import { useContatosStore } from '../../store/contatos'
 import { useWhatsappStore } from '../../store/whatsapp'
-import { Delete, Edit, Message, WhatsApp } from '@mui/icons-material'
+import { Delete, Edit, WhatsApp } from '@mui/icons-material'
 
 import { ModalNovoTicket } from '../Atendimento/ModalNovoTicket'
 import { DeletarContato, ListarContatos } from '../../services/contatos'
@@ -242,7 +240,7 @@ export const Contatos: React.FC<{
   }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listaContatos = useCallback(async () => {
-    const { data } = await ListarContatos()
+    const { data } = await ListarContatos({})
     loadContacts(data.contacts)
   }, [])
 
@@ -274,9 +272,9 @@ export const Contatos: React.FC<{
           placeholder="Localize"
           value={filter}
           onChange={e => setFilter(e.target.value)}
-        // InputProps={{
-        //   startAdornment: <SearchIcon />,
-        // }}
+          // InputProps={{
+          //   startAdornment: <SearchIcon />,
+          // }}
         />
         <Box sx={{ gap: 2, display: 'flex' }}>
           <Button

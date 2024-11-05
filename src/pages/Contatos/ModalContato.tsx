@@ -5,8 +5,6 @@ import {
   DialogActions,
   Button,
   TextField,
-  Box,
-  Toolbar,
 } from '@mui/material'
 import Grid from '@mui/material/Grid2'
 import { useEffect, useState } from 'react'
@@ -39,7 +37,6 @@ export const ContatoModal: React.FC<{
   } = useForm<Contato>()
   const [isLoading, setLoading] = useState(false)
 
-
   const onSubimit = contato => {
     setLoading(true)
     if (contact) {
@@ -52,7 +49,8 @@ export const ContatoModal: React.FC<{
         })
         .catch(err => {
           Errors(err)
-        }).finally(() => {
+        })
+        .finally(() => {
           setLoading(false)
         })
     } else {
@@ -65,23 +63,24 @@ export const ContatoModal: React.FC<{
         })
         .catch(err => {
           Errors(err)
-        }).finally(() => {
+        })
+        .finally(() => {
           setLoading(false)
         })
     }
   }
 
-  const formatPhoneNumber = (value: string) => {
-    // Remove tudo que não for número
-    const onlyNumbers = value.replace(/\D/g, '')
+  // const formatPhoneNumber = (value: string) => {
+  //   // Remove tudo que não for número
+  //   const onlyNumbers = value.replace(/\D/g, '')
 
-    // Formata no padrão +DDI (DDD) 99999-9999
-    const formatted = onlyNumbers.replace(
-      /^(\d{2})(\d{2})(\d{4,5})(\d{4}).*/,
-      '+$1 ($2) $3-$4'
-    )
-    return formatted
-  }
+  //   // Formata no padrão +DDI (DDD) 99999-9999
+  //   const formatted = onlyNumbers.replace(
+  //     /^(\d{2})(\d{2})(\d{4,5})(\d{4}).*/,
+  //     '+$1 ($2) $3-$4'
+  //   )
+  //   return formatted
+  // }
   const formatCPFNumber = (value: string) => {
     // Remove tudo que não for número
     const onlyNumbers = value.replace(/\D/g, '')
@@ -122,10 +121,8 @@ export const ContatoModal: React.FC<{
     }
   }, [contact])
 
-
   return (
     <Dialog open={open}>
-
       <DialogTitle>
         {contact ? 'Editar Contato' : 'Adicionar Contato'}
       </DialogTitle>
@@ -223,7 +220,7 @@ export const ContatoModal: React.FC<{
                   setValue('birthdayDate', formattedNumber) // Atualiza o valor do formulário com o número formatado
                 }}
                 error={!!errors.birthdayDate}
-              // helperText="A data de aniversário deverá ser informada no formato 01/01/1990."
+                // helperText="A data de aniversário deverá ser informada no formato 01/01/1990."
               />
             </Grid>
 
@@ -273,10 +270,20 @@ export const ContatoModal: React.FC<{
             </Grid>
           </Grid>
           <DialogActions>
-            <Button variant='contained' color='error' onClick={() => close()} disabled={isLoading}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => close()}
+              disabled={isLoading}
+            >
               Cancelar
             </Button>
-            <Button type="submit" variant='contained' color='success' disabled={isLoading}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="success"
+              disabled={isLoading}
+            >
               Confirmar
             </Button>
           </DialogActions>

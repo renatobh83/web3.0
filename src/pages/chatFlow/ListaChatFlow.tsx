@@ -14,7 +14,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { ModalChatFlow } from './ModalChatFlow'
 import { CustomTableContainer } from '../../components/MaterialUi/CustomTable'
 import { DeletarChatFlow, ListarChatFlow } from '../../services/chatflow'
-import { Check, Close, Delete, Edit } from '@mui/icons-material'
+import { Delete, Edit } from '@mui/icons-material'
 import { red } from '@mui/material/colors'
 import LanIcon from '@mui/icons-material/Lan'
 import useChatFlowStore from '../../store/chatFlow'
@@ -32,17 +32,19 @@ export const ListaChatFlow: React.FC = () => {
 
   const closeModal = () => {
     setOpen(false)
-    if (flowSelecionado.id) {
+    if ('id' in flowSelecionado && flowSelecionado.id) {
       setFlowSelecionado({})
     }
   }
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const handleEditarFlow = (flow: any) => {
     setOpen(true)
     setFlowSelecionado(flow)
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const handleFlowCreateOrUpdate = (novoFlow: any) => {
-    if (flowSelecionado?.id) {
+    if ('id' in flowSelecionado && flowSelecionado?.id) {
       setChatFlows(prev => {
         const index = prev.findIndex(flow => flow.id === flowSelecionado.id)
         const updateFlow = [...prev]
@@ -106,7 +108,7 @@ export const ListaChatFlow: React.FC = () => {
     )
   }
   const [pagination, setPagination] = useState({ page: 0, rowsPerPage: 10 })
-  const handlePageChange = (event: unknown, newPage: number) => {
+  const handlePageChange = (_event: unknown, newPage: number) => {
     setPagination(prev => ({ ...prev, page: newPage }))
   }
 

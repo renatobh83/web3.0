@@ -1,19 +1,15 @@
-import { Settings, Title, Webhook } from '@mui/icons-material'
+import { Settings, Webhook } from '@mui/icons-material'
 import {
   Box,
-  Button,
-  Checkbox,
   List,
-  ListItem,
   ListItemText,
   Switch,
   Tab,
   Tabs,
   TextField,
-  Toolbar,
-  Typography,
 } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import type React from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import {
   AlterarConfiguracao,
@@ -83,7 +79,7 @@ function CustomTabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props
 
   return (
-    <div
+    <Box
       role="tabpanel"
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
@@ -91,7 +87,7 @@ function CustomTabPanel(props: TabPanelProps) {
       {...other}
     >
       {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
+    </Box>
   )
 }
 
@@ -107,16 +103,17 @@ export const Configuracoes = () => {
 
   const confi = JSON.parse(decryptData('configuracoes'))
   const [configuracoesOpcoes, setConfiguracoesOpcoes] = useState([])
-  const [selectedIndex, setSelectedIndex] = useState(0)
+  // const [selectedIndex, setSelectedIndex] = useState(0)
 
   const usuario = JSON.parse(decryptData('usuario'))
 
-  const [checked, setChecked] = useState<{
-    [key: string]: {
-      checked: string
-    }
-  }>({})
+  // const [checked, setChecked] = useState<{
+  //   [key: string]: {
+  //     checked: string
+  //   }
+  // }>({})
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (confi) {
       setConfiguracoesOpcoes(confi)
@@ -142,15 +139,15 @@ export const Configuracoes = () => {
     AlterarConfiguracao(params).then(async data => {
       if (data.status === 200) {
         toast.info('Configuracao atualizada')
-        const { data } = await ListarConfiguracoes()
-        localStorage.setItem('configuracoes', encryptData(JSON.stringify(data)))
+        // const { data } = await ListarConfiguracoes()
+        // localStorage.setItem('configuracoes', encryptData(JSON.stringify(data)))
       }
     })
   }, 1500)
-  const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChangeTab = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
-  const handleChange = async (value: React.SyntheticEvent, key: string) => {
+  const handleChange = async (value: string, key: string) => {
     setConfiguracoesOpcoes(prevState =>
       prevState.map(config =>
         config.key === key ? { ...config, value: value } : config
