@@ -93,10 +93,15 @@ export const MenusNavbar = () => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const { notifications, notificationsP, updateNotifications, updateNotificationsP } = useNotificationsStore()
+  const {
+    notifications,
+    notificationsP,
+    updateNotifications,
+    updateNotificationsP,
+  } = useNotificationsStore()
   const { mode, setMode } = useColorScheme()
   const [status, setStatus] = useState(false)
-  const usuario = JSON.parse(decryptData("usuario"))
+  const usuario = JSON.parse(decryptData('usuario'))
 
   const username = localStorage.getItem('username')
   const { themeMode, toggleThemeMode } = useApplicationStore()
@@ -105,7 +110,6 @@ export const MenusNavbar = () => {
   )
   const setHasMore = useAtendimentoTicketStore(s => s.setHasMore)
   const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
-
 
   const { setUsuarioSelecionado, toggleModalUsuario, modalUsuario } =
     useUsuarioStore()
@@ -130,14 +134,15 @@ export const MenusNavbar = () => {
     }
   }
   function abrirChatContato(ticket) {
-
-    if (
-      !(
-        ticket.status !== 'pending' &&
-        (ticket.id !== ticketFocado.id || location.pathname !== 'chat')
+    if ('id' in ticketFocado) {
+      if (
+        !(
+          ticket.status !== 'pending' &&
+          (ticket.id !== ticketFocado.id || location.pathname !== 'chat')
+        )
       )
-    )
-      return
+        return
+    }
     setHasMore(true)
     AbrirChatMensagens(ticket)
     goToChat(ticket.id)
@@ -214,8 +219,7 @@ export const MenusNavbar = () => {
       const response = await ConsultarTickets(paramsOpen)
 
       updateNotifications(response.data)
-    } catch (error) {
-    }
+    } catch (error) {}
     const paramsPending = {
       searchParam: '',
       pageNumber: 1,
@@ -230,14 +234,14 @@ export const MenusNavbar = () => {
     try {
       const response = await ConsultarTickets(paramsPending)
       updateNotificationsP(response.data)
-    } catch (error) {
-    }
+    } catch (error) {}
   }
   const userNotificationsCount = notifications.tickets
     .filter(ticket => ticket.userId === user)
-    .reduce((acc, ticket) => acc + Number(ticket.unreadMessages), 0);
+    .reduce((acc, ticket) => acc + Number(ticket.unreadMessages), 0)
 
-  const totalNotificationsCount = userNotificationsCount + Number(notificationsP.count);
+  const totalNotificationsCount =
+    userNotificationsCount + Number(notificationsP.count)
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     consultaTickets()
@@ -251,13 +255,11 @@ export const MenusNavbar = () => {
       {whatsApps?.map(item => (
         <React.Fragment key={item.id}>
           {/* Equivalente a `q-mx-xs` e `q-pa-none` */}
-          < Tooltip
+          <Tooltip
             arrow
-
             title={
-              item.status === 'CONNECTED' ?
-                `Esta conectado na conta  ${item.phone.pushname}-${item.phone.wid.user}`
-
+              item.status === 'CONNECTED'
+                ? `Esta conectado na conta  ${item.phone.pushname}-${item.phone.wid.user}`
                 : item.status
             }
             placement="top"
@@ -275,7 +277,6 @@ export const MenusNavbar = () => {
                 padding: 0,
                 width: 30, // Tamanho equivalente ao `size="18px"` ajustado
                 height: 30,
-
               }}
             >
               {/* O ícone pode ser um `img` ou `Avatar` */}
@@ -286,16 +287,15 @@ export const MenusNavbar = () => {
             </IconButton>
           </Tooltip>
         </React.Fragment>
-      ))
-      }
+      ))}
       <Tooltip title="Notificações" arrow placement="left">
         <>
           <Button onClick={handleClick}>
-            {Number(notificationsP.count) + Number(notifications.count) === 0 ? (
+            {Number(notificationsP.count) + Number(notifications.count) ===
+            0 ? (
               <NotificationsNoneIcon />
             ) : (
               <Badge badgeContent={totalNotificationsCount} color="primary">
-
                 <NotificationsIcon />
               </Badge>
             )}
@@ -309,13 +309,13 @@ export const MenusNavbar = () => {
             onClose={handleClose}
             open={open}
           >
-            {Number(notificationsP.count) + Number(notifications.count) === 0 ? (
+            {Number(notificationsP.count) + Number(notifications.count) ===
+            0 ? (
               <MenuItem onClick={handleClose} disableRipple>
                 <Typography>Não a nada de novo por aqui!!</Typography>
               </MenuItem>
             ) : (
               <MenuList sx={{ display: 'flex', gap: 2 }}>
-
                 {Number(notificationsP.count) > 0 && (
                   <MenuItem onClick={() => navigate('/atendimento')}>
                     <Typography>
@@ -324,24 +324,31 @@ export const MenusNavbar = () => {
                   </MenuItem>
                 )}
 
-                {notifications?.tickets?.filter(i => i.userId === user).map(ticket => (
-                  <MenuItem
-                    key={ticket.id}
-                    sx={{ display: 'flex', gap: 3 }}
-                    onClick={() => abrirChatContato(ticket)}
-                  >
-                    <Avatar src={ticket.profilePicUrl ?? ''} />
-                    <div>
-                      <ListItemText>{ticket.name}</ListItemText>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: 'text.secondary', width: '150px', textOverflow: "ellipsis", overflow: "hidden" }}
-                      >
-                        {ticket.lastMessage}
-                      </Typography>
-                    </div>
-                  </MenuItem>
-                ))}
+                {notifications?.tickets
+                  ?.filter(i => i.userId === user)
+                  .map(ticket => (
+                    <MenuItem
+                      key={ticket.id}
+                      sx={{ display: 'flex', gap: 3 }}
+                      onClick={() => abrirChatContato(ticket)}
+                    >
+                      <Avatar src={ticket.profilePicUrl ?? ''} />
+                      <div>
+                        <ListItemText>{ticket.name}</ListItemText>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: 'text.secondary',
+                            width: '150px',
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                          }}
+                        >
+                          {ticket.lastMessage}
+                        </Typography>
+                      </div>
+                    </MenuItem>
+                  ))}
               </MenuList>
             )}
           </StyledMenu>
@@ -407,6 +414,6 @@ export const MenusNavbar = () => {
         toggleColorMode={handleToggleColor}
       />
       {modalUsuario && <ModalUsuario />}
-    </Stack >
+    </Stack>
   )
 }

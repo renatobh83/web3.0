@@ -10,7 +10,6 @@ import { useWebSocketStore } from '../store/socket'
 import { useUsersAppStore } from '../store/usersApp'
 import { eventEmitterScrool } from '../pages/Atendimento/ChatMenssage'
 import { useAuth } from '../context/AuthContext'
-import type { DefaultEventsMap } from '@socket.io/component-emitter'
 import type { Socket } from 'socket.io-client'
 import { useNavigate } from 'react-router-dom'
 import { Errors } from '../utils/error'
@@ -65,8 +64,7 @@ export const useSocketInitial = () => {
     useUsuarioStore()
   const usuario = JSON.parse(decryptData('usuario'))
   const userId = +localStorage.getItem('userId')
-  let socket: Socket | null =
-    null
+  let socket: Socket | null = null
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -224,7 +222,7 @@ export const useSocketInitial = () => {
           try {
             const response = await ConsultarTickets(paramsPending)
             updateNotificationsP(response.data)
-          } catch (error) { }
+          } catch (error) {}
           const paramsOpen = {
             searchParam: '',
             pageNumber: 1,
@@ -240,7 +238,7 @@ export const useSocketInitial = () => {
             const response = await ConsultarTickets(paramsOpen)
             console.log(response)
             updateNotifications(response.data)
-          } catch (error) { }
+          } catch (error) {}
         }
         // if (data.type === 'ticket:create') {
         //   console.log('socket ON: TICKET:CREATE 1')

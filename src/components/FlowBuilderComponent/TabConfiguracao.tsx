@@ -16,29 +16,57 @@ import type { Node } from '@xyflow/react'
 import useChatFlowStore from '../../store/chatFlow'
 import { useEffect, useState } from 'react'
 import { RadioComponentCard } from './RadioComponentCard'
+
+interface NodeData {
+  welcomeMessage: { message: string }
+  maxRetryBotMessage: {
+    destiny: string
+    number: number
+    type: number
+  }
+  notOptionsSelectMessage: {
+    message: string
+    stepReturn: string
+  }
+  notResponseMessage: {
+    type: number | null
+    destiny: number | null
+    message: string
+    time: number
+  }
+  outOpenHours: {
+    destiny: string
+    type: number
+  }
+  firstInteraction: { type: number; destiny: string }
+  keyword: { message: string }
+}
+
+interface NodeProps {
+  data?: NodeData
+}
 interface TabConfiguracaoProps {
-  node: Node | undefined
+  node: NodeProps
 }
 
 export const TabConfiguracao = ({ node }: TabConfiguracaoProps) => {
   const {
     welcomeMessage,
-    farewellMessage,
     maxRetryBotMessage,
     notOptionsSelectMessage,
     notResponseMessage,
     outOpenHours,
     firstInteraction,
     keyword,
-  } = node?.data
+  } = node?.data ?? {}
 
-  const { filas, usuarios } = useChatFlowStore()
-  const [optionsFilas, setOptionsFilas] = useState([])
-  const [selectOption, setSelectOption] = useState({})
-  const [optionsUsuarios, setOptionsUsuarios] = useState([])
+  // const { filas, usuarios } = useChatFlowStore()
+  // const [optionsFilas, setOptionsFilas] = useState([])
+  // const [selectOption, setSelectOption] = useState({})
+  // const [optionsUsuarios, setOptionsUsuarios] = useState([])
 
-  const [radioChoiceAusencia, setRadioChoiceAusencia] = useState({})
-  const [radioChoicebot, setRadioChoicebot] = useState({})
+  // const [radioChoiceAusencia, setRadioChoiceAusencia] = useState({})
+  // const [radioChoicebot, setRadioChoicebot] = useState({})
 
   const [messageWelcomeMessage, setMessagewelcomeMessage] = useState('')
   const [feedback, setFeeedback] = useState('')
@@ -55,13 +83,14 @@ export const TabConfiguracao = ({ node }: TabConfiguracaoProps) => {
     message: '',
   })
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    setMessagewelcomeMessage(welcomeMessage.message || '')
+    setMessagewelcomeMessage(welcomeMessage.message)
     setFeeedback(notOptionsSelectMessage.message || '')
     setMessageKeyword(keyword.message || '')
     setSemResposta(notResponseMessage)
   }, [])
-
+  console.log(node)
   const handleSemResposta = (item: string, value: string) => {
     setSemResposta(prev => ({
       ...prev,
@@ -81,6 +110,7 @@ export const TabConfiguracao = ({ node }: TabConfiguracaoProps) => {
 
   const handleKeyword = value => {
     setMessageKeyword(value)
+
     keyword.message = value
   }
 
