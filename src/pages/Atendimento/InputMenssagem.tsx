@@ -1,4 +1,4 @@
-import { Cancel, Close, Mic, Send, Try } from '@mui/icons-material'
+import { Cancel, Close, Send } from '@mui/icons-material'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions'
 import SendIcon from '@mui/icons-material/Send'
@@ -15,9 +15,6 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  List,
-  ListItem,
-  ListItemText,
   Menu,
   type MenuProps,
   styled,
@@ -83,15 +80,17 @@ import { useAtendimentoStore } from '../../store/atendimento'
 import { useNavigate } from 'react-router-dom'
 interface InputMenssagemProps {
   isScheduleDate?: boolean
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   setReplyingMessage?: (value: any) => void
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   replyingMessage?: any
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   mensagensRapidas?: any[]
 }
 
 export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   isScheduleDate,
   replyingMessage,
-  setReplyingMessage,
   mensagensRapidas,
 }) => {
   const { iniciarAtendimento } = useTicketService()
@@ -201,7 +200,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
       }
     }
     const mensagem = textChat.trim()
-    const username = localStorage.getItem('username')
+    // const username = localStorage.getItem('username')
     // if (username) {
     //   mensagem = `*${username}*:\n ${mensagem}`
     // }
@@ -305,15 +304,15 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
       handleStopRecordingAudio(controls.recordingBlob)
     }
   }
-  async function handleSartRecordingAudio() {
-    try {
-      await navigator.mediaDevices.getUserMedia({ audio: true })
-      // recorderControlsRef.current?.startRecording()
-      setIsRecordingAudio(true)
-    } catch (error) {
-      setIsRecordingAudio(false)
-    }
-  }
+  // async function handleSartRecordingAudio() {
+  //   try {
+  //     await navigator.mediaDevices.getUserMedia({ audio: true })
+  //     // recorderControlsRef.current?.startRecording()
+  //     setIsRecordingAudio(true)
+  //   } catch (error) {
+  //     setIsRecordingAudio(false)
+  //   }
+  // }
 
   async function handleStopRecordingAudio(blob: Blob) {
     setIsloading(true)
