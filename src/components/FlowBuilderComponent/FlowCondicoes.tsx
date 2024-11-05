@@ -270,7 +270,11 @@ export const Condicoes = ({ node }: InteracoesProps) => {
 
   function changePosition(from: number, to: number) {
     if (to >= 0 && to < conditions.length) {
-      const newArr = [...conditions]
+      // const newArr = [...conditions]
+      const newArr = conditions.filter(
+        item => item.shouldRemove === false || item.shouldRemove === undefined
+      )
+
       newArr.splice(to, 0, newArr.splice(from, 1)[0]) // Move o item
       setConditions(newArr) // Atualiza o estado com a nova orde
       updatePositionArr(node.id, newArr, 'conditions')

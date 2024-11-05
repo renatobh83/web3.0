@@ -154,8 +154,12 @@ export const Interacoes = ({ node }: InteracoesProps) => {
   }
   function changePosition(from: number, to: number) {
     if (to >= 0 && to < interacoes.length) {
-      const newArr = [...interacoes]
+      // const newArr = [...interacoes]
+      const newArr = interacoes.filter(
+        item => item.shouldRemove === false || item.shouldRemove === undefined
+      )
       newArr.splice(to, 0, newArr.splice(from, 1)[0]) // Move o item
+      console.log(newArr)
       setInteracoes(newArr) // Atualiza o estado com a nova ordem
       updatePositionArr(node.id, newArr, 'interactions')
     }

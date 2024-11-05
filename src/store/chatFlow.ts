@@ -102,7 +102,6 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
     // console.log(get().nodes);
   },
   updatePositionArr: (nodeId, newEntry, type) => {
-    console.log(newEntry)
     set(state => ({
       nodes: state.nodes.map(node =>
         node.id === nodeId
