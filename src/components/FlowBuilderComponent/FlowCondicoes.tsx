@@ -41,10 +41,10 @@ export const Condicoes = ({ node }: InteracoesProps) => {
     updatePositionArr,
   } = useChatFlowStore()
   const { asSource } = getEdgesByNodeId(node.id)
-  const theme = useTheme(); // Obtém o tema atual
+  const theme = useTheme() // Obtém o tema atual
 
   // Verifica se o modo é escuro
-  const isDarkMode = theme.palette.mode === 'dark';
+  const isDarkMode = theme.palette.mode === 'dark'
   const [optionsEtapas, setOptionsEtapas] = useState([])
   const [optionsFilas, setOptionsFilas] = useState([])
   const [optionsUsuarios, setOptionsUsuarios] = useState([])
@@ -83,7 +83,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
             nextStepId: c.nextStepId,
             userIdDestination: c.userIdDestination,
             queueId: c.queueId,
-            condition: c.condition
+            condition: c.condition,
           },
         }))
       })
@@ -93,14 +93,14 @@ export const Condicoes = ({ node }: InteracoesProps) => {
   }, [node.id])
 
   function addCondiction() {
-    // setConditions(prev => [
-    //   ...prev,
-    //   {
-    //     type: '',
-    //     condition: [],
-    //     id: crypto.randomUUID(),
-    //   },
-    // ])
+    setConditions(prev => [
+      ...prev,
+      {
+        type: '',
+        condition: [],
+        id: crypto.randomUUID(),
+      },
+    ])
   }
   function removeCondition(conditionId: string) {
     const updatedConditions = conditions.map(
@@ -168,10 +168,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
   }
 
   // Função para capturar mudanças no Select e enviar o id
-  const handleSelectSeChange = (
-    id: string,
-    event: string
-  ) => {
+  const handleSelectSeChange = (id: string, event: string) => {
     const selectedValue = event
     setConditionState(prevState => ({
       ...prevState,
@@ -204,7 +201,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
         [id]: {
           ...prev[id],
           action: 3,
-          closeTicket: 'Obrigado por acessar nossos serviços.'
+          closeTicket: 'Obrigado por acessar nossos serviços.',
         },
       }))
     }
@@ -282,7 +279,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
 
   return (
     <>
-      <Box sx={{ mt: 1, }}>
+      <Box sx={{ mt: 1 }}>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', pr: '4px' }}>
           <Button
             size="small"
@@ -303,7 +300,6 @@ export const Condicoes = ({ node }: InteracoesProps) => {
           display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'center',
-
         }}
       >
         <Box
@@ -320,7 +316,9 @@ export const Condicoes = ({ node }: InteracoesProps) => {
                 <Box
                   id={condition.id}
                   sx={{
-                    background: isDarkMode ? theme.palette.background.default : theme.palette.grey[200],
+                    background: isDarkMode
+                      ? theme.palette.background.default
+                      : theme.palette.grey[200],
                     minHeight: '250px',
                     transition: 'box-shadow 0.3s ease-in-out',
                     my: 1,
@@ -379,7 +377,9 @@ export const Condicoes = ({ node }: InteracoesProps) => {
                     <Select
                       id={`select_se-${condition.id}`}
                       value={conditionState[condition.id]?.type || ''}
-                      onChange={e => handleSelectSeChange(condition.id, e.target.value)}
+                      onChange={e =>
+                        handleSelectSeChange(condition.id, e.target.value)
+                      }
                       input={<OutlinedInput label="se" />}
                     >
                       {optionsSe.map(opt => (
@@ -398,7 +398,6 @@ export const Condicoes = ({ node }: InteracoesProps) => {
                       >
                         {conditionState[condition.id].condition?.map(
                           (chip, index) => (
-
                             <Chip
                               // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                               key={index}

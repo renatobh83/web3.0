@@ -64,7 +64,7 @@ export const ContatosCampanha = () => {
       rowsPerPage: Number.parseInt(event.target.value, 10),
     })
   }
-  const handlePageChangeModal = (event: unknown, newPage: number) => {
+  const handlePageChangeModal = (_event: unknown, newPage: number) => {
     setPaginationModal(prev => ({ ...prev, page: newPage }))
   }
 
@@ -79,9 +79,9 @@ export const ContatosCampanha = () => {
 
   const [modalContato, setModalContato] = useState(false)
   const [contatosCampanha, setContatosCampanha] = useState([])
-  const [campanha, setCampanha] = useState(state.campanha || '')
+  const [campanha] = useState(state.campanha || '')
   const [contatos, setContatos] = useState([])
-  const [pesquisa, setPesquisa] = useState({
+  const [pesquisa] = useState({
     startDate: format(sub(new Date(), { days: 30 }), 'yyyy-MM-dd'),
     endDate: format(new Date(), 'yyyy-MM-dd'),
     ddds: [],
@@ -89,7 +89,7 @@ export const ContatosCampanha = () => {
     wallets: [],
     searchParam: '',
   })
-  const [ack, setAck] = useState({
+  const [ack] = useState({
     '-1': 'Error',
     0: 'Envio Pendente',
     1: 'Entrega Pendente',

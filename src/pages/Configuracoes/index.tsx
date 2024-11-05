@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import {
   AlterarConfiguracao,
-  ListarConfiguracoes,
+  // ListarConfiguracoes,
 } from '../../services/configuracoes'
 import { debounce } from 'lodash'
 import { toast } from 'sonner'
@@ -98,7 +98,7 @@ function a11yProps(index: number) {
   }
 }
 export const Configuracoes = () => {
-  const { decryptData, encryptData } = useAuth()
+  const { decryptData } = useAuth()
   const [value, setValue] = useState(0)
 
   const confi = JSON.parse(decryptData('configuracoes'))

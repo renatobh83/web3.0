@@ -110,6 +110,7 @@ export const ContatoModal: React.FC<{
     return formatted
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (contact) {
       setValue('name', contact.name || '')

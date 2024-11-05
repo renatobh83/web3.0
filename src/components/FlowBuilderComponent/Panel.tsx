@@ -26,11 +26,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { DefaultEdge } from './edges/DefaultEdges'
 import { ConnectionLine } from './edges/ConnectionLine'
-import {
-  Add,
-  ArrowLeft,
-  SaveRounded,
-} from '@mui/icons-material'
+import { Add, ArrowLeft, SaveRounded } from '@mui/icons-material'
 import { Configuracoes } from './nodes/Configuracoes'
 import useChatFlowStore from '../../store/chatFlow'
 import { UpdateChatFlow } from '../../services/chatflow'
@@ -40,7 +36,6 @@ import { TabsDetails } from './TabsDetails'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Node as NodeCustom } from './nodes/Node'
-import { WebhookField } from './nodes/WebhookField'
 
 const EDGE_TYPES = {
   default: DefaultEdge,
@@ -50,22 +45,33 @@ const NODE_TYPES = {
   configurations: Configuracoes,
   start: Start,
   boasVindas: BoasVindas,
-
 }
 
 export const PanelChatFlow = () => {
   const { flow: chatFlow } = useChatFlowStore()
 
-  const theme = useTheme(); // Obtém o tema do Material-UI
-  const isDarkMode = theme.palette.mode === 'dark';
+  const theme = useTheme() // Obtém o tema do Material-UI
+  const isDarkMode = theme.palette.mode === 'dark'
   const nav = useNavigate()
   if (!chatFlow.id) {
     return <Navigate to="/chat-flow" />
   }
 
-  const { nodes, edges, deleteNode, updateNodePosition, setEdges,
-    removeEdge, reconnectEdge, addNode, resetFlowData, updateEdges, updateNodes, setSelectedNode, selectedNode } =
-    useChatFlowStore()
+  const {
+    nodes,
+    edges,
+    deleteNode,
+    updateNodePosition,
+    setEdges,
+    removeEdge,
+    reconnectEdge,
+    addNode,
+    resetFlowData,
+    updateEdges,
+    updateNodes,
+    setSelectedNode,
+    selectedNode,
+  } = useChatFlowStore()
   const [hasChange, setHasChange] = useState(false)
   const [localEdges, setLocalEdges, onEdgesChange] = useEdgesState(edges)
   const [localNodes, setLocalNodes, onNodesChange] = useNodesState(nodes)
@@ -75,14 +81,14 @@ export const PanelChatFlow = () => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (selectedNode?.id) {
-      nodes.find(node => { if (node.id === selectedNode.id) setSelectedNode(node) })
-
+      nodes.find(node => {
+        if (node.id === selectedNode.id) setSelectedNode(node)
+      })
     }
     if (!hasChange) setHasChange(true)
     setLocalNodes(nodes)
     updateNodes(nodes)
     updateEdges(localEdges)
-
   }, [nodes])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -90,13 +96,13 @@ export const PanelChatFlow = () => {
     setLocalEdges(edges)
   }, [edges])
 
-
   const onNodeDragStop = (_, node) => {
-    updateNodePosition(node.id, node.position);
-  };
+    updateNodePosition(node.id, node.position)
+  }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const onReconnectStart = useCallback(
-    (_: MouseEvent | TouchEvent, edge: Edge) => {
+    (_: MouseEvent | TouchEvent, _edge: Edge) => {
       edgeReconnectSuccessful.current = false
       setSelectedNode(undefined)
     },
@@ -137,7 +143,7 @@ export const PanelChatFlow = () => {
   const handleSair = () => {
     resetFlowData()
     setSelectedNode(undefined)
-    nav("/chat-flow")
+    nav('/chat-flow')
     // if (hasChange) {
     //   toast.info('Salve o painel antes de sair', {
     //     position: 'top-center'
@@ -150,7 +156,6 @@ export const PanelChatFlow = () => {
   const [valueX, setValuex] = useState(0)
 
   const addNewNode = () => {
-
     const newNode = {
       id: crypto.randomUUID(),
       type: 'node',
@@ -168,16 +173,13 @@ export const PanelChatFlow = () => {
     setValuex(v => v + 10)
 
     addNode(newNode)
-
   }
 
   const onNodeClick = (_event: React.MouseEvent<Element>, node: Node) => {
-
     setSelectedNode(node)
   }
   const onPanelClick = () => {
     setSelectedNode(undefined)
-
   }
   const [labelNode, setLabelNode] = useState('')
 
@@ -210,21 +212,20 @@ export const PanelChatFlow = () => {
     toast.error(
       `Atenção!! Deseja realmente deletar o node "${selectedNode?.data.label}"?`,
       {
-        position: "top-center",
+        position: 'top-center',
         cancel: {
-          label: "Cancel",
-          onClick: () => console.log("Cancel!"),
+          label: 'Cancel',
+          onClick: () => console.log('Cancel!'),
         },
         action: {
-          label: "Confirma",
+          label: 'Confirma',
           onClick: () => {
             deleteNode(nodeId)
             setSelectedNode(undefined)
           },
         },
-      },
-    );
-
+      }
+    )
   }
   return (
     <Box
@@ -266,19 +267,31 @@ export const PanelChatFlow = () => {
               background: theme.palette.background.paper,
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, }}>
-              <IconButton onClick={() => handleSair()}><ArrowLeft /></IconButton>
-              <Typography variant='subtitle2' >{(chatFlow.name).toUpperCase()}</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <IconButton onClick={() => handleSair()}>
+                <ArrowLeft />
+              </IconButton>
+              <Typography variant="subtitle2">
+                {chatFlow.name.toUpperCase()}
+              </Typography>
             </Box>
           </Panel>
-          <Background gap={12} size={1} style={{
-            color: isDarkMode ? theme.palette.grey[900] // Cor de fundo para tema escuro
-              : '#000'
-          }} />
-          <Controls style={{
-            color: isDarkMode ? theme.palette.grey[900] // Cor de fundo para tema escuro
-              : '#000'
-          }} />
+          <Background
+            gap={12}
+            size={1}
+            style={{
+              color: isDarkMode
+                ? theme.palette.grey[900] // Cor de fundo para tema escuro
+                : '#000',
+            }}
+          />
+          <Controls
+            style={{
+              color: isDarkMode
+                ? theme.palette.grey[900] // Cor de fundo para tema escuro
+                : '#000',
+            }}
+          />
         </ReactFlow>
       </Box>
       <Box sx={{ flexGrow: 1, background: theme.palette.background.paper }}>
@@ -295,14 +308,16 @@ export const PanelChatFlow = () => {
           >
             <Button
               onClick={handleSavePanel}
-              variant="contained" color="success">
+              variant="contained"
+              color="success"
+            >
               <SaveRounded sx={{ mr: 1 }} />
               Salvar
             </Button>
             <Button
               variant="contained"
               color="warning"
-              disabled={!selectedNode?.id || selectedNode.type !== "node"}
+              disabled={!selectedNode?.id || selectedNode.type !== 'node'}
               onClick={() => {
                 handleDeleteNode(selectedNode.id)
               }}
@@ -359,13 +374,11 @@ export const PanelChatFlow = () => {
                   focused
                 />
               </FormControl>
-              {selectedNode && (
-                <TabsDetails node={selectedNode} />
-              )}
+              {selectedNode && <TabsDetails node={selectedNode} />}
             </Box>
           </Box>
         </Box>
       </Box>
-    </Box >
+    </Box>
   )
 }

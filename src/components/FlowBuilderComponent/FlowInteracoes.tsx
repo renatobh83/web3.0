@@ -37,14 +37,13 @@ export const Interacoes = ({ node }: InteracoesProps) => {
   const [hasChanges, setHasChanges] = useState(false)
 
   const [interacoes, setInteracoes] = useState<
-    { type: string; id: string; shouldRemove: boolean }[]
+    { type: string; id: string; shouldRemove?: boolean }[]
   >([])
 
-
-  const theme = useTheme(); // Obtém o tema atual
+  const theme = useTheme() // Obtém o tema atual
 
   // Verifica se o modo é escuro
-  const isDarkMode = theme.palette.mode === 'dark';
+  const isDarkMode = theme.palette.mode === 'dark'
   const [interacoesState, setInteracoesState] = useState<{
     [key: string]: {
       id: string
@@ -54,7 +53,10 @@ export const Interacoes = ({ node }: InteracoesProps) => {
   }>({})
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (Array.isArray(node.data.interactions) && node.data?.interactions?.length) {
+    if (
+      Array.isArray(node.data.interactions) &&
+      node.data?.interactions?.length
+    ) {
       setInteracoes(node.data.interactions)
       node.data.interactions.map(interacao => {
         setInteracoesState(prev => ({
@@ -88,7 +90,6 @@ export const Interacoes = ({ node }: InteracoesProps) => {
       setInteracoes(iter)
       setHasChanges(true) // Marca que houve alteração
     }
-    console.log(interacoesState)
   }, [interacoesState])
 
   const addInteracao = (type: string) => {
@@ -99,7 +100,7 @@ export const Interacoes = ({ node }: InteracoesProps) => {
     setInteracoes(prev => [...prev, newInteracao])
     setHasChanges(true) // Marca que houve alteração
   }
-    ;[]
+  ;[]
   const debounceRef = useRef<null | number>(null)
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -121,7 +122,6 @@ export const Interacoes = ({ node }: InteracoesProps) => {
     return () => {
       clearTimeout
     }
-
   }, [interacoes, hasChanges])
 
   const handlRemoveInteracao = (id: string) => {
@@ -135,7 +135,6 @@ export const Interacoes = ({ node }: InteracoesProps) => {
     setHasChanges(true)
     setInteracoes(newInteracoes)
     // setInteracoesState({})
-
   }
 
   const handleChange = e => {
@@ -146,7 +145,10 @@ export const Interacoes = ({ node }: InteracoesProps) => {
         ...prev[id],
         id: id,
         type: name,
-        data: name === 'MessageField' ? { message: value } : { webhook: { apiId: selectApi, acao: value } },
+        data:
+          name === 'MessageField'
+            ? { message: value }
+            : { webhook: { apiId: selectApi, acao: value } },
       },
     }))
   }
@@ -160,7 +162,7 @@ export const Interacoes = ({ node }: InteracoesProps) => {
   }
   const handleSelectRadio = (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log((event.target as HTMLInputElement).value)
-    setSelectApi(((event.target as HTMLInputElement).value))
+    setSelectApi((event.target as HTMLInputElement).value)
   }
   const listarWebhook = useCallback(async () => {
     const { data } = await ListarWebhook()
@@ -218,12 +220,12 @@ export const Interacoes = ({ node }: InteracoesProps) => {
           {interacoes
             .filter(interacao => !interacao.shouldRemove) // Filtra os que devem ser renderizados
             .map((interacao, idx) => (
-              // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
               <React.Fragment key={interacao.id}>
                 <Box
-                  key={interacao.id}
                   sx={{
-                    background: isDarkMode ? theme.palette.background.default : theme.palette.grey[200],
+                    background: isDarkMode
+                      ? theme.palette.background.default
+                      : theme.palette.grey[200],
                     minHeight: '250px',
                     transition: 'box-shadow 0.3s ease-in-out',
                     my: 1,
@@ -275,25 +277,27 @@ export const Interacoes = ({ node }: InteracoesProps) => {
                       />
                     </Button>
 
-                    <Box sx={{ width: '100%', mt: 2, px: 3, }} >
-                      {interacao.type === 'WebhookField' &&
+                    <Box sx={{ width: '100%', mt: 2, px: 3 }}>
+                      {interacao.type === 'WebhookField' && (
                         <>
                           <RadioGroup
-                            value={interacoesState[interacao.id]?.data?.webhook?.apiId || selectApi}
+                            value={
+                              interacoesState[interacao.id]?.data?.webhook
+                                ?.apiId || selectApi
+                            }
                             onChange={handleSelectRadio}
                             row
                             name="row-radio-buttons-group"
                           >
-                            {webhooks?.filter(i => i.status === "CONECTADA")
+                            {webhooks
+                              ?.filter(i => i.status === 'CONECTADA')
                               .map(w => (
                                 <FormControlLabel
                                   key={w.id}
                                   value={w.id}
-                                  control={<Radio
-                                    size="small"
-
-                                  />} label={w.nomeApi} />
-
+                                  control={<Radio size="small" />}
+                                  label={w.nomeApi}
+                                />
                               ))}
                           </RadioGroup>
                           <TextField
@@ -301,10 +305,15 @@ export const Interacoes = ({ node }: InteracoesProps) => {
                             id={interacao.id}
                             sx={{ mt: 3 }}
                             focused
-                            value={interacoesState[interacao.id]?.data?.webhook?.acao || ''}
+                            value={
+                              interacoesState[interacao.id]?.data?.webhook
+                                ?.acao || ''
+                            }
                             onChange={e => handleChange(e)}
                             label={
-                              <Typography variant="subtitle1">Digite a ação </Typography>
+                              <Typography variant="subtitle1">
+                                Digite a ação{' '}
+                              </Typography>
                             }
                             multiline
                             maxRows={7}
@@ -312,9 +321,9 @@ export const Interacoes = ({ node }: InteracoesProps) => {
                             variant="standard"
                           />
                         </>
-                      }
+                      )}
 
-                      {interacao.type === 'MessageField' &&
+                      {interacao.type === 'MessageField' && (
                         <TextField
                           value={
                             interacoesState[interacao.id]?.data?.message ||
@@ -326,14 +335,16 @@ export const Interacoes = ({ node }: InteracoesProps) => {
                           focused
                           onChange={e => handleChange(e)}
                           label={
-                            <Typography variant="subtitle1">Digite a mensagem </Typography>
+                            <Typography variant="subtitle1">
+                              Digite a mensagem{' '}
+                            </Typography>
                           }
                           multiline
                           maxRows={7}
                           fullWidth
                           variant="standard"
                         />
-                      }
+                      )}
                     </Box>
                   </Box>
                 </Box>
@@ -341,6 +352,6 @@ export const Interacoes = ({ node }: InteracoesProps) => {
             ))}
         </Box>
       </Box>
-    </Box >
+    </Box>
   )
 }

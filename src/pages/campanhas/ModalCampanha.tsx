@@ -323,17 +323,17 @@ import { toast } from 'sonner'
 import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker'
 import { Errors } from '../../utils/error'
 
-const variaveis = [
-  { label: 'Nome', value: '{{name}}' },
-  { label: 'E-mail (se existir)', value: '{{email}}' },
-  { label: 'Telefone', value: '{{phoneNumber}}' },
-  { label: 'Kanban', value: '{{kanban}}' },
-]
-const optRadio = [
-  { label: 'Msg.1', value: 'message1' },
-  { label: 'Msg. 2', value: 'message2' },
-  { label: 'Msg. 3', value: 'message3' },
-]
+// const variaveis = [
+//   { label: 'Nome', value: '{{name}}' },
+//   { label: 'E-mail (se existir)', value: '{{email}}' },
+//   { label: 'Telefone', value: '{{phoneNumber}}' },
+//   { label: 'Kanban', value: '{{kanban}}' },
+// ]
+// const optRadio = [
+//   { label: 'Msg.1', value: 'message1' },
+//   { label: 'Msg. 2', value: 'message2' },
+//   { label: 'Msg. 3', value: 'message3' },
+// ]
 
 interface Campanha {
   name: string
@@ -343,6 +343,7 @@ interface Campanha {
 interface ModalCampanhaProps {
   open: boolean
   setClose: () => void
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   campanhaId: any
 }
 
