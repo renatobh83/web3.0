@@ -32,7 +32,7 @@ interface EdgeStore {
   setSelectedNode: (node: Node | undefined) => void;
   getEdgesByNodeId: (nodeId: string) => { asSource: Edge[]; asTarget: Edge[] };
   getLabelByTarget: (targetId: string) => string | undefined;
-  // reconnectEdge: (oldEdge: Edge, newEdge: Edge) => Edge[];
+  reconnectEdgeZ: (oldEdge: Edge, newEdge: Edge) => void;
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   updatePositionArr: (nodeId: string, newPosition: any[], type: string) => void;
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -207,15 +207,15 @@ const useChatFlowStore = create<CombinedState>((set, get) => ({
       edges: payload.flow.flow.lineList,
     });
   },
-  // reconnectEdge: (oldEdge, newConnection) =>
-  //   set((state) => ({
-  //     edges: state.edges.map((edge) => {
-  //       if (edge.id === oldEdge.id) {
-  //         return { ...edge, ...newConnection };
-  //       }
-  //       return edge;
-  //     }),
-  //   })),
+  reconnectEdgeZ: (oldEdge, newConnection) =>
+    set((state) => ({
+      edges: state.edges.map((edge) => {
+        if (edge.id === oldEdge.id) {
+          return { ...edge, ...newConnection };
+        }
+        return edge;
+      }),
+    })),
   removeSelectedNodesAndEdges: () => {
     const { nodes, setNodes } = get();
 
