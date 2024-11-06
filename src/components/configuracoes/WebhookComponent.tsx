@@ -314,26 +314,26 @@ export const WebhookConfiguracao = () => {
             <TextField
               variant="filled"
               label="Descricao api"
-              value={stateWebhook.nomeApi}
+              value={stateWebhook?.nomeApi}
               onChange={e => handleOnChange(e.target.value, 'nomeApi')}
             />
             <Box sx={{ display: 'flex', gap: 4 }}>
               <TextField
                 variant="filled"
                 label="Usuario"
-                value={stateWebhook.usuario}
+                value={stateWebhook?.usuario}
                 onChange={e => handleOnChange(e.target.value, 'usuario')}
               />
               <TextField
                 variant="filled"
                 label="Senha"
-                value={stateWebhook.senha}
+                value={stateWebhook?.senha}
                 onChange={e => handleOnChange(e.target.value, 'senha')}
               />
               <TextField
                 variant="filled"
                 label="Link"
-                value={stateWebhook.baseURl}
+                value={stateWebhook?.baseURl}
                 onChange={e => handleOnChange(e.target.value, 'baseURl')}
               />
             </Box>
@@ -345,7 +345,7 @@ export const WebhookConfiguracao = () => {
                   flexWrap: 'wrap',
                 }}
               >
-                {stateWebhook.action.map((chip, index) => (
+                {stateWebhook?.action.map((chip, index) => (
                   <Chip
                     // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                     key={index}
