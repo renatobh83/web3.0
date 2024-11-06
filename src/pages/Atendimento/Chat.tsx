@@ -1,4 +1,4 @@
-import { Box, Button, Fade, Toolbar, Typography } from '@mui/material'
+import { Box, Button, Fade, Typography } from '@mui/material'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 import { useEffect, useRef, useState } from 'react'
@@ -20,9 +20,9 @@ export type OutletContextType = {
 }
 
 export const Chat = () => {
-  const { mensagensRapidas } = useOutletContext()
+  const ctx: { mensagensRapidas: [] } = useOutletContext()
 
-  const { socketTicket, socketTicketList } = useMixinSocket()
+  const { socketTicketList } = useMixinSocket()
   // const { drawerWidth, handleDrawerToggle } = useOutletContext<OutletContextType>();
   const { mensagens, LocalizarMensagensTicket } = useAtendimentoTicketStore()
   const modalAgendamento = useAtendimentoStore(s => s.modalAgendamento)
@@ -68,17 +68,13 @@ export const Chat = () => {
   const onLoadMore = async () => {
     console.log('load More')
     if (loading) return
-    if (!hasMore || ticketFocado.id) {
+    if (!hasMore || ("id" in ticketFocado && ticketFocado.id)) {
       return
     }
     const nextPageNumber = params.pageNumber + 1
     try {
       setLoading(true)
-      const params = {
-        ticketId: ticketFocado.id,
-        pageNumber: nextPageNumber,
-      }
-      await LocalizarMensagensTicket(params)
+      await LocalizarMensagensTicket({ pageNumber: nextPageNumber, ticketId: ("id" in ticketFocado && String(ticketFocado.id)) })
       // Atualiza os params com a nova página após o carregamento
       setParams(prevParams => ({
         ...prevParams,
@@ -90,8 +86,8 @@ export const Chat = () => {
     }
   }
   const [OpenModalEnc, setOpenModalEnc] = useState(false)
-  const [scrollIcon, setScrollIcon] = useState(false)
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
+  const [_scrollIcon, _setScrollIcon] = useState(false)
+  // const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const [mensagensParaEncaminhar, setMensagensParaEncaminhar] = useState([])
   const resetMensagenParaEncaminhar = () => {
 
@@ -101,16 +97,16 @@ export const Chat = () => {
 
     setMensagensParaEncaminhar([msg])
   }
-  const onScroll = (e: any) => {
-    if (
-      e.target.scrollTop + e.target.clientHeight >=
-      e.target.scrollHeight - 2000
-    ) {
-      setScrollIcon(false)
-    } else {
-      setScrollIcon(true)
-    }
-  }
+  // const onScroll = (e: any) => {
+  //   if (
+  //     e.target.scrollTop + e.target.clientHeight >=
+  //     e.target.scrollHeight - 2000
+  //   ) {
+  //     setScrollIcon(false)
+  //   } else {
+  //     setScrollIcon(true)
+  //   }
+  // }
   const [inputHeight, setInputHeight] = useState(0)
 
   const footerRef = useRef<HTMLDivElement>(null)
@@ -120,6 +116,7 @@ export const Chat = () => {
   }
 
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const resizeObserver = new ResizeObserver(onResize)
 
@@ -145,7 +142,7 @@ export const Chat = () => {
       minHeight: `calc(100vh - ${62 + add}px)`,
       height: `calc(100vh - ${62 + add}px)`,
       width: '100%',
-      overflowY: 'auto',
+      // overflowY: auto,
       contain: 'strict',
       willChange: 'scroll-position',
       backgroundCole: 'white',
@@ -242,7 +239,7 @@ export const Chat = () => {
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 {!replyingMessage.fromMe &&
                   <Typography variant='caption' color='gray'>
-                    {replyingMessage.contact && replyingMessage.contact.name}
+                    {replyingMessage.contact?.name}
                   </Typography>
                 }
                 <Typography>{formatarMensagemWhatsapp(replyingMessage.body)}</Typography>
@@ -250,7 +247,7 @@ export const Chat = () => {
               <Button size='small' variant='outlined' onClick={() => setReplyingMessage(null)}><Close sx={{ fontSize: '18px' }} /></Button>
             </Box>
           </Box>}
-          <InputMenssagem replyingMessage={replyingMessage} setReplyingMessage={setReplyingMessage} mensagensRapidas={mensagensRapidas} />
+          <InputMenssagem replyingMessage={replyingMessage} setReplyingMessage={setReplyingMessage} mensagensRapidas={ctx.mensagensRapidas} />
         </Box>
       </Box>
       {modalAgendamento && <ModalAgendamentoMensagem />}

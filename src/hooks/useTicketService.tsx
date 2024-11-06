@@ -22,7 +22,7 @@ export const useTicketService = () => {
     status: string
     ticket: Ticket
   } | null>(null)
-  const { AbrirChatMensagens, setHasMore, setTicketFocado } = useAtendimentoTicketStore()
+  const { AbrirChatMensagens, setHasMore } = useAtendimentoTicketStore()
   const { mobileOpen, setMobileOpen } = useAtendimentoStore()
   const goToChat = async (id: number) => {
     try {

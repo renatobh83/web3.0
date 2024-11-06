@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { socketIO } from '../utils/socket'
 import { useNotificationsStore } from '../store/notifications'
 import { useWhatsappStore } from '../store/whatsapp'
@@ -21,9 +21,9 @@ import { eventEmitterMain } from '../layout/MainLayout'
 // export const eventEmitter = new EventEmitter();
 
 export const useSocketInitial = () => {
-  const { ws, setWs, getWs, resetWs } = useWebSocketStore()
+  const { setWs, getWs, resetWs } = useWebSocketStore()
 
-  const wsRef = useRef<WebSocket | null>(null)
+  // const wsRef = useRef<WebSocket | null>(null)
   const updateWhatsapps = useWhatsappStore(state => state.updateWhatsApps)
   const deleteWhatsApp = useWhatsappStore(state => state.deleteWhatsApp)
   const updateSession = useWhatsappStore(state => state.updateSession)
@@ -74,12 +74,12 @@ export const useSocketInitial = () => {
       setWs(socket)
 
       socket.emit(`${usuario.tenantId}:joinNotification`)
-
-      socket.io.on(`${usuario.tenantId}:whatsapp`, data => {
+      socket.on(`${usuario.tenantId}:whatsapp`, data => {
+        // socket.io.on(`${usuario.tenantId}:whatsapp` as string, data => {
         if (data.action === 'update') {
-          updateWhatsapps(data.whatsapp)
+          updateWhatsapps(data.whatsapp);
         }
-      })
+      });
       socket.on(`tokenInvalid:${socket.id}`, () => {
         socket?.disconnect()
         localStorage.removeItem('token')
@@ -138,24 +138,24 @@ export const useSocketInitial = () => {
           )
         }
       })
-      let notification: (() => void) | null = null
+      // let notification: (() => void) | null = null
       socket.on(`${usuario.tenantId}:importMessages`, data => {
         console.log('socket ON: UPDATE_IMPORT')
         if (data.action === 'update') {
           if (data.status.all === -1 && data.status.this === -1) {
-            if (notification) {
-              notification()
-            }
+            // if (notification) {
+            //   notification()
+            // }
             toast.info(
-              `Aguarde, iniciando o processo de importação de mensagens do dispositivo`,
+              'Aguarde, iniciando o processo de importação de mensagens do dispositivo',
               {
                 position: 'top-center',
               }
             )
           } else {
-            if (notification) {
-              // notification()
-            }
+            // if (notification) {
+            //   // notification()
+            // }
             toast.info(
               `Importando mensagens ${data.status.this} de ${data.status.all} em ${data.status.date}`,
               {
@@ -222,7 +222,7 @@ export const useSocketInitial = () => {
           try {
             const response = await ConsultarTickets(paramsPending)
             updateNotificationsP(response.data)
-          } catch (error) {}
+          } catch (error) { }
           const paramsOpen = {
             searchParam: '',
             pageNumber: 1,
@@ -238,7 +238,7 @@ export const useSocketInitial = () => {
             const response = await ConsultarTickets(paramsOpen)
             console.log(response)
             updateNotifications(response.data)
-          } catch (error) {}
+          } catch (error) { }
         }
         // if (data.type === 'ticket:create') {
         //   console.log('socket ON: TICKET:CREATE 1')
@@ -423,7 +423,7 @@ export const useSocketInitial = () => {
             const data_noti = await ConsultarTickets(params)
 
             updateNotificationsP(data_noti.data)
-            verify = data_noti
+            verify = data_noti.data.tickets
           } catch (err) {
             toast.message('Algum problema', {
               description: `${err}`,
@@ -434,7 +434,7 @@ export const useSocketInitial = () => {
           let pass_noti = false
 
           // biome-ignore lint/complexity/noForEach: <explanation>
-          verify?.data?.tickets.forEach(element => {
+          verify?.forEach(element => {
             pass_noti = element.id === data.payload.id ? true : pass_noti
           })
 
@@ -476,7 +476,7 @@ export const useSocketInitial = () => {
         }
       })
 
-      socket.on(`${usuario.tenantId}:msg-private-msg`, data => {
+      socket.on(`${usuario.tenantId}:msg-private-msg`, _data => {
         console.log('PRIVATE_RECEIVED_MESSAGE')
         // if ((data.data.receiverId == usuario.userId || data.data.groupId != null) && data.action === 'update') {
         //     this.$store.commit('PRIVATE_RECEIVED_MESSAGE', data)
@@ -486,21 +486,21 @@ export const useSocketInitial = () => {
         setUsersApp(data)
         //   this.$store.commit('SET_USERS_APP', data)
       })
-      socket.on(`${usuario.tenantId}:unread-msg-private-msg`, data => {
+      socket.on(`${usuario.tenantId}:unread-msg-private-msg`, _data => {
         console.log('UNREAD_MESSAGE_PRIVATE_RECEIVED')
         // if (data.data.senderId == usuario.userId && data.action === 'update') {
         //     this.$store.commit('UNREAD_MESSAGE_PRIVATE_RECEIVED', data)
         // }
       })
 
-      socket.on(`${usuario.tenantId}:msg-private-msg-notificacao`, data => {
+      socket.on(`${usuario.tenantId}:msg-private-msg-notificacao`, _data => {
         console.log('NOTIFICATION_RECEIVED_PRIVATE_MESSAGE')
         // if ((data.data.receiverId == usuario.userId || data.data.groupId != null) && data.action === 'update') {
         //     this.$store.commit('NOTIFICATION_RECEIVED_PRIVATE_MESSAGE', data)
         // }
       })
 
-      socket.on('verifyOnlineUsers', data => {
+      socket.on('verifyOnlineUsers', _data => {
         console.log('LIST_USERS_PRIVATE')
         // this.$store.commit('LIST_USERS_PRIVATE', { action: 'updateAllUsers', data: {} })
         // this.socket.emit(`${usuario.tenantId}:userVerified`, usuario)

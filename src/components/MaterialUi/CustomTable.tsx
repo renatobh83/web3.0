@@ -1,5 +1,6 @@
-import styled from "@emotion/styled";
-import { Table } from "@mui/material";
+import { styled } from '@mui/material/styles';
+import Table from '@mui/material/Table';
+
 
 export const CustomTableContainer = styled(Table)(({ theme }) => ({
     // Customize styles with Tailwind CSS classes

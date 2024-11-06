@@ -1,9 +1,9 @@
-import * as React from 'react';
 import SvgIcon from '@mui/material/SvgIcon';
 
 export function SitemarkIcon() {
     return (
         <SvgIcon sx={{ height: 21, width: 100, mr: 2 }}>
+            {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
             <svg
                 width={86}
                 height={19}
@@ -55,6 +55,7 @@ export function SitemarkIcon() {
 export function FacebookIcon() {
     return (
         <SvgIcon>
+            {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
             <svg
                 width="16"
                 height="16"
@@ -91,6 +92,7 @@ export function FacebookIcon() {
 export function GoogleIcon() {
     return (
         <SvgIcon>
+            {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
             <svg
                 width="16"
                 height="16"

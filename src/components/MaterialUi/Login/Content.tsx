@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -46,6 +45,7 @@ export default function Content() {
                 <SitemarkIcon />
             </Box>
             {items.map((item, index) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                 <Stack key={index} direction="row" sx={{ gap: 2 }}>
                     {item.icon}
                     <div>

@@ -1,5 +1,4 @@
 import {
-  alpha,
   Box,
   Button,
   CardMedia,
@@ -10,9 +9,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  type MenuProps,
   Popover,
-  styled,
   Typography,
   useColorScheme,
 } from '@mui/material'
@@ -32,7 +29,7 @@ import {
   formatarTemplates,
 } from './mixinCommon'
 import DOMPurify from 'dompurify'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { MensagemRespondida } from './MensagemRespondida'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
@@ -40,10 +37,31 @@ import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 import { EventEmitter } from 'events'
 
 export const eventEmitterScrool = new EventEmitter()
+// interface Mensagem {
+//   mediaType: string
+//   mediaUrl: string
+
+//   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+//   isSticker: any
+//   id: number
+//   createdAt: string
+//   body: string
+//   fromMe: boolean
+//   scheduleDate: Date
+//   status: string
+//   reaction: string
+//   reactionFromMe: boolean
+//   isDeleted: boolean
+//   updatedAt: Date
+//   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+//   quotedMsg: any
+// }
 
 interface ChatMensagemProps {
   setReplyingMessage?: (any) => void
-  menssagens: object,
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  menssagens: any[],
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   getMensagenParaEncaminhar?: (menssagen: any) => void
   openModalEcanminhar?: () => void
   scrollTo?: boolean
@@ -59,12 +77,12 @@ export const ChatMensagem = ({
 
   const isScrool = scrollTo === false ? scrollTo : true
   const [modalImageUrl, setModalImageUrl] = useState<string | null>(null)
-  const lastMessageRef = useRef<HTMLInputElement | null>(null)
+  // const lastMessageRef = useRef<HTMLInputElement | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const { mode } = useColorScheme()
   const [ativarMultiEncaminhamento, setAtivarMultiEncaminhamento] = useState(false)
   const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
-  const [isShowOptions, setIsShowOptions] = useState(false)
+  // const [isShowOptions, setIsShowOptions] = useState(false)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [openStyledMenu, setOpenStyledMenu] = useState(false)
@@ -72,7 +90,7 @@ export const ChatMensagem = ({
     null
   )
   // valores para icone de agendamento
-  const [anchorElAgenda, setAnchorElAgenda] = useState(null)
+  const [_anchorElAgenda, setAnchorElAgenda] = useState(null)
   const [messageAgendamento, setMessageAgendamento] = useState(null)
 
 
@@ -92,25 +110,26 @@ export const ChatMensagem = ({
   }
   const isGroupLabel = mensagem => {
     try {
-      return ticketFocado.isGroup ? mensagem.contact.name : ''
+      return ("isGroup" in ticketFocado && ticketFocado.isGroup) ? mensagem.contact.name : ''
     } catch (error) {
       return ''
     }
   }
-  const getAudioSource = url => {
-    try {
-      const newUrl = url.replace('.ogg', '.mp3')
-      return newUrl
-    } catch (error) {
-      return url
-    }
-  }
+  // const getAudioSource = url => {
+  //   try {
+  //     const newUrl = url.replace('.ogg', '.mp3')
+  //     return newUrl
+  //   } catch (error) {
+  //     return url
+  //   }
+  // }
   const openLinkInNewPage = url => {
     window.open(url, '_blank')
   }
 
 
-  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>, id: string) => {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>, id: any) => {
     setAnchorEl(event.currentTarget) // Define a ancora do menu
     setSelectedMessageId(id) // Armazena o ID da mensagem clicada
     setOpenStyledMenu(true)
@@ -124,10 +143,10 @@ export const ChatMensagem = ({
 
 
 
-  const handleMouseEnter = (event, id) => {
-    setAnchorElAgenda(event.currentTarget)
-    setMessageAgendamento(id)
-  }
+  // const handleMouseEnter = (event, id) => {
+  //   setAnchorElAgenda(event.currentTarget)
+  //   setMessageAgendamento(id)
+  // }
   const handleMouseLeave = () => {
     setAnchorElAgenda(null) // Fecha o menu ao sair do ícone
     setMessageAgendamento(null)
@@ -137,7 +156,8 @@ export const ChatMensagem = ({
 
   const handlePopoverOpen = (
     event: React.MouseEvent<HTMLElement>,
-    mensagemId: string
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    mensagemId: any
   ) => {
     const anchorEl = event.currentTarget;
 
@@ -154,7 +174,8 @@ export const ChatMensagem = ({
     }
   }
 
-  const handlePopoverClose = (mensagemId: string) => {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  const handlePopoverClose = (mensagemId: any) => {
     setAnchorEls(prev => ({ ...prev, [mensagemId]: null }))
     setOpen(prev => ({ ...prev, [mensagemId]: false }))
     setMessageAgendamento(null)
@@ -270,7 +291,7 @@ export const ChatMensagem = ({
                   </Divider></Box>
                 )}
 
-                <Box id={mensagem.id} onMouseLeave={handleMouseLeave} />
+                <Box id={String(mensagem.id)} onMouseLeave={handleMouseLeave} />
                 <Box
                   sx={{
                     fontWeight: '500',
@@ -455,7 +476,7 @@ export const ChatMensagem = ({
                                 <MensagemRespondida
                                   mensagem={mensagem.quotedMsg} />
                               )}
-                              {/* ATIVAR ENCAMINHAMENTO E RESPONDER */}
+
                               {!mensagem.isDeleted && (
                                 <>
                                   <IconButton
@@ -482,7 +503,7 @@ export const ChatMensagem = ({
                                         fontSize: '20px'
                                       }} />
                                   </IconButton>
-                                  {selectedMessageId === mensagem.id &&
+                                  {selectedMessageId === String(mensagem.id) &&
                                     anchorEl &&
                                     openStyledMenu && (
                                       <Menu
@@ -522,7 +543,7 @@ export const ChatMensagem = ({
                                     )}
                                 </>
                               )}
-                              {/* AUDIO */}
+
                               {mensagem.mediaType === 'audio' &&
                                 mensagem.mediaUrl && (
                                   <Box  >
@@ -538,10 +559,10 @@ export const ChatMensagem = ({
                                     </audio>
                                   </Box>
                                 )}
+                              {/* biome-ignore lint/a11y/useMediaCaption: <explanation> */}
                               {['vcard', 'contactMessage'].includes(
                                 mensagem.mediaType
                               ) && (
-                                  // Criar Componento VCARD
                                   <Button>Download</Button>
                                 )}
 
@@ -620,6 +641,7 @@ export const ChatMensagem = ({
                                 )}
                               {mensagem.mediaType === 'interactive' && (
                                 <Box
+                                  // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
                                   dangerouslySetInnerHTML={{
                                     __html: formatarMensagemRespostaBotaoWhatsapp(
                                       DOMPurify.sanitize(mensagem.body)
@@ -628,6 +650,7 @@ export const ChatMensagem = ({
                               )}
                               {mensagem.mediaType === 'button' && (
                                 <Box
+                                  // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
                                   dangerouslySetInnerHTML={{
                                     __html: formatarBotaoWhatsapp(
                                       DOMPurify.sanitize(mensagem.body)
@@ -636,6 +659,7 @@ export const ChatMensagem = ({
                               )}
                               {mensagem.mediaType === 'list' && (
                                 <Box
+                                  // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
                                   dangerouslySetInnerHTML={{
                                     __html: formatarMensagemDeLista(
                                       DOMPurify.sanitize(mensagem.body)
@@ -644,6 +668,7 @@ export const ChatMensagem = ({
                               )}
                               {mensagem.mediaType === 'notes' && (
                                 <Box
+                                  // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
                                   dangerouslySetInnerHTML={{
                                     __html: formatarNotas(
                                       DOMPurify.sanitize(mensagem.body)
@@ -652,6 +677,7 @@ export const ChatMensagem = ({
                               )}
                               {mensagem.mediaType === 'templates' && (
                                 <Box
+                                  // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
                                   dangerouslySetInnerHTML={{
                                     __html: formatarTemplates(
                                       DOMPurify.sanitize(mensagem.body)
@@ -700,70 +726,68 @@ export const ChatMensagem = ({
                                 'templates',
                                 'transcription',
                               ].includes(mensagem.mediaType) && (
-                                  <>
-                                    {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
-                                    <Box
-                                      //  dangerouslySetInnerHTML={{ __html: formatarMensagemWhatsapp(DOMPurify.sanitize(mensagem.body)) }}
-                                      sx={{
-                                        mt: '2px',
-                                        minWidth: '100px',
-                                        minHeight: '48px',
-                                        position: 'relative',
-                                        padding: ' 12px 0 8px 0',
-                                        borderRadius: '16px',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        gap: 2,
-                                      }}
-                                    >
-                                      <Box sx={{ wordWrap: 'break-word' }}>
-                                        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
-                                        <span
-                                          dangerouslySetInnerHTML={{
-                                            __html: formatarMensagemWhatsapp(
-                                              DOMPurify.sanitize(mensagem.body)
-                                            ),
-                                          }} />
-                                      </Box>
-                                      {mensagem.fromMe ? (
-                                        <Box
-                                          sx={{
-                                            display: 'flex',
-                                            justifyContent: 'flex-end',
-                                            alignItems: 'center',
-                                            mt: '4px',
-                                          }}
-                                        >
-                                          <Typography
-                                            variant="caption"
-                                            sx={{
-                                              fontSize: '12px',
-                                              color: 'rgba(0, 0, 0, 0.45)',
-                                              mr: 1
-                                            }}
-                                          >
-                                            {dataInWords(mensagem.createdAt)}
-                                          </Typography>
-                                          <DoneAll
-                                            sx={{
-                                              fontSize: '16px',
-                                              color: 'rgba(0, 0, 0, 0.45)',
-                                            }} />
-                                        </Box>
-                                      ) : (
+                                  <Box
+                                    //  dangerouslySetInnerHTML={{ __html: formatarMensagemWhatsapp(DOMPurify.sanitize(mensagem.body)) }}
+                                    sx={{
+                                      mt: '2px',
+                                      minWidth: '100px',
+                                      minHeight: '48px',
+                                      position: 'relative',
+                                      padding: ' 12px 0 8px 0',
+                                      borderRadius: '16px',
+                                      display: 'flex',
+                                      flexDirection: 'column',
+                                      gap: 2,
+                                    }}
+                                  >
+                                    <Box sx={{ wordWrap: 'break-word' }}>
+
+                                      <span
+                                        // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+                                        dangerouslySetInnerHTML={{
+                                          __html: formatarMensagemWhatsapp(
+                                            DOMPurify.sanitize(mensagem.body)
+                                          ),
+                                        }} />
+                                    </Box>
+                                    {mensagem.fromMe ? (
+                                      <Box
+                                        sx={{
+                                          display: 'flex',
+                                          justifyContent: 'flex-end',
+                                          alignItems: 'center',
+                                          mt: '4px',
+                                        }}
+                                      >
                                         <Typography
                                           variant="caption"
                                           sx={{
                                             fontSize: '12px',
                                             color: 'rgba(0, 0, 0, 0.45)',
+                                            mr: 1
                                           }}
                                         >
                                           {dataInWords(mensagem.createdAt)}
                                         </Typography>
-                                      )}
+                                        <DoneAll
+                                          sx={{
+                                            fontSize: '16px',
+                                            color: 'rgba(0, 0, 0, 0.45)',
+                                          }} />
+                                      </Box>
+                                    ) : (
+                                      <Typography
+                                        variant="caption"
+                                        sx={{
+                                          fontSize: '12px',
+                                          color: 'rgba(0, 0, 0, 0.45)',
+                                        }}
+                                      >
+                                        {dataInWords(mensagem.createdAt)}
+                                      </Typography>
+                                    )}
 
-                                    </Box>
-                                  </>
+                                  </Box>
                                 )}
                             </Box>
                           </div>
@@ -787,45 +811,45 @@ export const ChatMensagem = ({
     </>
   )
 }
-const StyledMenu = styled((props: MenuProps) => (
-  <Menu
-    elevation={0}
-    anchorOrigin={{
-      vertical: 'bottom',
-      horizontal: 'right',
-    }}
-    transformOrigin={{
-      vertical: 'top',
-      horizontal: 'right',
-    }}
-    {...props}
-  />
-))(({ theme }) => ({
-  '& .MuiPaper-root': {
-    borderRadius: 6,
-    marginTop: theme.spacing(1),
-    minWidth: 180,
-    color: 'rgb(55, 65, 81)',
-    boxShadow:
-      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
-    '& .MuiMenu-list': {
-      padding: '4px 0',
-    },
-    '& .MuiMenuItem-root': {
-      '& .MuiSvgIcon-root': {
-        fontSize: 18,
-        color: theme.palette.text.secondary,
-        // marginRight: theme.spacing(1.5),
-      },
-      '&:active': {
-        backgroundColor: alpha(
-          theme.palette.primary.main,
-          theme.palette.action.selectedOpacity
-        ),
-      },
-    },
-    ...theme.applyStyles('dark', {
-      color: theme.palette.grey[300],
-    }),
-  },
-}))
+// const StyledMenu = styled((props: MenuProps) => (
+//   <Menu
+//     elevation={0}
+//     anchorOrigin={{
+//       vertical: 'bottom',
+//       horizontal: 'right',
+//     }}
+//     transformOrigin={{
+//       vertical: 'top',
+//       horizontal: 'right',
+//     }}
+//     {...props}
+//   />
+// ))(({ theme }) => ({
+//   '& .MuiPaper-root': {
+//     borderRadius: 6,
+//     marginTop: theme.spacing(1),
+//     minWidth: 180,
+//     color: 'rgb(55, 65, 81)',
+//     boxShadow:
+//       'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+//     '& .MuiMenu-list': {
+//       padding: '4px 0',
+//     },
+//     '& .MuiMenuItem-root': {
+//       '& .MuiSvgIcon-root': {
+//         fontSize: 18,
+//         color: theme.palette.text.secondary,
+//         // marginRight: theme.spacing(1.5),
+//       },
+//       '&:active': {
+//         backgroundColor: alpha(
+//           theme.palette.primary.main,
+//           theme.palette.action.selectedOpacity
+//         ),
+//       },
+//     },
+//     ...theme.applyStyles('dark', {
+//       color: theme.palette.grey[300],
+//     }),
+//   },
+// }))

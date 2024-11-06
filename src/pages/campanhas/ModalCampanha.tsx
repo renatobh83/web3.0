@@ -353,10 +353,8 @@ export const ModalCampanha = ({
   campanhaId,
 }: ModalCampanhaProps) => {
   const {
-    register,
     handleSubmit,
-    setValue,
-    formState: { errors },
+
   } = useForm<Campanha>()
   const { whatsApps } = useWhatsappStore()
 
@@ -373,7 +371,7 @@ export const ModalCampanha = ({
 
   const [messagemPreview, setMessagemPreview] = useState('message1')
   const msgArray = ['message1', 'message2', 'message3']
-  const [messageTemplate, setMessageTemplate] = useState({
+  const [messageTemplate] = useState({
     mediaUrl: null,
     id: null,
     ack: 3,

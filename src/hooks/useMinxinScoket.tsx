@@ -1,12 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { socketIO } from '../utils/socket'
 import { useAtendimentoTicketStore } from '../store/atendimentoTicket'
 import { useContatosStore } from '../store/contatos'
 import type { Socket } from 'socket.io-client'
-import checkTicketFilter from '../utils/checkTicketFilter'
 import { ConsultarTickets } from '../services/tickets'
-import { useNotificationsStore } from '../store/notifications'
-
 import { toast } from 'sonner'
 import { eventEmitterScrool } from '../pages/Atendimento/ChatMenssage'
 import { eventEmitter as eventNotification } from '../pages/Atendimento/index'
@@ -37,14 +34,14 @@ export const useMixinSocket = () => {
   )
   const updateTicket = useAtendimentoTicketStore(state => state.updateTicket)
   const updateContatos = useContatosStore(s => s.updateContact)
-  const [loading, setLoading] = useState(false)
+  // const [loading, setLoading] = useState(false)
   const socketRef = useRef<Socket | null>(null)
   const { resetUnread } = useAtendimentoTicketStore()
   const { getWs, setWs, resetWs } = useWebSocketStore()
-  const updateNotifications = useNotificationsStore(s => s.updateNotifications)
-  const updateNotificationsP = useNotificationsStore(
-    s => s.updateNotificationsP
-  )
+  // const updateNotifications = useNotificationsStore(s => s.updateNotifications)
+  // const updateNotificationsP = useNotificationsStore(
+  //   s => s.updateNotificationsP
+  // )
   const scrollToBottom = () => {
     setTimeout(() => {
       eventEmitterScrool.emit('scrollToBottomMessageChat')
@@ -122,7 +119,7 @@ export const useMixinSocket = () => {
             !data.payload.read &&
             (data.payload.ticket.userId === userId ||
               !data.payload.ticket.userId) &&
-            data.payload.ticket.id !== ticketFocado.id
+            data.payload.ticket.id !== ("id" in ticketFocado && ticketFocado.id)
           ) {
 
             if (data.payload.ticket.userId) {
@@ -217,9 +214,10 @@ export const useMixinSocket = () => {
             // date: new Date(),
           }
           try {
-            const data_noti = await ConsultarTickets(params)
+            const { data } = await ConsultarTickets(params)
             // updateNotificationsP(data_noti.data)
-            verify = data_noti
+            verify = data.tickets
+
           } catch (err) {
             toast.message('Algum problema ao consultar tickets', {
               description: `${err}`,
@@ -230,7 +228,7 @@ export const useMixinSocket = () => {
           // Faz verificação para se certificar que notificação pertence a fila do usuário
           let pass_noti = false
           // biome-ignore lint/complexity/noForEach: <explanation>
-          verify.data.tickets.forEach(element => {
+          verify.forEach(element => {
             pass_noti = element.id === data.payload.id ? true : pass_noti
           })
           // // Exibe Notificação

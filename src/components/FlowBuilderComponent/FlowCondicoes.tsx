@@ -52,7 +52,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
   const [tempValue, setTempValue] = useState({})
 
   const [conditions, setConditions] = useState<
-    { type: string; id: string; shouldRemove: boolean }[]
+    { type: string; id: string; shouldRemove?: boolean }[]
   >([])
   const [conditionState, setConditionState] = useState<{
     [key: string]: {

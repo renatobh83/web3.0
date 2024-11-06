@@ -162,13 +162,15 @@ export const Campanhas = () => {
       label: 'Início',
       field: 'start',
 
-      renderCell: ({ value }) => format(parseISO(value), 'dd/MM/yyyy HH:mm'),
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      renderCell: (params: { row: any; value: any }) => format(parseISO(params.value), 'dd/MM/yyyy HH:mm'),
     },
     {
       name: 'status',
       label: 'Status',
       field: 'status',
-      renderCell: ({ value }) => (value ? status[value] : ''),
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      renderCell: (params: { row: any; value: any }) => (params.value ? status[params.value] : ''),
     },
     {
       name: 'contactsCount',

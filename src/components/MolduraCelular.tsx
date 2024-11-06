@@ -1,6 +1,5 @@
 import { Box, Paper } from '@mui/material';
 import { styled } from '@mui/system';
-import { ChatMensagem } from '../pages/Atendimento/ChatMenssage';
 
 export const MolduraCelular = ({ children }) => {
     const Main = styled(Box)({

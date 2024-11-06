@@ -37,7 +37,7 @@ export const ModalApi = ({ open, setClose, apiEdit }: ModalApiProps) => {
     authToken: '',
     isActive: true,
   })
-  const onChangeState = (value: string, action: string) => {
+  const onChangeState = (value: string | boolean, action: string) => {
     setStateModalApi(prev => ({
       ...prev,
       [action]: value,
@@ -59,7 +59,7 @@ export const ModalApi = ({ open, setClose, apiEdit }: ModalApiProps) => {
     if (validateInputs()) {
       setIsLoading(true)
       try {
-        if (apiEdit.id) {
+        if ('id' in apiEdit && apiEdit.id) {
           const apidata = {
             ...apiEdit,
             name: stateModalApi.name,
@@ -83,12 +83,12 @@ export const ModalApi = ({ open, setClose, apiEdit }: ModalApiProps) => {
   }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (apiEdit.id) {
+    if ('id' in apiEdit && apiEdit.id) {
       setStateModalApi({
-        name: apiEdit.name,
-        sessionId: apiEdit.sessionId,
-        isActive: apiEdit.isActive,
-        authToken: apiEdit.authToken,
+        name: ('name' in apiEdit && apiEdit.name) as string,
+        sessionId: ('sessionId' in apiEdit && apiEdit.sessionId) as string,
+        isActive: ('isActive' in apiEdit && apiEdit.isActive) as boolean,
+        authToken: ('authToken' in apiEdit && apiEdit.authToken) as string,
       })
     }
   }, [])
@@ -146,7 +146,7 @@ export const ModalApi = ({ open, setClose, apiEdit }: ModalApiProps) => {
         <DialogActions
           sx={{ display: 'flex', justifyContent: 'space-between', px: '24px' }}
         >
-          {apiEdit.id ? (
+          {"id" in apiEdit && apiEdit.id ? (
             <Box>
               <FormControlLabel
                 control={

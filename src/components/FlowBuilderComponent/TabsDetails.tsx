@@ -1,15 +1,16 @@
 import { Box, Card, CardContent, Tab, Tabs, Typography } from '@mui/material'
-import type { Node } from '@xyflow/react'
 import { a11yProps, TabPanel } from '../MaterialUi/TablePanel'
 import { useState } from 'react'
 import { TabConfiguracao } from './TabConfiguracao'
 import { Interacoes } from './FlowInteracoes'
 import { Condicoes } from './FlowCondicoes'
+import useChatFlowStore from '../../store/chatFlow'
 
-export const TabsDetails = ({
-  node
-}: { node: Node | undefined }) => {
+export const TabsDetails = () => {
+  const node = useChatFlowStore(s => s.selectedNode)
+
   const nodeType = node?.type
+
   const [tabSelected, setTabSelected] = useState(0)
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -20,7 +21,7 @@ export const TabsDetails = ({
   return (
     <>
       {nodeType === 'configurations' ? (
-        <TabConfiguracao node={node} />
+        <TabConfiguracao />
       ) : nodeType === 'start' ? (
         <Box
           sx={{

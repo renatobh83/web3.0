@@ -1,4 +1,4 @@
-import * as React from 'react'
+import type * as React from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import MuiCard from '@mui/material/Card'
@@ -48,9 +48,7 @@ export default function SignInCard() {
 
   const handleClickShowPassword = () => setShowPassword(show => !show)
 
-  const handleClickOpen = () => {
-    setOpen(true)
-  }
+
 
   const handleClose = () => {
     setOpen(false)

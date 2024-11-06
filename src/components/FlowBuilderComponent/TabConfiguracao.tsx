@@ -8,40 +8,44 @@ import {
 } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { RadioComponentCard } from './RadioComponentCard'
+import useChatFlowStore from '../../store/chatFlow'
 
-interface NodeData {
-  welcomeMessage: { message: string }
-  maxRetryBotMessage: {
-    destiny: string
-    number: number
-    type: number
-  }
-  notOptionsSelectMessage: {
-    message: string
-    stepReturn: string
-  }
-  notResponseMessage: {
-    type: number | null
-    destiny: number | null
-    message: string
-    time: number
-  }
-  outOpenHours: {
-    destiny: string
-    type: number
-  }
-  firstInteraction: { type: number; destiny: string }
-  keyword: { message: string }
-}
 
-interface NodeProps {
-  data?: NodeData
-}
-interface TabConfiguracaoProps {
-  node: NodeProps
-}
+// interface NodeData {
 
-export const TabConfiguracao = ({ node }: TabConfiguracaoProps) => {
+//   welcomeMessage: { message: string }
+//   maxRetryBotMessage: {
+//     destiny: string
+//     number: number
+//     type: number
+//   }
+//   notOptionsSelectMessage: {
+//     message: string
+//     stepReturn: string
+//   }
+//   notResponseMessage: {
+//     type: number | null
+//     destiny: number | null
+//     message: string
+//     time: number
+//   }
+//   outOpenHours: {
+//     destiny: string
+//     type: number
+//   }
+//   firstInteraction: { type: number; destiny: string }
+//   keyword: { message: string }
+// }
+
+// export interface NodeProps {
+//   data?: NodeData
+// }
+// interface TabConfiguracaoProps {
+//   node: NodeProps
+// }
+
+export const TabConfiguracao = () => {
+  const node = useChatFlowStore(s => s.selectedNode)
   const {
     welcomeMessage,
     maxRetryBotMessage,
@@ -82,7 +86,7 @@ export const TabConfiguracao = ({ node }: TabConfiguracaoProps) => {
     setMessageKeyword(keyword.message || '')
     setSemResposta(notResponseMessage)
   }, [])
-  console.log(node)
+
   const handleSemResposta = (item: string, value: string) => {
     setSemResposta(prev => ({
       ...prev,

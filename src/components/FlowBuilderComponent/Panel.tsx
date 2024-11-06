@@ -13,6 +13,7 @@ import {
   Background,
   Controls,
   addEdge,
+  reconnectEdge,
   useEdgesState,
   useNodesState,
   type Connection,
@@ -64,7 +65,7 @@ export const PanelChatFlow = () => {
     updateNodePosition,
     setEdges,
     removeEdge,
-    reconnectEdge,
+
     addNode,
     resetFlowData,
     updateEdges,
@@ -118,8 +119,12 @@ export const PanelChatFlow = () => {
       }
 
       edgeReconnectSuccessful.current = true
-      reconnectEdge(oldEdge, newConnection)
-      setLocalEdges(els => reconnectEdge(oldEdge, newConnection, els))
+
+      setLocalEdges((els) => reconnectEdge(oldEdge, newConnection, els))
+      // reconnectEdge(oldEdge, newConnection)
+      // console.log(updated)
+      // setEdges(updated)
+      // setLocalEdges(updated)
     },
     [reconnectEdge]
   )
@@ -198,16 +203,25 @@ export const PanelChatFlow = () => {
       ...chatFlow,
       flow,
     }
-    console.log(nodes, data)
+
     setHasChange(false)
     await UpdateChatFlow(data)
   }
-
-  const onConnect = (params: Connection | Edge) => {
-    const updatedEdges = addEdge(params, localEdges)
-    setLocalEdges(updatedEdges) // Atualiza os edges locais
-    setEdges(updatedEdges) // Atualiza os edges no Zustand
-  }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  const onConnect = useCallback(
+    (params) => {
+      const updated = addEdge(params, localEdges)
+      setLocalEdges((els) => addEdge(params, els))
+      setEdges(updated)
+    },
+    [],
+  );
+  // const onConnect = (params: Connection | Edge) => {
+  //   const updated = addEdge(params, localEdges)
+  //   console.log(updated)
+  //   setLocalEdges(updated) // Atualiza os edges locais
+  //   setEdges(updated) // Atualiza os edges no Zustand
+  // }
   const handleDeleteNode = (nodeId: string) => {
     toast.error(
       `Atenção!! Deseja realmente deletar o node "${selectedNode?.data.label}"?`,
@@ -374,7 +388,7 @@ export const PanelChatFlow = () => {
                   focused
                 />
               </FormControl>
-              {selectedNode && <TabsDetails node={selectedNode} />}
+              {selectedNode && <TabsDetails />}
             </Box>
           </Box>
         </Box>

@@ -27,7 +27,10 @@ function isEmptyObject(obj) {
 
 type DataType = {
   message?: string
-  webhook?: string
+  webhook?: {
+    apiId: string,
+    acao: string
+  }
 }
 export const Interacoes = ({ node }: InteracoesProps) => {
   const [webhooks, setWebhooks] = useState([])
@@ -100,7 +103,7 @@ export const Interacoes = ({ node }: InteracoesProps) => {
     setInteracoes(prev => [...prev, newInteracao])
     setHasChanges(true) // Marca que houve alteração
   }
-  ;[]
+    ;[]
   const debounceRef = useRef<null | number>(null)
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {

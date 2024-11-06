@@ -139,8 +139,8 @@ export const Canais = () => {
     setModalQrCode(false)
   }
   function cDadosWhatsappSelecionado() {
-    const { id } = whatsappSelecionado
-    return data.find(w => w.id === id)
+    const whats = whatsappSelecionado as { id: string }
+    return data.find(w => w.id === whats.id)
   }
 
   const handleDisconectWhatsSession = (whatsAppId: string) => {
@@ -190,7 +190,7 @@ export const Canais = () => {
     })
   }
 
-  async function handleRequestNewQrCode(channel, origem) {
+  async function handleRequestNewQrCode(channel, _origem) {
     if (channel.type === 'telegram' && !channel.tokenTelegram) {
       toast.error('Necessário informar o token para Telegram', {
         position: 'top-center',
@@ -429,13 +429,13 @@ export const Canais = () => {
                         {['CONNECTED', 'PAIRING', 'TIMEOUT'].includes(
                           item.status
                         ) && (
-                          <Button
-                            variant="outlined"
-                            onClick={() => handleDisconectWhatsSession(item.id)}
-                          >
-                            Desconectar
-                          </Button>
-                        )}
+                            <Button
+                              variant="outlined"
+                              onClick={() => handleDisconectWhatsSession(item.id)}
+                            >
+                              Desconectar
+                            </Button>
+                          )}
                       </Box>
                     </Box>
                   </CardContent>

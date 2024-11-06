@@ -4,7 +4,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Divider,
+
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -25,6 +25,7 @@ import { useNavigate } from 'react-router-dom'
 interface ModalNovoTicketProps {
   open: boolean
   close: () => void
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   isContact?: any
 }
 
@@ -41,7 +42,7 @@ export const ModalNovoTicket = ({
     s => s.AbrirChatMensagens
   )
   const whatsApps = useWhatsappStore(s => s.whatsApps)
-  const [contatoSelecionado, setContatoSelecionado] = useState({})
+  const [contatoSelecionado, setContatoSelecionado] = useState(null)
   const [canalSelecionado, setCanaSelecionado] = useState(null)
   const [modalCanal, setModalCanal] = useState(false)
   const [canais, setCanais] = useState([])
@@ -52,8 +53,9 @@ export const ModalNovoTicket = ({
         replace: false,
         state: { t: new Date().getTime() },
       })
-    } catch (error) {}
+    } catch (error) { }
   }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (isContact) {
       setContatoSelecionado(isContact)
@@ -61,10 +63,10 @@ export const ModalNovoTicket = ({
     }
   }, [])
   const handleSelectChannel = () => {
-    if (!contatoSelecionado.id) return
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    if ("id" in contatoSelecionado && !contatoSelecionado.id) return
     const itens:
       | ((prevState: never[]) => never[])
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       | { label: any; value: any }[] = []
     // biome-ignore lint/complexity/noForEach: <explanation>
     whatsApps.forEach(w => {
@@ -79,7 +81,7 @@ export const ModalNovoTicket = ({
     if (
       !(
         ticket.status !== 'pending' &&
-        (ticket.id !== ticketFocado.id || location.pathname !== 'chat')
+        (ticket.id !== ("id" in ticketFocado && ticketFocado.id) || location.pathname !== 'chat')
       )
     )
       return
@@ -88,9 +90,11 @@ export const ModalNovoTicket = ({
     goToChat(ticket.id)
     close()
   }
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+
   const abrirAtendimentoExistente = (
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     contato: { name?: any },
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     ticket: { id: any }
   ) => {
     toast.info(
@@ -109,7 +113,7 @@ export const ModalNovoTicket = ({
     if (!canalSelecionado) return
     try {
       const { data: ticket } = await CriarTicket({
-        contactId: contatoSelecionado.id,
+        contactId: "id" in contatoSelecionado && contatoSelecionado.id,
         isActiveDemand: true,
         userId: userId,
         channel: 'whatsapp',
