@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Stack, Typography, Breadcrumbs, breadcrumbsClasses, styled } from "@mui/material";
+import { Stack, Typography, Breadcrumbs, breadcrumbsClasses, styled } from "@mui/material";
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 import { useLocation } from "react-router-dom";
 
@@ -38,7 +38,7 @@ export function Header() {
                 </Typography>
             </StyledBreadcrumbs>
             <Stack direction="row" sx={{ gap: 1 }}>
-                
+
             </Stack>
         </Stack>
     )

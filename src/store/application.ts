@@ -12,7 +12,7 @@ export const useApplicationStore = create<ApplicationStore>((set) => ({
   setProfileUser: (user: string) => set({ profileUser: user }),
   themeMode:
     (localStorage.getItem("themeMode") as "light" | "dark" | "system") ||
-    "light", // Carrega do localStorage ou usa "light" por padrão
+    "system", // Carrega do localStorage ou usa "light" por padrão
   toggleThemeMode: () => {
     set((state) => {
       const newMode = state.themeMode === "dark" ? "light" : "dark";

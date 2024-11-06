@@ -102,17 +102,19 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   const [isRecordingAudio, setIsRecordingAudio] = useState(false)
   const [loading, setIsloading] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [visualizarMensagensRapidas, setVisualizarMensagensRapidas] =
+    useState(false)
   const open = Boolean(anchorEl)
-  const [urlMediaPreview, setUrlMediaPreview] = useState({})
+  const [urlMediaPreview, setUrlMediaPreview] = useState(null)
   const [arquivos, setArquivos] = useState<File[]>([])
-  const menuRef = useRef(null)
+  // const menuRef = useRef(null)
   const recorderControlsRef = useRef<ReturnType<
     typeof useAudioRecorder
   > | null>(null)
 
-  const handleClickOpenPreviewImagem = () => {
-    setOpenPreviewImagem(true)
-  }
+  // const handleClickOpenPreviewImagem = () => {
+  //   setOpenPreviewImagem(true)
+  // }
 
   const handleClosePreviewImagem = () => {
     setOpenPreviewImagem(false)
@@ -227,7 +229,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
     }
     const formDatas = arquivos.map(media => {
       const formData = new FormData()
-      formData.append('fromMe', true)
+      formData.append('fromMe', 'true')
       formData.append('medias', media)
       formData.append('body', media.name)
       formData.append('idFront', uid())
@@ -241,7 +243,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   }
   // Função que será chamada para enviar a mensagem
   const enviarMensagem = async () => {
-    const ticketId = ticketFocado.id
+    const ticketId = "id" in ticketFocado && ticketFocado.id
     setIsloading(true)
     try {
       if (!cMostrarEnvioArquivo()) {
@@ -328,12 +330,12 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
       const filename = `${new Date().getTime()}.mp3`
       formData.append('medias', blob, filename)
       formData.append('body', filename)
-      formData.append('fromMe', true)
+      formData.append('fromMe', 'true')
       // if (isScheduleDate) {
       //     formData.append('scheduleDate', this.scheduleDate)
       // }
 
-      const ticketId = ticketFocado.id
+      const ticketId = "id" in ticketFocado && ticketFocado.id
 
       await EnviarMensagemTexto(ticketId, formData)
 
@@ -356,10 +358,12 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   }
 
   function cDisableActions() {
-    return isRecordingAudio || ticketFocado.status !== 'open'
+    return isRecordingAudio || ("status" in ticketFocado && ticketFocado.status) !== 'open'
   }
 
-  const handlePaste = (event: ClipboardEvent) => {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  const handlePaste = (event: any) => {
+
     const clipboardItems = event.clipboardData.items
     // Percorre os itens da área de transferência
     for (let i = 0; i < clipboardItems.length; i++) {
@@ -373,7 +377,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
 
           setOpenPreviewImagem(true)
           setUrlMediaPreview({
-            title: `Enviar imagem para `,
+            title: 'Enviar imagem para ',
             src: urlImg,
           })
 
@@ -384,8 +388,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
     return null
   }
 
-  const [visualizarMensagensRapidas, setVisualizarMensagensRapidas] =
-    useState(false)
+
   // Função para exibir o menu ao digitar "/"
   useEffect(() => {
     if (textChat.startsWith('/')) {
@@ -395,6 +398,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
     }
   }, [textChat])
 
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const handleMessageClick = (resposta: any) => {
     setTextChat(resposta.message)
     setVisualizarMensagensRapidas(false)
@@ -436,7 +440,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   }
   return (
     <>
-      {ticketFocado.status !== 'pending' ? (
+      {("status" in ticketFocado && ticketFocado.status) !== 'pending' ? (
         <>
           {isScheduleDate && (
             <AgendamentoComponent getScheduleDate={setScheduleDate} />
@@ -519,6 +523,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
                   {arquivos.map((file, index) => (
                     // biome-ignore lint/a11y/noLabelWithoutControl: <explanation>
                     <label
+                      // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                       key={index}
                       style={{
                         display: 'flex',
@@ -630,14 +635,14 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
                       alignItems: 'center',
                       flexWrap: 'nowrap',
                     }}
-                    onPaste={handlePaste}
+                    onPaste={(e) => handlePaste(e)}
                   />
                 </>
               )}
               {textChat && (
                 <Tooltip title="Enviar Mensagem">
                   <IconButton
-                    disabled={ticketFocado.status !== 'open' || loading}
+                    disabled={("status" in ticketFocado && ticketFocado.status) !== 'open' || loading}
                     onClick={enviarMensagem}
                   >
                     <Send />
@@ -647,7 +652,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
               {cMostrarEnvioArquivo() && (
                 <Tooltip title="Enviar Mensagem">
                   <IconButton
-                    disabled={ticketFocado.status !== 'open'}
+                    disabled={("status" in ticketFocado && ticketFocado.status) !== 'open'}
                     onClick={enviarMensagem}
                   >
                     <Send />
@@ -694,7 +699,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
               fullWidth
             >
               <DialogTitle id="abrirModalPreviewImagem">
-                {urlMediaPreview.title}
+                {urlMediaPreview?.title}
               </DialogTitle>
               <DialogContent
                 sx={{
@@ -710,7 +715,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
                     maxWidth: 'calc(100% - 100px)',
                   }}
                 >
-                  <CardMedia component="img" image={urlMediaPreview.src} />
+                  <CardMedia component="img" image={urlMediaPreview?.src} />
                 </Card>
               </DialogContent>
               <DialogActions>

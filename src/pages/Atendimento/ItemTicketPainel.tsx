@@ -2,8 +2,7 @@ import { Box, Card, Chip, Typography } from '@mui/material'
 import { formatDistance, parseJSON } from 'date-fns'
 import { useEffect, useState } from 'react'
 import { ptBR } from 'date-fns/locale'
-import { red } from '@mui/material/colors'
-import { Ticket } from '../../store/atendimentoTicket'
+import type { Ticket } from '../../store/atendimentoTicket'
 const borderColor = {
   open: '#1976d2',
   pending: '#c10015',
@@ -18,6 +17,7 @@ export const ItemTicketPainel = ({ ticket }) => {
   const [timeLabel, setTimeLabel] = useState<string>(() =>
     dataInWords(ticket.lastMessageAt, ticket.updatedAt)
   )
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     // Função que atualiza a label
     const updateTimeLabel = () => {

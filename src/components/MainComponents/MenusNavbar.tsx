@@ -17,6 +17,7 @@ import {
   MenuItem,
   MenuList,
   type MenuProps,
+  PaletteMode,
   Stack,
   styled,
   Switch,
@@ -42,7 +43,7 @@ import { Errors } from '../../utils/error'
 import { ConsultarTickets } from '../../services/tickets'
 import { useWhatsappStore } from '../../store/whatsapp'
 import React from 'react'
-import checkTicketFilter from '../../utils/checkTicketFilter'
+// import checkTicketFilter from '../../utils/checkTicketFilter'
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -99,7 +100,7 @@ export const MenusNavbar = () => {
     updateNotifications,
     updateNotificationsP,
   } = useNotificationsStore()
-  const { mode, setMode } = useColorScheme()
+  const { setMode } = useColorScheme()
   const [status, setStatus] = useState(false)
   const usuario = JSON.parse(decryptData('usuario'))
 
@@ -155,6 +156,7 @@ export const MenusNavbar = () => {
   const handleToggleColor = () => {
     toggleThemeMode() // Alterna o tema na store
   }
+  const mode: PaletteMode = 'dark'
   const { whatsApps } = useWhatsappStore()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
@@ -219,7 +221,7 @@ export const MenusNavbar = () => {
       const response = await ConsultarTickets(paramsOpen)
 
       updateNotifications(response.data)
-    } catch (error) {}
+    } catch (error) { }
     const paramsPending = {
       searchParam: '',
       pageNumber: 1,
@@ -234,7 +236,7 @@ export const MenusNavbar = () => {
     try {
       const response = await ConsultarTickets(paramsPending)
       updateNotificationsP(response.data)
-    } catch (error) {}
+    } catch (error) { }
   }
   const userNotificationsCount = notifications.tickets
     .filter(ticket => ticket.userId === user)
@@ -292,7 +294,7 @@ export const MenusNavbar = () => {
         <>
           <Button onClick={handleClick}>
             {Number(notificationsP.count) + Number(notifications.count) ===
-            0 ? (
+              0 ? (
               <NotificationsNoneIcon />
             ) : (
               <Badge badgeContent={totalNotificationsCount} color="primary">
@@ -310,7 +312,7 @@ export const MenusNavbar = () => {
             open={open}
           >
             {Number(notificationsP.count) + Number(notifications.count) ===
-            0 ? (
+              0 ? (
               <MenuItem onClick={handleClose} disableRipple>
                 <Typography>Não a nada de novo por aqui!!</Typography>
               </MenuItem>

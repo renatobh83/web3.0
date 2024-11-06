@@ -2,7 +2,6 @@ import * as React from "react";
 import { useState } from "react";
 import {
     styled,
-    useTheme,
     type Theme,
     type CSSObject,
 } from "@mui/material/styles";
@@ -15,7 +14,6 @@ import Divider from "@mui/material/Divider";
 
 import AppNavbar from "./AppNavbar";
 import { MenuComponent } from "./MenuComponent";
-import { useApplicationStore } from "../../store/application";
 import { useAuth } from "../../context/AuthContext";
 
 
@@ -110,7 +108,7 @@ export const MenuDrawer: React.FC = () => {
     const profile = decryptData("profile");
 
 
-    const [miniState, setMiniState] = useState(true);
+    const [, setMiniState] = useState(true);
 
 
     const [open, setOpen] = React.useState(false);

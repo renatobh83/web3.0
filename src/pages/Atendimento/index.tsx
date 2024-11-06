@@ -34,6 +34,7 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
+  type PaletteMode,
 } from '@mui/material'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -124,7 +125,6 @@ function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props
   return (
     <div
-      // biome-ignore lint/a11y/useSemanticElements: <explanation>
       role="tabpanel"
       hidden={value !== index}
       id={`vertical-tabpanel-${index}`}
@@ -154,7 +154,7 @@ export function Atendimento() {
 
   const { decryptData, encryptData, logout } = useAuth()
   // Remove this const when copying and pasting into your project.
-
+  const mode: PaletteMode = 'dark'
   const [openModalNovoTicket, setOpenModalNovoTicket] = useState(false)
 
   // Stores
@@ -165,7 +165,7 @@ export function Atendimento() {
   const { loadWhatsApps, whatsApps } = useWhatsappStore()
   const { setUsuarioSelecionado, toggleModalUsuario, modalUsuario } =
     useUsuarioStore()
-  const { drawerWidth, mobileOpen, setMobileOpen, isClosing, setIsClosing } =
+  const { drawerWidth, mobileOpen, setMobileOpen, setIsClosing } =
     useAtendimentoStore()
   const tickets = useAtendimentoTicketStore(s => s.tickets)
   // const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -175,9 +175,9 @@ export function Atendimento() {
   const [mensagensRapidas, setMensagensRapidas] = useState([])
   const [tabTicketsStatus, setTabTicketsStatus] = useState('pending')
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
-  const [etiquetas, setEtiquetas] = useState([])
+  const [_etiquetas, setEtiquetas] = useState([])
   const [anchorElFiltro, setAnchorElFiltro] = useState<null | HTMLElement>(null)
-  const [loading, setLoading] = useState(false)
+  const [_loading, setLoading] = useState(false)
   // const [usuarios, setUsuarios] = useState([])
   // const UserQueues = JSON.parse(localStorage.getItem('queues'))
   const profile = decryptData('profile')
@@ -204,8 +204,8 @@ export function Atendimento() {
   const [filas, setFilas] = useState([])
   const { AbrirChatMensagens } = useAtendimentoTicketStore()
   const { themeMode, toggleThemeMode } = useApplicationStore()
-  const { mode, setMode } = useColorScheme()
-  const [localTickets, setLocalTickets] = useState([])
+  const { setMode } = useColorScheme()
+  // const [localTickets, setLocalTickets] = useState([])
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const alertSound = '/sound.mp3' // Corrigido o caminho
@@ -271,7 +271,6 @@ export function Atendimento() {
   //   return ticketFocado?.contact?.extraInfo?.length > 0
   // }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     setMode(themeMode)
   }, [themeMode, setMode])
@@ -431,6 +430,7 @@ export function Atendimento() {
   const listarConfiguracoes = async () => {
     if (!localStorage.getItem('configuracoes')) {
       const { data } = await ListarConfiguracoes()
+
       localStorage.setItem('configuracoes', encryptData(JSON.stringify(data)))
     }
   }
@@ -546,12 +546,12 @@ export function Atendimento() {
       }
       return acc
     }, {})
-    const groupedTicketIds = new Set(
-      Object.values(groupedTickets).map(ticket => ticket.id)
-    )
-    const remainingTickets = filteredTickets.filter(
-      ticket => !groupedTicketIds.has(ticket.id)
-    )
+    // const groupedTicketIds = new Set(
+    //   Object.values(groupedTickets).map(ticket => ticket.id)
+    // )
+    // const remainingTickets = filteredTickets.filter(
+    //   ticket => !groupedTicketIds.has(ticket.id)
+    // )
 
     // remainingTickets.forEach(ticket => {
     //     AtualizarStatusTicketNull(ticket.id, 'closed', ticket.userId);
@@ -577,12 +577,12 @@ export function Atendimento() {
       return acc
     }, {})
 
-    const groupedTicketIds = new Set(
-      Object.values(groupedTickets).map(ticket => ticket.id)
-    )
-    const remainingTickets = filteredTickets.filter(
-      ticket => !groupedTicketIds.has(ticket.id)
-    )
+    // const groupedTicketIds = new Set(
+    //   Object.values(groupedTickets).map(ticket => ticket.id)
+    // )
+    // const remainingTickets = filteredTickets.filter(
+    //   ticket => !groupedTicketIds.has(ticket.id)
+    // )
     // remainingTickets.forEach(ticket => {
     //     AtualizarStatusTicketNull(ticket.id, 'closed', ticket.userId);
     //     console.log(`Ticket duplo ${ticket.id} tratado.`);
@@ -632,12 +632,12 @@ export function Atendimento() {
     return Object.values(groupedTickets)
     // return Object.values(groupedTickets).slice(0, this.batchSize);
   }
-  function privateMessages(): Ticket[] {
-    return tickets.filter(ticket => ticket.unreadMessages && !ticket.isGroup)
-  }
-  function groupMessages(): Ticket[] {
-    return tickets.filter(ticket => ticket.unreadMessages && ticket.isGroup)
-  }
+  // function privateMessages(): Ticket[] {
+  //   return tickets.filter(ticket => ticket.unreadMessages && !ticket.isGroup)
+  // }
+  // function groupMessages(): Ticket[] {
+  //   return tickets.filter(ticket => ticket.unreadMessages && ticket.isGroup)
+  // }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     // Adiciona o listener ao montar o componente
@@ -674,7 +674,7 @@ export function Atendimento() {
     listarEtiquetas()
     // resetTickets()
     const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento'))
-    if (!filtros?.pageNumber !== 1) {
+    if (filtros?.pageNumber !== 1) {
       localStorage.setItem(
         'filtrosAtendimento',
         JSON.stringify(pesquisaTickets)
@@ -693,7 +693,7 @@ export function Atendimento() {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listaContatos = useCallback(async () => {
-    const { data } = await ListarContatos()
+    const { data } = await ListarContatos({})
     loadContacts(data.contacts)
   }, [])
   const listarMensagensRapidas = useCallback(async () => {

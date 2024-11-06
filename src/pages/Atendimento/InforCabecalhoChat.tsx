@@ -38,10 +38,9 @@ import {
 } from '@mui/icons-material'
 import { useAtendimentoStore } from '../../store/atendimento'
 import {
-  Ticket,
+  type Ticket,
   useAtendimentoTicketStore,
 } from '../../store/atendimentoTicket'
-import { ModalAgendamentoMensagem } from './ModalAgendamentoMensagem'
 import { useTicketService } from '../../hooks/useTicketService'
 import { useEffect, useState } from 'react'
 import { ListarUsuarios } from '../../services/user'
@@ -51,7 +50,7 @@ import { AtualizarTicket } from '../../services/tickets'
 import { Errors } from '../../utils/error'
 import { useNavigate } from 'react-router-dom'
 
-// biome-ignore lint/suspicious/noRedeclare: <explanation>
+
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean
 }
@@ -143,6 +142,7 @@ export const InfoCabecalhoMenssagens = () => {
       setMobileOpen(!mobileOpen)
     }
   }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (modalTransferirTicket) {
       listarFilas()
@@ -160,30 +160,31 @@ export const InfoCabecalhoMenssagens = () => {
   const confirmarTransferenciaTicket = async () => {
     // if (!filaSelecionada) return
     if (
-      usuarioSelecionado === ticketFocado.userId &&
-      ticketFocado.userId !== null
+      usuarioSelecionado === ("userId" in ticketFocado && ticketFocado.userId) &&
+      ("userId" in ticketFocado && ticketFocado.userId) !== null
     ) {
       toast.error('Ticket já pertece ao usuário selecionado.')
       return
     }
-    if (ticketFocado.userId === userId && userId === usuarioSelecionado) {
+    if (("userId" in ticketFocado && ticketFocado.userId) === userId && userId === usuarioSelecionado) {
       toast.error('Ticket já pertece ao seu usuário')
       return
     }
     if (
-      ticketFocado.queueId === filaSelecionada &&
-      ticketFocado.userId === usuarioSelecionado
+      ("queueId" in ticketFocado && ticketFocado.queueId) === filaSelecionada &&
+      ("userId" in ticketFocado && ticketFocado.userId) === usuarioSelecionado
     ) {
       toast.error('Ticket já pertece a esta fila e usuário')
       return
     }
     try {
-      await AtualizarTicket(ticketFocado.id, {
-        userId: usuarioSelecionado,
-        queueId: filaSelecionada,
-        status: usuarioSelecionado == null ? 'pending' : 'open',
-        isTransference: 1,
-      })
+      await AtualizarTicket
+        (("id" in ticketFocado && ticketFocado.id), {
+          userId: usuarioSelecionado,
+          queueId: filaSelecionada,
+          status: usuarioSelecionado == null ? 'pending' : 'open',
+          isTransference: 1,
+        })
       toast.success('Ticket transferido.')
       setModalTransferirTicket(false)
       setTicketFocado({})
@@ -232,7 +233,7 @@ export const InfoCabecalhoMenssagens = () => {
         <Box
           sx={{ display: 'flex', width: '100%', alignItems: 'center', gap: 2 }}
         >
-          {!ticketFocado.id ? (
+          {("id" in ticketFocado && !ticketFocado.id) ? (
             <Box sx={{ width: { sm: 100, md: 300 } }}>
               <Skeleton />
               <Skeleton />
@@ -253,7 +254,7 @@ export const InfoCabecalhoMenssagens = () => {
                   <ListItem sx={{ gap: 2 }} disablePadding>
                     <ListItemIcon>
                       <Avatar
-                        src={Value(ticketFocado.contact, 'profilePicUrl')}
+                        src={Value(("contact" in ticketFocado && !ticketFocado.contact), 'profilePicUrl')}
                       />
                     </ListItemIcon>
 
@@ -262,13 +263,13 @@ export const InfoCabecalhoMenssagens = () => {
                         display: { xs: 'none', sm: 'none', md: 'block' },
                       }}
                       secondary={
-                        Value(ticketFocado.user, 'name') && (
+                        Value(("user" in ticketFocado && !ticketFocado.user), 'name') && (
                           <Typography
                             variant="caption"
                             sx={{
                               fontSize: 9,
                             }}
-                          >{`Ticket ${ticketFocado.id}`}</Typography>
+                          >{`Ticket ${("id" in ticketFocado && ticketFocado.id)}`}</Typography>
                         )
                       }
                     >
@@ -280,7 +281,7 @@ export const InfoCabecalhoMenssagens = () => {
                           maxWidth: '80%',
                         }}
                       >
-                        {Value(ticketFocado.contact, 'name')}
+                        {Value(("contact" in ticketFocado && !ticketFocado.contact), 'name')}
                       </Typography>
                       <Typography
                         // variant="caption"
@@ -291,7 +292,7 @@ export const InfoCabecalhoMenssagens = () => {
                           whiteSpace: 'nowrap',
                           maxWidth: '80%',
                         }}
-                      >{`Atribuido à: ${Value(ticketFocado.user, 'name')}`}</Typography>
+                      >{`Atribuido à: ${Value(("user" in ticketFocado && ticketFocado.user), 'name')}`}</Typography>
                     </ListItemText>
                   </ListItem>
                 </List>
@@ -307,7 +308,7 @@ export const InfoCabecalhoMenssagens = () => {
                     <CalendarMonth />
                   </Button>
                 </Tooltip>
-                {ticketFocado.status === 'closed' ? (
+                {("status" in ticketFocado && ticketFocado.status) === 'closed' ? (
                   <Tooltip title="Reabir">
                     <Button
                       onClick={() => handleUpdateStatus(ticketFocado, 'open')}
@@ -316,7 +317,7 @@ export const InfoCabecalhoMenssagens = () => {
                     </Button>
                   </Tooltip>
                 ) : (
-                  ticketFocado.status === 'open' && (
+                  ("status" in ticketFocado && ticketFocado.status) === 'open' && (
                     <>
                       <Tooltip title="Resolver">
                         <Button
@@ -339,7 +340,7 @@ export const InfoCabecalhoMenssagens = () => {
                     </>
                   )
                 )}
-                {ticketFocado.status !== 'closed' && (
+                {("status" in ticketFocado && ticketFocado.status) !== 'closed' && (
                   <Tooltip title="Transferir">
                     <Button onClick={() => setModalTransferirTicket(true)}>
                       <AirlineStopsIcon />

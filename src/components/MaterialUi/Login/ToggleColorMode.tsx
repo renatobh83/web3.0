@@ -1,6 +1,6 @@
 
-import { PaletteMode } from '@mui/material/styles';
-import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import type { PaletteMode } from '@mui/material/styles';
+import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
 
 import ModeNightRoundedIcon from '@mui/icons-material/ModeNightRounded';
 import WbSunnyRoundedIcon from '@mui/icons-material/WbSunnyRounded';
@@ -15,6 +15,7 @@ export default function ToggleColorMode({
   toggleColorMode,
   ...props
 }: ToggleColorModeProps) {
+
   return (
     <IconButton
       onClick={toggleColorMode}

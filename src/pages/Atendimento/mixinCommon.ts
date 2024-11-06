@@ -15,7 +15,7 @@ export const dataInWords = (date: string): string => {
 export const formatarMensagemWhatsapp = (body: string): string | undefined => {
   if (!body) return;
 
-  let format = body;
+  let formattedMessage = body;
 
   const isAlphanumeric = (c: string) => {
     const x = c.charCodeAt(0);
@@ -25,19 +25,18 @@ export const formatarMensagemWhatsapp = (body: string): string | undefined => {
   };
 
   const whatsappStyles = (
-    format: string,
+    text: string,
     wildcard: string,
     opTag: string,
     clTag: string
   ) => {
     const indices: number[] = [];
-    for (let i = 0; i < format.length; i++) {
-      if (format[i] === wildcard) {
+    for (let i = 0; i < text.length; i++) {
+      if (text[i] === wildcard) {
         if (indices.length % 2) {
           if (
-            format[i - 1] !== " " &&
-            (isAlphanumeric(format[i + 1]) ||
-              typeof format[i + 1] === "undefined")
+            text[i - 1] !== " " &&
+            (isAlphanumeric(text[i + 1]) || typeof text[i + 1] === "undefined")
           ) {
             // Fechando tag
           } else {
@@ -45,14 +44,13 @@ export const formatarMensagemWhatsapp = (body: string): string | undefined => {
           }
         } else {
           if (
-            format[i + 1] !== " " &&
-            (isAlphanumeric(format[i - 1]) ||
-              typeof format[i + 1] === "undefined")
+            text[i + 1] !== " " &&
+            (isAlphanumeric(text[i - 1]) || typeof text[i + 1] === "undefined")
           ) {
             indices.push(i);
           }
         }
-      } else if (format[i].charCodeAt(0) === 10 && indices.length % 2) {
+      } else if (text[i].charCodeAt(0) === 10 && indices.length % 2) {
         indices.pop();
       }
     }
@@ -62,19 +60,19 @@ export const formatarMensagemWhatsapp = (body: string): string | undefined => {
     indices.forEach((v, i) => {
       const t = i % 2 ? clTag : opTag;
       v += e;
-      format = format.substr(0, v) + t + format.substr(v + 1);
+      text = text.substr(0, v) + t + text.substr(v + 1);
       e += t.length - 1;
     });
 
-    return format;
+    return text;
   };
 
-  format = whatsappStyles(format, "_", "<i>", "</i>");
-  format = whatsappStyles(format, "*", "<b>", "</b>");
-  format = whatsappStyles(format, "~", "<s>", "</s>");
-  format = format.replace(/\n/g, "<br>");
+  formattedMessage = whatsappStyles(formattedMessage, "_", "<i>", "</i>");
+  formattedMessage = whatsappStyles(formattedMessage, "*", "<b>", "</b>");
+  formattedMessage = whatsappStyles(formattedMessage, "~", "<s>", "</s>");
+  formattedMessage = formattedMessage.replace(/\n/g, "<br>");
 
-  return format;
+  return formattedMessage;
 };
 
 export const formatarMensagemRespostaBotaoWhatsapp = (body: string): string => {
@@ -98,6 +96,7 @@ export const formatarTemplates = (body: string): string => {
     bodyText = "",
     footerText = "";
   // biome-ignore lint/complexity/noForEach: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   components.forEach((component: any) => {
     if (component.type === "HEADER") {
       headerText = `<h2 style="font-weight: bold;">${component.text}</h2>`;
@@ -120,7 +119,7 @@ export const formatarBotaoWhatsapp = (body: string): string => {
     .replace(":", ":\n")}\n`;
 
   botoes = botoes.map((btn) => {
-    const [numero, texto] = btn.split(":");
+    const [, texto] = btn.split(":");
     return `<button title="Esse botão só é clicável no celular">➡️ ${texto.trim()}</button>`;
   });
 
@@ -134,24 +133,28 @@ export const formatarMensagemDeLista = (body: string): string => {
   if (!body) return "";
   const data = JSON.parse(body);
 
-  let header = data.header
+  const header = data.header
     ? `<h3 style="font-weight: bold;">${data.header}</h3>`
     : "";
-  let bodyText = data.body ? `<p>${data.body.replace(/\n/g, "<br>")}</p>` : "";
-  let footer = data.footer
+  const bodyText = data.body
+    ? `<p>${data.body.replace(/\n/g, "<br>")}</p>`
+    : "";
+  const footer = data.footer
     ? `<footer style="font-size: 0.75em; color: grey;">${data.footer}</footer>`
     : "";
-  let buttonText = data.button_text
+  const buttonText = data.button_text
     ? `<button title="Esse botão só é clicável no celular">➡️ ${data.button_text}</button>`
     : "";
 
   let sectionsHtml = "";
   if (data.sections && data.sections.length > 0) {
     // biome-ignore lint/complexity/noForEach: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     data.sections.forEach((section: any) => {
       if (section.rows && section.rows.length > 0) {
         sectionsHtml += "<ul>";
         // biome-ignore lint/complexity/noForEach: <explanation>
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         section.rows.forEach((row: any) => {
           sectionsHtml += `<li><strong>${row.title}</strong>: ${row.description}</li>`;
         });

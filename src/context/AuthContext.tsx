@@ -13,15 +13,15 @@ import { RealizarLogin } from '../services/login.js'
 import { useUserStore } from '../store/user.js'
 import { socketIO } from '../utils/socket.js'
 import { Errors } from '../utils/error.js'
-import { useApplicationStore } from '../store/application.js'
-import { EventEmitter } from 'events'
+
 
 // import { socketIO } from "../utils/socket.js";
 
 interface AuthContextType {
   isAuthenticated: boolean
   decryptData: (encryptedData: string) => string | null
-  encryptData: (data: string) => void
+  encryptData: (data: string) => string
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   login: (form: any) => void
   logout: () => void
 }
@@ -61,7 +61,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(true) // Estado de carregamento
   // const setProfileUser = useApplicationStore(s => s.setProfileUser)
   const setUserState = useUserStore(s => s.setUserState)
-  const encryptData = (data: string) => {
+  const encryptData = (data: string): string => {
     return CryptoJS.AES.encrypt(data, secretKey).toString()
   }
 

@@ -13,7 +13,7 @@ import { useAtendimentoStore } from '../../store/atendimento'
 import { useOutletContext } from 'react-router-dom'
 
 export const ModalAgendamentoMensagem = () => {
-  const { mensagensRapidas } = useOutletContext()
+  const ctx: { mensagensRapidas: [] } = useOutletContext()
 
   const modalagendamento = useAtendimentoStore(s => s.modalAgendamento)
   const setModalAgendamento = useAtendimentoStore(s => s.setModalAgendamento)
@@ -30,7 +30,7 @@ export const ModalAgendamentoMensagem = () => {
       <DialogContent>
         <InputMenssagem
           isScheduleDate={true}
-          mensagensRapidas={mensagensRapidas}
+          mensagensRapidas={ctx.mensagensRapidas}
         />
       </DialogContent>
       <DialogActions>
