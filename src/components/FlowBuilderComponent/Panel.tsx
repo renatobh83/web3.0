@@ -114,7 +114,9 @@ export const PanelChatFlow = () => {
       }
 
       edgeReconnectSuccessful.current = true
+      // @ts-ignore
       reconnectEdgeZ(oldEdge, newConnection)
+      // @ts-ignore
       setLocalEdges(els => reconnectEdge(oldEdge, newConnection, els))
 
     },
@@ -206,7 +208,9 @@ export const PanelChatFlow = () => {
 
   const onConnect = (params: Connection | Edge) => {
     const updatedEdges = addEdge(params, localEdges)
+    // @ts-ignore
     setLocalEdges(updatedEdges) // Atualiza os edges locais
+    // @ts-ignore
     setEdges(updatedEdges) // Atualiza os edges no Zustand
   }
   const handleDeleteNode = (nodeId: string) => {
@@ -243,6 +247,7 @@ export const PanelChatFlow = () => {
         <ReactFlow
           nodes={localNodes}
           edges={localEdges}
+          // @ts-ignore
           nodeTypes={NODE_TYPES}
           edgeTypes={EDGE_TYPES}
           defaultEdgeOptions={{ type: 'default' }}

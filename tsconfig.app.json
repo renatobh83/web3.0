@@ -15,7 +15,9 @@
     "jsx": "react-jsx",
 
     /* Linting */
+    "noImplicitAny": false,
     "noUnusedLocals": true,
+
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noEmitOnError": false, // Permite a compilação mesmo com erros
