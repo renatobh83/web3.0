@@ -409,9 +409,9 @@ export const shape = {
   borderRadius: 8,
 };
 
-// @ts-ignore
 const defaultShadows: Shadows = [
-  // "var(--mui-palette-baseShadow)",
+  // @ts-ignore
+  "var(--mui-palette-baseShadow)",
   ...defaultTheme.shadows.slice(1),
 ];
 export const shadows = defaultShadows;

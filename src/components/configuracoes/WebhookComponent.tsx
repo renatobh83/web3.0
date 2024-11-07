@@ -78,6 +78,7 @@ export const WebhookConfiguracao = () => {
     { field: 'Descricao', headerName: 'desc', name: 'nomeApi' },
     { field: 'Usuario', headerName: 'usuario', name: 'usuario' },
     { field: 'Senha', headerName: 'senha', name: 'senha' },
+    { field: 'Status', headerName: 'status', name: 'status' },
     { field: 'Link', headerName: 'baseURl', name: 'baseURl' },
     {
       field: 'Operações',
@@ -331,6 +332,7 @@ export const WebhookConfiguracao = () => {
                 onChange={e => handleOnChange(e.target.value, 'senha')}
               />
               <TextField
+                fullWidth
                 variant="filled"
                 label="Link"
                 value={stateWebhook?.baseURl}

@@ -43,7 +43,7 @@ export const Contatos: React.FC<{
   const [openModalNovoTicket, setOpenModalNovoTicket] = useState(false)
   const handleSaveTicket = async contact => {
     if (!contact.id) return
-
+    setContatoSelecionado(contact)
     setOpenModalNovoTicket(true)
   }
   const columns = [
@@ -51,8 +51,6 @@ export const Contatos: React.FC<{
       name: 'profilePicUrl',
       label: '',
       field: 'profilePicUrl',
-      style: 'w-[50px]',
-      align: 'center',
       renderCell: (params: { value: string | undefined }) => (
         <Box
           sx={{
@@ -90,8 +88,6 @@ export const Contatos: React.FC<{
       name: 'name',
       label: 'Nome',
       field: 'name',
-      align: 'left',
-      style: 'w-[300px]',
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       format: (_v: any, r: { number: any; name: any; pushname: any }) =>
         r.number && r.name === r.number && r.pushname ? r.pushname : r.name,
@@ -100,22 +96,16 @@ export const Contatos: React.FC<{
       name: 'number',
       label: 'WhatsApp',
       field: 'number',
-      align: 'center',
-      style: 'w-[300px]',
     },
     {
       name: 'wallet',
       label: 'Carteira',
       field: 'wallet',
-      align: 'center',
-      style: 'w-[300px]',
     },
     {
       name: 'tags',
       label: 'Etiquetas',
       field: 'tags',
-      align: 'center',
-      style: 'w-[300px]',
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       renderCell: (params: { value: any }) => (
         // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
@@ -126,23 +116,18 @@ export const Contatos: React.FC<{
       name: 'email',
       label: 'Email',
       field: 'email',
-      style: 'w-[500px]',
-      align: 'left',
     },
 
     {
       name: 'birthdayDate',
       label: 'Aniversário',
       field: 'birthdayDate',
-      style: 'w-[500px]',
-      align: 'left',
     },
 
     {
       name: 'acoes',
       label: 'Ações',
       field: 'acoes',
-      align: 'center',
       renderCell: (params: { row }) => (
         <Box
           sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}
@@ -152,7 +137,6 @@ export const Contatos: React.FC<{
             <Tooltip title="Abrir ticket">
               <IconButton
                 onClick={() => {
-                  setContatoSelecionado(params.row)
                   handleSaveTicket(params.row)
                 }}
               >
@@ -184,12 +168,13 @@ export const Contatos: React.FC<{
   }
   const closeModalNovoTicket = () => {
     setOpenModalNovoTicket(false)
+    setContatoSelecionado({})
   }
   const [pagination, setPagination] = useState({ page: 0, rowsPerPage: 10 })
   const [filter, setFilter] = useState('')
   const { contatos, loadContacts } = useContatosStore()
   const whatsapp = useWhatsappStore(s => s.whatsApps)
-  const [contatoSelecionado, setContatoSelecionado] = useState(null)
+  const [contatoSelecionado, setContatoSelecionado] = useState({})
 
   const [modalOpen, setModalOpen] = useState(false)
   const handlePageChange = (_event: unknown, newPage: number) => {
@@ -254,7 +239,7 @@ export const Contatos: React.FC<{
       sx={{
         width: '100%',
         maxWidth: { sm: '100%', md: '1700px' },
-        px: 4,
+        px: 2,
         pt: 2,
       }}
     >
@@ -272,9 +257,9 @@ export const Contatos: React.FC<{
           placeholder="Localize"
           value={filter}
           onChange={e => setFilter(e.target.value)}
-          // InputProps={{
-          //   startAdornment: <SearchIcon />,
-          // }}
+        // InputProps={{
+        //   startAdornment: <SearchIcon />,
+        // }}
         />
         <Box sx={{ gap: 2, display: 'flex' }}>
           <Button

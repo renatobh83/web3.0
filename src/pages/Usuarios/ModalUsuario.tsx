@@ -67,6 +67,7 @@ export const ModalUsuario: React.FC = () => {
     };
 
     useEffect(() => {
+        console.log(usuarioSelecionado)
         if (usuarioSelecionado) {
             setUsuario({
                 id: usuarioSelecionado.id ?? Number(usuarioSelecionado.userId),
@@ -145,6 +146,7 @@ export const ModalUsuario: React.FC = () => {
                                     <IconButton
                                         onClick={handleClickShowPassword}
                                         onMouseDown={handleMouseDownPassword}
+                                        sx={{ height: '10px', width: '10px', mr: 2 }}
                                     >
                                         {showPassword ? <VisibilityOff /> : <Visibility />}
                                     </IconButton>
@@ -152,20 +154,22 @@ export const ModalUsuario: React.FC = () => {
                             }
                         />
                     </FormControl>
-                    <FormControl fullWidth sx={{ m: 1 }} variant="standard">
-                        <InputLabel htmlFor="profile">Perfil</InputLabel>
-                        <Select
-                            id="profile"
-                            value={usuario.profile}
-                            onChange={(e) => setUsuario((prev) => ({ ...prev, profile: e.target.value as string }))}
-                        >
-                            {optionsProfile.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    {!usuarioSelecionado?.token &&
+                        <FormControl fullWidth sx={{ m: 1 }} variant="standard">
+                            <InputLabel htmlFor="profile">Perfil</InputLabel>
+                            <Select
+                                id="profile"
+                                value={usuario.profile}
+                                onChange={(e) => setUsuario((prev) => ({ ...prev, profile: e.target.value as string }))}
+                            >
+                                {optionsProfile.map((option) => (
+                                    <MenuItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    }
                     <DialogActions>
                         <Button variant="contained" color="error" onClick={toggleModalUsuario} disabled={isLoading}>
                             Cancelar

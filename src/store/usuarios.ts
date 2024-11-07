@@ -9,6 +9,7 @@ export interface Usuario {
   queues?: [];
   name?: string;
   id?: number;
+  token?: string;
 }
 
 interface UsuarioStore {

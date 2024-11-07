@@ -34,6 +34,8 @@ export const ModalNovoTicket = ({
   close,
   isContact,
 }: ModalNovoTicketProps) => {
+
+
   const userId = +localStorage.getItem('userId')
   const navigate = useNavigate()
   const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
@@ -55,26 +57,19 @@ export const ModalNovoTicket = ({
       })
     } catch (error) { }
   }
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (isContact) {
+    if (isContact.id) {
       setContatoSelecionado(isContact)
       handleSelectChannel()
+
     }
-  }, [])
+  }, [isContact])
+  const handleCloseModalCanal = () => {
+    setModalCanal(false)
+    setContatoSelecionado(null)
+  }
   const handleSelectChannel = () => {
-    if ("id" in contatoSelecionado && !contatoSelecionado.id) return
-    const itens:
-      | ((prevState: never[]) => never[])
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-      | { label: any; value: any }[] = []
-    // biome-ignore lint/complexity/noForEach: <explanation>
-    whatsApps.forEach(w => {
-      if (w.type === 'whatsapp') {
-        itens.push({ label: w.name, value: w.id })
-      }
-    })
-    setCanais(itens)
+    if (contatoSelecionado && !contatoSelecionado.id) return
     setModalCanal(true)
   }
   const abrirChatContato = ticket => {
@@ -113,7 +108,7 @@ export const ModalNovoTicket = ({
     if (!canalSelecionado) return
     try {
       const { data: ticket } = await CriarTicket({
-        contactId: "id" in contatoSelecionado && contatoSelecionado.id,
+        contactId: contatoSelecionado?.id,
         isActiveDemand: true,
         userId: userId,
         channel: 'whatsapp',
@@ -135,12 +130,26 @@ export const ModalNovoTicket = ({
       Errors(error)
     }
   }
-  const handlChange = e => {
+  const handleChange = e => {
     setCanaSelecionado(e.target.value)
   }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    setCanais([])
+
+    const itens:
+      | ((prevState: never[]) => never[])
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      | { label: any; value: any }[] = []
+    // biome-ignore lint/complexity/noForEach: <explanation>
+    whatsApps.forEach(w => {
+      if (w.type === 'whatsapp') {
+        itens.push({ label: w.name, value: w.id })
+      }
+    })
+    setCanais(itens)
+    return () => {
+      setCanais([])
+    }
   }, [contatoSelecionado])
 
   return (
@@ -160,7 +169,7 @@ export const ModalNovoTicket = ({
       {modalCanal && (
         <Dialog
           open={modalCanal}
-          onClose={() => setModalCanal(false)}
+          onClose={() => handleCloseModalCanal()}
           fullWidth
           maxWidth="sm"
         >
@@ -177,7 +186,7 @@ export const ModalNovoTicket = ({
               </FormLabel>
               <RadioGroup
                 aria-labelledby="demo-radio-buttons-group-label"
-                onChange={canal => handlChange(canal)}
+                onChange={canal => handleChange(canal)}
                 name="radio-buttons-group"
               >
                 {' '}
@@ -193,7 +202,7 @@ export const ModalNovoTicket = ({
             </FormControl>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setModalCanal(false)}>Cancelar</Button>
+            <Button onClick={() => handleCloseModalCanal()}>Cancelar</Button>
             <Button onClick={() => handleCreateTicket()}>Criar ticket</Button>
           </DialogActions>
         </Dialog>

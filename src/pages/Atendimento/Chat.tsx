@@ -134,7 +134,7 @@ export const Chat = () => {
 
     setOpenModalEnc(true)
   }
-  function cStyleScroll() {
+  function cStyleScroll(): React.CSSProperties {
     const loading = 0 // Substitua essa lógica conforme necessário
     const add = inputHeight + loading
 
@@ -142,10 +142,9 @@ export const Chat = () => {
       minHeight: `calc(100vh - ${62 + add}px)`,
       height: `calc(100vh - ${62 + add}px)`,
       width: '100%',
-      // overflowY: auto,
+      overflowY: 'auto',
       contain: 'strict',
       willChange: 'scroll-position',
-      backgroundCole: 'white',
     }
   }
   return (
@@ -186,6 +185,8 @@ export const Chat = () => {
           loader={<></>}
           scrollableTarget="scrollarea_container"
         >
+
+
           <div style={cStyleScroll()}>
             <ChatMensagem
               menssagens={cMessages}

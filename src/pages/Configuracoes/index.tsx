@@ -86,7 +86,7 @@ function CustomTabPanel(props: TabPanelProps) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ p: 1 / 2 }}>{children}</Box>}
     </Box>
   )
 }
@@ -193,7 +193,7 @@ export const Configuracoes = () => {
                 sx={{
                   display: 'flex',
                 }}
-                // onClick={(event) => handleListItemClick(event, item.id)}
+              // onClick={(event) => handleListItemClick(event, item.id)}
               >
                 <ListItemText secondary={keyValues[item.key]?.subtitle || ''}>
                   {keyValues[item.key]?.title || 'Valor não encontrado'}

@@ -9,7 +9,6 @@ export function TabPanel(props: TabPanelProps) {
 
     return (
         <div
-            // biome-ignore lint/a11y/useSemanticElements: <explanation>
             role="tabpanel"
             hidden={value !== index}
             id={`vertical-tabpanel-${index}`}
