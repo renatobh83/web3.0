@@ -120,8 +120,8 @@ export const Interacoes = ({ node }: InteracoesProps) => {
         }
         setHasChanges(false) // Resetar flag de alterações após salvar
       }
-    }, 700) // Tempo de debounce em milissegundos (300ms neste exemplo)
-    // Cleanup function para cancelar o timeout se `interacoes` mudar antes de concluir o debounce
+    }, 700)
+
     return () => {
       clearTimeout
     }
@@ -168,11 +168,13 @@ export const Interacoes = ({ node }: InteracoesProps) => {
     }
   }
   const handleSelectRadio = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log((event.target as HTMLInputElement).value)
+
     setSelectApi((event.target as HTMLInputElement).value)
+
   }
   const listarWebhook = useCallback(async () => {
     const { data } = await ListarWebhook()
+
     setWebhooks(data)
   }, [])
 
@@ -296,16 +298,14 @@ export const Interacoes = ({ node }: InteracoesProps) => {
                             row
                             name="row-radio-buttons-group"
                           >
-                            {webhooks
-                              ?.filter(i => i.status === 'CONECTADA')
-                              .map(w => (
-                                <FormControlLabel
-                                  key={w.id}
-                                  value={w.id}
-                                  control={<Radio size="small" />}
-                                  label={w.nomeApi}
-                                />
-                              ))}
+                            {webhooks?.map(w => (
+                              <FormControlLabel
+                                key={w.id}
+                                value={w.id}
+                                control={<Radio size="small" />}
+                                label={w.nomeApi}
+                              />
+                            ))}
                           </RadioGroup>
                           <TextField
                             name={interacao.type}

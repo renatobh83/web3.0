@@ -125,9 +125,10 @@ export const WebhookConfiguracao = () => {
     setTempValue(value)
   }
   const handleDeleteInputChips = (chipToDelete: string) => {
+
     setStateWebhook(prev => ({
       ...prev,
-      acoes: prev.action.filter(chip => chip !== chipToDelete),
+      action: prev.action.filter(chip => chip !== chipToDelete),
     }))
   }
 
