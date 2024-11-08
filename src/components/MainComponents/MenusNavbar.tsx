@@ -134,15 +134,15 @@ export const MenusNavbar = () => {
     }
   }
   function abrirChatContato(ticket) {
-    if ('id' in ticketFocado) {
-      if (
-        !(
-          ticket.status !== 'pending' &&
-          (ticket.id !== ticketFocado.id || location.pathname !== 'chat')
-        )
+
+    if (
+      !(
+        ticket.status !== 'pending' &&
+        (ticket.id !== ticketFocado?.id || location.pathname !== 'chat')
       )
-        return
-    }
+    )
+      return
+
     setHasMore(true)
     AbrirChatMensagens(ticket)
     goToChat(ticket.id)

@@ -76,17 +76,17 @@ export const ItemTicket = ({ filas, ticket }: ItemTicketProps) => {
   // const userid = +localStorage.getItem('userId')
   const nav = useNavigate()
   const abrirChatContato = async ticket => {
-    if ('id' in ticketFocado) {
-      if (
-        !(
-          ticket.status !== 'pending' &&
-          (ticket.id !== ticketFocado.id || location.pathname !== 'chat')
-        )
+
+    if (
+      !(
+        ticket.status !== 'pending' &&
+        (ticket.id !== ticketFocado?.id || location.pathname !== 'chat')
       )
-        return
-    }
+    )
+      return
+
     nav('/atendimento')
-    if ('id' in ticketFocado) if (ticket.id === ticketFocado.id) return
+    if (ticket.id === ticketFocado?.id) return
 
     AbrirChatMensagens(ticket)
     goToChat(ticket.id)
@@ -144,7 +144,7 @@ export const ItemTicket = ({ filas, ticket }: ItemTicketProps) => {
                 <Badge
                   badgeContent={ticket.unreadMessages}
                   color="secondary"
-                  // sx={{ mr: 1 }}
+                // sx={{ mr: 1 }}
                 />
               </Button>
             </Tooltip>
@@ -173,7 +173,7 @@ export const ItemTicket = ({ filas, ticket }: ItemTicketProps) => {
             display="flex"
             justifyContent="space-between"
             alignItems="center"
-            // sx={{ width: '100%' }}
+          // sx={{ width: '100%' }}
           >
             <Typography
               // fontWeight="bold"/

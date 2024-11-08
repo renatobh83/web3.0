@@ -7,7 +7,7 @@ export const MensagemRespondida = ({ mensagem }) => {
   const { ticketFocado } = useAtendimentoTicketStore()
   const isGroupLabel = mensagem => {
     try {
-      return 'isGroup' in ticketFocado && ticketFocado.isGroup
+      return ticketFocado?.isGroup
         ? mensagem.contact.name
         : ''
     } catch (error) {
@@ -116,10 +116,10 @@ export const MensagemRespondida = ({ mensagem }) => {
                 'image',
                 'video',
               ].includes(mensagem.mediaType) && (
-                <Typography>
-                  {formatarMensagemWhatsapp(mensagem.body)}
-                </Typography>
-              )}
+                  <Typography>
+                    {formatarMensagemWhatsapp(mensagem.body)}
+                  </Typography>
+                )}
             </Box>
           </Box>
         </Box>

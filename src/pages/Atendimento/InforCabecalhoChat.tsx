@@ -151,6 +151,7 @@ export const InfoCabecalhoMenssagens = () => {
   }, [modalTransferirTicket])
 
   const Value = (obj, prop) => {
+
     try {
       return obj[prop]
     } catch (error) {
@@ -160,26 +161,26 @@ export const InfoCabecalhoMenssagens = () => {
   const confirmarTransferenciaTicket = async () => {
     // if (!filaSelecionada) return
     if (
-      usuarioSelecionado === ("userId" in ticketFocado && ticketFocado.userId) &&
-      ("userId" in ticketFocado && ticketFocado.userId) !== null
+      usuarioSelecionado === ticketFocado?.userId &&
+      ticketFocado?.userId !== null
     ) {
       toast.error('Ticket já pertece ao usuário selecionado.')
       return
     }
-    if (("userId" in ticketFocado && ticketFocado.userId) === userId && userId === usuarioSelecionado) {
+    if (ticketFocado?.userId === userId && userId === usuarioSelecionado) {
       toast.error('Ticket já pertece ao seu usuário')
       return
     }
     if (
-      ("queueId" in ticketFocado && ticketFocado.queueId) === filaSelecionada &&
-      ("userId" in ticketFocado && ticketFocado.userId) === usuarioSelecionado
+      ticketFocado?.queueId === filaSelecionada &&
+      ticketFocado?.userId === usuarioSelecionado
     ) {
       toast.error('Ticket já pertece a esta fila e usuário')
       return
     }
     try {
       await AtualizarTicket
-        (("id" in ticketFocado && ticketFocado.id), {
+        (ticketFocado?.id, {
           userId: usuarioSelecionado,
           queueId: filaSelecionada,
           status: usuarioSelecionado == null ? 'pending' : 'open',
@@ -187,7 +188,7 @@ export const InfoCabecalhoMenssagens = () => {
         })
       toast.success('Ticket transferido.')
       setModalTransferirTicket(false)
-      setTicketFocado({})
+      setTicketFocado(null)
     } catch (error) {
       Errors(error)
     }
@@ -207,6 +208,7 @@ export const InfoCabecalhoMenssagens = () => {
     setFilaSelecionada(null)
     setUsuarioSelecionado(null)
   }
+
   return (
     <AppBar
       open={isContactInfo}
@@ -233,7 +235,7 @@ export const InfoCabecalhoMenssagens = () => {
         <Box
           sx={{ display: 'flex', width: '100%', alignItems: 'center', gap: 2 }}
         >
-          {("id" in ticketFocado && !ticketFocado.id) ? (
+          {!ticketFocado?.id ? (
             <Box sx={{ width: { sm: 100, md: 300 } }}>
               <Skeleton />
               <Skeleton />
@@ -254,7 +256,7 @@ export const InfoCabecalhoMenssagens = () => {
                   <ListItem sx={{ gap: 2 }} disablePadding>
                     <ListItemIcon>
                       <Avatar
-                        src={Value(("contact" in ticketFocado && !ticketFocado.contact), 'profilePicUrl')}
+                        src={Value(ticketFocado?.contact, 'profilePicUrl')}
                       />
                     </ListItemIcon>
 
@@ -263,13 +265,13 @@ export const InfoCabecalhoMenssagens = () => {
                         display: { xs: 'none', sm: 'none', md: 'block' },
                       }}
                       secondary={
-                        Value(("user" in ticketFocado && !ticketFocado.user), 'name') && (
+                        Value(ticketFocado?.user, 'name') && (
                           <Typography
                             variant="caption"
                             sx={{
                               fontSize: 9,
                             }}
-                          >{`Ticket ${("id" in ticketFocado && ticketFocado.id)}`}</Typography>
+                          >{`Ticket ${ticketFocado?.id}`}</Typography>
                         )
                       }
                     >
@@ -281,7 +283,8 @@ export const InfoCabecalhoMenssagens = () => {
                           maxWidth: '80%',
                         }}
                       >
-                        {Value(("contact" in ticketFocado && !ticketFocado.contact), 'name')}
+
+                        {Value(ticketFocado?.contact, 'name')}
                       </Typography>
                       <Typography
                         // variant="caption"
@@ -292,7 +295,7 @@ export const InfoCabecalhoMenssagens = () => {
                           whiteSpace: 'nowrap',
                           maxWidth: '80%',
                         }}
-                      >{`Atribuido à: ${Value(("user" in ticketFocado && ticketFocado.user), 'name')}`}</Typography>
+                      >{`Atribuido à: ${Value(ticketFocado?.user, 'name')}`}</Typography>
                     </ListItemText>
                   </ListItem>
                 </List>
@@ -308,7 +311,7 @@ export const InfoCabecalhoMenssagens = () => {
                     <CalendarMonth />
                   </Button>
                 </Tooltip>
-                {("status" in ticketFocado && ticketFocado.status) === 'closed' ? (
+                {ticketFocado?.status === 'closed' ? (
                   <Tooltip title="Reabir">
                     <Button
                       onClick={() => handleUpdateStatus(ticketFocado, 'open')}
@@ -317,7 +320,7 @@ export const InfoCabecalhoMenssagens = () => {
                     </Button>
                   </Tooltip>
                 ) : (
-                  ("status" in ticketFocado && ticketFocado.status) === 'open' && (
+                  ticketFocado?.status === 'open' && (
                     <>
                       <Tooltip title="Resolver">
                         <Button
@@ -340,7 +343,7 @@ export const InfoCabecalhoMenssagens = () => {
                     </>
                   )
                 )}
-                {("status" in ticketFocado && ticketFocado.status) !== 'closed' && (
+                {ticketFocado?.status !== 'closed' && (
                   <Tooltip title="Transferir">
                     <Button onClick={() => setModalTransferirTicket(true)}>
                       <AirlineStopsIcon />
@@ -373,7 +376,7 @@ export const InfoCabecalhoMenssagens = () => {
               onClick={async () => {
                 if (confirmAction) {
                   await confirmAction().then(() => {
-                    setTicketFocado({})
+                    setTicketFocado(null)
                     navegate('/atendimento')
                   }) // Executa a função de confirmação
                 }

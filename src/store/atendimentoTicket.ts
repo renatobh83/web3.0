@@ -38,9 +38,8 @@ interface AtendimentoTicketState {
   chatTicketDisponivel: boolean;
   tickets: Ticket[];
   ticketsLocalizadosBusca: Ticket[];
-
   // biome-ignore lint/complexity/noBannedTypes: <explanation>
-  ticketFocado: Ticket | {};
+  ticketFocado: Ticket | null;
   hasMore: boolean;
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   contatos: any[];
@@ -76,8 +75,7 @@ interface AtendimentoTicketActions {
   updateTicketFocadoContact: (payload: any) => void;
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   updateContact: (payload: any) => void;
-  // biome-ignore lint/complexity/noBannedTypes: <explanation>
-  setTicketFocado: (payload: Ticket | {}) => void;
+  setTicketFocado: (payload: Ticket | null) => void;
   updateMessageStatus: (payload: Message & { ticket: Ticket }) => void;
   loadInitialMessages: (payload: {
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -307,13 +305,14 @@ export const useAtendimentoTicketStore = create<
   chatTicketDisponivel: false,
   tickets: [],
   ticketsLocalizadosBusca: [],
-  ticketFocado: {
-    contacts: {
-      tags: [],
-      wallets: [],
-      extraInfo: [],
-    },
-  },
+  ticketFocado: null,
+  // ticketFocado: {
+  //   // contacts: {
+  //   //   tags: [],
+  //   //   wallets: [],
+  //   //   extraInfo: [],
+  //   // },
+  // },
   hasMore: false,
   contatos: [],
   mensagens: [],
@@ -384,7 +383,7 @@ export const useAtendimentoTicketStore = create<
         };
         const updatedTickets = [...state.tickets];
         updatedTickets[ticketIndex] = updatedTicket;
-        if ("id" in state.ticketFocado) {
+        if (state.ticketFocado) {
           // Agora o TypeScript sabe que ticketFocado é do tipo Ticket
           if (state.ticketFocado.id === payload.id) {
             return {
@@ -439,7 +438,7 @@ export const useAtendimentoTicketStore = create<
         }
         return t;
       });
-      if ("contactId" in state.ticketFocado) {
+      if (state.ticketFocado) {
         updatedTicketFocado =
           state.ticketFocado.contactId === payload.id
             ? { ...state.ticketFocado, contact: payload }
@@ -449,16 +448,15 @@ export const useAtendimentoTicketStore = create<
       return { tickets: updatedTickets, ticketFocado: updatedTicketFocado };
     }),
 
-  setTicketFocado: (payload) =>
+  setTicketFocado: (payload) => {
+    if (!payload) return;
     set(() => ({
       ticketFocado: {
         ...payload,
-        status:
-          "status" in payload && payload.status === "pending"
-            ? "open"
-            : "status" in payload && payload.status,
+        status: payload.status === "pending" ? "open" : payload.status,
       },
-    })),
+    }));
+  },
 
   loadInitialMessages: (payload) =>
     set(() => {
@@ -485,10 +483,7 @@ export const useAtendimentoTicketStore = create<
 
   updateMessages: (payload) =>
     set((state) => {
-      if (
-        "id" in state.ticketFocado &&
-        state.ticketFocado.id === payload.ticket.id
-      ) {
+      if (state.ticketFocado?.id === payload.ticket.id) {
         const updatedMessages = [...state.mensagens];
         const messageIndex = updatedMessages.findIndex(
           (m) => m.id === payload.id
@@ -519,8 +514,7 @@ export const useAtendimentoTicketStore = create<
     const { ticketFocado, mensagens } = get();
 
     // Se o ticket não for o focado, não atualiza.
-    if (("id" in ticketFocado && ticketFocado?.id) !== payload.ticket.id)
-      return;
+    if (ticketFocado?.id !== payload.ticket.id) return;
 
     const messageIndex = mensagens.findIndex((m) => m.id === payload.id);
     const updatedMensagens = [...mensagens];
@@ -533,10 +527,7 @@ export const useAtendimentoTicketStore = create<
     set({ mensagens: updatedMensagens });
 
     // Tratar a atualização das mensagens agendadas, se existirem
-    if (
-      "scheduledMessages" in ticketFocado &&
-      ticketFocado?.scheduledMessages
-    ) {
+    if (ticketFocado?.scheduledMessages) {
       const updatedScheduledMessages = ticketFocado.scheduledMessages.filter(
         (m) => m.id !== payload.id
       );
@@ -553,7 +544,6 @@ export const useAtendimentoTicketStore = create<
     try {
       const mensagens = await LocalizarMensagens(params);
       const { loadInitialMessages, loadMoreMessages } = get(); // Acessa os métodos da store
-
       set(() => ({
         hasMore: mensagens.data.hasMore,
       }));
@@ -574,7 +564,7 @@ export const useAtendimentoTicketStore = create<
   AbrirChatMensagens: async (data) => {
     try {
       // Resetando ticket focado e mensagens
-      set({ ticketFocado: {}, mensagens: [] });
+      set({ ticketFocado: null, mensagens: [] });
 
       // // Consultar os dados do ticket
       const ticket = await ConsultarDadosTicket(data);

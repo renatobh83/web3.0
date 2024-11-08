@@ -243,7 +243,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   }
   // Função que será chamada para enviar a mensagem
   const enviarMensagem = async () => {
-    const ticketId = "id" in ticketFocado && ticketFocado.id
+    const ticketId = ticketFocado?.id
     setIsloading(true)
     try {
       if (!cMostrarEnvioArquivo()) {
@@ -335,7 +335,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
       //     formData.append('scheduleDate', this.scheduleDate)
       // }
 
-      const ticketId = "id" in ticketFocado && ticketFocado.id
+      const ticketId = ticketFocado?.id
 
       await EnviarMensagemTexto(ticketId, formData)
 
@@ -358,7 +358,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   }
 
   function cDisableActions() {
-    return isRecordingAudio || ("status" in ticketFocado && ticketFocado.status) !== 'open'
+    return isRecordingAudio || ticketFocado?.status !== 'open'
   }
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -440,7 +440,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   }
   return (
     <>
-      {("status" in ticketFocado && ticketFocado.status) !== 'pending' ? (
+      {ticketFocado?.status !== 'pending' ? (
         <>
           {isScheduleDate && (
             <AgendamentoComponent getScheduleDate={setScheduleDate} />
@@ -642,7 +642,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
               {textChat && (
                 <Tooltip title="Enviar Mensagem">
                   <IconButton
-                    disabled={("status" in ticketFocado && ticketFocado.status) !== 'open' || loading}
+                    disabled={ticketFocado?.status !== 'open' || loading}
                     onClick={enviarMensagem}
                   >
                     <Send />
@@ -652,7 +652,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
               {cMostrarEnvioArquivo() && (
                 <Tooltip title="Enviar Mensagem">
                   <IconButton
-                    disabled={("status" in ticketFocado && ticketFocado.status) !== 'open'}
+                    disabled={ticketFocado?.status !== 'open'}
                     onClick={enviarMensagem}
                   >
                     <Send />

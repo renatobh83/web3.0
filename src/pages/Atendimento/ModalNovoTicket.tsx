@@ -75,7 +75,7 @@ export const ModalNovoTicket = ({
     if (
       !(
         ticket.status !== 'pending' &&
-        (ticket.id !== ("id" in ticketFocado && ticketFocado.id) || location.pathname !== 'chat')
+        (ticket.id !== ticketFocado?.id || location.pathname !== 'chat')
       )
     )
       return

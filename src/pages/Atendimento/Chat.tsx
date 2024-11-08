@@ -68,13 +68,13 @@ export const Chat = () => {
   const onLoadMore = async () => {
     console.log('load More')
     if (loading) return
-    if (!hasMore || ("id" in ticketFocado && ticketFocado.id)) {
+    if (!hasMore || ticketFocado?.id) {
       return
     }
     const nextPageNumber = params.pageNumber + 1
     try {
       setLoading(true)
-      await LocalizarMensagensTicket({ pageNumber: nextPageNumber, ticketId: ("id" in ticketFocado && String(ticketFocado.id)) })
+      await LocalizarMensagensTicket({ pageNumber: nextPageNumber, ticketId: (String(ticketFocado?.id)) })
       // Atualiza os params com a nova página após o carregamento
       setParams(prevParams => ({
         ...prevParams,

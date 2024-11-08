@@ -110,7 +110,7 @@ export const ChatMensagem = ({
   }
   const isGroupLabel = mensagem => {
     try {
-      return ("isGroup" in ticketFocado && ticketFocado.isGroup) ? mensagem.contact.name : ''
+      return ticketFocado?.isGroup ? mensagem.contact.name : ''
     } catch (error) {
       return ''
     }
@@ -233,8 +233,6 @@ export const ChatMensagem = ({
       const element = document.getElementById('inicioListaMensagensChat')
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' })
-      } else {
-        console.log('Elemento não encontrado')
       }
     }, 200)
   }

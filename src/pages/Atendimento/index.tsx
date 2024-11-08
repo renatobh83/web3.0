@@ -682,7 +682,7 @@ export function Atendimento() {
     }
     return () => {
       resetTickets()
-      setTicketFocado({})
+      setTicketFocado(null)
     }
   }, [])
 

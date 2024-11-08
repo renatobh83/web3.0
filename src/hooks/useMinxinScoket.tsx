@@ -119,7 +119,7 @@ export const useMixinSocket = () => {
             !data.payload.read &&
             (data.payload.ticket.userId === userId ||
               !data.payload.ticket.userId) &&
-            data.payload.ticket.id !== ("id" in ticketFocado && ticketFocado.id)
+            data.payload.ticket.id !== ticketFocado?.id
           ) {
 
             if (data.payload.ticket.userId) {
