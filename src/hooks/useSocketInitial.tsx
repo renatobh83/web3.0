@@ -18,6 +18,7 @@ import { orderTickets } from '../utils/ordertTickets'
 // import { EventEmitter } from "events";
 import { eventEmitter as eventNotification } from '../pages/Atendimento/index'
 import { eventEmitterMain } from '../layout/MainLayout'
+import checkTicketFilter from '../utils/checkTicketFilter'
 // export const eventEmitter = new EventEmitter();
 
 export const useSocketInitial = () => {
@@ -236,7 +237,6 @@ export const useSocketInitial = () => {
           }
           try {
             const response = await ConsultarTickets(paramsOpen)
-            console.log(response)
             updateNotifications(response.data)
           } catch (error) { }
         }
@@ -293,21 +293,23 @@ export const useSocketInitial = () => {
           console.log('socket ON: CHAT:CREATE - nova mensagem ', data)
           // if (data.payload.ticket.userId !== userId) return
           // if (data.payload.fromMe) return
-          if (data.payload.ticket.userId === userId && !data.payload.fromMe) {
-            if (location.pathname.startsWith('/atendimento')) {
-              eventNotification.emit('handlerNotifications', data.payload)
-            } else {
-              eventEmitterMain.emit('handlerNotifications', data.payload)
-            }
-          }
-          if (!data.payload.ticket.userId && !data.payload.fromMe) {
-            if (location.pathname.startsWith('/atendimento')) {
-              eventNotification.emit('handlerNotifications', data.payload)
-            } else {
-              eventEmitterMain.emit('handlerNotifications', data.payload)
-            }
-          }
+          if (checkTicketFilter(data.payload.ticket)) {
 
+            if (data.payload.ticket.userId === userId && !data.payload.fromMe) {
+              if (location.pathname.startsWith('/atendimento')) {
+                eventNotification.emit('handlerNotifications', data.payload)
+              } else {
+                eventEmitterMain.emit('handlerNotifications', data.payload)
+              }
+            }
+            if (!data.payload.ticket.userId && !data.payload.fromMe) {
+              if (location.pathname.startsWith('/atendimento')) {
+                eventNotification.emit('handlerNotifications', data.payload)
+              } else {
+                eventEmitterMain.emit('handlerNotifications', data.payload)
+              }
+            }
+          }
           updateMessages(data.payload)
 
           // const paramsOpen = {

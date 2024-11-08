@@ -568,6 +568,7 @@ export const useAtendimentoTicketStore = create<
 
       // // Consultar os dados do ticket
       const ticket = await ConsultarDadosTicket(data);
+
       set(() => ({ ticketFocado: { ...ticket.data } }));
 
       // // Definindo parâmetros para localizar as mensagens do ticket

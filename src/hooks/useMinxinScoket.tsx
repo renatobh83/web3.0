@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom'
 import { Errors } from '../utils/error'
 import { format } from 'date-fns'
 import { orderTickets } from '../utils/ordertTickets'
+import checkTicketFilter from '../utils/checkTicketFilter'
 
 
 export const useMixinSocket = () => {
@@ -22,7 +23,9 @@ export const useMixinSocket = () => {
 
   const userId = +localStorage.getItem('userId')
   const loadTickets = useAtendimentoTicketStore(state => state.loadTickets)
+
   const ticketFocado = useAtendimentoTicketStore(state => state.ticketFocado)
+
   const setTicketFocado = useAtendimentoTicketStore(
     state => state.setTicketFocado
   )
@@ -97,7 +100,9 @@ export const useMixinSocket = () => {
   const socketTicket = useCallback(() => {
     const socket = socketRef.current
     socket?.on('connect', () => {
+
       socket?.on(`${usuario.tenantId}:ticket`, data => {
+        console.log(data)
         if (data.action === 'update' && data.ticket.userId === userId) {
           if (data.ticket.status === 'open' && !data.ticket.isTransference) {
             setTicketFocado(data.ticket)
@@ -119,7 +124,7 @@ export const useMixinSocket = () => {
             !data.payload.read &&
             (data.payload.ticket.userId === userId ||
               !data.payload.ticket.userId) &&
-            data.payload.ticket.id !== ticketFocado?.id
+            data.payload.ticket.id !== ticketFocado?.id && checkTicketFilter(data.payload.ticket)
           ) {
 
             if (data.payload.ticket.userId) {
@@ -171,6 +176,7 @@ export const useMixinSocket = () => {
           updateMessages(data.payload)
         }
         if (data.type === 'ticket:update') {
+
           const params = {
             searchParam: '',
             pageNumber: 1,
@@ -183,7 +189,7 @@ export const useMixinSocket = () => {
             includeNotQueueDefined: true,
           }
           const response = await ConsultarTickets(params)
-          const newTicketsOrder = orderTickets(response.data.tickets)
+          const newTicketsOrder = orderTickets(response.data.ticket)
           setTimeout(() => {
             loadTickets(newTicketsOrder)
           }, 200)
@@ -232,7 +238,7 @@ export const useMixinSocket = () => {
             pass_noti = element.id === data.payload.id ? true : pass_noti
           })
           // // Exibe Notificação
-          if (pass_noti) {
+          if (pass_noti && checkTicketFilter(data.payload)) {
             eventNotification.emit('playSoundNotification')
             const message = new Notification('Novo cliente pendente', {
               body: `Cliente: ${data.payload.contact.name}`,

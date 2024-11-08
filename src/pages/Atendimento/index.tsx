@@ -185,7 +185,7 @@ export function Atendimento() {
   const userid = localStorage.getItem('userId')
   const usuario = JSON.parse(decryptData('usuario'))
 
-  const { socketDisconnect, socketTicketList } = useMixinSocket()
+  const { socketDisconnect, socketTicketList, socketTicket } = useMixinSocket()
 
   const [switchStates, setSwitchStates] = useState(() => {
     const savedStates = JSON.parse(localStorage.getItem('filtrosAtendimento'))
@@ -654,6 +654,7 @@ export function Atendimento() {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     socketTicketList()
+    socketTicket()
     return () => {
       socketDisconnect()
     }
