@@ -158,12 +158,13 @@ export const ModalUsuario: React.FC = () => {
                         <FormControl fullWidth sx={{ m: 1 }} variant="standard">
                             <InputLabel htmlFor="profile">Perfil</InputLabel>
                             <Select
+                                sx={{ padding: 0.85 }}
                                 id="profile"
                                 value={usuario.profile}
                                 onChange={(e) => setUsuario((prev) => ({ ...prev, profile: e.target.value as string }))}
                             >
                                 {optionsProfile.map((option) => (
-                                    <MenuItem key={option.value} value={option.value}>
+                                    <MenuItem key={option.value} value={option.value} >
                                         {option.label}
                                     </MenuItem>
                                 ))}

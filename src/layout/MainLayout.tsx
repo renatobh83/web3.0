@@ -31,14 +31,7 @@ export const MainLayout: React.FC = () => {
         }).catch(error => {
           console.error('Erro ao solicitar permissão de notificação:', error);
         });
-      } else if (Notification.permission === 'granted') {
-        console.log('Permissão já concedida anteriormente');
-        // Já possui permissão, pode tocar sons ou enviar notificações
-      } else {
-        console.log('Permissão de notificação já negada anteriormente');
       }
-    } else {
-      console.log('Este navegador não suporta notificações');
     }
   }, [])
   useSocketInitial()
