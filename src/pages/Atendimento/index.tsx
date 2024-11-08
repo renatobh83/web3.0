@@ -384,7 +384,7 @@ export function Atendimento() {
   }
 
   function handlerNotifications(data) {
-    console.log('Emiter', data)
+
     if (data.ticket.userId) {
       const options = {
         body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
@@ -650,14 +650,7 @@ export function Atendimento() {
     }
   }, [])
 
-  if (Notification.permission === 'default') {
-    Notification.requestPermission().then(permission => {
-      if (permission === 'granted') {
-        console.log('Permissão de notificação concedida')
-        // Agora você pode tocar sons quando necessário, pois o usuário já interagiu
-      }
-    })
-  }
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     socketTicketList()

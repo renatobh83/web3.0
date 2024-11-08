@@ -17,6 +17,30 @@ export const MainLayout: React.FC = () => {
   const nav = useNavigate()
   const { AbrirChatMensagens } = useAtendimentoTicketStore()
   const { loadWhatsApps, whatsApps } = useWhatsappStore()
+  useEffect(() => {
+    if ("Notification" in window) {
+      // Verifica o status atual da permissão
+      if (Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            console.log('Permissão de notificação concedida');
+            // Agora você pode tocar sons ou enviar notificações conforme necessário
+          } else {
+            console.log('Permissão de notificação negada ou ignorada');
+          }
+        }).catch(error => {
+          console.error('Erro ao solicitar permissão de notificação:', error);
+        });
+      } else if (Notification.permission === 'granted') {
+        console.log('Permissão já concedida anteriormente');
+        // Já possui permissão, pode tocar sons ou enviar notificações
+      } else {
+        console.log('Permissão de notificação já negada anteriormente');
+      }
+    } else {
+      console.log('Este navegador não suporta notificações');
+    }
+  }, [])
   useSocketInitial()
   // Nao sendo invocada
   // function cProblemaConexao() {
