@@ -32,7 +32,7 @@ export const Usuarios: React.FC = () => {
         toggleModalUsuario,
         setUsuarioSelecionado,
         loadUsuarios,
-        toggleModalFilaUsuario,
+        // toggleModalFilaUsuario,
     } = useUsuarioStore();
 
     const [filter, setFilter] = useState("");
@@ -84,10 +84,10 @@ export const Usuarios: React.FC = () => {
         listarUsuarios();
     }, [listarUsuarios]);
 
-    const handleManageUserQueues = (usuario: Usuario) => {
-        setUsuarioSelecionado(usuario);
-        toggleModalFilaUsuario();
-    };
+    // const handleManageUserQueues = (usuario: Usuario) => {
+    //     setUsuarioSelecionado(usuario);
+    //     toggleModalFilaUsuario();
+    // };
 
     const handleEditUser = (usuario: Usuario) => {
         setUsuarioSelecionado(usuario);
