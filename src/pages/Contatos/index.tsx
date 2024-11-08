@@ -261,7 +261,7 @@ export const Contatos: React.FC<{
         //   startAdornment: <SearchIcon />,
         // }}
         />
-        <Box sx={{ gap: 2, display: 'flex' }}>
+        <Box sx={{ gap: 2, display: { sm: 'none', xs: 'none', md: 'flex' }, }}>
           <Button
             sx={{ display: isChatContact ? 'none' : 'flex' }}
             variant="contained"

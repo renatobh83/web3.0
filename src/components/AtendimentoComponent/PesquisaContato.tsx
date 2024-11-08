@@ -70,7 +70,8 @@ import { useState } from "react";
 import { ListarContatos } from "../../services/contatos";
 
 interface PesquisaContatoProps {
-    getContatoSelecionado: (contato: string | null) => void;
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    getContatoSelecionado: (contato: any | null) => void;
 }
 
 interface Contato {
@@ -121,7 +122,7 @@ export const PesquisaContato: React.FC<PesquisaContatoProps> = ({ getContatoSele
             value={contatoSelecionado}
             onChange={(_event, newValue) => {
                 setContatoSelecionado(newValue);
-                getContatoSelecionado(newValue ? newValue.name : null);
+                getContatoSelecionado(newValue ? newValue : null);
             }}
             renderInput={(params) => (
                 <TextField

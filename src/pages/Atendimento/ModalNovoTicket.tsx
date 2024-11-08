@@ -58,19 +58,18 @@ export const ModalNovoTicket = ({
     } catch (error) { }
   }
   useEffect(() => {
-    if (isContact.id) {
+    if (isContact?.id) {
       setContatoSelecionado(isContact)
       handleSelectChannel()
-
     }
   }, [isContact])
   const handleCloseModalCanal = () => {
     setModalCanal(false)
-    setContatoSelecionado(null)
   }
   const handleSelectChannel = () => {
     if (contatoSelecionado && !contatoSelecionado.id) return
     setModalCanal(true)
+
   }
   const abrirChatContato = ticket => {
     if (
@@ -154,18 +153,20 @@ export const ModalNovoTicket = ({
 
   return (
     <>
-      <Dialog open={open} fullWidth maxWidth="xs">
-        <DialogTitle>Criar ticket</DialogTitle>
-        <DialogContent>
-          <FormControl fullWidth>
-            <PesquisaContato getContatoSelecionado={setContatoSelecionado} />
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => close()}>Cancelar</Button>
-          <Button onClick={() => handleSelectChannel()}>Salvar</Button>
-        </DialogActions>
-      </Dialog>
+      {open &&
+        <Dialog open={open} fullWidth maxWidth="xs">
+          <DialogTitle>Criar ticket</DialogTitle>
+          <DialogContent>
+            <FormControl fullWidth>
+              <PesquisaContato getContatoSelecionado={setContatoSelecionado} />
+            </FormControl>
+          </DialogContent>
+          <DialogActions>
+            <Button variant='contained' color='error' onClick={() => close()}>Cancelar</Button>
+            <Button variant='contained' color='success' onClick={() => handleSelectChannel()}>Salvar</Button>
+          </DialogActions>
+        </Dialog>
+      }
       {modalCanal && (
         <Dialog
           open={modalCanal}
@@ -176,13 +177,13 @@ export const ModalNovoTicket = ({
           <DialogContent>
             <DialogTitle>
               <Typography variant="h6">
-                Abrir um novo ticket para {contatoSelecionado.name}
+                {!canais.length ? "Nenhum canal conectado favor verificar em Canais" : `Abrir um novo ticket para ${contatoSelecionado.name}`}
               </Typography>
             </DialogTitle>
 
             <FormControl>
               <FormLabel id="demo-radio-buttons-group-label">
-                Selecione o canal para iniciar o atendimento.
+                {canais.length ? "Selecione o canal para iniciar o atendimento." : ''}
               </FormLabel>
               <RadioGroup
                 aria-labelledby="demo-radio-buttons-group-label"
@@ -202,8 +203,8 @@ export const ModalNovoTicket = ({
             </FormControl>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => handleCloseModalCanal()}>Cancelar</Button>
-            <Button onClick={() => handleCreateTicket()}>Criar ticket</Button>
+            <Button variant='contained' color='error' onClick={() => handleCloseModalCanal()}>Cancelar</Button>
+            <Button disabled={!canais.length} variant='contained' color='success' onClick={() => handleCreateTicket()}>Criar ticket</Button>
           </DialogActions>
         </Dialog>
       )}

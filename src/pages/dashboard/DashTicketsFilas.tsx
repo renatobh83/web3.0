@@ -238,11 +238,11 @@ export const DashTicketsFilas = () => {
         >
           Filtros
         </Button>
-        <Box>
+        {/* <Box>
           <Button variant="outlined" size="small">
             Action
           </Button>
-        </Box>
+        </Box> */}
       </Box>
       <Box
         sx={{
