@@ -1,4 +1,4 @@
-import { Close, North, South } from '@mui/icons-material'
+import { Close, ContactSupportOutlined, North, South } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -30,6 +30,7 @@ interface InteracoesProps {
 const optionsSe = [
   { label: 'Qualquer resposta', value: 'US' },
   { label: 'Respostas', value: 'R' },
+  { label: 'Api', value: 'A' },
 ]
 export const Condicoes = ({ node }: InteracoesProps) => {
   const {
@@ -170,6 +171,7 @@ export const Condicoes = ({ node }: InteracoesProps) => {
   // Função para capturar mudanças no Select e enviar o id
   const handleSelectSeChange = (id: string, event: string) => {
     const selectedValue = event
+    console.log(selectedValue)
     setConditionState(prevState => ({
       ...prevState,
       [id]: {
