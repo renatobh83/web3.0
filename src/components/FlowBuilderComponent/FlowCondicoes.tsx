@@ -30,7 +30,8 @@ interface InteracoesProps {
 const optionsSe = [
   { label: 'Qualquer resposta', value: 'US' },
   { label: 'Respostas', value: 'R' },
-  { label: 'Api', value: 'A' },
+  { label: 'Inicio', value: 'I' },
+  { label: 'Avancada', value: 'A' },
 ]
 export const Condicoes = ({ node }: InteracoesProps) => {
   const {
