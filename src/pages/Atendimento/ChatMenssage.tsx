@@ -104,7 +104,12 @@ export const ChatMensagem = ({
     [key: string]: boolean
   }>({})
 
-
+  const isPDF = (url) => {
+    if (!url) return false;
+    const split = url.split(".");
+    const ext = split[split.length - 1];
+    return ext === "pdf";
+  }
   const handleOpenModal = () => {
     openModalEcanminhar()
   }
@@ -124,7 +129,12 @@ export const ChatMensagem = ({
   //   }
   // }
   const openLinkInNewPage = url => {
-    window.open(url, '_blank')
+    const base64Image = `data:image/jpeg;base64,${url}`;
+    const novaAba = window.open();
+    novaAba.document.write('<html><head><title>Mapa</title></head><body>');
+    novaAba.document.write(`<img src="${base64Image}" alt="Mapa">`);
+    novaAba.document.write('</body></html>');
+    // window.open(url, '_blank')
   }
 
 
@@ -306,7 +316,7 @@ export const ChatMensagem = ({
                       position: 'relative',
                     }}
                   >
-                    <Box id="aonde estou">
+                    <Box id="id">
                       <Box
                         sx={{
                           backgroundColor: mensagem.fromMe
@@ -578,8 +588,17 @@ export const ChatMensagem = ({
                               {['location', 'locationMessage'].includes(
                                 mensagem.mediaType
                               ) &&
-                                // CRIAR MODAL ABRIR MAPs
-                                openLinkInNewPage(mensagem.body)}
+                                <CardMedia
+                                  onClick={() => {
+                                    openLinkInNewPage(mensagem.body)
+                                  }}
+                                  component="img"
+                                  height="150px"
+                                  width="330px"
+                                  image={`data:image/jpeg;base64, ${mensagem.body}`}
+                                />
+
+                              }
                               {/* FIGURINHAS */}
                               {mensagem.mediaType === 'image' &&
                                 mensagem.mediaUrl.includes('.webp') && (
@@ -682,32 +701,15 @@ export const ChatMensagem = ({
                                     ),
                                   }} />
                               )}
-                              {![
-                                'audio',
-                                'vcard',
-                                'contactMessage',
-                                'locationMessage',
-                                'image',
-                                'imageMessage',
-                                'video',
-                                'videoMessage',
-                                'sticker',
-                                'location',
-                                'interactive',
-                                'button',
-                                'list',
-                                'button_reply',
-                                'sticker',
-                                'notes',
-                                'transcription',
-                              ].includes(mensagem.mediaType) &&
-                                mensagem.mediaUrl && (
-                                  <Box sx={{ mt: '20px' }}>Criar Iframe</Box>
-                                )}
+
                               {/* nome do arquivo  */}
-                              {/* {['image', 'video', 'imageMessage', 'videoMessage'].includes(mensagem.mediaType) && mensagem.mediaUrl && (
-                  <Box>{formatarMensagemWhatsapp(mensagem.body || mensagem.mediaName)}</Box>
-                )} */}
+                              {mensagem.mediaUrl}
+                              {!['image', 'video', 'imageMessage', 'videoMessage', 'audio'].includes(mensagem.mediaType) && mensagem.mediaUrl && (
+                                <Box>{formatarMensagemWhatsapp(mensagem.body || mensagem.mediaName)}</Box>
+                                // {isPdf(mensagem.mediaUrl) && 'as'}as
+
+                              )}
+
                               {![
                                 'vcard',
                                 'contactMessage',
