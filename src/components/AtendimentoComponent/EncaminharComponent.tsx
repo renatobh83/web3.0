@@ -14,9 +14,7 @@ interface EncaminharComponentProps {
 }
 export const EncaminharComponent = ({ menssagemParaEncaminhar, open, setClose, resetMensagenParaEncaminhar }: EncaminharComponentProps) => {
 
-
     const [contatoSeleciondo, setContatoSelecionado] = useState({})
-
 
     const handleCloseModal = () => {
         resetMensagenParaEncaminhar()
@@ -39,7 +37,7 @@ export const EncaminharComponent = ({ menssagemParaEncaminhar, open, setClose, r
             <DialogContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <Box>
-                        <ChatMensagem menssagens={menssagemParaEncaminhar} />
+                        <ChatMensagem mensagens={menssagemParaEncaminhar} />
 
                     </Box>
                     <PesquisaContato getContatoSelecionado={setContatoSelecionado} />

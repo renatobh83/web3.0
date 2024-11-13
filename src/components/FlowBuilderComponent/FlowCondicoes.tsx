@@ -1,4 +1,4 @@
-import { Close, ContactSupportOutlined, North, South } from '@mui/icons-material'
+import { Close, North, South } from '@mui/icons-material'
 import {
   Box,
   Button,

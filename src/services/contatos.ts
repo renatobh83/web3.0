@@ -15,6 +15,20 @@ export function ObterContato(contactId: any) {
   });
 }
 
+export function ObterContatoPeloNumero(numberId) {
+  return request({
+    url: `/contactsNumber/${numberId}`,
+    method: "get",
+  });
+}
+
+export function CriarContatoVcard(data) {
+  return request({
+    url: "/contactVcard",
+    method: "post",
+    data,
+  });
+}
 export function CriarContato(data: any) {
   return request({
     url: "/contacts",

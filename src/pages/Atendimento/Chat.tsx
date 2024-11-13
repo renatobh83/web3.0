@@ -2,7 +2,7 @@ import { Box, Button, Fade, Typography } from '@mui/material'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 import { useEffect, useRef, useState } from 'react'
-import { ChatMensagem } from './ChatMenssage'
+import { ChatMensagem } from './ChatMenssage.tsx'
 import { useMixinSocket } from '../../hooks/useMinxinScoket'
 
 import { ModalAgendamentoMensagem } from './ModalAgendamentoMensagem'
@@ -12,6 +12,7 @@ import { Close } from '@mui/icons-material'
 import { formatarMensagemWhatsapp } from '../../utils/helpers'
 
 import { EncaminharComponent } from '../../components/AtendimentoComponent/EncaminharComponent'
+
 import { useOutletContext } from 'react-router-dom'
 
 export type OutletContextType = {
@@ -189,7 +190,7 @@ export const Chat = () => {
 
           <div style={cStyleScroll()}>
             <ChatMensagem
-              menssagens={cMessages}
+              mensagens={cMessages}
               setReplyingMessage={setReplyingMessage}
               getMensagenParaEncaminhar={getMensagensParaEncaminhar}
               openModalEcanminhar={openModalEcanminhar}
@@ -243,7 +244,7 @@ export const Chat = () => {
                     {replyingMessage.contact?.name}
                   </Typography>
                 }
-                <Typography>{formatarMensagemWhatsapp(replyingMessage.body)}</Typography>
+                <Typography style={{ maxWidth: 290, overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatarMensagemWhatsapp(replyingMessage.body)}</Typography>
               </Box>
               <Button size='small' variant='outlined' onClick={() => setReplyingMessage(null)}><Close sx={{ fontSize: '18px' }} /></Button>
             </Box>
