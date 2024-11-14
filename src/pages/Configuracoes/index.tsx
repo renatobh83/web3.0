@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import {
   AlterarConfiguracao,
+  ListarConfiguracoes,
   // ListarConfiguracoes,
 } from '../../services/configuracoes'
 import { debounce } from 'lodash'
@@ -98,7 +99,7 @@ function a11yProps(index: number) {
   }
 }
 export const Configuracoes = () => {
-  const { decryptData } = useAuth()
+  const { decryptData, encryptData } = useAuth()
   const [value, setValue] = useState(0)
 
   const confi = JSON.parse(decryptData('configuracoes'))
@@ -139,8 +140,8 @@ export const Configuracoes = () => {
     AlterarConfiguracao(params).then(async data => {
       if (data.status === 200) {
         toast.info('Configuracao atualizada')
-        // const { data } = await ListarConfiguracoes()
-        // localStorage.setItem('configuracoes', encryptData(JSON.stringify(data)))
+        const { data } = await ListarConfiguracoes()
+        localStorage.setItem('configuracoes', encryptData(JSON.stringify(data)))
       }
     })
   }, 1500)
@@ -182,6 +183,7 @@ export const Configuracoes = () => {
       </Box>
       <CustomTabPanel value={value} index={0}>
         {configuracoesOpcoes
+          .sort((a, b) => a.id - b.id)
           .filter(id => id.tenantId === usuario.tenantId)
           .map(item => (
             <List
@@ -221,7 +223,7 @@ export const Configuracoes = () => {
                     }
                     sx={{
                       width:
-                        item.key === 'callRejectMessage' ? '280px' : '60px',
+                        item.key === 'callRejectMessage' ? '500px' : '60px',
                     }}
                     inputProps={{ style: { textAlign: 'right' } }}
                   />

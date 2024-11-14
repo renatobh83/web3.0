@@ -147,6 +147,7 @@ export const DashTicketsFilas = () => {
     const field = visao === 'U' || visao === 'US' ? 'userId' : 'queueId'
     return [groupBy(tickets, field)]
   }
+  console.log(cTicketsUser())
   const handleChange = event => {
     const { name, checked } = event.target
     // Atualizar o estado específico do switch

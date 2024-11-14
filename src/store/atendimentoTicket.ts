@@ -38,7 +38,6 @@ interface AtendimentoTicketState {
   chatTicketDisponivel: boolean;
   tickets: Ticket[];
   ticketsLocalizadosBusca: Ticket[];
-  // biome-ignore lint/complexity/noBannedTypes: <explanation>
   ticketFocado: Ticket | null;
   hasMore: boolean;
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -119,7 +118,13 @@ const orderTickets = (tickets: Ticket[]) => {
   );
   return [...newTickets];
 };
-
+const checkConfiguracao = (value: string) => {
+  const configuracoes = JSON.parse(
+    decryptData(localStorage.getItem("configuracoes"))
+  );
+  const conf = configuracoes?.find((c: { key: string }) => c.key === value);
+  return conf?.value === "enabled";
+};
 const checkTicketFilter = (ticket: Ticket) => {
   const filtroPadrao = {
     searchParam: "",
@@ -220,11 +225,6 @@ const checkTicketFilter = (ticket: Ticket) => {
     !ticket.queueId &&
     !filtros.includeNotQueueDefined
   ) {
-    console.log(
-      "filtros.includeNotQueueDefined",
-      ticket.queueId,
-      !filtros.includeNotQueueDefined
-    );
     return false;
   }
 
