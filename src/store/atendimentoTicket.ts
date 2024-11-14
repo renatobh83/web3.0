@@ -118,13 +118,7 @@ const orderTickets = (tickets: Ticket[]) => {
   );
   return [...newTickets];
 };
-const checkConfiguracao = (value: string) => {
-  const configuracoes = JSON.parse(
-    decryptData(localStorage.getItem("configuracoes"))
-  );
-  const conf = configuracoes?.find((c: { key: string }) => c.key === value);
-  return conf?.value === "enabled";
-};
+
 const checkTicketFilter = (ticket: Ticket) => {
   const filtroPadrao = {
     searchParam: "",
