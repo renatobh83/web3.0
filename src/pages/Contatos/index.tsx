@@ -262,7 +262,7 @@ export const Contatos: React.FC<{
         // }}
         />
         <Box sx={{ gap: 2, display: { sm: 'none', xs: 'none', md: 'flex' }, }}>
-          <Button
+          {/*        <Button
             sx={{ display: isChatContact ? 'none' : 'flex' }}
             variant="contained"
             color="warning"
@@ -279,7 +279,7 @@ export const Contatos: React.FC<{
             startIcon={<ImportExportIcon />}
           >
             Exportar
-          </Button>
+          </Button> */}
           <Button
             variant="contained"
             color="success"
