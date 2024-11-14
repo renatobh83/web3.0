@@ -15,7 +15,6 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import ImportExportIcon from '@mui/icons-material/ImportExport'
 import { useCallback, useEffect, useState } from 'react'
 import { useContatosStore } from '../../store/contatos'
 import { useWhatsappStore } from '../../store/whatsapp'
