@@ -124,7 +124,9 @@ export const useMixinSocket = () => {
             !data.payload.read &&
             (data.payload.ticket.userId === userId ||
               !data.payload.ticket.userId) &&
-            data.payload.ticket.id !== ticketFocado?.id && checkTicketFilter(data.payload.ticket)
+            data.payload.ticket.id !== ticketFocado?.id
+            && checkTicketFilter(data.payload.ticket)
+            && data.payload.mediaType !== "call_log"
           ) {
 
             if (data.payload.ticket.userId) {

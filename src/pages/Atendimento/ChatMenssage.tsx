@@ -275,7 +275,7 @@ export const ChatMensagem = ({
           gap: '1rem'
         }}
       >
-        {mensagens?.filter(mensagem => mensagem !== undefined && mensagem !== null)
+        {mensagens?.filter(mensagem => mensagem !== undefined && mensagem !== null && mensagem.mediaType !== 'call_log')
           .map((mensagem, index) => (
             <React.Fragment key={mensagem.id}>
               {index === 0 ||
@@ -620,6 +620,7 @@ export const ChatMensagem = ({
                           width="100px"
                           image={mensagem.mediaUrl} />
                       )}
+
                     {(mensagem.mediaType === 'video' ||
                       mensagem.mediaType === 'videoMessage') && (
                         // biome-ignore lint/a11y/useMediaCaption: <explanation>

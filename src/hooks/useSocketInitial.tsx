@@ -293,7 +293,7 @@ export const useSocketInitial = () => {
           console.log('socket ON: CHAT:CREATE - nova mensagem ', data)
           // if (data.payload.ticket.userId !== userId) return
           // if (data.payload.fromMe) return
-          if (checkTicketFilter(data.payload.ticket)) {
+          if (checkTicketFilter(data.payload.ticket) && data.payload.mediaType !== "call_log") {
 
             if (data.payload.ticket.userId === userId && !data.payload.fromMe) {
               if (location.pathname.startsWith('/atendimento')) {
