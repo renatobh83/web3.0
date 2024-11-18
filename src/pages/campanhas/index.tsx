@@ -56,6 +56,7 @@ export const Campanhas = () => {
       setCampanhas(data)
     } catch (error) {
       setCampanhas([])
+      Errors(error)
     }
   }, [])
   const handleEditarCampanha = (id: SetStateAction<null>) => {

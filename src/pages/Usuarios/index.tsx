@@ -19,6 +19,7 @@ import { DeleteUsuario, ListarUsuarios } from "../../services/user";
 import { toast } from "sonner";
 import type { Usuario } from "./ModalUsuario";
 import { CustomTableContainer } from "../../components/MaterialUi/CustomTable";
+import { Errors } from "../../utils/error";
 
 // const optionsProfile = [
 //     { value: "user", label: "Usuário" },
@@ -66,7 +67,7 @@ export const Usuarios: React.FC = () => {
             loadUsuarios(data.users);
             // setParams((prev) => ({ ...prev, hasMore: data.hasMore }));
         } catch (error) {
-            toast.error("Erro ao listar usuários");
+            Errors(error)
         }
     }, [loadUsuarios]);
 

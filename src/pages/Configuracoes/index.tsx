@@ -19,6 +19,7 @@ import {
 import { debounce } from 'lodash'
 import { toast } from 'sonner'
 import { WebhookConfiguracao } from '../../components/configuracoes/WebhookComponent'
+import { Errors } from '../../utils/error'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -140,10 +141,15 @@ export const Configuracoes = () => {
     AlterarConfiguracao(params).then(async data => {
       if (data.status === 200) {
         toast.info('Configuracao atualizada')
-        const { data } = await ListarConfiguracoes()
-        localStorage.setItem('configuracoes', encryptData(JSON.stringify(data)))
+        try {
+          const { data } = await ListarConfiguracoes()
+          localStorage.setItem('configuracoes', encryptData(JSON.stringify(data)))
+        } catch (error) {
+          Errors(error)
+        }
+
       }
-    })
+    }).catch(err => Errors(err))
   }, 1500)
   const handleChangeTab = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)

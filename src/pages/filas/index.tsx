@@ -185,6 +185,7 @@ import { Check, Close, Delete, Edit } from '@mui/icons-material';
 import { red } from '@mui/material/colors';
 import { toast } from 'sonner';
 import { CustomTableContainer } from '../../components/MaterialUi/CustomTable';
+import { Errors } from '../../utils/error';
 
 interface Fila {
   id: string;
@@ -221,8 +222,7 @@ export const Filas = () => {
       const { data } = await ListarFilas();
       setFilas(data);
     } catch (error) {
-      console.error("Erro ao listar filas:", error);
-      toast.error("Erro ao carregar filas.");
+      Errors(error)
     }
   }, []);
 

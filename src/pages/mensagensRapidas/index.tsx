@@ -20,6 +20,7 @@ import { Edit, Delete } from '@mui/icons-material'
 import { red } from '@mui/material/colors'
 import { toast } from 'sonner'
 import { CustomTableContainer } from '../../components/MaterialUi/CustomTable'
+import { Errors } from '../../utils/error'
 
 export const MensagensRapidas = () => {
   const [mensagensRapidas, setMensagensRapidas] = useState([])
@@ -52,8 +53,13 @@ export const MensagensRapidas = () => {
     }
   }
   const listarMensagensRapidas = useCallback(async () => {
-    const { data } = await ListarMensagensRapidas()
-    setMensagensRapidas(data)
+    try {
+      const { data } = await ListarMensagensRapidas()
+      setMensagensRapidas(data)
+    } catch (error) {
+      Errors(error)
+    }
+
   }, [])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>

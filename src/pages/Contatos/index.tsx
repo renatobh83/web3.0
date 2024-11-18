@@ -24,6 +24,7 @@ import { ModalNovoTicket } from '../Atendimento/ModalNovoTicket'
 import { DeletarContato, ListarContatos } from '../../services/contatos'
 import { ContatoModal } from './ModalContato'
 import { toast } from 'sonner'
+import { Errors } from '../../utils/error'
 
 const CustomTableContainer = styled(Table)(({ theme }) => ({
   // Customize styles with Tailwind CSS classes
@@ -224,8 +225,13 @@ export const Contatos: React.FC<{
   }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listaContatos = useCallback(async () => {
-    const { data } = await ListarContatos({})
-    loadContacts(data.contacts)
+    try {
+      const { data } = await ListarContatos({})
+      loadContacts(data.contacts)
+    } catch (error) {
+      Errors(error)
+    }
+
   }, [])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>

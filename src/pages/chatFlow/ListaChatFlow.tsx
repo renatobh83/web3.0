@@ -22,6 +22,7 @@ import { ListarFilas } from '../../services/filas'
 import { ListarUsuarios } from '../../services/user'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { Errors } from '../../utils/error'
 
 export const ListaChatFlow: React.FC = () => {
   const [open, setOpen] = useState(false)
@@ -56,8 +57,13 @@ export const ListaChatFlow: React.FC = () => {
     }
   }
   const listaChatFlow = useCallback(async () => {
-    const { data } = await ListarChatFlow()
-    setChatFlows(data.chatFlow)
+    try {
+      const { data } = await ListarChatFlow()
+      setChatFlows(data.chatFlow)
+    } catch (error) {
+      Errors(error)
+    }
+
   }, [])
   const [filas, setFilas] = useState([])
   const [usuarios, setUsuarios] = useState([])

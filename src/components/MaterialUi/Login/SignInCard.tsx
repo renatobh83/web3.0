@@ -127,7 +127,7 @@ export default function SignInCard() {
             id="email"
             type="email"
             name="email"
-            placeholder="your@email.com"
+            placeholder="seu@email.com"
             autoComplete="email"
             autoFocus
             required
@@ -183,10 +183,10 @@ export default function SignInCard() {
           />
         </FormControl>
 
-        <FormControlLabel
+        {/*     <FormControlLabel
           control={<Checkbox value="remember" color="primary" />}
           label="Remember me"
-        />
+        /> */}
         <ForgotPassword open={open} handleClose={handleClose} />
         <Button
           type="submit"

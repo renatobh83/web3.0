@@ -66,11 +66,12 @@ import { useMixinSocket } from '../../hooks/useMinxinScoket'
 import { ModalNovoTicket } from './ModalNovoTicket'
 import { ListarContatos } from '../../services/contatos'
 import { useContatosStore } from '../../store/contatos'
-import { Errors } from '../../utils/error'
+
 import { useAuth } from '../../context/AuthContext'
 import { useSocketInitial } from '../../hooks/useSocketInitial'
 import { ListarMensagensRapidas } from '../../services/mensagensRapidas'
 import { RealizarLogout } from '../../services/login'
+import { Errors } from '../../utils/error'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -379,6 +380,7 @@ export function Atendimento() {
         state: { t: new Date().getTime() },
       })
     } catch (error) {
+
       Errors(error)
     }
   }
@@ -454,7 +456,8 @@ export function Atendimento() {
       loadTickets(data.tickets)
       setHasMore(data.hasMore)
     } catch (err) {
-      console.error(err)
+      console.log(err)
+      Errors(err)
     } finally {
       toast.dismiss(toastId)
     }
@@ -509,16 +512,26 @@ export function Atendimento() {
   }, [])
 
   const listarFilas = useCallback(async () => {
-    const { data } = await ListarFilas()
-    setFilas(data)
-    localStorage.setItem('filasCadastradas', JSON.stringify(data || []))
+    try {
+      const { data } = await ListarFilas()
+      setFilas(data)
+      localStorage.setItem('filasCadastradas', JSON.stringify(data || []))
+    } catch (error) {
+      Errors(error)
+    }
+
   }, [])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listarWhatsapps = useCallback(async () => {
     if (!whatsApps.length) {
-      const { data } = await ListarWhatsapps()
-      loadWhatsApps(data)
+      try {
+        const { data } = await ListarWhatsapps()
+        loadWhatsApps(data)
+      } catch (error) {
+        Errors(error)
+      }
+
     }
   }, [])
 
@@ -531,8 +544,13 @@ export function Atendimento() {
   }, [BuscarTicketFiltro])
 
   const listarEtiquetas = useCallback(async () => {
-    const { data } = await ListarEtiquetas(true)
-    setEtiquetas(data)
+    try {
+      const { data } = await ListarEtiquetas(true)
+      setEtiquetas(data)
+    } catch (error) {
+      Errors(error)
+    }
+
   }, [])
 
   const pendingTickets = (): Ticket[] => {
@@ -687,12 +705,22 @@ export function Atendimento() {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listaContatos = useCallback(async () => {
-    const { data } = await ListarContatos({})
-    loadContacts(data.contacts)
+    try {
+      const { data } = await ListarContatos({})
+      loadContacts(data.contacts)
+    } catch (error) {
+      Errors(error)
+    }
+
   }, [])
   const listarMensagensRapidas = useCallback(async () => {
-    const { data } = await ListarMensagensRapidas()
-    setMensagensRapidas(data)
+    try {
+      const { data } = await ListarMensagensRapidas()
+      setMensagensRapidas(data)
+    } catch (error) {
+      Errors(error)
+    }
+
   }, [])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {

@@ -178,12 +178,18 @@ export const MainLayout: React.FC = () => {
 
 
   useEffect(() => {
+
     const conectar = async () => {
       await listarWhatsapps()
       await listarConfiguracoes()
     }
 
-    conectar()
+    try {
+
+      conectar()
+    } catch (error) {
+      Errors(error)
+    }
   }, [listarWhatsapps, listarConfiguracoes])
 
   return (

@@ -42,6 +42,7 @@ import { ModalWhatsapp } from './ModalWhatsapp'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { ModalQrCode } from './ModalQrCode'
 import { useAuth } from '../../context/AuthContext'
+import { Errors } from '../../utils/error'
 
 export const Canais = () => {
   const { decryptData } = useAuth()
@@ -107,8 +108,13 @@ export const Canais = () => {
   }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listChatFlow = useCallback(async () => {
-    const { data } = await ListarChatFlow()
-    loadChatFlows(data.chatFlow)
+    try {
+      const { data } = await ListarChatFlow()
+      loadChatFlows(data.chatFlow)
+    } catch (error) {
+      Errors(error)
+    }
+
   }, [])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>

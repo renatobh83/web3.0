@@ -19,8 +19,13 @@ export const ApiExternal = () => {
         return `${import.meta.env.VITE_APP_BASE_URL}/v1/api/external`
     }
     const listarApis = useCallback(async () => {
-        const { data } = await ListarAPIs()
-        setApis(data.apis)
+        try {
+            const { data } = await ListarAPIs()
+            setApis(data.apis)
+        } catch (error) {
+            Errors(error)
+        }
+
     }, [])
 
     const handleEditarApi = (api) => {

@@ -28,6 +28,7 @@ import { toast } from 'sonner'
 import { ItemTicketPainel } from '../Atendimento/ItemTicketPainel'
 import { groupBy } from 'lodash'
 import { format, sub } from 'date-fns'
+import { Errors } from '../../utils/error'
 dayjs.extend(isSameOrAfter)
 
 const optionsVisao = [
@@ -123,8 +124,7 @@ export const DashTicketsFilas = () => {
       ConsultarTicketsQueuesService(pesquisaTickets)
         .then(res => {
           setTickets(res.data)
-        })
-
+        }).catch(err => Errors(err))
         .finally(() => {
           setIsloading(false)
           setDrawerFiltro(false)
@@ -147,7 +147,6 @@ export const DashTicketsFilas = () => {
     const field = visao === 'U' || visao === 'US' ? 'userId' : 'queueId'
     return [groupBy(tickets, field)]
   }
-  console.log(cTicketsUser())
   const handleChange = event => {
     const { name, checked } = event.target
     // Atualizar o estado específico do switch
