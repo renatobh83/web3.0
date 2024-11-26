@@ -8,6 +8,7 @@ const service = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_URL,
   // baseURL: "https://app2.pluslive.online/",
   timeout: 20000,
+  withCredentials: true
 });
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -49,9 +50,10 @@ service.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error?.response?.status === 403 && !error.config._retry) {
+    if (error?.status === 403 && !error.config._retry) {
       error.config._retry = true;
       RefreshToken().then((res) => {
+
         if (res.data) {
           localStorage.setItem("token", JSON.stringify(res.data.token));
         }

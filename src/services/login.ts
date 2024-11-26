@@ -22,5 +22,6 @@ export function RefreshToken() {
 	return request({
 		url: "/auth/refresh_token",
 		method: "post",
+
 	});
 }

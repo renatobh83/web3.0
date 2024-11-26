@@ -4,6 +4,7 @@ export function ListarWhatsapps() {
   return request({
     url: "/whatsapp/",
     method: "get",
+
   });
 }
 
