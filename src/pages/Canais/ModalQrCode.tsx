@@ -48,10 +48,11 @@ export const ModalQrCode = ({
 
         <Box
           sx={{ textAlign: 'center' }}
-          // className={clsx('text-center my-6', {
-          //     'bg-white': theme.palette.mode === 'dark',
-          // })}
+        // className={clsx('text-center my-6', {
+        //     'bg-white': theme.palette.mode === 'dark',
+        // })}
         >
+          {channel.qrCode}
           {channel.qrcode ? (
             <QRCodeSVG value={channel.qrcode} size={300} level="H" />
           ) : (

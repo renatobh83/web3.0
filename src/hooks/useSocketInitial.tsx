@@ -131,8 +131,10 @@ export const useSocketInitial = () => {
         }
 
         if (data.action === 'readySession') {
+
           toast.info(
-            `A conexão com o WhatsApp está pronta e o mesmo está habilitado para enviar e receber mensagens. Conexão: ${data.session.name}. Número: ${data.session.number}.`,
+            `A conexão com o WhatsApp está pronta e o mesmo está habilitado para enviar e receber mensagens. Conexão: ${data.session.name}. Número: ${data.session.profileSession
+            }.`,
             {
               position: 'top-center',
             }

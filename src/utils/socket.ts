@@ -4,6 +4,7 @@ export const socketIO = () => {
   return io(import.meta.env.VITE_APP_BASE_URL, {
     reconnection: true,
     autoConnect: true,
+    withCredentials:true,
     transports: ["websocket", "polling"],
     auth: (cb) => {
       const tokenItem = localStorage.getItem("token");

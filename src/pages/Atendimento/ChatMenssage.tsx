@@ -95,7 +95,9 @@ export const ChatMensagem = ({
   const [_anchorElAgenda, setAnchorElAgenda] = useState(null)
   const [messageAgendamento, setMessageAgendamento] = useState(null)
 
-
+  useEffect(() => {
+    console.log(mensagens)
+  }, [mensagens])
   const [anchorEls, setAnchorEls] = useState<
     Record<string, HTMLElement | null>
   >({})

@@ -169,7 +169,6 @@ export const MenusNavbar = () => {
   const handleClose = () => {
     setAnchorEl(null)
   }
-
   const handleCloseNavMenu = () => {
     setAnchorElNav(null)
   }
@@ -260,7 +259,7 @@ export const MenusNavbar = () => {
             arrow
             title={
               item.status === 'CONNECTED'
-                ? `Esta conectado na conta  ${item.phone.pushname}-${item.phone.wid.user}`
+                ? `Esta conectado na conta  ${item.name}-${item.phone.profileSession}`
                 : item.status
             }
             placement="top"

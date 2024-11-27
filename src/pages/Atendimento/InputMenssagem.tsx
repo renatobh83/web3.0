@@ -217,6 +217,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
       idFront: uid(),
       id: uid(),
     }
+
     if (isScheduleDate) {
       message.scheduleDate = ScheduleDate
     }
@@ -241,6 +242,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
     })
     return formDatas
   }
+
   // Função que será chamada para enviar a mensagem
   const enviarMensagem = async () => {
     const ticketId = ticketFocado?.id
