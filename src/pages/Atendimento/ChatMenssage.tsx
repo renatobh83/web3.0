@@ -281,6 +281,7 @@ export const ChatMensagem = ({
         {mensagens?.filter(mensagem => mensagem !== undefined && mensagem !== null && mensagem.mediaType !== 'call_log')
           .map((mensagem, index) => (
             <React.Fragment key={mensagem.id}>
+
               {index === 0 ||
                 (formatarData(mensagem.createdAt) !==
                   formatarData(mensagens[index - 1].createdAt)) &&

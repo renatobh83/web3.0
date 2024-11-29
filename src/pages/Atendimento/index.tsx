@@ -694,7 +694,19 @@ export function Atendimento() {
     }
     return () => {
       resetTickets()
-      setTicketFocado(null)
+      setTicketFocado({
+        whatsapp: undefined,
+        channel: '',
+        lastMessageAt: undefined,
+        updatedAt: undefined,
+        user: undefined,
+        username: undefined,
+        contactId: undefined,
+        id: undefined,
+        name: '',
+        lastMessage: '',
+        profilePicUrl: '',
+      });
     }
   }, [])
 

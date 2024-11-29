@@ -334,8 +334,7 @@
 //     // </Box >
 //   )
 // }
-import { Box, Button, Fade, Paper, Typography } from '@mui/material';
-import InfiniteScroll from 'react-infinite-scroll-component';
+import { Box, Button, CircularProgress, Typography } from '@mui/material';
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket';
 import { useEffect, useRef, useState } from 'react';
 import { ChatMensagem } from './ChatMenssage.tsx';
@@ -358,25 +357,39 @@ export type OutletContextType = {
 
 export const Chat = () => {
   const ctx: { mensagensRapidas: [] } = useOutletContext();
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const previousScrollHeight = useRef<number>(0);
+  const { isContactInfo } = useAtendimentoStore()
   const { socketTicketList } = useMixinSocket();
-  const { mensagens, LocalizarMensagensTicket } = useAtendimentoTicketStore();
+  const { mensagens, LocalizarMensagensTicket, hasMore } = useAtendimentoTicketStore();
   const modalAgendamento = useAtendimentoStore((s) => s.modalAgendamento);
   const { ticketFocado, setTicketFocado } = useAtendimentoTicketStore();
   const [replyingMessage, setReplyingMessage] = useState(null);
   const isEmpty = !replyingMessage || Object.keys(replyingMessage).length === 0;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  const [cMessages, setCMessages] = useState<any[]>(mensagens.slice(-10)); // Carrega as últimas 10 mensagens inicialmente
 
-
-
+  const [params, setParams] = useState({
+    ticketId: null,
+    pageNumber: 1,
+  })
+  const [isLoading, setIsloading] = useState(false)
+  const [OpenModalEnc, setOpenModalEnc] = useState(false);
+  const [mensagensParaEncaminhar, setMensagensParaEncaminhar] = useState([]);
   // useEffect(() => {
   //   setReplyingMessage(null);
   //   setCMessages(mensagens.slice(-10)); // Inicia com as últimas 10 mensagens
   // }, [mensagens]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
+
     socketTicketList();
   }, []);
-
+  // biome-ignore lint: nao tem
   useEffect(() => {
+
     return () => {
       setTicketFocado({
         whatsapp: undefined,
@@ -386,19 +399,18 @@ export const Chat = () => {
         user: undefined,
         username: undefined,
         contactId: undefined,
-        id: 0,
+        id: undefined,
         name: '',
         lastMessage: '',
         profilePicUrl: '',
       });
     };
+
   }, []);
 
 
 
 
-  const [OpenModalEnc, setOpenModalEnc] = useState(false);
-  const [mensagensParaEncaminhar, setMensagensParaEncaminhar] = useState([]);
   const resetMensagenParaEncaminhar = () => {
     setMensagensParaEncaminhar([]);
   };
@@ -434,21 +446,32 @@ export const Chat = () => {
     setOpenModalEnc(true);
   };
 
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  const [cMessages, setCMessages] = useState<any[]>(mensagens.slice(-10)); // Carrega as últimas 10 mensagens inicialmente
-  const [hasMore, setHasMore] = useState(true);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const previousScrollHeight = useRef<number>(0);
-  const { isContactInfo } = useAtendimentoStore()
+
   // Função para carregar mais mensagens no scroll
-  const handleScroll = () => {
+  const handleScroll = async () => {
     if (containerRef.current) {
       const { scrollTop } = containerRef.current;
+      console.log(hasMore)
+      if (!hasMore || !ticketFocado || isLoading) {
+        return
+      }
+      const nextPageNumber = params.pageNumber + 1
 
       if (scrollTop === 0 && hasMore) {
         // Salva a altura do contêiner antes de carregar novas mensagens
         previousScrollHeight.current = containerRef.current.scrollHeight;
-
+        try {
+          setIsloading(true)
+          await LocalizarMensagensTicket({ pageNumber: nextPageNumber, ticketId: (String(ticketFocado?.id)) })
+          // Atualiza os params com a nova página após o carregamento
+          setParams(prevParams => ({
+            ...prevParams,
+            pageNumber: nextPageNumber, // Atualiza para a nova página
+          }))
+          setIsloading(false)
+        } catch (error) {
+          setIsloading(false)
+        }
         const currentLength = cMessages.length;
         const nextMessages = mensagens.slice(
           Math.max(0, mensagens.length - currentLength - 10),
@@ -458,24 +481,26 @@ export const Chat = () => {
         setCMessages((prev) => [...nextMessages, ...prev]);
 
         if (currentLength + nextMessages.length >= mensagens.length) {
-          setHasMore(false);
+          // setHasMore(false);
         }
       }
     }
   };
   useEffect(() => {
-    setCMessages(mensagens)
 
+    setCMessages(mensagens)
   }, [mensagens])
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (containerRef.current) {
+    if (containerRef.current && !isLoading) {
       setTimeout(() => {
-        console.log(containerRef.current.scrollHeight)
         containerRef.current.scrollTop = containerRef.current.scrollHeight;
       }, 0);
     }
   }, [mensagens])
   // Ajusta o scroll após carregar mensagens mais antigas
+  // biome-ignore lint : sem explicacao
   useEffect(() => {
     if (containerRef.current && previousScrollHeight.current > 0) {
       const scrollDiff =
@@ -486,6 +511,7 @@ export const Chat = () => {
   }, [mensagens]);
 
   // Scrolla automaticamente para baixo ao adicionar novas mensagens (apenas ao final da lista)
+  // biome-ignore lint:
   useEffect(() => {
     if (containerRef.current && !previousScrollHeight.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
@@ -498,6 +524,8 @@ export const Chat = () => {
       ref={containerRef}
       onScroll={handleScroll}
       sx={{
+        background: 'url(../wa-background.png)',
+        backgroundPosition: 'center center !important',
         maxHeight: 'calc(100vh - 80px)',
         paddingLeft: { md: '380px', sm: '0' },
         width: { md: `calc(100% - ${drawerWidth}px)` },
@@ -510,12 +538,14 @@ export const Chat = () => {
         bgcolor: "#f0f0f0",
       }}
     >
+
       <ChatMensagem
         mensagens={cMessages}
         setReplyingMessage={setReplyingMessage}
         getMensagenParaEncaminhar={getMensagensParaEncaminhar}
         openModalEcanminhar={openModalEcanminhar}
       />
+
 
       <Box
         sx={{
@@ -597,6 +627,19 @@ export const Chat = () => {
         menssagemParaEncaminhar={mensagensParaEncaminhar}
         resetMensagenParaEncaminhar={resetMensagenParaEncaminhar}
       />
+      {isLoading && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            zIndex: 10, // Garantir que o spinner fique acima dos outros elementos
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      )}
     </Box>
   );
 };

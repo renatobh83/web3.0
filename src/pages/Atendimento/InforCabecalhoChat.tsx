@@ -188,7 +188,19 @@ export const InfoCabecalhoMenssagens = () => {
         })
       toast.success('Ticket transferido.')
       setModalTransferirTicket(false)
-      setTicketFocado(null)
+      setTicketFocado({
+        whatsapp: undefined,
+        channel: '',
+        lastMessageAt: undefined,
+        updatedAt: undefined,
+        user: undefined,
+        username: undefined,
+        contactId: undefined,
+        id: undefined,
+        name: '',
+        lastMessage: '',
+        profilePicUrl: '',
+      });
     } catch (error) {
       Errors(error)
     }
@@ -376,7 +388,19 @@ export const InfoCabecalhoMenssagens = () => {
               onClick={async () => {
                 if (confirmAction) {
                   await confirmAction().then(() => {
-                    setTicketFocado(null)
+                    setTicketFocado({
+                      whatsapp: undefined,
+                      channel: '',
+                      lastMessageAt: undefined,
+                      updatedAt: undefined,
+                      user: undefined,
+                      username: undefined,
+                      contactId: undefined,
+                      id: undefined,
+                      name: '',
+                      lastMessage: '',
+                      profilePicUrl: '',
+                    });
                     navegate('/atendimento')
                   }) // Executa a função de confirmação
                 }
