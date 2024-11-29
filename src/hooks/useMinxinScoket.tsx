@@ -128,8 +128,8 @@ export const useMixinSocket = () => {
             && checkTicketFilter(data.payload.ticket)
             && data.payload.mediaType !== "call_log"
           ) {
-
             if (data.payload.ticket.userId) {
+
               eventNotification.emit('playSoundNotification')
               const options = {
                 body: `${data.payload.body} - ${format(new Date(), 'HH:mm')}`,
@@ -155,6 +155,7 @@ export const useMixinSocket = () => {
                 goToChat(data.payload.ticketId)
               }
             } else {
+
               eventNotification.emit('playSoundNotification')
               const message = new Notification('Novo cliente pendente', {
                 body: `Cliente: ${data.payload.ticket.contact.name}`,

@@ -451,7 +451,6 @@ export const Chat = () => {
   const handleScroll = async () => {
     if (containerRef.current) {
       const { scrollTop } = containerRef.current;
-      console.log(hasMore)
       if (!hasMore || !ticketFocado || isLoading) {
         return
       }
