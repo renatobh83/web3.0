@@ -169,9 +169,7 @@ export function Atendimento() {
   const { drawerWidth, mobileOpen, setMobileOpen, setIsClosing } =
     useAtendimentoStore()
   const tickets = useAtendimentoTicketStore(s => s.tickets)
-  // const [mobileOpen, setMobileOpen] = React.useState(false);
-  // const [isClosing, setIsClosing] = React.useState(false);
-  const { isContactInfo } = useAtendimentoStore()
+
   const [tabTickets, setTabTickets] = useState(0)
   const [mensagensRapidas, setMensagensRapidas] = useState([])
   const [tabTicketsStatus, setTabTicketsStatus] = useState('pending')
@@ -179,8 +177,7 @@ export function Atendimento() {
   const [_etiquetas, setEtiquetas] = useState([])
   const [anchorElFiltro, setAnchorElFiltro] = useState<null | HTMLElement>(null)
   const [_loading, setLoading] = useState(false)
-  // const [usuarios, setUsuarios] = useState([])
-  // const UserQueues = JSON.parse(localStorage.getItem('queues'))
+
   const profile = decryptData('profile')
   const username = localStorage.getItem('username')
   const userid = localStorage.getItem('userId')
