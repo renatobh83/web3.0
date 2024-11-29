@@ -118,6 +118,7 @@ export const ChatMensagem = ({
     openModalEcanminhar()
   }
   const isGroupLabel = mensagem => {
+
     try {
       return ticketFocado?.isGroup ? mensagem.contact.name : ''
     } catch (error) {
@@ -462,9 +463,10 @@ export const ChatMensagem = ({
                         {formatarData(mensagem.updatedAt, 'dd/MM/yyyy')}
                       </Typography>
                     )}
-                    {isGroupLabel(mensagem) && (
+                    {mensagem.ticket.isGroup && (
                       <Typography variant="body2">
                         {isGroupLabel(mensagem)}
+
                       </Typography>
                     )}
                     {mensagem.quotedMsg && (

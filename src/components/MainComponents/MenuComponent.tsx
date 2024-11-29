@@ -58,12 +58,6 @@ export const MenuComponent: React.FC<Props> = ({ userProfile, state }) => {
       routeName: 'atendimento',
     },
     {
-      title: 'Atendimentos2 Teses',
-      caption: 'TESTE',
-      icon: <ForumIcon />,
-      routeName: 'atendimento2',
-    },
-    {
       title: 'Contatos',
       caption: 'Lista de contatos',
       icon: <PeopleAltIcon />,
