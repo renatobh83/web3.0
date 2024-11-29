@@ -5,6 +5,7 @@ import { MainLayout } from './layout/MainLayout'
 import Login from './pages/Login'
 import { Atendimento } from './pages/Atendimento'
 import { Chat } from './pages/Atendimento/Chat'
+import { Chat as Chat2 } from './pages/Atendimento2/Chat'
 import { Canais } from './pages/Canais'
 import { Contatos } from './pages/Contatos'
 import { Dashboard } from './pages/dashboard'
@@ -20,6 +21,7 @@ import { Configuracoes } from './pages/Configuracoes'
 import { Campanhas } from './pages/campanhas'
 import { ContatosCampanha } from './pages/campanhas/ContatosCampanha'
 import { ApiExternal } from './pages/api'
+import { Atendimento2 } from './pages/Atendimento2'
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth()
@@ -67,6 +69,13 @@ const AppRoutes = () => {
             </Route>
             <Route path="/atendimento" element={<Atendimento />}>
               <Route path=":ticketId" element={<Chat />} />
+              <Route
+                path="chat-contatos"
+                element={<Contatos isChatContact={true} />}
+              />
+            </Route>
+            <Route path="/atendimento2" element={<Atendimento2 />}>
+              <Route path=":ticketId" element={<Chat2 />} />
               <Route
                 path="chat-contatos"
                 element={<Contatos isChatContact={true} />}

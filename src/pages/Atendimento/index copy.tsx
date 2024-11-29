@@ -1017,14 +1017,35 @@ export function Atendimento() {
             value="pending"
             disableRipple
           />
-          <Tab label="Fechado" value="closed" disableRipple />
 
+          {/* <Badge color="error" className="absolute left-0 top-0" /> */}
+          <Tab label="Fechado" value="closed" disableRipple />
+          {/* <Badge color="error" className="absolute left-0 top-0" /> */}
+          {/* {chatBotLane === "enabled" && (
+                                    <Tab
+                                        icon={<Settings />}
+                                        label="Chatbot"
+                                        value="chatbot"
+                                        className={clsx(darkMode ? "text-white" : "text-black")}
+                                        disableRipple
+                                    />
+                                )}
+                                {chatBotLane === "enabled" && (
+                                    <Badge
+                                        badgeContent={pendingTicketsChatBot}
+                                        color="error"
+                                        className="absolute left-0 top-0"
+                                    />
+                                )}
+                                {chatBotLane === "enabled" && (
+                                    <Tooltip title="Conversas Privadas" className="bg-padrao text-gray-900 font-bold" />
+                                )} */}
         </Tabs>
       )}
 
       {tabTickets === 1 && (
         <Tabs
-          sx={{ mt: 2 }}
+          sx={{ mt: 2, mb: 2 }}
           variant="fullWidth"
           value={tabTicketsStatus}
           onChange={(_event, newValue) => setTabTicketsStatus(newValue)}
@@ -1100,28 +1121,21 @@ export function Atendimento() {
       </TabPanel>
 
       <TabPanel value={tabTickets} index={1}>
-        <List
-          sx={{
-            // width: '100%',
-            gap: 1,
-          }}
-        >
-          {tabTickets === 1 &&
-            tabTicketsStatus === 'open' &&
-            openGroupTickets().map(ticket => (
-              <ItemTicket key={ticket.id} ticket={ticket} filas={filas} />
-            ))}
-          {tabTickets === 1 &&
-            tabTicketsStatus === 'pending' &&
-            pendingGroupTickets().map(ticket => (
-              <ItemTicket key={ticket.id} ticket={ticket} filas={filas} />
-            ))}
-          {tabTickets === 1 &&
-            tabTicketsStatus === 'closed' &&
-            closedGroupTickets().map(ticket => (
-              <ItemTicket key={ticket.id} ticket={ticket} filas={filas} />
-            ))}
-        </List>
+        {tabTickets === 1 &&
+          tabTicketsStatus === 'open' &&
+          openGroupTickets().map(ticket => (
+            <ItemTicket key={ticket.id} ticket={ticket} filas={filas} />
+          ))}
+        {tabTickets === 1 &&
+          tabTicketsStatus === 'pending' &&
+          pendingGroupTickets().map(ticket => (
+            <ItemTicket key={ticket.id} ticket={ticket} filas={filas} />
+          ))}
+        {tabTickets === 1 &&
+          tabTicketsStatus === 'closed' &&
+          closedGroupTickets().map(ticket => (
+            <ItemTicket key={ticket.id} ticket={ticket} filas={filas} />
+          ))}
       </TabPanel>
       <Box
         sx={{
@@ -1179,13 +1193,22 @@ export function Atendimento() {
 
   return (
     <>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex', height: '100vh' }}>
         <InfoCabecalhoMenssagens />
+        {/* <IconButton
+                    color="inherit"
+                    aria-label="open drawer"
+                    edge="start"
+                    onClick={handleDrawerToggle}
+                    sx={{ ml: 2, mt: 2, display: { md: 'none' } }}
+                >
+                    <MenuIcon />
+                </IconButton> */}
 
         <Box
-          component="aside"
+          component="nav"
           sx={{
-
+            // width: { sm: drawerWidth, md: 0 },
             flexShrink: { sm: 0 },
             overflow: 'auto',
           }}
@@ -1226,7 +1249,7 @@ export function Atendimento() {
           </Drawer>
         </Box>
 
-        {/* <Box
+        <Box
           component="main"
           sx={{
 
@@ -1241,11 +1264,11 @@ export function Atendimento() {
 
 
           }}
-        > */}
-        {/* <Outlet context={{ drawerWidth, handleDrawerToggle }} /> */}
-        <Outlet context={{ mensagensRapidas }} />
+        >
+          {/* <Outlet context={{ drawerWidth, handleDrawerToggle }} /> */}
+          <Outlet context={{ mensagensRapidas }} />
 
-        {/* </Box> */}
+        </Box>
 
         {modalUsuario && <ModalUsuario />}
         {openModalNovoTicket && (

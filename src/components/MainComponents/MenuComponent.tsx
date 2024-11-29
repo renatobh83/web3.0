@@ -58,6 +58,12 @@ export const MenuComponent: React.FC<Props> = ({ userProfile, state }) => {
       routeName: 'atendimento',
     },
     {
+      title: 'Atendimentos2 Teses',
+      caption: 'TESTE',
+      icon: <ForumIcon />,
+      routeName: 'atendimento2',
+    },
+    {
       title: 'Contatos',
       caption: 'Lista de contatos',
       icon: <PeopleAltIcon />,
@@ -155,11 +161,11 @@ export const MenuComponent: React.FC<Props> = ({ userProfile, state }) => {
               },
               state
                 ? {
-                    justifyContent: 'initial',
-                  }
+                  justifyContent: 'initial',
+                }
                 : {
-                    justifyContent: 'center',
-                  },
+                  justifyContent: 'center',
+                },
             ]}
             onClick={() => handleClick(item.routeName)}
           >
@@ -172,11 +178,11 @@ export const MenuComponent: React.FC<Props> = ({ userProfile, state }) => {
                 },
                 state
                   ? {
-                      mr: 3,
-                    }
+                    mr: 3,
+                  }
                   : {
-                      mr: 'auto',
-                    },
+                    mr: 'auto',
+                  },
               ]}
             >
               {item.icon}
@@ -187,11 +193,11 @@ export const MenuComponent: React.FC<Props> = ({ userProfile, state }) => {
               sx={[
                 state
                   ? {
-                      opacity: 1,
-                    }
+                    opacity: 1,
+                  }
                   : {
-                      opacity: 0,
-                    },
+                    opacity: 0,
+                  },
               ]}
             />
           </ListItemButton>
@@ -211,11 +217,11 @@ export const MenuComponent: React.FC<Props> = ({ userProfile, state }) => {
                   },
                   state
                     ? {
-                        justifyContent: 'initial',
-                      }
+                      justifyContent: 'initial',
+                    }
                     : {
-                        justifyContent: 'center',
-                      },
+                      justifyContent: 'center',
+                    },
                 ]}
                 onClick={() => handleClick(item.routeName)}
               >
@@ -227,11 +233,11 @@ export const MenuComponent: React.FC<Props> = ({ userProfile, state }) => {
                     },
                     state
                       ? {
-                          mr: 3,
-                        }
+                        mr: 3,
+                      }
                       : {
-                          mr: 'auto',
-                        },
+                        mr: 'auto',
+                      },
                   ]}
                 >
                   {item.icon}
@@ -242,11 +248,11 @@ export const MenuComponent: React.FC<Props> = ({ userProfile, state }) => {
                   sx={[
                     state
                       ? {
-                          opacity: 1,
-                        }
+                        opacity: 1,
+                      }
                       : {
-                          opacity: 0,
-                        },
+                        opacity: 0,
+                      },
                   ]}
                 />
               </ListItemButton>

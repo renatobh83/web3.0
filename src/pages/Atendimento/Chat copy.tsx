@@ -334,7 +334,7 @@
 //     // </Box >
 //   )
 // }
-import { Box, Button, Fade, Paper, Typography } from '@mui/material';
+import { Box, Button, Fade, Typography } from '@mui/material';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket';
 import { useEffect, useRef, useState } from 'react';
@@ -358,19 +358,23 @@ export type OutletContextType = {
 
 export const Chat = () => {
   const ctx: { mensagensRapidas: [] } = useOutletContext();
+
   const { socketTicketList } = useMixinSocket();
   const { mensagens, LocalizarMensagensTicket } = useAtendimentoTicketStore();
   const modalAgendamento = useAtendimentoStore((s) => s.modalAgendamento);
   const { ticketFocado, setTicketFocado } = useAtendimentoTicketStore();
+
+  const [loading, setLoading] = useState(false);
   const [replyingMessage, setReplyingMessage] = useState(null);
   const isEmpty = !replyingMessage || Object.keys(replyingMessage).length === 0;
+  const [hasMoreC, setHasMoreC] = useState(true);
+  const [cMessages, setCMessages] = useState(mensagens.slice(-10));
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-
-
-  // useEffect(() => {
-  //   setReplyingMessage(null);
-  //   setCMessages(mensagens.slice(-10)); // Inicia com as últimas 10 mensagens
-  // }, [mensagens]);
+  useEffect(() => {
+    setReplyingMessage(null);
+    setCMessages(mensagens.slice(-10)); // Inicia com as últimas 10 mensagens
+  }, [mensagens]);
 
   useEffect(() => {
     socketTicketList();
@@ -394,8 +398,27 @@ export const Chat = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight; // Posiciona o scroll no final
+    }
 
+  }, [cMessages]);
 
+  const onLoadMore = () => {
+    const currentLength = cMessages.length;
+    if (currentLength === mensagens.length) {
+      setHasMoreC(false); // Não há mais mensagens a carregar
+      return;
+    }
+
+    const newMessages = mensagens.slice(
+      Math.max(mensagens.length - currentLength - 10, 0),
+      mensagens.length - currentLength
+    );
+
+    setCMessages((prevMessages) => [...newMessages, ...prevMessages]);
+  };
 
   const [OpenModalEnc, setOpenModalEnc] = useState(false);
   const [mensagensParaEncaminhar, setMensagensParaEncaminhar] = useState([]);
@@ -407,116 +430,94 @@ export const Chat = () => {
     setMensagensParaEncaminhar([msg]);
   };
 
-  // const [inputHeight, setInputHeight] = useState(0);
+  const [inputHeight, setInputHeight] = useState(0);
 
   const footerRef = useRef<HTMLDivElement>(null);
-  // const onResize = (entries: ResizeObserverEntry[]) => {
-  //   const entry = entries[0];
-  //   console.log(entry)
-  //   setInputHeight(entry.contentRect.height);
-  // };
+  const onResize = (entries: ResizeObserverEntry[]) => {
+    const entry = entries[0];
+    console.log(entry)
+    setInputHeight(entry.contentRect.height);
+  };
 
-  // useEffect(() => {
-  //   const resizeObserver = new ResizeObserver(onResize);
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(onResize);
 
-  //   if (footerRef.current) {
-  //     resizeObserver.observe(footerRef.current);
-  //   }
+    if (footerRef.current) {
+      resizeObserver.observe(footerRef.current);
+    }
 
-  //   return () => {
-  //     if (footerRef.current) {
-  //       resizeObserver.unobserve(footerRef.current);
-  //     }
-  //   };
-  // }, []);
+    return () => {
+      if (footerRef.current) {
+        resizeObserver.unobserve(footerRef.current);
+      }
+    };
+  }, []);
 
   const openModalEcanminhar = () => {
     setOpenModalEnc(true);
   };
 
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  const [cMessages, setCMessages] = useState<any[]>(mensagens.slice(-10)); // Carrega as últimas 10 mensagens inicialmente
-  const [hasMore, setHasMore] = useState(true);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const previousScrollHeight = useRef<number>(0);
-  const { isContactInfo } = useAtendimentoStore()
-  // Função para carregar mais mensagens no scroll
-  const handleScroll = () => {
-    if (containerRef.current) {
-      const { scrollTop } = containerRef.current;
+  function cStyleScroll(): React.CSSProperties {
+    const add = inputHeight;
 
-      if (scrollTop === 0 && hasMore) {
-        // Salva a altura do contêiner antes de carregar novas mensagens
-        previousScrollHeight.current = containerRef.current.scrollHeight;
+    return {
+      minHeight: `calc(100vh - ${62 + add}px)`,
+      height: `calc(100vh - ${62 + add}px)`,
+      width: '100%',
+      overflowY: 'auto',
+      contain: 'strict',
+      willChange: 'scroll-position',
+    };
+  }
 
-        const currentLength = cMessages.length;
-        const nextMessages = mensagens.slice(
-          Math.max(0, mensagens.length - currentLength - 10),
-          mensagens.length - currentLength
-        );
-
-        setCMessages((prev) => [...nextMessages, ...prev]);
-
-        if (currentLength + nextMessages.length >= mensagens.length) {
-          setHasMore(false);
-        }
-      }
-    }
-  };
-  useEffect(() => {
-    setCMessages(mensagens)
-
-  }, [mensagens])
-  useEffect(() => {
-    if (containerRef.current) {
-      setTimeout(() => {
-        console.log(containerRef.current.scrollHeight)
-        containerRef.current.scrollTop = containerRef.current.scrollHeight;
-      }, 0);
-    }
-  }, [mensagens])
-  // Ajusta o scroll após carregar mensagens mais antigas
-  useEffect(() => {
-    if (containerRef.current && previousScrollHeight.current > 0) {
-      const scrollDiff =
-        containerRef.current.scrollHeight - previousScrollHeight.current;
-      containerRef.current.scrollTop = scrollDiff; // Mantém a posição de scroll após adicionar novas mensagens
-    }
-
-  }, [mensagens]);
-
-  // Scrolla automaticamente para baixo ao adicionar novas mensagens (apenas ao final da lista)
-  useEffect(() => {
-    if (containerRef.current && !previousScrollHeight.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
-    }
-  }, [mensagens]);
-  const { drawerWidth } =
-    useAtendimentoStore()
   return (
     <Box
-      ref={containerRef}
-      onScroll={handleScroll}
+      id="scrollInfinit"
       sx={{
-        maxHeight: 'calc(100vh - 80px)',
-        paddingLeft: { md: '380px', sm: '0' },
-        width: { md: `calc(100% - ${drawerWidth}px)` },
-        mr: isContactInfo ? '300px' : '0',
-        height: 'calc(100vh - 77px)',
-        overflowY: "auto",
-        display: "flex",
-        flexDirection: "column",
-        flexGrow: 1,
-        bgcolor: "#f0f0f0",
+        paddingTop: '61px',
+        paddingBottom: '73px',
+
       }}
     >
-      <ChatMensagem
-        mensagens={cMessages}
-        setReplyingMessage={setReplyingMessage}
-        getMensagenParaEncaminhar={getMensagensParaEncaminhar}
-        openModalEcanminhar={openModalEcanminhar}
-      />
+      {!mensagens.length ? (
+        <Fade in={true} timeout={2000}>
+          <Box
+            sx={{
+              display: 'flex',
+              height: '100vh',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            Carregando mensagens.....
+          </Box>
+        </Fade>
+      ) : (
+        <InfiniteScroll
+          style={{
+            background: 'url(../wa-background.png)',
+            backgroundPosition: 'center center !important',
+            scrollbarWidth: 'none',
+            overflow: 'hidden !important',
+          }}
+          dataLength={cMessages.length}
+          next={onLoadMore}
+          inverse={true}
+          hasMore={hasMoreC}
+          loader={<p>Carregando mais mensagens...</p>}
+          scrollableTarget="scrollarea_container"
+        >
+          <div style={cStyleScroll()} ref={scrollContainerRef}>
+            <ChatMensagem
+              mensagens={cMessages}
+              setReplyingMessage={setReplyingMessage}
+              getMensagenParaEncaminhar={getMensagensParaEncaminhar}
+              openModalEcanminhar={openModalEcanminhar}
+            />
+          </div>
+        </InfiniteScroll>
 
+      )}
       <Box
         sx={{
           position: 'fixed',
