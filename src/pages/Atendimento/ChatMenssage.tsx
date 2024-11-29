@@ -279,7 +279,9 @@ export const ChatMensagem = ({
           gap: '1rem'
         }}
       >
-        {mensagens?.filter(mensagem => mensagem !== undefined && mensagem !== null && mensagem.mediaType !== 'call_log')
+        {mensagens?.filter(mensagem =>
+          mensagem.ack !== 1 &&
+          mensagem !== undefined && mensagem !== null && mensagem.mediaType !== 'call_log')
           .map((mensagem, index) => (
             <React.Fragment key={mensagem.id}>
 
