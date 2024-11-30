@@ -23,6 +23,7 @@ import {
   Tooltip,
   Typography,
   useColorScheme,
+  useMediaQuery,
 } from '@mui/material'
 import { useEffect, useState } from 'react'
 import ToggleColorMode from '../MaterialUi/Login/ToggleColorMode'
@@ -246,13 +247,19 @@ export const MenusNavbar = () => {
   useEffect(() => {
     consultaTickets()
   }, [])
+  const isMobile = useMediaQuery('(max-width:600px)');
+
+  // Filtra os itens no modo mobile
+  const filteredWhatsApps = isMobile
+    ? whatsApps.filter((item) => item.status === 'CONNECTED').slice(0, 1) // Apenas 1 conectado
+    : whatsApps;
   return (
     <Stack
       direction="row"
       spacing={1}
       sx={{ justifyContent: 'center', alignItems: 'center' }}
     >
-      {whatsApps?.map(item => (
+      {filteredWhatsApps?.map(item => (
         <React.Fragment key={item.id}>
           {/* Equivalente a `q-mx-xs` e `q-pa-none` */}
           <Tooltip
@@ -264,6 +271,7 @@ export const MenusNavbar = () => {
             }
             placement="top"
             sx={{
+            
               maxHeight: 300,
               bgcolor: 'blue.100',
               color: 'grey.900',
@@ -279,7 +287,6 @@ export const MenusNavbar = () => {
                 height: 30,
               }}
             >
-              {/* O ícone pode ser um `img` ou `Avatar` */}
               <Avatar
                 src={`../${item.type}-logo.png`}
                 sx={{ width: 18, height: 18 }} // Ajuste do tamanho do ícone
