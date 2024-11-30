@@ -526,7 +526,7 @@ export const Chat = () => {
         background: 'url(../wa-background.png)',
         backgroundPosition: 'center center !important',
         maxHeight: 'calc(100vh - 80px)',
-        paddingLeft: { md: '380px', sm: '0' },
+        // paddingLeft: { md: '380px', sm: '0' },
         width: { md: `calc(100% - ${drawerWidth}px)` },
         mr: isContactInfo ? '300px' : '0',
         height: 'calc(100vh - 77px)',
