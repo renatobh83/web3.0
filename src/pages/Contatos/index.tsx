@@ -46,6 +46,7 @@ export const Contatos: React.FC<{
     setContatoSelecionado(contact)
     setOpenModalNovoTicket(true)
   }
+
   const columns = [
     {
       name: 'profilePicUrl',

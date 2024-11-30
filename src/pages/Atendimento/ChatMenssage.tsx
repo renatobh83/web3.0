@@ -265,7 +265,6 @@ export const ChatMensagem = ({
       eventEmitterScrool.off('scrollToBottomMessageChat', scrollToBottom)
     }
   }, [])
-
   return (
     <>
       <Box

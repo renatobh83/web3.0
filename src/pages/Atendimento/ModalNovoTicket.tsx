@@ -154,7 +154,7 @@ export const ModalNovoTicket = ({
   return (
     <>
       {open &&
-        <Dialog open={open} fullWidth maxWidth="xs">
+        <Dialog open={open} fullWidth maxWidth="xs" sx={{zIndex: 50000}}>
           <DialogTitle>Criar ticket</DialogTitle>
           <DialogContent>
             <FormControl fullWidth>

@@ -1193,8 +1193,8 @@ export function Atendimento() {
 
         <Box
           component="aside"
-          sx={{
-
+            sx={{
+              width: {sm: 0, md: '380px'},  
             flexShrink: { sm: 0 },
             overflow: 'auto',
           }}
@@ -1211,6 +1211,7 @@ export function Atendimento() {
               keepMounted: true, // Better open performance on mobile.
             }}
             sx={{
+              zIndex: 2000,
               display: { xs: 'block', sm: 'block' },
               '& .MuiDrawer-paper': {
                 boxSizing: 'border-box',
@@ -1254,7 +1255,7 @@ export function Atendimento() {
         {/* <Outlet context={{ drawerWidth, handleDrawerToggle }} /> */}
         <Outlet context={{ mensagensRapidas }} />
 
-        {/* </Box> */}
+       
 
         {modalUsuario && <ModalUsuario />}
         {openModalNovoTicket && (
