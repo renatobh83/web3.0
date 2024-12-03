@@ -156,7 +156,9 @@ export const ChatMensagem = ({
     setSelectedMessageId(null)
   }
 
-
+  useEffect(() => {
+    console.log(mensagens)
+  }, [mensagens])
 
   // const handleMouseEnter = (event, id) => {
   //   setAnchorElAgenda(event.currentTarget)
@@ -464,7 +466,7 @@ export const ChatMensagem = ({
                         {formatarData(mensagem.updatedAt, 'dd/MM/yyyy')}
                       </Typography>
                     )}
-                    {mensagem.ticket.isGroup && (
+                    {isGroupLabel(mensagem) && (
                       <Typography variant="body2">
                         {isGroupLabel(mensagem)}
 

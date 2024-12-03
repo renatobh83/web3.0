@@ -240,7 +240,9 @@ export const Campanhas = () => {
   ]
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
+
     listarCampanhas()
+    console.log(campanhas)
   }, [open])
 
   const [pagination, setPagination] = useState({ page: 0, rowsPerPage: 10 })
