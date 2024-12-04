@@ -17,7 +17,7 @@ import {
 
 import { CheckCircle, PlayArrow, WhatsApp } from '@mui/icons-material'
 import { formatDistance, parseJSON } from 'date-fns'
-import { id, ptBR } from 'date-fns/locale'
+import { ptBR } from 'date-fns/locale'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTicketService } from '../../hooks/useTicketService'
@@ -28,6 +28,7 @@ interface ItemTicketProps {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   filas: any[]
 }
+
 
 export const ItemTicket = ({ filas, ticket }: ItemTicketProps) => {
   const navigate = useNavigate()
