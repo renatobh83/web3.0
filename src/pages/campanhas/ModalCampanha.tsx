@@ -433,6 +433,7 @@ export const ModalCampanha = ({
 
     try {
       if (campanhaId?.id) {
+
         await AlterarCampanha(formData, campanhaId.id)
         toast.info('Campanha editada!')
       } else {

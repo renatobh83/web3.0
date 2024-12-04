@@ -557,6 +557,7 @@ export const useAtendimentoTicketStore = create<
   // Ação para abrir o chat de mensagens
   AbrirChatMensagens: async (data) => {
     try {
+      console.log(data)
       // Resetando ticket focado e mensagens
       set({ ticketFocado: null, mensagens: [] });
 

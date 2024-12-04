@@ -12,7 +12,7 @@ export function ConsultarDadosTicket(params: { id: any }) {
   return request({
     url: `/tickets/${params.id}`,
     method: "get",
-    params,
+
   });
 }
 
@@ -44,7 +44,7 @@ export function AtualizarTicket(ticketId: any, data: any) {
 }
 
 export function LocalizarMensagens(params: { ticketId: any }) {
- 
+
   return request({
     url: `/messages/${params.ticketId}`,
     method: "get",

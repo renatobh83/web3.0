@@ -17,7 +17,7 @@ import {
 
 import { CheckCircle, PlayArrow, WhatsApp } from '@mui/icons-material'
 import { formatDistance, parseJSON } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
+import { id, ptBR } from 'date-fns/locale'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTicketService } from '../../hooks/useTicketService'
@@ -84,7 +84,7 @@ export const ItemTicket = ({ filas, ticket }: ItemTicketProps) => {
       )
     )
       return
-
+    console.log("abrir chat contato", ticket.id)
     nav('/atendimento')
     if (ticket.id === ticketFocado?.id) return
 

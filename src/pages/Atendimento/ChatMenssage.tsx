@@ -156,9 +156,7 @@ export const ChatMensagem = ({
     setSelectedMessageId(null)
   }
 
-  useEffect(() => {
-    console.log(mensagens)
-  }, [mensagens])
+
 
   // const handleMouseEnter = (event, id) => {
   //   setAnchorElAgenda(event.currentTarget)

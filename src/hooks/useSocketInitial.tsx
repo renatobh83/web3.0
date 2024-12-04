@@ -242,6 +242,9 @@ export const useSocketInitial = () => {
             updateNotifications(response.data)
           } catch (error) { }
         }
+        if (data.type === 'campaign:update') {
+          toast.info('Data de inicio alterada devido a esta fora do horario ou final de semana')
+        }
         // if (data.type === 'ticket:create') {
         //   console.log('socket ON: TICKET:CREATE 1')
         //   try {
