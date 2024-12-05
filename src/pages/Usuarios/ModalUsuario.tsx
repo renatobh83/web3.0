@@ -67,7 +67,7 @@ export const ModalUsuario: React.FC = () => {
     };
 
     useEffect(() => {
-        console.log(usuarioSelecionado)
+
         if (usuarioSelecionado) {
             setUsuario({
                 id: usuarioSelecionado.id ?? Number(usuarioSelecionado.userId),

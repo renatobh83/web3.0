@@ -102,7 +102,7 @@ export const ContatosCampanha = () => {
   const [selectAll, setSelectAll] = useState(false)
 
   const handleSelectContact = contato => {
-    console.log(contato)
+
 
     if (
       contatosSelected.some(
@@ -295,7 +295,7 @@ export const ContatosCampanha = () => {
       setContatosSelected([])
       setModalContato(false)
       setSelectAll(false)
-    } catch (error) {}
+    } catch (error) { }
   }
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, pt: 2 }}>
@@ -374,11 +374,11 @@ export const ContatosCampanha = () => {
                       {
                         col.renderCell
                           ? col.renderCell({
-                              value: contato[col.field],
-                              contato,
-                            }) // Usa o renderCell se estiver definido
+                            value: contato[col.field],
+                            contato,
+                          }) // Usa o renderCell se estiver definido
                           : typeof contato[col.field] === 'object' &&
-                              contato[col.field] !== null
+                            contato[col.field] !== null
                             ? JSON.stringify(contato[col.field]) // Formata se for objeto
                             : contato[col.field] // Caso contrário, renderiza diretamente
                       }

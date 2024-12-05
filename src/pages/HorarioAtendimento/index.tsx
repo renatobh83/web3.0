@@ -27,6 +27,7 @@ import {
   MostrarHorariosAtendiemento,
 } from '../../services/empresa'
 import { toast } from 'sonner'
+import { Errors } from '../../utils/error'
 
 const optType = [
   { value: 'O', label: 'Aberto' },
@@ -205,7 +206,8 @@ export const HorarioAtendimento = () => {
       await AtualizarHorariosAtendiemento(businessHours)
       toast.info('Horário de funcionamento atualizado.')
     } catch (e) {
-      console.log(`Mensagem de ausência erro :${e}`)
+      Errors(`Erro ao atualizar horario :${e}`)
+
     }
   }
   return (

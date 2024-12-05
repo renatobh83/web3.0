@@ -19,6 +19,8 @@ import { orderTickets } from '../utils/ordertTickets'
 import { eventEmitter as eventNotification } from '../pages/Atendimento/index'
 import { eventEmitterMain } from '../layout/MainLayout'
 import checkTicketFilter from '../utils/checkTicketFilter'
+import { ListarCampanhas } from '../services/campanhas'
+import { useApplicationStore } from '../store/application'
 // export const eventEmitter = new EventEmitter();
 
 export const useSocketInitial = () => {
@@ -63,6 +65,7 @@ export const useSocketInitial = () => {
   const { AbrirChatMensagens, resetUnread } = useAtendimentoTicketStore()
   const { editarUsuario, insertNewUser, toggleModalUsuario, deletarUsuario } =
     useUsuarioStore()
+  const { setCampanhas } = useApplicationStore()
   const usuario = JSON.parse(decryptData('usuario'))
   const userId = +localStorage.getItem('userId')
   let socket: Socket | null = null
@@ -244,6 +247,17 @@ export const useSocketInitial = () => {
         }
         if (data.type === 'campaign:update') {
           toast.info('Data de inicio alterada devido a esta fora do horario ou final de semana')
+        }
+        if (data.type === 'campaign:send') {
+          setTimeout(async () => {
+            const { data } = await ListarCampanhas()
+            setCampanhas(data)
+          }, 200)
+          setTimeout(async () => {
+            const { data } = await ListarCampanhas()
+            setCampanhas(data)
+          }, 1000)
+
         }
         // if (data.type === 'ticket:create') {
         //   console.log('socket ON: TICKET:CREATE 1')
@@ -535,3 +549,4 @@ export const useSocketInitial = () => {
     }
   }, [getWs, setWs])
 }
+

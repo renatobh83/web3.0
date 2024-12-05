@@ -24,6 +24,7 @@ import { ModalCampanha } from './ModalCampanha'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
 import { Errors } from '../../utils/error'
+import { useApplicationStore } from '../../store/application'
 const status = {
   pending: 'Pendente',
   scheduled: 'Programada',
@@ -42,7 +43,8 @@ interface campanha {
 
 export const Campanhas = () => {
   const nav = useNavigate()
-  const [campanhas, setCampanhas] = useState([])
+  const { campanhas, setCampanhas } = useApplicationStore()
+  // const [campanhas, setCampanhas] = useState([])
   const [campanhaId, setCampanhaId] = useState(null)
   const [open, setOpen] = useState(false)
   // const [openContatos, setOpenContatos] = useState(false)
@@ -50,6 +52,7 @@ export const Campanhas = () => {
     setOpen(false)
     setCampanhaId(null)
   }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listarCampanhas = useCallback(async () => {
     try {
       const { data } = await ListarCampanhas()
@@ -59,6 +62,7 @@ export const Campanhas = () => {
       Errors(error)
     }
   }, [])
+
   const handleEditarCampanha = (id: SetStateAction<null>) => {
     setCampanhaId(id)
     setOpen(true)
@@ -95,6 +99,7 @@ export const Campanhas = () => {
                 listarCampanhas()
               })
               .catch(err => {
+                console.log(err)
                 Errors(err)
               })
           },
@@ -240,9 +245,7 @@ export const Campanhas = () => {
   ]
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-
     listarCampanhas()
-    console.log(campanhas)
   }, [open])
 
   const [pagination, setPagination] = useState({ page: 0, rowsPerPage: 10 })
