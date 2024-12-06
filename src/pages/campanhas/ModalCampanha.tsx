@@ -310,12 +310,12 @@ import {
   Typography,
 } from '@mui/material'
 
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import { useForm } from 'react-hook-form'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { MolduraCelular } from '../../components/MolduraCelular'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ChatMensagem } from '../Atendimento/ChatMenssage'
 import { useWhatsappStore } from '../../store/whatsapp'
 import { AlterarCampanha, CriarCampanha } from '../../services/campanhas'
@@ -338,6 +338,11 @@ import { Errors } from '../../utils/error'
 interface Campanha {
   name: string
   data: string
+  messages: string[]
+  delay: number
+  mediaUrl: string
+  start: Dayjs | null
+  sessionId: string
 }
 
 interface ModalCampanhaProps {
@@ -352,22 +357,28 @@ export const ModalCampanha = ({
   setClose,
   campanhaId,
 }: ModalCampanhaProps) => {
+
   const {
     handleSubmit,
-
-  } = useForm<Campanha>()
-  const { whatsApps } = useWhatsappStore()
-
-  const [campanha, setCampanha] = useState({
-    name: '',
-    start: null,
-    mediaUrl: null,
-    message1: '',
-    message2: '',
-    message3: '',
-    sessionId: null,
-    delay: 20,
+    register,
+    watch,
+    setValue, reset, clearErrors,
+    formState: { errors },
+  } = useForm<Campanha>({
+    defaultValues: {
+      name: campanhaId?.name || '',
+      mediaUrl: campanhaId?.mediaUrl || null,
+      start: campanhaId?.start || null,
+      sessionId: campanhaId?.sessionId || '',
+      delay: campanhaId?.delay || 20,
+      messages: [
+        campanhaId?.message1 || '',
+        campanhaId?.message2 || '',
+        campanhaId?.message3 || '',
+      ],
+    },
   })
+  const { whatsApps } = useWhatsappStore()
 
   const [messagemPreview, setMessagemPreview] = useState('message1')
   const msgArray = ['message1', 'message2', 'message3']
@@ -391,53 +402,27 @@ export const ModalCampanha = ({
     quotedMsg: null,
   })
 
-  const adjustedDate = (date: Date | null) => {
-    return date ? dayjs(date).tz('America/Sao_Paulo').format() : null
-  }
+  // const adjustedDate = (date: Date | null) => {
+  //   return date ? dayjs(date).tz('America/Sao_Paulo').format() : null
+  // }
 
-  const resetarCampanha = () => {
-    setCampanha({
-      name: '',
-      start: null,
-      mediaUrl: null,
-      message1: '',
-      message2: '',
-      message3: '',
-      sessionId: null,
-      delay: 20,
-    })
-  }
+
 
   const handleCloseModal = () => {
-    resetarCampanha()
+    reset();           // Resetando os campos
+    clearErrors();     // Limpando os erros
     setClose()
   }
 
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  const handleOnChange = (value: any, key: string) => {
-    setCampanha(prev => ({
-      ...prev,
-      [key]: key === 'start' ? adjustedDate(value) : value,
-    }))
-  }
-
-  const onSubmit = async () => {
-    const formData = new FormData()
-
-    // biome-ignore lint/complexity/noForEach: <explanation>
-    Object.keys(campanha).forEach(key => {
-      if (campanha[key] !== null) {
-        formData.append(key, campanha[key].toString())
-      }
-    })
-
+  const onSubmit = async (data: Campanha) => {
+    console.log(data)
     try {
       if (campanhaId?.id) {
 
-        await AlterarCampanha(formData, campanhaId.id)
+        await AlterarCampanha(data, campanhaId.id)
         toast.info('Campanha editada!')
       } else {
-        await CriarCampanha(formData)
+        await CriarCampanha(data)
         toast.info('Campanha criada!')
       }
       handleCloseModal()
@@ -455,28 +440,42 @@ export const ModalCampanha = ({
 
   const cMessages = () => {
     return msgArray
-      .filter(el => messagemPreview === el)
-      .map(el => ({
-        ...messageTemplate,
-        id: el,
-        body: campanha[el as keyof typeof campanha] || '',
-      }))
-  }
+      .filter(el => messagemPreview === el) // Filtra a mensagem selecionada
+      .map(el => {
+        const index = parseInt(el.replace('message', '')) - 1; // Extrai o número e ajusta o índice
+        const messageBody = watch(`messages.${index}`) || '';
+        return {
+          ...messageTemplate,
+          id: el,
+          body: messageBody, // Usa o valor encontrado
+        };
+      });
+  };
 
-  useEffect(() => {
-    if (campanhaId) {
-      setCampanha({
-        delay: campanhaId.delay || 20,
-        start: campanhaId.start || null,
-        name: campanhaId.name || '',
-        message1: campanhaId.message1 || '',
-        message2: campanhaId.message2 || '',
-        message3: campanhaId.message3 || '',
-        sessionId: campanhaId.sessionId || null,
-        mediaUrl: campanhaId.mediaUrl || null,
-      })
-    }
-  }, [campanhaId])
+  // useEffect(() => {
+  //   if (campanhaId) {
+  //     setValue("name", campanhaId.name || '')
+  //     setValue("mediaUrl", campanhaId.mediaUrl || null)
+  //     setValue("messages", [
+  //       campanhaId.message1 || '',
+  //       campanhaId.message2 || '',
+  //       campanhaId.message3 || '',
+  //     ]);
+  //     setValue("sessionId", campanhaId.sessionId || null)
+  //     setValue("delay", campanhaId.delay || 20)
+  //     // setCampanha({
+  //     //   delay: campanhaId.delay || 20,
+  //     //   start: campanhaId.start || null,
+  //     //   name: campanhaId.name || '',
+  //     //   message1: campanhaId.message1 || '',
+  //     //   message2: campanhaId.message2 || '',
+  //     //   message3: campanhaId.message3 || '',
+  //     //   sessionId: campanhaId.sessionId || null,
+  //     //   mediaUrl: campanhaId.mediaUrl || null,
+  //     // })
+  //   }
+
+  // }, [campanhaId])
 
   return (
     <Dialog open={open} fullWidth maxWidth="md">
@@ -496,8 +495,11 @@ export const ModalCampanha = ({
                 fullWidth
                 variant="outlined"
                 label="Nome da campanha"
-                value={campanha.name}
-                onChange={e => handleOnChange(e.target.value, 'name')}
+                // value={campanha.name}
+                {...register('name', { required: 'Descriação é obrigatório' })}
+                error={!!errors.name}
+                helperText={errors.name?.message}
+                onChange={e => setValue('name', e.target.value,)}
               />
               <LocalizationProvider
                 dateAdapter={AdapterDayjs}
@@ -505,9 +507,24 @@ export const ModalCampanha = ({
               >
                 <Stack spacing={2} sx={{ minWidth: 305 }}>
                   <MobileDateTimePicker
+                    value={watch('start') ? dayjs(watch('start')) : null}
+                    onChange={(date: Dayjs | null) => {
+                      setValue('start', date); // Directly save the Dayjs object
+                    }}
+                    slotProps={{
+                      textField: {
+                        ...register('start', { required: 'Data é obrigatória' }),
+                        error: !!errors.start,
+                        helperText: errors.start?.message,
+                        fullWidth: true,
+                        variant: 'outlined',
+                      },
+                    }}
+                  />
+                  {/* <MobileDateTimePicker
                     value={campanha.start ? dayjs(campanha.start) : null}
                     onChange={date => handleOnChange(date, 'start')}
-                  />
+                  /> */}
                 </Stack>
               </LocalizationProvider>
             </Box>
@@ -517,8 +534,12 @@ export const ModalCampanha = ({
                 <Select
                   label="Enviar por"
                   variant="outlined"
-                  value={campanha.sessionId || ''}
-                  onChange={e => handleOnChange(e.target.value, 'sessionId')}
+                  // value={campanha.sessionId || ''}
+                  {...register('sessionId', { required: 'Sessão é obrigatória' })}
+                  value={watch('sessionId') || ''}
+                  onChange={e => setValue('sessionId', e.target.value)}
+
+                // onChange={e => handleOnChange(e.target.value, 'sessionId')}
                 >
                   {cSessions().map(sessao => (
                     <MenuItem key={sessao.id} value={sessao.id}>
@@ -526,13 +547,24 @@ export const ModalCampanha = ({
                     </MenuItem>
                   ))}
                 </Select>
+                {errors.sessionId && (
+                  <Typography color="error">{errors.sessionId.message}</Typography>
+                )}
               </FormControl>
               <TextField
                 sx={{ width: '100px' }}
                 variant="outlined"
                 label="Delay"
-                value={campanha.delay}
-                onChange={e => handleOnChange(Number(e.target.value), 'delay')}
+                {...register('delay', {
+                  required: 'Delay é obrigatório',
+                  validate: value => value > 0 || 'Delay deve ser maior que 0',
+                })}
+                value={watch('delay') || ''}
+                onChange={e => setValue('delay', Number(e.target.value))}
+                error={!!errors.delay}
+                helperText={errors.delay?.message}
+              // value={campanha.delay}
+              // onChange={e => handleOnChange(Number(e.target.value), 'delay')}
               />
             </Box>
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
@@ -545,8 +577,11 @@ export const ModalCampanha = ({
                       variant="filled"
                       multiline
                       rows={5}
-                      value={campanha[msgKey as keyof typeof campanha] || ''}
-                      onChange={e => handleOnChange(e.target.value, msgKey)}
+                      {...register(`messages.${idx}`, { required: "Mensagem é obrigatória" })} // Registrando com o índice no array
+                      error={!!errors.messages?.[idx]}
+                      helperText={errors.messages?.[idx]?.message}
+                      value={watch(`messages.${idx}`) || ''}
+                      onChange={e => setValue(`messages.${idx}`, e.target.value)}
                     />
                   </Box>
                 ))}

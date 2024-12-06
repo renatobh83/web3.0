@@ -304,6 +304,7 @@ export const Campanhas = () => {
         </TableHead>
         <TableBody>
           {campanhas
+            .sort((a, b) => b.id - a.id)
             .slice(
               pagination.page * pagination.rowsPerPage,
               pagination.page * pagination.rowsPerPage + pagination.rowsPerPage

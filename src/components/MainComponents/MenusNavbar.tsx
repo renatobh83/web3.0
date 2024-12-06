@@ -271,7 +271,7 @@ export const MenusNavbar = () => {
             }
             placement="top"
             sx={{
-            
+
               maxHeight: 300,
               bgcolor: 'blue.100',
               color: 'grey.900',
@@ -330,32 +330,65 @@ export const MenusNavbar = () => {
                     </Typography>
                   </MenuItem>
                 )}
-
-                {notifications?.tickets
-                  ?.filter(i => i.userId === user)
-                  .map(ticket => (
-                    <MenuItem
-                      key={ticket.id}
-                      sx={{ display: 'flex', gap: 3 }}
-                      onClick={() => abrirChatContato(ticket)}
-                    >
-                      <Avatar src={ticket.profilePicUrl ?? ''} />
-                      <div>
-                        <ListItemText>{ticket.name}</ListItemText>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: 'text.secondary',
-                            width: '150px',
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden',
-                          }}
+                {notifications?.tickets && (
+                  <>
+                    {notifications?.tickets
+                      ?.filter(i => i.userId === user)
+                      .filter(i => !i.isGroup)
+                      .map(ticket => (
+                        <MenuItem
+                          key={ticket.id}
+                          sx={{ display: 'flex', gap: 3 }}
+                          onClick={() => abrirChatContato(ticket)}
                         >
-                          {ticket.lastMessage}
-                        </Typography>
-                      </div>
-                    </MenuItem>
-                  ))}
+
+                          <Avatar src={ticket.profilePicUrl ?? ''} />
+                          <div>
+                            <ListItemText>{ticket.name}</ListItemText>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                color: 'text.secondary',
+                                width: '150px',
+                                textOverflow: 'ellipsis',
+                                overflow: 'hidden',
+                              }}
+                            >
+                              {ticket.lastMessage}
+                            </Typography>
+                          </div>
+                        </MenuItem>
+                      ))}
+                    {notifications.tickets.some(ticket => ticket.isGroup) && <Divider >Grupo</Divider>}
+                    {notifications?.tickets
+                      ?.filter(i => i.userId === user)
+                      .filter(i => i.isGroup)
+                      .slice(0, 1)
+                      .map(ticket => (
+                        <MenuItem
+                          key={ticket.id}
+                          sx={{ display: 'flex', gap: 3 }}
+                          onClick={() => abrirChatContato(ticket)}
+                        >
+                          <Avatar src={ticket.profilePicUrl ?? ''} />
+                          <div>
+                            <ListItemText>{ticket.name}</ListItemText>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                color: 'text.secondary',
+                                width: '150px',
+                                textOverflow: 'ellipsis',
+                                overflow: 'hidden',
+                              }}
+                            >
+                              {ticket.lastMessage}
+                            </Typography>
+                          </div>
+                        </MenuItem>
+                      ))}
+                  </>
+                )}
               </MenuList>
             )}
           </StyledMenu>
