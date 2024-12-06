@@ -132,11 +132,11 @@ const checkTicketFilter = (ticket: Ticket) => {
     includeNotQueueDefined: true,
     // date: new Date(),
   };
-
   const NotViewTicketsChatBot = () => {
     const configuracoes = JSON.parse(
       decryptData(localStorage.getItem("configuracoes"))
     );
+
     const conf = configuracoes?.find(
       (c: { key: string }) => c.key === "NotViewTicketsChatBot"
     );
@@ -335,7 +335,10 @@ export const useAtendimentoTicketStore = create<
         } else {
           if (checkTicketFilter(ticket)) {
             state.tickets.push(ticket);
+          } else {
+            state.tickets = []
           }
+
         }
       });
 

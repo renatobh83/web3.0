@@ -676,10 +676,11 @@ export function Atendimento() {
   }, [])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
+    listarConfiguracoes()
+
     listarFilas()
     listarWhatsapps()
     // listarUsuarios()
-    listarConfiguracoes()
     listarEtiquetas()
     // resetTickets()
     const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento'))
@@ -1193,8 +1194,8 @@ export function Atendimento() {
 
         <Box
           component="aside"
-            sx={{
-              width: {sm: 0, md: '380px'},  
+          sx={{
+            width: { sm: 0, md: '380px' },
             flexShrink: { sm: 0 },
             overflow: 'auto',
           }}
@@ -1255,7 +1256,7 @@ export function Atendimento() {
         {/* <Outlet context={{ drawerWidth, handleDrawerToggle }} /> */}
         <Outlet context={{ mensagensRapidas }} />
 
-       
+
 
         {modalUsuario && <ModalUsuario />}
         {openModalNovoTicket && (
