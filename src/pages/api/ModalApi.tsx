@@ -26,16 +26,21 @@ interface ModalApiProps {
 export const ModalApi = ({ open, setClose, apiEdit }: ModalApiProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const { whatsApps } = useWhatsappStore()
+
   const [stateModalApi, setStateModalApi] = useState<{
     name: string
     sessionId: string
     authToken: string
     isActive: boolean
+    urlServiceStatus: string,
+    urlMessageStatus: string
   }>({
     name: '',
     sessionId: '',
     authToken: '',
     isActive: true,
+    urlMessageStatus: '',
+    urlServiceStatus: ''
   })
   const onChangeState = (value: string | boolean, action: string) => {
     setStateModalApi(prev => ({
@@ -66,6 +71,8 @@ export const ModalApi = ({ open, setClose, apiEdit }: ModalApiProps) => {
             isActive: stateModalApi.isActive,
             sessionId: stateModalApi.sessionId,
             authToken: stateModalApi.authToken,
+            urlServiceStatus: stateModalApi.urlServiceStatus,
+            urlMessageStatus: stateModalApi.urlMessageStatus
           }
 
           const { data } = await EditarAPI(apidata)
@@ -84,11 +91,14 @@ export const ModalApi = ({ open, setClose, apiEdit }: ModalApiProps) => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if ('id' in apiEdit && apiEdit.id) {
+      console.log(apiEdit)
       setStateModalApi({
         name: ('name' in apiEdit && apiEdit.name) as string,
         sessionId: ('sessionId' in apiEdit && apiEdit.sessionId) as string,
         isActive: ('isActive' in apiEdit && apiEdit.isActive) as boolean,
         authToken: ('authToken' in apiEdit && apiEdit.authToken) as string,
+        urlMessageStatus: ('urlMessageStatus' in apiEdit && apiEdit.urlMessageStatus) as string,
+        urlServiceStatus: ('urlServiceStatus' in apiEdit && apiEdit.urlServiceStatus) as string,
       })
     }
   }, [])
@@ -131,7 +141,9 @@ export const ModalApi = ({ open, setClose, apiEdit }: ModalApiProps) => {
                 </Select>
               </FormControl>
             </Box>
-            <Box>
+            <Box sx={{ display: 'flex', gap: '12px', width: '100%' }}>
+
+
               <TextField
                 sx={{ maxWidth: '100%', width: '100%' }}
                 label="Token para autenticação"
@@ -140,6 +152,24 @@ export const ModalApi = ({ open, setClose, apiEdit }: ModalApiProps) => {
                 value={stateModalApi?.authToken || ''}
                 onChange={e => onChangeState(e.target.value, 'authToken')}
               />
+
+              <TextField
+                sx={{ maxWidth: '100%', width: '100%' }}
+                label="Webook url Message Status"
+                variant="filled"
+                required
+                value={stateModalApi?.urlMessageStatus || ''}
+                onChange={e => onChangeState(e.target.value, 'urlMessageStatus')}
+              />
+              <TextField
+                sx={{ maxWidth: '100%', width: '100%' }}
+                label="Webook url Message Service"
+                variant="filled"
+                required
+                value={stateModalApi?.urlServiceStatus || ''}
+                onChange={e => onChangeState(e.target.value, 'urlServiceStatus')}
+              />
+
             </Box>
           </Box>
         </DialogContent>
