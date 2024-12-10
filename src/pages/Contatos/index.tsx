@@ -25,6 +25,7 @@ import { DeletarContato, ListarContatos } from '../../services/contatos'
 import { ContatoModal } from './ModalContato'
 import { toast } from 'sonner'
 import { Errors } from '../../utils/error'
+import { useApplicationStore } from '../../store/application'
 
 const CustomTableContainer = styled(Table)(({ theme }) => ({
   // Customize styles with Tailwind CSS classes
@@ -41,6 +42,7 @@ export const Contatos: React.FC<{
   isChatContact?: boolean
 }> = ({ isChatContact = false }) => {
   const [openModalNovoTicket, setOpenModalNovoTicket] = useState(false)
+  const { contatoSelecionado, setContatoSelecionado } = useApplicationStore()
   const handleSaveTicket = async contact => {
     if (!contact.id) return
     setContatoSelecionado(contact)
@@ -169,13 +171,13 @@ export const Contatos: React.FC<{
   }
   const closeModalNovoTicket = () => {
     setOpenModalNovoTicket(false)
-    setContatoSelecionado({})
+    setContatoSelecionado(undefined)
   }
   const [pagination, setPagination] = useState({ page: 0, rowsPerPage: 10 })
   const [filter, setFilter] = useState('')
   const { contatos, loadContacts } = useContatosStore()
   const whatsapp = useWhatsappStore(s => s.whatsApps)
-  const [contatoSelecionado, setContatoSelecionado] = useState({})
+
 
   const [modalOpen, setModalOpen] = useState(false)
   const handlePageChange = (_event: unknown, newPage: number) => {
@@ -222,7 +224,7 @@ export const Contatos: React.FC<{
   }
   const closeModal = () => {
     setModalOpen(false)
-    setContatoSelecionado(null)
+    setContatoSelecionado(undefined)
   }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listaContatos = useCallback(async () => {
@@ -263,9 +265,7 @@ export const Contatos: React.FC<{
           placeholder="Localize"
           value={filter}
           onChange={e => setFilter(e.target.value)}
-        // InputProps={{
-        //   startAdornment: <SearchIcon />,
-        // }}
+
         />
         <Box sx={{ gap: 2, display: { sm: 'none', xs: 'none', md: 'flex' }, }}>
           {/*        <Button
@@ -354,7 +354,7 @@ export const Contatos: React.FC<{
         <ModalNovoTicket
           open={openModalNovoTicket}
           close={closeModalNovoTicket}
-          isContact={contatoSelecionado}
+
         />
       )}
       {modalOpen && (

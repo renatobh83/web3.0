@@ -22,6 +22,7 @@ export const dataInWords = (date) => {
 export const formatarMensagemWhatsapp = (body) => {
   if (!body) return;
   let format = body;
+
   function is_aplhanumeric(c) {
     var x = c.charCodeAt();
     return !!(
@@ -29,6 +30,13 @@ export const formatarMensagemWhatsapp = (body) => {
       (x >= 97 && x <= 122) ||
       (x >= 48 && x <= 57)
     );
+  }
+  function hyperlinkify(text) {
+    const urlRegex = /(?:https?:\/\/|www\.)[^\s/$.?#].[^\s]*/gi;
+    return text.replace(urlRegex, (url) => {
+      const href = url.startsWith("http") ? url : `http://${url}`;
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+    });
   }
   function whatsappStyles(format, wildcard, opTag, clTag) {
     var indices = [];
@@ -76,6 +84,7 @@ export const formatarMensagemWhatsapp = (body) => {
   format = whatsappStyles(format, "*", "<b>", "</b>");
   format = whatsappStyles(format, "~", "<s>", "</s>");
   format = format.replace(/\n/gi, "<br>");
+  format = hyperlinkify(format);
   return format;
 };
 export const formatarValorMoeda = (num, black = false, intl = {}) => {

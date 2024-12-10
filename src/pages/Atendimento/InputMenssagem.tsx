@@ -78,6 +78,7 @@ import { useTicketService } from '../../hooks/useTicketService'
 
 import { useAtendimentoStore } from '../../store/atendimento'
 import { useNavigate } from 'react-router-dom'
+
 interface InputMenssagemProps {
   isScheduleDate?: boolean
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -250,7 +251,6 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
     try {
       if (!cMostrarEnvioArquivo()) {
         const message = prepararMensagemTexto()
-
         await EnviarMensagemTexto(ticketId, message)
       } else {
         const formDatas = prepararUploadMedia()

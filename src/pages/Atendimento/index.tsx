@@ -707,9 +707,10 @@ export function Atendimento() {
       });
     }
   }, [])
-
+  const { setContatoSelecionado } = useApplicationStore()
   const closeModalNovoTicket = () => {
     setOpenModalNovoTicket(false)
+    setContatoSelecionado(undefined)
   }
   const { contatos, loadContacts } = useContatosStore()
 
@@ -760,7 +761,13 @@ export function Atendimento() {
   const drawer = (
     <>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        <Button onClick={handleOpenNavMenu}>
+        <Button onClick={handleOpenNavMenu} sx={{
+          display: { xs: 'none', sm: 'none', md: 'block' },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: drawerWidth,
+          },
+        }}>
           {username}
           <ArrowDownwardSharp fontSize="small" />
         </Button>
@@ -1191,7 +1198,6 @@ export function Atendimento() {
     <>
       <Box sx={{ display: 'flex' }}>
         <InfoCabecalhoMenssagens />
-
         <Box
           component="aside"
           sx={{
@@ -1199,9 +1205,8 @@ export function Atendimento() {
             flexShrink: { sm: 0 },
             overflow: 'auto',
           }}
-          aria-label="mailbox folders"
+          aria-label="Drawer"
         >
-          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
           <Drawer
             // container={container}
             variant="temporary"
@@ -1212,7 +1217,7 @@ export function Atendimento() {
               keepMounted: true, // Better open performance on mobile.
             }}
             sx={{
-              zIndex: 2000,
+              // zIndex: 2000,
               display: { xs: 'block', sm: 'block' },
               '& .MuiDrawer-paper': {
                 boxSizing: 'border-box',
@@ -1236,28 +1241,7 @@ export function Atendimento() {
             {drawer}
           </Drawer>
         </Box>
-
-        {/* <Box
-          component="main"
-          sx={{
-
-            maxHeight: 'calc(100vh - 64px)',
-            paddingLeft: { md: '380px', sm: '0' },
-            mr: isContactInfo ? '300px' : '0',
-            flexGrow: 1,
-            width: { md: `calc(100% - ${drawerWidth}px)` },
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-
-
-          }}
-        > */}
-        {/* <Outlet context={{ drawerWidth, handleDrawerToggle }} /> */}
         <Outlet context={{ mensagensRapidas }} />
-
-
-
         {modalUsuario && <ModalUsuario />}
         {openModalNovoTicket && (
           <ModalNovoTicket
@@ -1265,7 +1249,6 @@ export function Atendimento() {
             close={closeModalNovoTicket}
           />
         )}
-        {/* biome-ignore lint/a11y/useMediaCaption: <explanation> */}
         <audio ref={audioRef}>
           <source src={alertSound} type="audio/mp3" />
         </audio>

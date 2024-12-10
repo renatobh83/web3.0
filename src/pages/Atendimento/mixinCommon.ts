@@ -17,8 +17,8 @@ export const formatarMensagemWhatsapp = (body: string): string | undefined => {
 
   let formattedMessage = body;
 
-  const isAlphanumeric = (c: string) => {
-    const x = c.charCodeAt(0);
+  const isAlphanumeric = (c) => {
+    const x = c.charCodeAt();
     return (
       (x >= 65 && x <= 90) || (x >= 97 && x <= 122) || (x >= 48 && x <= 57)
     );
@@ -34,6 +34,7 @@ export const formatarMensagemWhatsapp = (body: string): string | undefined => {
     for (let i = 0; i < text.length; i++) {
       if (text[i] === wildcard) {
         if (indices.length % 2) {
+
           if (
             text[i - 1] !== " " &&
             (isAlphanumeric(text[i + 1]) || typeof text[i + 1] === "undefined")

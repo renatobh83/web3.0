@@ -22,6 +22,8 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTicketService } from '../../hooks/useTicketService'
 import { useAtendimentoStore } from '../../store/atendimento'
+import { formatarMensagemWhatsapp } from '../../utils/helpers'
+
 
 interface ItemTicketProps {
   ticket: Ticket
@@ -204,7 +206,7 @@ export const ItemTicket = ({ filas, ticket }: ItemTicketProps) => {
               maxWidth: '70%',
             }}
           >
-            {ticket.lastMessage}
+            {formatarMensagemWhatsapp(ticket.lastMessage)}
           </Typography>
 
           <Box

@@ -4,37 +4,32 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-
   FormControl,
   FormControlLabel,
   FormLabel,
   Radio,
   RadioGroup,
-  Typography,
 } from '@mui/material'
 
 import { PesquisaContato } from '../../components/AtendimentoComponent/PesquisaContato'
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { useWhatsappStore } from '../../store/whatsapp'
 import { Errors } from '../../utils/error'
 import { CriarTicket } from '../../services/tickets'
 import { toast } from 'sonner'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
 import { useNavigate } from 'react-router-dom'
+import { useApplicationStore } from '../../store/application'
 
 interface ModalNovoTicketProps {
   open: boolean
   close: () => void
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  isContact?: any
 }
 
 export const ModalNovoTicket = ({
   open,
   close,
-  isContact,
 }: ModalNovoTicketProps) => {
-
 
   const userId = +localStorage.getItem('userId')
   const navigate = useNavigate()
@@ -44,8 +39,11 @@ export const ModalNovoTicket = ({
     s => s.AbrirChatMensagens
   )
   const whatsApps = useWhatsappStore(s => s.whatsApps)
-  const [contatoSelecionado, setContatoSelecionado] = useState(null)
+  const { contatoSelecionado, setContatoSelecionado } = useApplicationStore()
+
+
   const [canalSelecionado, setCanaSelecionado] = useState(null)
+
   const [modalCanal, setModalCanal] = useState(false)
   const [canais, setCanais] = useState([])
   const goToChat = async (id: string) => {
@@ -57,14 +55,19 @@ export const ModalNovoTicket = ({
       })
     } catch (error) { }
   }
+
   useEffect(() => {
-    if (isContact?.id) {
-      setContatoSelecionado(isContact)
+    if (contatoSelecionado?.id) {
+      // setContatoSelecionado(isContact)
+
       handleSelectChannel()
     }
-  }, [isContact])
+  }, [contatoSelecionado])
+
+
   const handleCloseModalCanal = () => {
     setModalCanal(false)
+    close()
   }
   const handleSelectChannel = () => {
     if (contatoSelecionado && !contatoSelecionado.id) return
@@ -129,7 +132,7 @@ export const ModalNovoTicket = ({
       Errors(error)
     }
   }
-  const handleChange = e => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setCanaSelecionado(e.target.value)
   }
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -153,8 +156,8 @@ export const ModalNovoTicket = ({
 
   return (
     <>
-      {open &&
-        <Dialog open={open} fullWidth maxWidth="xs" sx={{zIndex: 50000}}>
+      {open && contatoSelecionado === undefined &&
+        <Dialog open={open} fullWidth maxWidth="xs" >
           <DialogTitle>Criar ticket</DialogTitle>
           <DialogContent>
             <FormControl fullWidth>
@@ -176,9 +179,9 @@ export const ModalNovoTicket = ({
         >
           <DialogContent>
             <DialogTitle>
-              <Typography variant="h6">
-                {!canais.length ? "Nenhum canal conectado favor verificar em Canais" : `Abrir um novo ticket para ${contatoSelecionado.name}`}
-              </Typography>
+
+              {!canais.length ? "Nenhum canal conectado favor verificar em Canais" : `Abrir um novo ticket para ${contatoSelecionado.name}`}
+
             </DialogTitle>
 
             <FormControl>

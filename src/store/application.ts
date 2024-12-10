@@ -7,7 +7,8 @@ interface Campanha {
 }
 
 interface ApplicationStore {
-
+  contatoSelecionado: any | undefined
+  setContatoSelecionado: (contato: any) => void
   profileUser: string | null;
   campanhas: any[]
   setCampanhas: (campanha: []) => void
@@ -20,6 +21,8 @@ interface ApplicationStore {
 export const useApplicationStore = create<ApplicationStore>((set) => ({
   profileUser: null,
   campanhas: [],
+  contatoSelecionado: undefined,
+  setContatoSelecionado: (contato) => set({contatoSelecionado:contato}),
   setCampanhas: (campanha: []) => set({campanhas: campanha}) ,
   setProfileUser: (user: string) => set({ profileUser: user }),
   updateCampanha: (id, dadosAtualizados) =>
