@@ -13,7 +13,7 @@ interface VcardProps {
 export const Vcard = ({ vcard }: VcardProps) => {
     const { whatsApps } = useWhatsappStore()
     const [openModal, setOpenModal] = useState(false)
-    const [selectedContact, setSelectedContact] = useState(null)
+
     const { contatoSelecionado, setContatoSelecionado } = useApplicationStore()
     const [contact, setcontact] = useState(null)
     const isWhatsAppConnected = () => {
