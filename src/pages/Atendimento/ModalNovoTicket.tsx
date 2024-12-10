@@ -24,11 +24,13 @@ import { useApplicationStore } from '../../store/application'
 interface ModalNovoTicketProps {
   open: boolean
   close: () => void
+  isContact?: any
 }
 
 export const ModalNovoTicket = ({
   open,
   close,
+  isContact
 }: ModalNovoTicketProps) => {
 
   const userId = +localStorage.getItem('userId')
@@ -58,11 +60,10 @@ export const ModalNovoTicket = ({
 
   useEffect(() => {
     if (contatoSelecionado?.id) {
-      // setContatoSelecionado(isContact)
-
+      setContatoSelecionado(isContact)
       handleSelectChannel()
     }
-  }, [contatoSelecionado])
+  }, [isContact])
 
 
   const handleCloseModalCanal = () => {

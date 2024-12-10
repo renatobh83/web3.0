@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { ListarContatos } from "../../services/contatos";
 
 interface PesquisaContatoProps {
-    getContatoSelecionado: (x: null) => void;
+    getContatoSelecionado: (x: any) => void;
 }
 
 interface Contato {

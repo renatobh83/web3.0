@@ -3,6 +3,7 @@ import { CriarContatoVcard, ObterContatoPeloNumero } from "../../services/contat
 import { Avatar, Box, Button, Typography } from "@mui/material"
 import { useWhatsappStore } from "../../store/whatsapp"
 import { ModalNovoTicket } from "../../pages/Atendimento/ModalNovoTicket"
+import { useApplicationStore } from "../../store/application"
 
 interface VcardProps {
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -13,6 +14,7 @@ export const Vcard = ({ vcard }: VcardProps) => {
     const { whatsApps } = useWhatsappStore()
     const [openModal, setOpenModal] = useState(false)
     const [selectedContact, setSelectedContact] = useState(null)
+    const { contatoSelecionado, setContatoSelecionado } = useApplicationStore()
     const [contact, setcontact] = useState(null)
     const isWhatsAppConnected = () => {
         return whatsApps.some(w => w.type === 'whatsapp' && w.status === 'CONNECTED');
@@ -63,13 +65,13 @@ export const Vcard = ({ vcard }: VcardProps) => {
         }
     }, [])
     const closeModal = () => {
-        setSelectedContact(null)
+        setContatoSelecionado(undefined)
         setOpenModal(false)
     }
     const handleSaveTicket = (contact) => {
         if (!contact.id) return
         setOpenModal(true)
-        setSelectedContact(contact)
+        setContatoSelecionado(contact)
 
     }
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -94,7 +96,7 @@ export const Vcard = ({ vcard }: VcardProps) => {
                 <Button
                     onClick={() => handleSaveTicket(contact)}
                     variant="contained" color="success" size="small" sx={{ mt: 1 / 2 }}>Abrir Ticket </Button>}
-            <ModalNovoTicket open={openModal} close={closeModal} isContact={selectedContact} />
+            <ModalNovoTicket open={openModal} close={closeModal} isContact={contatoSelecionado} />
         </Box >
     )
 }
