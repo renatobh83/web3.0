@@ -266,7 +266,7 @@ export const MenusNavbar = () => {
             arrow
             title={
               item.status === 'CONNECTED'
-                ? `Esta conectado na conta  ${item.name}-${item.phone.profileSession}`
+                ? `Esta conectado na conta  ${item.name}-${item.phone.profileSession} - ${item.phone.number}`
                 : item.status
             }
             placement="top"

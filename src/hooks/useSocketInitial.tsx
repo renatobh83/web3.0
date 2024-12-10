@@ -123,7 +123,7 @@ export const useSocketInitial = () => {
           // console.log('Emit')
           //   this.$root.$emit('UPDATE_SESSION', data.session)
         }
-
+        console.log(data)
         if (data.action === 'loadingscreen') {
           toast.info(
             `A conexão com o WhatsApp está sendo sincronizada. Conexão: ${data.session.name} - ${data.percent}%.`,
@@ -136,8 +136,8 @@ export const useSocketInitial = () => {
         if (data.action === 'readySession') {
 
           toast.info(
-            `A conexão com o WhatsApp está pronta e o mesmo está habilitado para enviar e receber mensagens. Conexão: ${data.session.name}. Número: ${data.session.profileSession
-            }.`,
+            `A conexão com o WhatsApp está pronta e o mesmo está habilitado para enviar e receber mensagens. Conexão: ${data.session.name}.
+            Número: ${data.session.number}.`,
             {
               position: 'top-center',
             }
