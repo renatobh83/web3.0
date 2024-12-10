@@ -14,7 +14,7 @@ export const Vcard = ({ vcard }: VcardProps) => {
     const { whatsApps } = useWhatsappStore()
     const [openModal, setOpenModal] = useState(false)
 
-    const { contatoSelecionado, setContatoSelecionado } = useApplicationStore()
+    const { setContatoSelecionado } = useApplicationStore()
     const [contact, setcontact] = useState(null)
     const isWhatsAppConnected = () => {
         return whatsApps.some(w => w.type === 'whatsapp' && w.status === 'CONNECTED');
@@ -96,7 +96,7 @@ export const Vcard = ({ vcard }: VcardProps) => {
                 <Button
                     onClick={() => handleSaveTicket(contact)}
                     variant="contained" color="success" size="small" sx={{ mt: 1 / 2 }}>Abrir Ticket </Button>}
-            <ModalNovoTicket open={openModal} close={closeModal} isContact={contatoSelecionado} />
+            <ModalNovoTicket open={openModal} close={closeModal} />
         </Box >
     )
 }
