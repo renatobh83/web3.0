@@ -4,7 +4,7 @@ import SendIcon from '@mui/icons-material/Send'
 
 import { uid } from 'uid'
 import {
-  alpha,
+
   Box,
   Button,
   Card,
@@ -14,9 +14,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  Menu,
-  type MenuProps,
-  styled,
+
   TextField,
   Tooltip,
   Typography,
@@ -102,7 +100,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   const [openPreviewImagem, setOpenPreviewImagem] = useState(false)
   const [isRecordingAudio, setIsRecordingAudio] = useState(false)
   const [loading, setIsloading] = useState(false)
-  const [_anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  // const [_anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [visualizarMensagensRapidas, setVisualizarMensagensRapidas] =
     useState(false)
   // const open = Boolean(anchorEl)
