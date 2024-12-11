@@ -1,6 +1,7 @@
 import { Box, CardMedia, Typography } from '@mui/material'
-import { formatarData, formatarMensagemWhatsapp } from './mixinCommon'
+import { formatarData } from './mixinCommon'
 import { useAtendimentoTicketStore } from '../../store/atendimentoTicket'
+import { formatarMensagemWhatsapp } from '../../utils/helpers'
 
 export const MensagemRespondida = ({ mensagem }) => {
   //   const { mode } = useColorScheme()

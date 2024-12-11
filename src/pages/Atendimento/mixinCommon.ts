@@ -12,69 +12,69 @@ export const dataInWords = (date: string): string => {
   return format(parseJSON(date), "HH:mm", { locale: ptBR });
 };
 
-export const formatarMensagemWhatsapp = (body: string): string | undefined => {
-  if (!body) return;
+// export const formatarMensagemWhatsapp = (body: string): string | undefined => {
+//   if (!body) return;
 
-  let formattedMessage = body;
+//   let formattedMessage = body;
 
-  const isAlphanumeric = (c) => {
-    const x = c.charCodeAt();
-    return (
-      (x >= 65 && x <= 90) || (x >= 97 && x <= 122) || (x >= 48 && x <= 57)
-    );
-  };
+//   const isAlphanumeric = (c) => {
+//     const x = c.charCodeAt();
+//     return (
+//       (x >= 65 && x <= 90) || (x >= 97 && x <= 122) || (x >= 48 && x <= 57)
+//     );
+//   };
 
-  const whatsappStyles = (
-    text: string,
-    wildcard: string,
-    opTag: string,
-    clTag: string
-  ) => {
-    const indices: number[] = [];
-    for (let i = 0; i < text.length; i++) {
-      if (text[i] === wildcard) {
-        if (indices.length % 2) {
+//   const whatsappStyles = (
+//     text: string,
+//     wildcard: string,
+//     opTag: string,
+//     clTag: string
+//   ) => {
+//     const indices: number[] = [];
+//     for (let i = 0; i < text.length; i++) {
+//       if (text[i] === wildcard) {
+//         if (indices.length % 2) {
 
-          if (
-            text[i - 1] !== " " &&
-            (isAlphanumeric(text[i + 1]) || typeof text[i + 1] === "undefined")
-          ) {
-            // Fechando tag
-          } else {
-            indices.push(i);
-          }
-        } else {
-          if (
-            text[i + 1] !== " " &&
-            (isAlphanumeric(text[i - 1]) || typeof text[i + 1] === "undefined")
-          ) {
-            indices.push(i);
-          }
-        }
-      } else if (text[i].charCodeAt(0) === 10 && indices.length % 2) {
-        indices.pop();
-      }
-    }
-    if (indices.length % 2) indices.pop();
+//           if (
+//             text[i - 1] !== " " &&
+//             (isAlphanumeric(text[i + 1]) || typeof text[i + 1] === "undefined")
+//           ) {
+//             // Fechando tag
+//           } else {
+//             indices.push(i);
+//           }
+//         } else {
+//           if (
+//             text[i + 1] !== " " &&
+//             (isAlphanumeric(text[i - 1]) || typeof text[i + 1] === "undefined")
+//           ) {
+//             indices.push(i);
+//           }
+//         }
+//       } else if (text[i].charCodeAt(0) === 10 && indices.length % 2) {
+//         indices.pop();
+//       }
+//     }
+//     if (indices.length % 2) indices.pop();
 
-    let e = 0;
-    indices.forEach((v, i) => {
-      const t = i % 2 ? clTag : opTag;
-      v += e;
-      text = text.substr(0, v) + t + text.substr(v + 1);
-      e += t.length - 1;
-    });
+//     let e = 0;
+//     indices.forEach((v, i) => {
+//       const t = i % 2 ? clTag : opTag;
+//       v += e;
+//       text = text.substr(0, v) + t + text.substr(v + 1);
+//       e += t.length - 1;
+//     });
 
-    return text;
-  };
+//     return text;
+//   };
 
-  formattedMessage = whatsappStyles(formattedMessage, "_", "<i>", "</i>");
-  formattedMessage = whatsappStyles(formattedMessage, "*", "<b>", "</b>");
-  formattedMessage = whatsappStyles(formattedMessage, "~", "<s>", "</s>");
-  formattedMessage = formattedMessage.replace(/\n/g, "<br>");
+//   formattedMessage = whatsappStyles(formattedMessage, "_", "<i>", "</i>");
+//   formattedMessage = whatsappStyles(formattedMessage, "*", "<b>", "</b>");
+//   formattedMessage = whatsappStyles(formattedMessage, "~", "<s>", "</s>");
+//   formattedMessage = formattedMessage.replace(/\n/g, "<br>");
 
-  return formattedMessage;
-};
+//   return formattedMessage;
+// };
 
 export const formatarMensagemRespostaBotaoWhatsapp = (body: string): string => {
   if (!body) return "";

@@ -93,6 +93,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   isScheduleDate,
   replyingMessage,
   mensagensRapidas,
+  setReplyingMessage
 }) => {
   const { iniciarAtendimento } = useTicketService()
   const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
@@ -259,9 +260,9 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
           await EnviarMensagemTexto(ticketId, formData)
         }
       }
+      setReplyingMessage(null)
       setTextChat('') // Limpa o campo após enviar a mensagem
       setArquivos([])
-      // setReplyingMessage(null)
       if (modalAgendamento) setModalAgendamento()
     } catch (err) {
       console.log(err)
@@ -456,12 +457,13 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
                 mx: '4px',
                 paddingTop: 2,
                 paddingBottom: 2,
+                paddingRight: 2,
                 flexWrap: 'wrap',
                 gap: 1,
               }}
             >
-              <Tooltip title="Enviar arquivo">
-                <>
+              <Tooltip title="Enviar arquivo" arrow>
+                <div>
                   {/* <input
                       type="file"
                       multiple
@@ -485,10 +487,10 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
                     style={{ display: 'none' }} // Esconde o input
                     onChange={handleFileChange} // Função que lida com a seleção do arquivo
                   />
-                </>
+                </div>
               </Tooltip>
 
-              <Tooltip title="Emoji">
+              {/* <Tooltip title="Emoji">
                 <>
                   <IconButton
                     disabled={cDisableActions()}
@@ -507,7 +509,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
                     Criar compoente para EMOJi
                   </StyledMenu>
                 </>
-              </Tooltip>
+              </Tooltip> */}
 
               {cMostrarEnvioArquivo() ? (
                 <Box
