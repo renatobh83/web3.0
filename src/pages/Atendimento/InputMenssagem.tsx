@@ -95,7 +95,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   const { iniciarAtendimento } = useTicketService()
   const ticketFocado = useAtendimentoTicketStore(s => s.ticketFocado)
   const { setModalAgendamento, modalAgendamento } = useAtendimentoStore()
-  const [mensagemSelecionada, setMensagemSelecionada] = useState(null)
+  const [mensagemSelecionada, _] = useState(null)
   const [ScheduleDate, setScheduleDate] = useState('')
   const [openPreviewImagem, setOpenPreviewImagem] = useState(false)
   const [isRecordingAudio, setIsRecordingAudio] = useState(false)
