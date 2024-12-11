@@ -6,6 +6,7 @@ import {
   DialogContent,
   FormControl,
   FormControlLabel,
+  IconButton,
   InputLabel,
   MenuItem,
   Radio,
@@ -21,13 +22,14 @@ import { useForm } from 'react-hook-form'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { MolduraCelular } from '../../components/MolduraCelular'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ChatMensagem } from '../Atendimento/ChatMenssage'
 import { useWhatsappStore } from '../../store/whatsapp'
 import { AlterarCampanha, CriarCampanha } from '../../services/campanhas'
 import { toast } from 'sonner'
 import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker'
 import { Errors } from '../../utils/error'
+import { CloudUpload, Close } from '@mui/icons-material'
 
 
 // const variaveis = [
@@ -58,6 +60,32 @@ interface ModalCampanhaProps {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   campanhaId: any
 }
+async function urlToFile(url) {
+  try {
+    // Faz o download do arquivo
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Erro ao fazer o download: ${response.statusText}`);
+    }
+
+    // Converte o conteúdo para um Blob
+    const blob = await response.blob();
+
+    // Extrai o nome do arquivo da URL
+    const fileName = url.substring(url.lastIndexOf('/') + 1);
+
+    // Cria um objeto File com o Blob
+    const file = new File([blob], fileName, { type: blob.type });
+
+    return file;
+  } catch (error) {
+    console.error('Erro ao converter URL para File:', error);
+    return null;
+  }
+}
+
+
 
 export const ModalCampanha = ({
   open,
@@ -75,7 +103,7 @@ export const ModalCampanha = ({
     defaultValues: {
       name: campanhaId?.name || '',
       mediaUrl: campanhaId?.mediaUrl || null,
-      start: campanhaId?.start || null,
+      start: dayjs(campanhaId?.start).tz("America/Sao_Paulo") || null,
       sessionId: campanhaId?.sessionId || '',
       delay: campanhaId?.delay || 20,
       messages: [
@@ -86,6 +114,8 @@ export const ModalCampanha = ({
     },
   })
   const { whatsApps } = useWhatsappStore()
+  const [mediaUrl, setMediaUrl] = useState<string | null>(null);
+  const [arquivos, setArquivos] = useState<File | null>(null);
 
   const [messagemPreview, setMessagemPreview] = useState('message1')
   const msgArray = ['message1', 'message2', 'message3']
@@ -124,13 +154,27 @@ export const ModalCampanha = ({
       data.start = fixedDate;
     }
 
+    const medias = new FormData()
+    Object.keys(data).forEach((key) => {
+      if (Array.isArray(data[key])) {
+        // Adicionar cada item do array individualmente
+        data[key].forEach((value) => {
+          medias.append(`${key}[]`, value); // Usa `key[]` para indicar um array
+        });
+      } else {
+        medias.append(key, data[key]);
+      }
+    });
+
+    medias.append('medias', arquivos)
+
     try {
       if (campanhaId?.id) {
 
-        await AlterarCampanha(data, campanhaId.id)
+        await AlterarCampanha(medias, campanhaId.id)
         toast.info('Campanha editada!')
       } else {
-        await CriarCampanha(data)
+        await CriarCampanha(medias)
         toast.info('Campanha criada!')
       }
       handleCloseModal()
@@ -139,7 +183,18 @@ export const ModalCampanha = ({
       handleCloseModal()
     }
   }
-
+  const getFile = useCallback(async () => {
+    if (campanhaId) {
+      const file = await urlToFile(campanhaId.mediaUrl);
+      if (file) {
+        setArquivos(file)
+        setMediaUrl(file.name)
+      }
+    }
+  }, [campanhaId])
+  useEffect(() => {
+    getFile()
+  }, [])
   const cSessions = () => {
     return whatsApps.filter(
       w => ['whatsapp', 'baileys'].includes(w.type) && !w.isDeleted
@@ -147,11 +202,32 @@ export const ModalCampanha = ({
   }
 
   const cMessages = () => {
+
     return msgArray
       .filter(el => messagemPreview === el) // Filtra a mensagem selecionada
       .map(el => {
         const index = parseInt(el.replace('message', '')) - 1; // Extrai o número e ajusta o índice
         const messageBody = watch(`messages.${index}`) || '';
+
+        if (arquivos?.type) {
+          const blob = new Blob([arquivos], { type: arquivos.type })
+          return {
+            ...messageTemplate,
+            id: 'mediaUrl',
+            mediaUrl: window.URL.createObjectURL(blob),
+            body: messageBody,
+            mediaType: arquivos.type.substr(0, arquivos.type.indexOf('/'))
+          }
+        } else if (campanhaId?.mediaUrl) {
+
+          return {
+            ...messageTemplate,
+            id: 'mediaUrl',
+            mediaUrl: campanhaId.mediaUrl,
+            body: messageBody,
+            mediaType: campanhaId.mediaType
+          }
+        }
         return {
           ...messageTemplate,
           id: el,
@@ -162,6 +238,28 @@ export const ModalCampanha = ({
 
 
 
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (file.size <= 15728640) { // Limite de tamanho do arquivo
+        setArquivos(file);
+        setMediaUrl(file.name);
+      } else {
+        alert('O arquivo excede o tamanho máximo permitido.');
+      }
+    }
+  };
+
+
+  const handleClear = () => {
+    setMediaUrl(null);
+    setArquivos(null);
+    if (campanhaId) {
+      campanhaId.mediaUrl = null
+    }
+  };
   return (
     <Dialog open={open} fullWidth maxWidth="md">
       <DialogContent>
@@ -180,7 +278,6 @@ export const ModalCampanha = ({
                 fullWidth
                 variant="outlined"
                 label="Nome da campanha"
-                // value={campanha.name}
                 {...register('name', { required: 'Descriação é obrigatório' })}
                 error={!!errors.name}
                 helperText={errors.name?.message}
@@ -192,10 +289,11 @@ export const ModalCampanha = ({
               >
                 <Stack spacing={2} sx={{ minWidth: 305 }}>
                   <MobileDateTimePicker
-                    value={watch('start') ? dayjs(watch('start')).tz("America/Sao_Paulo") : null}
+                    value={watch('start') ? dayjs(watch('start')).isValid() ? dayjs(watch('start')) : null : null}
                     onChange={(date: Dayjs) => {
-
-                      setValue('start', date);
+                      if (date?.isValid()) {
+                        setValue('start', date);
+                      }
 
                     }}
 
@@ -219,12 +317,9 @@ export const ModalCampanha = ({
                 <Select
                   label="Enviar por"
                   variant="outlined"
-                  // value={campanha.sessionId || ''}
                   {...register('sessionId', { required: 'Sessão é obrigatória' })}
                   value={watch('sessionId') || ''}
                   onChange={e => setValue('sessionId', e.target.value)}
-
-                // onChange={e => handleOnChange(e.target.value, 'sessionId')}
                 >
                   {cSessions().map(sessao => (
                     <MenuItem key={sessao.id} value={sessao.id}>
@@ -248,9 +343,46 @@ export const ModalCampanha = ({
                 onChange={e => setValue('delay', Number(e.target.value))}
                 error={!!errors.delay}
                 helperText={errors.delay?.message}
-              // value={campanha.delay}
-              // onChange={e => handleOnChange(Number(e.target.value), 'delay')}
+
               />
+              {!mediaUrl ? (
+                <>
+                  <Button
+                    variant="outlined"
+                    component="label"
+                    startIcon={<CloudUpload />}
+                    sx={{ bgcolor: 'blueGrey.100' }}
+
+                  >
+                    <Typography> Mídia mensagem</Typography>
+                    <input
+                      type="file"
+                      hidden
+                      accept=".jpg,.png,image/jpeg,.pdf,.doc,.docx,.mp4,.xls,.xlsx,.jpeg,.zip,.ppt,.pptx,image/*"
+                      onChange={handleFileChange}
+                    />
+                  </Button>
+                  {/* <div style={{ fontSize: 12, textAlign: 'center' }}>
+                    Máx. 15MB por arquivo, formatos suportados: JPG, PNG, PDF, DOC, etc.
+                  </div> */}
+                </>
+              ) : (
+                <TextField
+                  label="Mídia mensagem"
+                  value={mediaUrl}
+                  InputProps={{
+                    readOnly: true,
+                    endAdornment: (
+                      <IconButton onClick={handleClear}>
+                        <Close />
+                      </IconButton>
+                    ),
+                  }}
+
+                  variant="outlined"
+                  sx={{ bgcolor: 'blueGrey.100' }}
+                />
+              )}
             </Box>
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
               <Box id="left" sx={{ minWidth: '400px' }}>

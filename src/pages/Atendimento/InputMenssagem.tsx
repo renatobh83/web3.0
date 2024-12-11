@@ -257,7 +257,10 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
           await EnviarMensagemTexto(ticketId, formData)
         }
       }
-      setReplyingMessage(null)
+      if (replyingMessage) {
+        setReplyingMessage(null)
+
+      }
       setTextChat('') // Limpa o campo após enviar a mensagem
       setArquivos([])
       if (modalAgendamento) setModalAgendamento()
