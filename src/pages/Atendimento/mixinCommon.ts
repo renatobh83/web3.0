@@ -1,5 +1,6 @@
 import { format, parseISO, parseJSON } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { formatarMensagemWhatsapp } from "../../utils/helpers";
 
 export const scrollToBottom = () => {
   setTimeout(() => {
