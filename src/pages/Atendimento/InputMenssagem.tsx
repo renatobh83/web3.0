@@ -271,6 +271,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
 
   // Função para capturar o evento de tecla
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+
     if (event.key === 'Enter' && !event.shiftKey) {
       // Verifica se o campo não está vazio ou apenas com espaços
       if (textChat.trim().length) {
@@ -278,11 +279,20 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
       }
       event.preventDefault() // Impede o comportamento padrão do Enter
     }
-    if (event.key === 'Tab' && mensagemSelecionada) {
+    if (event.key === 'Tab' && !mensagemSelecionada) {
       event.preventDefault()
+      if (textChat.trim()?.startsWith('/')) {
+        let search = textChat.trim().toLowerCase()
+        search = search.replace('/', '')
+        const mensagemRapida = mensagensRapidas?.find(
+          m => m.key.toLowerCase() === search
+        )
+        if (mensagemRapida?.message) {
+          setTextChat(mensagemRapida.message)
+          setVisualizarMensagensRapidas(false)
+        }
+      }
 
-      setTextChat(mensagemSelecionada.message)
-      setVisualizarMensagensRapidas(false)
     }
   }
   async function handleCancelRecordingAudio() {
@@ -407,13 +417,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
   const mensagensFiltradas = mensagensRapidas?.filter(resposta =>
     textChat.length > 1 ? resposta.key.includes(textChat.substring(1)) : true
   )
-  useEffect(() => {
-    if (mensagensFiltradas?.length > 0) {
-      setMensagemSelecionada(mensagensFiltradas[0]) // Seleciona a primeira mensagem
-    } else {
-      setMensagemSelecionada(null)
-    }
-  }, [mensagensFiltradas])
+
   const { mobileOpen, setMobileOpen } = useAtendimentoStore()
   const navigate = useNavigate()
   const goToChat = async (id: string) => {

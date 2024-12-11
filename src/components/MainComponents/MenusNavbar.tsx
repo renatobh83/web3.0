@@ -183,6 +183,7 @@ export const MenusNavbar = () => {
     }
     localStorage.setItem('usuario', encryptData(JSON.stringify(usuario)))
     setStatus(e.target.checked)
+
   }
   const efetuarLogout = async () => {
     try {
@@ -202,6 +203,7 @@ export const MenusNavbar = () => {
     if (usuario) {
       setStatus(usuario.status === 'online')
     }
+
   }, [])
 
   const consultaTickets = async () => {

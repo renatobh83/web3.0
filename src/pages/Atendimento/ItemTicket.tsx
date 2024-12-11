@@ -87,7 +87,7 @@ export const ItemTicket = ({ filas, ticket }: ItemTicketProps) => {
       )
     )
       return
-    console.log("abrir chat contato", ticket.id)
+
     nav('/atendimento')
     if (ticket.id === ticketFocado?.id) return
 

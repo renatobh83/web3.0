@@ -230,10 +230,10 @@ const checkTicketFilter = (ticket: Ticket) => {
       (q: { id: number | undefined }) => ticket.queueId === q.id
     );
     if (isQueueUser !== -1) {
-      console.log("Fila do ticket liberada para o Usuario", ticket.queueId);
+      // console.log("Fila do ticket liberada para o Usuario", ticket.queueId);
       isValid = true;
     } else {
-      console.log("Usuario não tem acesso a fila", ticket.queueId);
+      // console.log("Usuario não tem acesso a fila", ticket.queueId);
       return false;
     }
   }
@@ -244,7 +244,7 @@ const checkTicketFilter = (ticket: Ticket) => {
       (q: number | undefined) => ticket.queueId === q
     );
     if (isQueue === -1) {
-      console.log("filas filtradas e diferentes da do ticket", ticket.queueId);
+      // console.log("filas filtradas e diferentes da do ticket", ticket.queueId);
       return false;
     }
   }
@@ -255,7 +255,7 @@ const checkTicketFilter = (ticket: Ticket) => {
       (w: { id: number }) => w.id === userId
     );
     if (idx !== -1) {
-      console.log("Ticket da carteira do usuário");
+      // console.log("Ticket da carteira do usuário");
       return true;
     }
     console.log(
@@ -300,13 +300,6 @@ export const useAtendimentoTicketStore = create<
   tickets: [],
   ticketsLocalizadosBusca: [],
   ticketFocado: null,
-  // ticketFocado: {
-  //   // contacts: {
-  //   //   tags: [],
-  //   //   wallets: [],
-  //   //   extraInfo: [],
-  //   // },
-  // },
   hasMore: false,
   contatos: [],
   mensagens: [],
@@ -560,7 +553,7 @@ export const useAtendimentoTicketStore = create<
   // Ação para abrir o chat de mensagens
   AbrirChatMensagens: async (data) => {
     try {
-      console.log(data)
+
       // Resetando ticket focado e mensagens
       set({ ticketFocado: null, mensagens: [] });
 
