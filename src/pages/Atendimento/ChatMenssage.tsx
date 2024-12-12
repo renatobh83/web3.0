@@ -379,7 +379,7 @@ export const ChatMensagem = ({
                           sx={{
                             // Só exibe o botão quando hoveredIndex coincide com a mensagem
                             position: 'absolute',
-                            zIndex: '99999',
+                            zIndex: '0',
                             bottom: '-24px',
                             left: mensagem.fromMe ? '-15px' : 'none',
                             padding: '0px', // Remove o espaçamento extra em torno do ícone
@@ -484,7 +484,7 @@ export const ChatMensagem = ({
                               ? 'block'
                               : 'none', // Só exibe o botão quando hoveredIndex coincide com a mensagem
                             position: 'absolute',
-                            zIndex: '99999',
+                            zIndex: '0',
                             top: '-15px',
                             //    left: mensagem.fromMe ? '-17px' : '110px',
 

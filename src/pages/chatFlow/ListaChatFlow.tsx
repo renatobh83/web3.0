@@ -147,6 +147,8 @@ export const ListaChatFlow: React.FC = () => {
       <CustomTableContainer sx={{ mt: 2 }}>
         <TableHead>
           <TableRow>
+
+            <TableCell>Fluxo Id</TableCell>
             <TableCell>Nome</TableCell>
             <TableCell>Status</TableCell>
             <TableCell>Celular Teste</TableCell>
@@ -161,6 +163,7 @@ export const ListaChatFlow: React.FC = () => {
             )
             .map(chatFlow => (
               <TableRow key={chatFlow.id}>
+                <TableCell>{chatFlow.id}</TableCell>
                 <TableCell>{chatFlow.name}</TableCell>
                 <TableCell>{chatFlow.isActive ? 'Ativo' : 'Inativo'}</TableCell>
                 <TableCell>{chatFlow.celularTeste}</TableCell>

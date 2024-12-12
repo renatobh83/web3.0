@@ -15,6 +15,9 @@ import { Errors } from '../utils/error'
 export const eventEmitterMain = new EventEmitter()
 export const MainLayout: React.FC = () => {
   const nav = useNavigate()
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const alertSound = '/sound.mp3' // Corrigido o caminho
+  const { encryptData } = useAuth()
   const { AbrirChatMensagens } = useAtendimentoTicketStore()
   const { loadWhatsApps, whatsApps } = useWhatsappStore()
   useEffect(() => {
@@ -87,8 +90,7 @@ export const MainLayout: React.FC = () => {
   //     this.closeModal();
   // }
 
-  const audioRef = useRef<HTMLAudioElement | null>(null)
-  const alertSound = '/sound.mp3' // Corrigido o caminho
+
   const playNotificationSound = async () => {
     if (audioRef.current) {
       try {
@@ -110,7 +112,7 @@ export const MainLayout: React.FC = () => {
       Errors(error)
     }
   }
-  function handlerNotifications(data) {
+  const handlerNotifications = (data) => {
     if (data.ticket.userId) {
       const options = {
         body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
@@ -150,7 +152,6 @@ export const MainLayout: React.FC = () => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     // Adiciona o listener ao montar o componente
-
     eventEmitterMain.on('handlerNotifications', handlerNotifications)
     eventEmitterMain.on('playSoundNotification', playNotificationSound)
     // Remove o listener ao desmontar o componente
@@ -166,26 +167,22 @@ export const MainLayout: React.FC = () => {
       loadWhatsApps(data)
     }
   }, [])
-  const { encryptData } = useAuth()
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listarConfiguracoes = useCallback(async () => {
-    if (!localStorage.getItem('configuracoes')) {
-      const { data } = await ListarConfiguracoes()
-      localStorage.setItem('configuracoes', encryptData(JSON.stringify(data)))
-    }
+    const { data } = await ListarConfiguracoes()
+    localStorage.setItem('configuracoes', encryptData(JSON.stringify(data)))
+
   }, [])
 
 
 
   useEffect(() => {
-
     const conectar = async () => {
       await listarWhatsapps()
       await listarConfiguracoes()
     }
-
     try {
-
       conectar()
     } catch (error) {
       Errors(error)
