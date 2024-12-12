@@ -26,6 +26,7 @@ import { ContatoModal } from './ModalContato'
 import { toast } from 'sonner'
 import { Errors } from '../../utils/error'
 import { useApplicationStore } from '../../store/application'
+import { format, parseISO } from 'date-fns'
 
 const CustomTableContainer = styled(Table)(({ theme }) => ({
   // Customize styles with Tailwind CSS classes
@@ -106,9 +107,9 @@ export const Contatos: React.FC<{
       field: 'wallet',
     },
     {
-      name: 'tags',
-      label: 'Etiquetas',
-      field: 'tags',
+      name: 'empresa',
+      label: 'Empresa',
+      field: 'empresa',
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       renderCell: (params: { value: any }) => (
         // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
@@ -122,9 +123,13 @@ export const Contatos: React.FC<{
     },
 
     {
-      name: 'birthdayDate',
+      name: 'dtaniversario',
       label: 'Aniversário',
-      field: 'birthdayDate',
+      field: 'dtaniversario',
+      renderCell: (params: { row: any; value: any }) => params?.value
+        ? format(parseISO(params.value), 'dd/MM/yyyy')
+        : '', // Ou outro texto padrão, como '',
+
     },
 
     {
@@ -230,6 +235,7 @@ export const Contatos: React.FC<{
   const listaContatos = useCallback(async () => {
     try {
       const { data } = await ListarContatos({})
+
       loadContacts(data.contacts)
     } catch (error) {
       Errors(error)

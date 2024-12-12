@@ -17,10 +17,11 @@ interface Contato {
   number: string
   email: string
   cpf: string
-  birthdayDate: string
+  dtaniversario: string
   firstName: string
   lastName: string
-  businessName: string
+  empresa: string
+  identifier: string
 }
 export const ContatoModal: React.FC<{
   open: boolean
@@ -39,6 +40,10 @@ export const ContatoModal: React.FC<{
 
   const onSubimit = contato => {
     setLoading(true)
+    if (!contato.dtaniversario) {
+      contato.dtaniversario = null
+    }
+
     if (contact) {
       EditarContato(contact.id, contato)
         .then(() => {
@@ -117,8 +122,10 @@ export const ContatoModal: React.FC<{
       setValue('email', contact.email || '')
       setValue('number', contact.number || '')
       setValue('cpf', contact.cpf || '')
-      setValue('birthdayDate', contact.birthdayDate || '')
+      setValue('dtaniversario', contact.dtaniversario || '')
       setValue('firstName', contact.name || '')
+      setValue('identifier', contact.identifier || '')
+      setValue('empresa', contact.empresa || '')
     }
   }, [contact])
 
@@ -194,12 +201,12 @@ export const ContatoModal: React.FC<{
                 label="CPF/CNPJ"
                 variant="outlined"
                 placeholder="CPF/CNPJ"
-                value={watch('cpf')}
-                {...register('cpf')}
+                value={watch('identifier')}
+                {...register('identifier')}
                 error={!!errors.cpf}
                 onChange={e => {
                   const formattedCPF = formatCPFNumber(e.target.value)
-                  setValue('cpf', formattedCPF) // Atualiza o valor do formulário com o número formatado
+                  setValue('identifier', formattedCPF) // Atualiza o valor do formulário com o número formatado
                 }}
                 helperText="Número do CPF/CNPJ apenas numeros."
               />
@@ -211,17 +218,17 @@ export const ContatoModal: React.FC<{
                 fullWidth
                 label="Data de Aniversário"
                 variant="outlined"
-                value={watch('birthdayDate')}
+                value={watch('dtaniversario')}
                 placeholder="01/01/1990"
-                {...register('birthdayDate', {
+                {...register('dtaniversario', {
                   // required: 'Data de Aniversário é obrigatória',
                 })}
                 onChange={e => {
                   const formattedNumber = formatDN(e.target.value)
-                  setValue('birthdayDate', formattedNumber) // Atualiza o valor do formulário com o número formatado
+                  setValue('dtaniversario', formattedNumber) // Atualiza o valor do formulário com o número formatado
                 }}
-                error={!!errors.birthdayDate}
-                // helperText="A data de aniversário deverá ser informada no formato 01/01/1990."
+                error={!!errors.dtaniversario}
+              // helperText="A data de aniversário deverá ser informada no formato 01/01/1990."
               />
             </Grid>
 
@@ -262,10 +269,10 @@ export const ContatoModal: React.FC<{
                 label="Empresa"
                 variant="outlined"
                 placeholder="Empresa"
-                {...register('businessName', {
+                {...register('empresa', {
                   // required: 'Empresa é obrigatório',
                 })}
-                error={!!errors.businessName}
+                error={!!errors.empresa}
                 helperText="Empresa"
               />
             </Grid>
