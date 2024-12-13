@@ -21,6 +21,7 @@ export const Kanban = () => {
       <>
         
         <Tabs
+        sx={{paddingTop: 2}}
           value={false}
           onChange={handleTabChange}
           variant="scrollable"

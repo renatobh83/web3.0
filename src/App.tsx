@@ -24,6 +24,7 @@ import { Kanban } from './pages/Kanban'
 import { Kanbans } from './pages/Kanban/Kanbans'
 
 
+
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth()
 
@@ -47,8 +48,8 @@ const AppRoutes = () => {
               <Route path="/filas" element={<Filas />} />
               <Route path="/mensagens-rapidas" element={<MensagensRapidas />} />
               <Route path="/sessoes" element={<Canais />} />
-              <Route path="/kanban" element={<Kanban />}>
-              {/* <Route path='/kanbans' element={<Kanbans />}/> */}
+              <Route path="/kanban"  element={<Kanban />}>
+              <Route path='kanbans' element={<Kanbans />}/>
               </Route>
               <Route path="/chat-flow" element={<ChatFlow />}>
                 <Route index element={<ListaChatFlow />} />
