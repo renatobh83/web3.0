@@ -274,11 +274,11 @@ export const ModalWhatsapp = ({
             variant="standard"
             value={whatsapp.farewellMessage}
           />
-          <Box id="btn" sx={{ position: 'absolute', top: '0', right: '0' }}>
+       {/*    <Box id="btn" sx={{ position: 'absolute', top: '0', right: '0' }}>
             <Button>
               <FunctionsIcon />
             </Button>
-          </Box>
+          </Box> */}
         </Box>
       </DialogContent>
       {whatsapp.type === 'whatsapp' && (
@@ -299,6 +299,10 @@ export const ModalWhatsapp = ({
           </List>
         </Alert>
       )}
+      <DialogContent>
+      <Box>Op</Box>
+      </DialogContent>
+      
       <DialogActions>
         <Button
           disabled={isLoading}

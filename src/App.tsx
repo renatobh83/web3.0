@@ -21,7 +21,7 @@ import { Campanhas } from './pages/campanhas'
 import { ContatosCampanha } from './pages/campanhas/ContatosCampanha'
 import { ApiExternal } from './pages/api'
 import { Kanban } from './pages/Kanban'
-import { Kanbans } from './pages/Kanban/Kanbans'
+
 
 
 
@@ -49,7 +49,7 @@ const AppRoutes = () => {
               <Route path="/mensagens-rapidas" element={<MensagensRapidas />} />
               <Route path="/sessoes" element={<Canais />} />
               <Route path="/kanban"  element={<Kanban />}>
-              <Route path='kanbans' element={<Kanbans />}/>
+              {/* <Route path='kanbans' element={<Kanbans />}/> */}
               </Route>
               <Route path="/chat-flow" element={<ChatFlow />}>
                 <Route index element={<ListaChatFlow />} />

@@ -12,6 +12,7 @@ import { useForm } from 'react-hook-form'
 import { CriarContato, EditarContato } from '../../services/contatos'
 import { toast } from 'sonner'
 import { Errors } from '../../utils/error'
+import { format, parseISO } from 'date-fns'
 interface Contato {
   name: string
   number: string
@@ -106,23 +107,26 @@ export const ContatoModal: React.FC<{
     return onlyNumbers
   }
   const formatDN = (value: string) => {
-    // Remove tudo que não for número
+    if(!value) return
+ 
     const onlyNumbers = value.replace(/\D/g, '')
 
-    // Formata no padrão +DDI (DDD) 99999-9999
+  
     const formatted = onlyNumbers.replace(/(\d{2})(\d{2})(\d{4})/, '$1/$2/$3')
-
+    
     return formatted
   }
+
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (contact) {
+      const dnFormat = format(contact.dtaniversario, "dd/MM/yyyy")
       setValue('name', contact.name || '')
       setValue('email', contact.email || '')
       setValue('number', contact.number || '')
       setValue('cpf', contact.cpf || '')
-      setValue('dtaniversario', contact.dtaniversario || '')
+      setValue('dtaniversario', dnFormat || '')
       setValue('firstName', contact.name || '')
       setValue('identifier', contact.identifier || '')
       setValue('empresa', contact.empresa || '')
@@ -220,9 +224,7 @@ export const ContatoModal: React.FC<{
                 variant="outlined"
                 value={watch('dtaniversario')}
                 placeholder="01/01/1990"
-                {...register('dtaniversario', {
-                  // required: 'Data de Aniversário é obrigatória',
-                })}
+                {...register('dtaniversario')}
                 onChange={e => {
                   const formattedNumber = formatDN(e.target.value)
                   setValue('dtaniversario', formattedNumber) // Atualiza o valor do formulário com o número formatado
