@@ -72,12 +72,12 @@ export const MenuComponent: React.FC<Props> = ({ userProfile, state }) => {
       icon: <CellWifiIcon />,
       routeName: 'sessoes',
     },
-    {
-      title: 'Kanbam',
-      caption: 'Lista de atendimentos',
-      icon: <ForumIcon />,
-      routeName: 'kanban',
-    },
+    // {
+    //   title: 'Kanbam',
+    //   caption: 'Lista de atendimentos',
+    //   icon: <ForumIcon />,
+    //   routeName: 'kanban',
+    // },
     {
       title: 'Painel Atendimentos',
       caption: 'Visão geral dos atendimentos',
