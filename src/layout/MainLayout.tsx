@@ -19,7 +19,8 @@ export const MainLayout: React.FC = () => {
   const alertSound = '/sound.mp3' // Corrigido o caminho
   const { encryptData } = useAuth()
   const { AbrirChatMensagens } = useAtendimentoTicketStore()
-  const { loadWhatsApps, whatsApps } = useWhatsappStore()
+  const { loadWhatsApps } = useWhatsappStore()
+
   useEffect(() => {
     if ("Notification" in window) {
       // Verifica o status atual da permissão
@@ -162,10 +163,10 @@ export const MainLayout: React.FC = () => {
   }, [])
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const listarWhatsapps = useCallback(async () => {
-    if (!whatsApps.length) {
+  
       const { data } = await ListarWhatsapps()
       loadWhatsApps(data)
-    }
+    
   }, [])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>

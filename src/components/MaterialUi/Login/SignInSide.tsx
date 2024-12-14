@@ -77,8 +77,8 @@ export default function Login() {
                             m: 'auto',
                         }}
                     >
-                        <Content />
-                        <SignInCard />
+                        {/* <Content />
+                        <SignInCard /> */}
                     </Stack>
                 </Stack>
             </ThemeProvider>

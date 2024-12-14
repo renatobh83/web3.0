@@ -91,6 +91,7 @@ export const useSocketInitial = () => {
         localStorage.removeItem('profile')
         localStorage.removeItem('userId')
         localStorage.removeItem('usuario')
+        toast.error("Faça um novo login")
         setTimeout(() => {
           window.location.href = '/login'
         }, 1000)
