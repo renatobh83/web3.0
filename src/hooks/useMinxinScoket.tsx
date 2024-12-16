@@ -102,7 +102,7 @@ export const useMixinSocket = () => {
     socket?.on('connect', () => {
 
       socket?.on(`${usuario.tenantId}:ticket`, data => {
-        console.log(data)
+
         if (data.action === 'update' && data.ticket.userId === userId) {
           if (data.ticket.status === 'open' && !data.ticket.isTransference) {
             setTicketFocado(data.ticket)
@@ -128,6 +128,7 @@ export const useMixinSocket = () => {
             && checkTicketFilter(data.payload.ticket)
             && data.payload.mediaType !== "call_log"
           ) {
+            // updateTicket(data.payload.ticket)
             if (data.payload.ticket.userId) {
 
               eventNotification.emit('playSoundNotification')

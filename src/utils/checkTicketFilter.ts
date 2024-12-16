@@ -77,7 +77,7 @@ const checkTicketFilter = (ticket) => {
 
   // verificar se já é um ticket do usuário
   if (ticket?.userId == userId) {
-    console.log("Ticket do usuário", ticket?.userId, userId);
+
     return true;
   }
 

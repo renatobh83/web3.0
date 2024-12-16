@@ -354,6 +354,7 @@ export const useAtendimentoTicketStore = create<
   updateTicket: (payload) =>
     set((state) => {
       const ticketIndex = state.tickets.findIndex((t) => t.id === payload.id);
+
       if (ticketIndex !== -1) {
         const updatedTicket = {
           ...state.tickets[ticketIndex],

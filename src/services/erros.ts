@@ -32,6 +32,7 @@ const backendErrors = {
   ERR_NO_UPDATE_CAMPAIGN_NOT_IN_CANCELED_PENDING:
     "Apenas campanhas pendentes ou canceladas podem ser editadas ou excluidas.",
   ERR_USER_NOT_FOUND: "Credenciais invalidas.",
+  ERR_API_NAME_EXISTS: "Já existe uma api com esse nome. favor escolher outro."
 };
 
 export default backendErrors;

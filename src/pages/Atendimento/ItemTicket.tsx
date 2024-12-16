@@ -34,6 +34,7 @@ interface ItemTicketProps {
 
 export const ItemTicket = ({ filas, ticket }: ItemTicketProps) => {
   const navigate = useNavigate()
+
   const { iniciarAtendimento } = useTicketService()
   // const setTicketFocado = useAtendimentoTicketStore(state => state.setTicketFocado)
   const dataInWords = (timestamp: string, updated: string) => {
@@ -51,9 +52,11 @@ export const ItemTicket = ({ filas, ticket }: ItemTicketProps) => {
   const AbrirChatMensagens = useAtendimentoTicketStore(
     s => s.AbrirChatMensagens
   )
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     // Função que atualiza a label
+
     const updateTimeLabel = () => {
       setTimeLabel(dataInWords(ticket.lastMessageAt, ticket.updatedAt))
     }

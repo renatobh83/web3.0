@@ -7,6 +7,5 @@ import { getDesignTokens } from './themePrimitives';
 export default function getSignInSideTheme(mode: PaletteMode): ThemeOptions {
     return {
         ...getDesignTokens(mode),
-
     };
 }

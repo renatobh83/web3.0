@@ -65,7 +65,14 @@ export const WebhookConfiguracao = () => {
   const [tempValue, setTempValue] = useState('')
   const [open, setOpen] = useState(false)
   const [webhookEdit, setWebhookEdit] = useState<webhookProps | null>(null)
-  const [stateWebhook, setStateWebhook] = useState<webhookProps | null>(null)
+  const [stateWebhook, setStateWebhook] = useState<webhookProps>({
+    expDate: '',
+    action: [],
+    nomeApi: '',
+    usuario: '',
+    senha: '',
+    baseURl: '',
+  })
 
   const [webhooks, setWebhooks] = useState([])
 
@@ -118,7 +125,7 @@ export const WebhookConfiguracao = () => {
   const handleOnChange = (value: string, acao: string) => {
     setStateWebhook(prev => ({
       ...prev,
-      [acao]: value,
+      [acao]: acao === 'nomeApi' ? value.toUpperCase() : value,
     }))
   }
   const handleChangeInputChips = (value: string) => {
@@ -146,6 +153,7 @@ export const WebhookConfiguracao = () => {
     }
   }
   const handleSalvar = async () => {
+
     if (!stateWebhook.usuario.trim() || !stateWebhook.senha.trim()) {
       toast.info('Preencher todas as informações')
       return
@@ -156,38 +164,58 @@ export const WebhookConfiguracao = () => {
         ...stateWebhook,
         status: 'DESCONECTADA',
       }
-      if (webhookEdit.id) {
+      if (webhookEdit?.id) {
         const { data } = await UpdateApi(webhookEdit.id, stateWebhook)
         setWebhooks(prevApis =>
           prevApis.map(item => (item.id === webhookEdit?.id ? data : item))
         )
         setOpen(false)
         setIsloading(false)
-      } else {
-        CriarWebhook(data).then(_ => {
-          listaWebhook()
-          setOpen(false)
-          setIsloading(false)
-          setStateWebhook({
-            expDate: '',
-            action: [],
-            nomeApi: '',
-            usuario: '',
-            senha: '',
-            baseURl: '',
-          })
+        setWebhookEdit({
+          expDate: '',
+          action: [],
+          nomeApi: '',
+          usuario: '',
+          senha: '',
+          baseURl: '',
         })
+        setStateWebhook({
+          expDate: '',
+          action: [],
+          nomeApi: '',
+          usuario: '',
+          senha: '',
+          baseURl: '',
+        })
+      } else {
+        CriarWebhook(data)
+          .then(_ => {
+            listaWebhook()
+            setOpen(false)
+            setIsloading(false)
+            setStateWebhook({
+              expDate: '',
+              action: [],
+              nomeApi: '',
+              usuario: '',
+              senha: '',
+              baseURl: '',
+            })
+          })
+          .catch(err => Errors(err))
       }
     } catch (error) {
       Errors(error)
+      setIsloading(false)
+    } finally {
+      setIsloading(false)
     }
   }
 
   const listaWebhook = useCallback(async () => {
     const { data } = await ListarWebhook()
-    if (data.length) {
-      setWebhooks(data)
-    }
+    setWebhooks(data)
+
   }, [])
 
   // const handlConnectApi = async (api) => {
@@ -348,7 +376,7 @@ export const WebhookConfiguracao = () => {
                   flexWrap: 'wrap',
                 }}
               >
-                {stateWebhook?.action.map((chip, index) => (
+                {stateWebhook?.action?.map((chip, index) => (
                   <Chip
                     // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                     key={index}
