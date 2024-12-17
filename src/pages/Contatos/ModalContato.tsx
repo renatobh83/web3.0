@@ -12,7 +12,7 @@ import { useForm } from 'react-hook-form'
 import { CriarContato, EditarContato } from '../../services/contatos'
 import { toast } from 'sonner'
 import { Errors } from '../../utils/error'
-import { format, parseISO } from 'date-fns'
+import { format } from 'date-fns'
 interface Contato {
   name: string
   number: string
@@ -107,13 +107,13 @@ export const ContatoModal: React.FC<{
     return onlyNumbers
   }
   const formatDN = (value: string) => {
-    if(!value) return
- 
+    if (!value) return
+
     const onlyNumbers = value.replace(/\D/g, '')
 
-  
+
     const formatted = onlyNumbers.replace(/(\d{2})(\d{2})(\d{4})/, '$1/$2/$3')
-    
+
     return formatted
   }
 

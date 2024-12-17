@@ -1,27 +1,27 @@
 
-import { Tabs, Tab, Toolbar } from '@mui/material';
+import { Tabs, Tab } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 import { Outlet, useNavigate } from 'react-router-dom';
 
 
 export const Kanban = () => {
-     const { decryptData } = useAuth()
+  const { decryptData } = useAuth()
   const profile = decryptData('profile') as unknown as String
-  
+
   const navigate = useNavigate()
 
- 
 
-  const handleTabChange = (event, newValue) => {
+
+  const handleTabChange = (_event, newValue) => {
     navigate(newValue);
   };
 
   return (
     profile === 'admin' && (
       <>
-        
+
         <Tabs
-        sx={{paddingTop: 2}}
+          sx={{ paddingTop: 2 }}
           value={false}
           onChange={handleTabChange}
           variant="scrollable"
@@ -41,7 +41,7 @@ export const Kanban = () => {
             value="/kanban/tags"
           />
         </Tabs>
-        <Outlet/>
+        <Outlet />
       </>
     )
   );

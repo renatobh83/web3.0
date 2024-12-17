@@ -13,7 +13,6 @@ import {
   MenuItem,
   TextField,
 } from '@mui/material'
-import FunctionsIcon from '@mui/icons-material/Functions'
 import { useWhatsappStore } from '../../store/whatsapp'
 import { useEffect, useState } from 'react'
 import {
@@ -274,7 +273,7 @@ export const ModalWhatsapp = ({
             variant="standard"
             value={whatsapp.farewellMessage}
           />
-       {/*    <Box id="btn" sx={{ position: 'absolute', top: '0', right: '0' }}>
+          {/*    <Box id="btn" sx={{ position: 'absolute', top: '0', right: '0' }}>
             <Button>
               <FunctionsIcon />
             </Button>
@@ -300,9 +299,9 @@ export const ModalWhatsapp = ({
         </Alert>
       )}
       <DialogContent>
-      <Box>Op</Box>
+        <Box>Op</Box>
       </DialogContent>
-      
+
       <DialogActions>
         <Button
           disabled={isLoading}

@@ -3,8 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Stack from '@mui/material/Stack';
 import { createTheme, ThemeProvider, PaletteMode } from '@mui/material/styles';
 
-import SignInCard from './SignInCard';
-import Content from './Content';
+
 import TemplateFrame from './TemplateFrame';
 import getSignInSideTheme from '../getSignInSideTheme';
 

@@ -3,12 +3,12 @@ import {
   Box,
   Card,
   CardContent,
-  CardMedia,
+
   Typography,
   IconButton,
   Tooltip,
   Avatar,
-  Grid,
+
 } from '@mui/material';
 import TagIcon from '@mui/icons-material/LocalOffer';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
