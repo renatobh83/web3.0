@@ -121,7 +121,7 @@ export const ContatoModal: React.FC<{
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (contact) {
-      const dnFormat = format(contact.dtaniversario, "dd/MM/yyyy")
+      const dnFormat = contact.dtaniversario ? format(contact.dtaniversario, "dd/MM/yyyy") : ''
       setValue('name', contact.name || '')
       setValue('email', contact.email || '')
       setValue('number', contact.number || '')

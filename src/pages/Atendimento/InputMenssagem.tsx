@@ -227,6 +227,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
     if (!arquivos.length) {
       throw new Error('Não existem arquivos para envio')
     }
+
     const formDatas = arquivos.map(media => {
       const formData = new FormData()
       formData.append('fromMe', 'true')
@@ -249,6 +250,7 @@ export const InputMenssagem: React.FC<InputMenssagemProps> = ({
     try {
       if (!cMostrarEnvioArquivo()) {
         const message = prepararMensagemTexto()
+
         await EnviarMensagemTexto(ticketId, message)
       } else {
         const formDatas = prepararUploadMedia()

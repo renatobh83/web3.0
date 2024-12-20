@@ -21,9 +21,11 @@ export const EncaminharComponent = ({ menssagemParaEncaminhar, open, setClose, r
         setClose(false)
     }
     const handleConfirmarEncaminhamentoMensagem = () => {
+
         if ("id" in contatoSeleciondo && !contatoSeleciondo?.id) return
         EncaminharMensagem(menssagemParaEncaminhar, contatoSeleciondo)
             .then(data => console.log(data))
+            .finally(() => handleCloseModal())
     }
     return (
         <Dialog open={open} fullWidth maxWidth='sm'>
