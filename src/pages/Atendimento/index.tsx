@@ -381,50 +381,121 @@ export function Atendimento() {
       Errors(error)
     }
   }
+  const handlerNotifications = (data) => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      let notification;
 
-  function handlerNotifications(data) {
-
-    if (data.ticket.userId) {
       const options = {
         body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
         icon: data.ticket.contact.profilePicUrl,
         tag: data.ticket.id,
         renotify: true,
+      };
+
+      // Verifica se o navegador tem suporte a Service Worker
+      if (navigator.serviceWorker) {
+        navigator.serviceWorker.getRegistration().then((registration) => {
+          if (registration) {
+            // Usa o Service Worker para mostrar a notificação
+            notification = registration.showNotification(
+              `Mensagem de ${data.ticket.contact.name}`,
+              options
+            );
+          } else {
+            // Caso o Service Worker não esteja disponível, cria a notificação diretamente
+            notification = new Notification(`Mensagem de ${data.ticket.contact.name}`, options);
+          }
+
+          // Configura o clique da notificação
+          notification.onclick = (e) => {
+            e.preventDefault();
+            if (document.hidden) {
+              window.focus();
+            }
+            AbrirChatMensagens(data.ticket);
+            goToChat(data.ticket.id);
+          };
+
+          // Fecha a notificação após 10 segundos
+          setTimeout(() => {
+            if (notification) {
+              notification.close();
+            }
+          }, 10000);
+        }).catch((error) => {
+          console.error('Erro ao tentar obter o Service Worker:', error);
+        });
+      } else {
+        // Caso não haja suporte a Service Worker, cria a notificação diretamente
+        notification = new Notification(`Mensagem de ${data.ticket.contact.name}`, options);
+
+        // Configura o clique da notificação
+        notification.onclick = (e) => {
+          e.preventDefault();
+          if (document.hidden) {
+            window.focus();
+          }
+          AbrirChatMensagens(data.ticket);
+          goToChat(data.ticket.id);
+        };
+
+        // Fecha a notificação após 10 segundos
+        setTimeout(() => {
+          if (notification) {
+            notification.close();
+          }
+        }, 10000);
       }
 
-      const notification = new Notification(
-        `Mensagem de ${data.ticket.contact.name}`,
-        options
-      )
-
-      setTimeout(() => {
-        notification.close()
-      }, 10000)
-
-      notification.onclick = e => {
-        e.preventDefault()
-
-        if (document.hidden) {
-          window.focus()
-        }
-
-        AbrirChatMensagens(data.ticket)
-        goToChat(data.ticket.id)
-      }
+      // Toca o som da notificação
+      playNotificationSound();
     } else {
-      const message = new Notification('Novo cliente pendente', {
-        body: `Cliente: ${data.ticket.contact.name}`,
-        tag: 'notification-pending',
-      })
-      message.onclick = e => {
-        e.preventDefault()
-
-        AbrirChatMensagens(data.ticket)
-        goToChat(data.ticket.id)
-      }
+      console.log('Permissão de notificações não concedida ou navegador não compatível');
     }
-    playNotificationSound()
-  }
+  };
+  // function handlerNotifications(data) {
+
+  //   if (data.ticket.userId) {
+  //     const options = {
+  //       body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
+  //       icon: data.ticket.contact.profilePicUrl,
+  //       tag: data.ticket.id,
+  //       renotify: true,
+  //     }
+
+  //     const notification = new Notification(
+  //       `Mensagem de ${data.ticket.contact.name}`,
+  //       options
+  //     )
+
+  //     setTimeout(() => {
+  //       notification.close()
+  //     }, 10000)
+
+  //     notification.onclick = e => {
+  //       e.preventDefault()
+
+  //       if (document.hidden) {
+  //         window.focus()
+  //       }
+
+  //       AbrirChatMensagens(data.ticket)
+  //       goToChat(data.ticket.id)
+  //     }
+  //   } else {
+  //     const message = new Notification('Novo cliente pendente', {
+  //       body: `Cliente: ${data.ticket.contact.name}`,
+  //       tag: 'notification-pending',
+  //     })
+  //     message.onclick = e => {
+  //       e.preventDefault()
+
+  //       AbrirChatMensagens(data.ticket)
+  //       goToChat(data.ticket.id)
+  //     }
+  //   }
+  //   playNotificationSound()
+  // }
 
   const listarConfiguracoes = async () => {
     if (!localStorage.getItem('configuracoes')) {

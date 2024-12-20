@@ -189,7 +189,7 @@ export const useSocketInitial = () => {
 
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
         if (data.type === 'ticket:update') {
-          console.log('socket ON: ticket:update', data)
+          // console.log('socket ON: ticket:update', data)
           const params = {
             searchParam: '',
             pageNumber: 1,
@@ -310,7 +310,7 @@ export const useSocketInitial = () => {
       socket.on(`${usuario.tenantId}:ticketList`, async data => {
         if (data.type === 'chat:create') {
           eventEmitterScrool.emit('scrollToBottomMessageChat')
-          console.log('socket ON: CHAT:CREATE - nova mensagem ', data)
+          // console.log('socket ON: CHAT:CREATE - nova mensagem ', data)
           // if (data.payload.ticket.userId !== userId) return
           // if (data.payload.fromMe) return
           if (checkTicketFilter(data.payload.ticket) && data.payload.mediaType !== "call_log") {
@@ -488,8 +488,7 @@ export const useSocketInitial = () => {
       })
       socket.on(`${usuario.tenantId}:contactList`, data => {
         if (data.type === 'contact:update') {
-          console.log('socket ON: CONTACT:UPDATE')
-
+          // console.log('socket ON: CONTACT:UPDATE')
           updateContact(data.payload)
         }
         if (data.type === 'contact:delete') {
