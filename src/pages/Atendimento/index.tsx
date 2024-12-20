@@ -383,8 +383,6 @@ export function Atendimento() {
   }
   const handlerNotifications = (data) => {
     if ('Notification' in window && Notification.permission === 'granted') {
-      let notification;
-
       const options = {
         body: `${data.body} - ${format(new Date(), 'HH:mm')}`,
         icon: data.ticket.contact.profilePicUrl,
@@ -396,38 +394,53 @@ export function Atendimento() {
       if (navigator.serviceWorker) {
         navigator.serviceWorker.getRegistration().then((registration) => {
           if (registration) {
-            // Usa o Service Worker para mostrar a notificação
-            notification = registration.showNotification(
+            // Usa o Service Worker para exibir a notificação
+            registration.showNotification(
               `Mensagem de ${data.ticket.contact.name}`,
               options
-            );
+            ).then((notification) => {
+              // Configura o clique da notificação
+              notification.onclick = (e) => {
+                e.preventDefault();
+                if (document.hidden) {
+                  window.focus();
+                }
+                AbrirChatMensagens(data.ticket);
+                goToChat(data.ticket.id);
+              };
+
+              // Fecha a notificação após 10 segundos
+              setTimeout(() => {
+                notification.close();
+              }, 10000);
+            }).catch((error) => {
+              console.error('Erro ao exibir a notificação via Service Worker:', error);
+            });
           } else {
             // Caso o Service Worker não esteja disponível, cria a notificação diretamente
-            notification = new Notification(`Mensagem de ${data.ticket.contact.name}`, options);
-          }
+            const notification = new Notification(`Mensagem de ${data.ticket.contact.name}`, options);
 
-          // Configura o clique da notificação
-          notification.onclick = (e) => {
-            e.preventDefault();
-            if (document.hidden) {
-              window.focus();
-            }
-            AbrirChatMensagens(data.ticket);
-            goToChat(data.ticket.id);
-          };
+            // Configura o clique da notificação
+            notification.onclick = (e) => {
+              e.preventDefault();
+              if (document.hidden) {
+                window.focus();
+              }
+              AbrirChatMensagens(data.ticket);
+              goToChat(data.ticket.id);
+            };
 
-          // Fecha a notificação após 10 segundos
-          setTimeout(() => {
-            if (notification) {
+            // Fecha a notificação após 10 segundos
+            setTimeout(() => {
               notification.close();
-            }
-          }, 10000);
+            }, 10000);
+          }
         }).catch((error) => {
           console.error('Erro ao tentar obter o Service Worker:', error);
         });
       } else {
         // Caso não haja suporte a Service Worker, cria a notificação diretamente
-        notification = new Notification(`Mensagem de ${data.ticket.contact.name}`, options);
+        const notification = new Notification(`Mensagem de ${data.ticket.contact.name}`, options);
 
         // Configura o clique da notificação
         notification.onclick = (e) => {
@@ -441,9 +454,7 @@ export function Atendimento() {
 
         // Fecha a notificação após 10 segundos
         setTimeout(() => {
-          if (notification) {
-            notification.close();
-          }
+          notification.close();
         }, 10000);
       }
 
@@ -453,6 +464,8 @@ export function Atendimento() {
       console.log('Permissão de notificações não concedida ou navegador não compatível');
     }
   };
+
+
   // function handlerNotifications(data) {
 
   //   if (data.ticket.userId) {
