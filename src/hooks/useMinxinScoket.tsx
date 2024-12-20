@@ -128,7 +128,7 @@ export const useMixinSocket = () => {
             && checkTicketFilter(data.payload.ticket)
             && data.payload.mediaType !== "call_log"
           ) {
-            // updateTicket(data.payload.ticket)
+            updateTicket(data.payload)
             if (data.payload.ticket.userId) {
 
               eventNotification.emit('playSoundNotification')
